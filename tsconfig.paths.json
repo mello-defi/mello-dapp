@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "_redux/*": ["./_redux/*"],
+      "_services/*": ["./_services/*"],
+      "_pages/*": ["./_pages/*"],
+      "_components/*": ["./_components/*"],
+      "_layouts/*": ["./_layouts/*"],
+      "_interfaces/*": ["./_interfaces/*"],
+      "_enums/*": ["./_enums/*"],
+      "_assets/*": ["./_assets/*"],
+      "_hooks/*": ["./_hooks/*"]
+    }
+  }
+}

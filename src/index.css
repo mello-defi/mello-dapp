@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css?family=Outfit');
+
+/*
+  Dongle, Syne, Manjari
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+  /*
+      *
+      *
+      * Typography
+      *
+      *
+      */
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  a {
+    @apply cursor-pointer;
+  }
+
+  h1 {
+    @apply text-7xl font-bold tracking-tighter !important;
+  }
+
+  h2 {
+    @apply text-6xl font-bold tracking-tight !important;
+  }
+
+  h3 {
+    @apply text-5xl font-bold tracking-tight !important;
+  }
+
+  h4 {
+    @apply text-4xl font-bold tracking-tight !important;
+  }
+
+  h5 {
+    @apply text-2xl font-bold !important;
+  }
+
+  h6 {
+    @apply text-xl font-semibold !important;
+  }
+
+  .text-title {
+    @apply text-lg tracking-tight;
+  }
+
+  .bg-light {
+    @apply bg-white dark:bg-black;
+  }
+
+  .text-light {
+    @apply text-white dark:text-black;
+  }
+
+  .text-dark {
+    @apply text-black dark:text-white;
+  }
+
+  .text-light-hover {
+    @apply text-white hover:text-gray-200 dark:text-black dark:hover:text-gray-500 cursor-pointer transition;
+  }
+
+  .text-dark-hover {
+    @apply text-black hover:text-gray-500 dark:text-white dark:hover:text-gray-200 cursor-pointer transition;
+  }
+
+  .text-title-tab-bar {
+    @apply text-sm tracking-tight;
+  }
+
+  .text-main-body {
+    @apply text-base tracking-tight;
+  }
+
+  .text-secondary-body {
+    @apply text-sm tracking-wide;
+  }
+
+  .text-tertiary-body {
+    @apply text-xs tracking-wide;
+  }
+
+  .text-button {
+    @apply text-sm tracking-wide;
+  }
+
+  .text-caption-regular {
+    @apply text-xs tracking-wider;
+  }
+
+  .border-light {
+    @apply border-2 border-gray-200;
+  }
+
+  .flex-row-center {
+    @apply flex flex-row items-center;
+  }
+}
