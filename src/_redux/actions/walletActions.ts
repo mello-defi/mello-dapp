@@ -1,4 +1,8 @@
-import { GET_BALANCE_FOR_TOKEN, WalletActionTypes, WalletTokenBalances } from '_redux/types/walletTypes';
+import {
+  GET_BALANCE_FOR_TOKEN,
+  WalletActionTypes,
+  WalletTokenBalances
+} from '_redux/types/walletTypes';
 
 export const getBalanceForTokenAction = (balance: WalletTokenBalances): WalletActionTypes => {
   return {

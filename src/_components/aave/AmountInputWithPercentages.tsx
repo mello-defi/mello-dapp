@@ -12,7 +12,7 @@ function PercentageButton({
 }) {
   return (
     <Button
-      className={'h-full'}
+      className={'h-full w-1/5'}
       disabled={!userBalance || parseFloat(userBalance) === 0}
       variant={ButtonVariant.SECONDARY}
       size={ButtonSize.SMALL}

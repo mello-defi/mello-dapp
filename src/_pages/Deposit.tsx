@@ -8,8 +8,10 @@ import aaveLogo from '_assets/images/logos/aave.svg';
 import PoweredByLink from '_components/core/PoweredByLink';
 import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveListItem';
 import useMarketPrices from '_hooks/useMarketPrices';
-import AaveReserve, { AaveFeature } from '_components/aave/AaveReserve';
 import { findTokenByAddress } from '_enums/tokens';
+import { AaveSection } from '_enums/aave';
+import AaveReserve from '_components/aave/AaveReserve';
+import HealthFactor from '_components/aave/HealthFactor';
 
 export default function Deposit() {
   const userAddress = useSelector((state: AppState) => state.web3.userAddress);
@@ -22,11 +24,6 @@ export default function Deposit() {
   const [userSummaryData, setUserSummaryData] = useState<UserSummaryData | undefined>(undefined);
 
   useEffect(() => {
-    // const timer = setInterval(() => {
-    // getMarketData().then((data) => {
-    //   setMarketDataResults(data);
-    // });
-    // getM
     if (userAddress && computedReserves) {
       getUserReserves(userAddress).then((data: UserSummaryData) => {
         setUserSummaryData(data);
@@ -37,8 +34,6 @@ export default function Deposit() {
         setComputedReserves(reserves);
       });
     }
-    // }, 500);
-    // return () => clearInterval(timer)
   }, [computedReserves]);
 
   return (
@@ -68,6 +63,7 @@ export default function Deposit() {
             })}
         </div>
       )}
+      {userSummaryData && <HealthFactor healthFactor={userSummaryData.healthFactor} />}
       {userSummaryData &&
         marketPrices &&
         marketPrices.length > 0 &&
@@ -76,7 +72,7 @@ export default function Deposit() {
             // <></>
             <AaveReserve
               token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
-              aaveFeature={AaveFeature.Lend}
+              aaveSection={AaveSection.Deposit}
               key={reserve.symbol}
               reserve={reserve}
               userReserve={userSummaryData.reservesData.find(

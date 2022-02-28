@@ -1,20 +1,16 @@
-import {Button} from '_components/core/Buttons';
-import React, {useEffect, useState} from 'react';
-import {ComputedReserveData, EthereumTransactionTypeExtended} from '@aave/protocol-js';
-import {ComputedUserReserve} from '@aave/protocol-js/dist/v2/types';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppState} from '_redux/store';
-import {DefaultTransition} from '_components/core/Transition';
-import {Spinner, SpinnerSize} from '_components/core/Animations';
+import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
+import React, { useEffect, useState } from 'react';
+import { ComputedReserveData, EthereumTransactionTypeExtended } from '@aave/protocol-js';
+import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState } from '_redux/store';
+import { DefaultTransition } from '_components/core/Transition';
+import { Spinner, SpinnerSize } from '_components/core/Animations';
 import AaveReserveMarketData from '_components/aave/AaveReserveMarketData';
-import TransactionAmountSummary from '_components/aave/TransactionAmountSummary';
-import AmountInputWithPercentages from '_components/aave/AmountInputWithPercentages';
-import UserReserveBalance from '_components/aave/UserReserveBalance';
-import {TransactionStep} from '_components/transactions/TransactionStep';
-import {initialiseParaSwap} from '_services/paraSwapService';
+import { TransactionStep } from '_components/transactions/TransactionStep';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
-import {ethers} from 'ethers';
+import { ethers } from 'ethers';
 import {
   getBorrowTransactions,
   getDepositTransactions,
@@ -24,29 +20,27 @@ import {
   runAaveActionTransaction,
   runAaveApprovalTransaction
 } from '_services/aaveService';
-import {CryptoCurrencySymbol} from '_enums/currency';
-import {getBalanceForToken} from '_redux/effects/walletEffects';
+import { CryptoCurrencySymbol } from '_enums/currency';
+import { getBalanceForToken } from '_redux/effects/walletEffects';
 import useWalletBalance from '_hooks/useWalletBalance';
-import {TokenDefinition} from '_enums/tokens';
+import { TokenDefinition } from '_enums/tokens';
 import useMarketPrices from '_hooks/useMarketPrices';
-import {HorizontalLineBreak} from '_components/core/HorizontalLineBreak';
+import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
+import { AaveFunction, AaveSection } from '_enums/aave';
+import AaveFunctionButton from '_components/aave/AaveFunctionButton';
+import AaveFunctionContent from '_components/aave/AaveFunctionContent';
 
-export enum AaveFeature {
-  Lend = 'Lend',
-  Borrow = 'Borrow'
-}
 
-// export function
 export default function AaveReserve({
   reserve,
   userReserve,
-  aaveFeature,
+  aaveSection,
   maxBorrowAmount,
   token
 }: {
   reserve: ComputedReserveData;
   userReserve?: ComputedUserReserve;
-  aaveFeature: AaveFeature;
+  aaveSection: AaveSection;
   maxBorrowAmount?: string;
   token: TokenDefinition;
 }) {
@@ -72,11 +66,8 @@ export default function AaveReserve({
   const [transactionError, setTransactionError] = useState<string>('');
   const [transactionSubmitted, setTransactionSubmitted] = useState<boolean>(false);
   const [transactionConfirmed, setTransactionConfirmed] = useState<boolean>(false);
+  const [aaveFunction, setAaveFunction] = useState<AaveFunction | null>();
   const userBalance = useWalletBalance(token);
-  console.log('IN AAVE RESERVE');
-  if (provider) {
-    initialiseParaSwap(provider, network.chainId);
-  }
 
   useEffect(() => {
     if (token && marketPrices) {
@@ -112,264 +103,197 @@ export default function AaveReserve({
     }
   };
 
-  const handleBorrow = async () => {
-    if (borrowAmount && provider && userAddress) {
+
+  const handleAaveFunction = async (
+    amount: number,
+    setFunctionSubmitting: (value: boolean) => void,
+    getTransactions: (provider: ethers.providers.Web3Provider, userAddress: string, underlyingAsset: string, amount: number) => Promise<EthereumTransactionTypeExtended[]>) => {
+    if (provider) {
       try {
         setTransactionStarted(true);
-        setBorrowSubmitting(true);
-        // setTransactionSubmitted(true);
-        const transactions: EthereumTransactionTypeExtended[] = await getBorrowTransactions(
-          provider,
-          userAddress,
-          reserve.underlyingAsset,
-          borrowAmount
-        );
+        setFunctionSubmitting(true);
+        const transactions: EthereumTransactionTypeExtended[] = await getTransactions(provider, userAddress, reserve.underlyingAsset, amount);
         await runAaveTransactions(provider, transactions);
       } catch (e: any) {
         setTransactionError(transactionError + '\n' + e.message);
       }
-      setBorrowSubmitting(false);
+      setFunctionSubmitting(false);
+    }
+  }
+  const handleBorrow = async () => {
+    if (borrowAmount && provider && userAddress) {
+      await handleAaveFunction(borrowAmount, setBorrowSubmitting, getBorrowTransactions);
     }
   };
 
   const handleRepay = async () => {
     if (repayAmount && provider && userAddress) {
-      try {
-        setTransactionStarted(true);
-        setRepaySubmitting(true);
-        // setTransactionSubmitted(true);
-        const transactions: EthereumTransactionTypeExtended[] = await getRepayTransactions(
-          provider,
-          userAddress,
-          reserve.underlyingAsset,
-          repayAmount
-        );
-        await runAaveTransactions(provider, transactions);
-      } catch (e: any) {
-        setTransactionError(transactionError + '\n' + e.message);
-      }
-      setRepaySubmitting(false);
+      await handleAaveFunction(repayAmount, setRepaySubmitting, getRepayTransactions);
     }
   };
 
   const handleDeposit = async () => {
     if (depositAmount && provider && userAddress) {
-      try {
-        setTransactionStarted(true);
-        setDepositSubmitting(true);
-        // setTransactionSubmitted(true);
-        const transactions: EthereumTransactionTypeExtended[] = await getDepositTransactions(
-          provider,
-          userAddress,
-          reserve.underlyingAsset,
-          depositAmount
-        );
-        await runAaveTransactions(provider, transactions);
-      } catch (e: any) {
-        setTransactionError(transactionError + '\n' + e.message);
-      }
-      setDepositSubmitting(false);
+      await handleAaveFunction(depositAmount, setDepositSubmitting, getDepositTransactions);
     }
   };
 
   const handleWithdraw = async () => {
     if (withdrawAmount && provider) {
-      try {
-        setTransactionStarted(true);
-        setWithdrawSubmitting(true);
-        // setTransactionSubmitted(true);
-        const transactions: EthereumTransactionTypeExtended[] = await getWithdrawTransactions(
-          provider,
-          userAddress,
-          reserve.underlyingAsset,
-          withdrawAmount
-        );
-        await runAaveTransactions(provider, transactions);
-      } catch (e: any) {
-        setTransactionError(e.message);
-      }
-      setWithdrawSubmitting(false);
+      await handleAaveFunction(withdrawAmount, setWithdrawSubmitting, getWithdrawTransactions);
     }
+  };
+
+  const handleFunctionButtonClicked = async (functionName: AaveFunction) => {
+    console.log('handleFunctionButtonClicked', functionName);
+    if (!aaveFunction || functionName === aaveFunction) {
+      setIsExpanded(!isExpanded);
+    }
+    // if (isExpanded) {
+    setAaveFunction(functionName);
+    // } else {
+    //   setAaveFunction(null);
+    // }
   };
 
   return (
     <>
       {marketPrices && (
         <div className={'bg-white rounded-xl px-4 py-4 mb-2 border-2 -mx-1 border-gray-50'}>
-          <AaveReserveMarketData
-            reserve={reserve}
-            aaveFeature={aaveFeature}
-            isExpanded={isExpanded}
-            setIsExpanded={setIsExpanded}
-          />
+          <div className={'flex-row-center justify-between'}>
+            <AaveReserveMarketData reserve={reserve} aaveSection={aaveSection} />
+            {aaveSection === AaveSection.Borrow && (
+              <div className={'flex flex-col md:flex-row items-center'}>
+                <AaveFunctionButton
+                  activeFunctionName={aaveFunction}
+                  handleClicked={handleFunctionButtonClicked}
+                  functionName={AaveFunction.Borrow}
+                />
+                <AaveFunctionButton
+                  activeFunctionName={aaveFunction}
+                  handleClicked={handleFunctionButtonClicked}
+                  functionName={AaveFunction.Repay}
+                />
+              </div>
+            )}
+            {aaveSection === AaveSection.Deposit && (
+              <div className={'flex flex-col md:flex-row items-center'}>
+                <AaveFunctionButton
+                  activeFunctionName={aaveFunction}
+                  handleClicked={handleFunctionButtonClicked}
+                  functionName={AaveFunction.Deposit}
+                />
+                <AaveFunctionButton
+                  activeFunctionName={aaveFunction}
+                  handleClicked={handleFunctionButtonClicked}
+                  functionName={AaveFunction.Withdraw}
+                />
+              </div>
+            )}
+          </div>
           <DefaultTransition isOpen={isExpanded}>
             <div>
               <HorizontalLineBreak />
               {marketPriceForToken && (
                 <div className={'flex flex-col md:flex-row justify-between space-x-0 sm:space-x-2'}>
-                  <div className={'flex flex-col w-full md:w-1/2'}>
-                    {aaveFeature === AaveFeature.Lend && (
-                      <>
-                        <UserReserveBalance
-                          title={'Wallet'}
-                          userBalance={userBalance}
-                          tokenPrice={marketPriceForToken}
-                        />
-                        <AmountInputWithPercentages
-                          inputAmount={depositAmount}
-                          setInputAmount={setDepositAmount}
-                          baseAmount={userBalance}
-                        />
-                        <TransactionAmountSummary
-                          tokenPrice={marketPriceForToken}
-                          title={'Amount to deposit'}
-                          amount={depositAmount}
-                        />
-                        <div className={'flex flex-col mt-2'}>
-                          {token && (
-                            <Button
-                              onClick={handleDeposit}
-                              disabled={
-                                transactionStarted ||
-                                parseFloat(userBalance) === 0 ||
-                                (!depositAmount
-                                  ? false
-                                  : depositAmount > parseFloat(userBalance)) ||
-                                (token.symbol.toUpperCase() ===
+                  <div className={'flex flex-col w-full'}>
+                    {aaveFunction === AaveFunction.Deposit && (
+                      <AaveFunctionContent
+                        reserveTitle={'Wallet'}
+                        summaryTitle={'Amount to deposit'}
+                        userBalance={userBalance}
+                        tokenPrice={marketPriceForToken}
+                        amount={depositAmount}
+                        setAmount={setDepositAmount}
+                        token={token}
+                        buttonOnClick={handleDeposit}
+                        buttonDisabled={
+                          transactionStarted ||
+                          parseFloat(userBalance) === 0 ||
+                          (!depositAmount ? false : depositAmount > parseFloat(userBalance)) ||
+                          (token.symbol.toUpperCase() ===
+                            CryptoCurrencySymbol.WMATIC.toUpperCase() &&
+                            depositAmount === parseFloat(userBalance))
+                        }
+                      >
+                        <Spinner show={depositSubmitting} size={SpinnerSize.SMALL} />
+                        <span>
+                          {depositSubmitting
+                            ? 'Submitting...'
+                            : `${
+                                token.symbol.toUpperCase() ===
                                   CryptoCurrencySymbol.WMATIC.toUpperCase() &&
-                                  depositAmount === parseFloat(userBalance))
-                              }
-                              className={'flex-row-center justify-center'}
-                            >
-                              <Spinner show={depositSubmitting} size={SpinnerSize.SMALL} />
-                              <span>
-                                {depositSubmitting
-                                  ? 'Submitting...'
-                                  : `${
-                                      token.symbol.toUpperCase() ===
-                                        CryptoCurrencySymbol.WMATIC.toUpperCase() &&
-                                      depositAmount === parseFloat(userBalance)
-                                        ? 'You cannot deposit all of your MATIC'
-                                        : 'Deposit'
-                                    }`}
-                              </span>
-                            </Button>
-                          )}
-                        </div>
-                      </>
+                                depositAmount === parseFloat(userBalance)
+                                  ? 'You cannot deposit all of your MATIC'
+                                  : 'Deposit'
+                              }`}
+                        </span>
+                      </AaveFunctionContent>
                     )}
-                    {aaveFeature === AaveFeature.Borrow && (
-                      <>
-                        <UserReserveBalance
-                          title={'Borrowing power'}
-                          userBalance={maxBorrowAmount}
-                          tokenPrice={marketPriceForToken}
-                        />
-                        <AmountInputWithPercentages
-                          inputAmount={borrowAmount}
-                          setInputAmount={setBorrowAmount}
-                          baseAmount={maxBorrowAmount}
-                        />
-                        <TransactionAmountSummary
-                          tokenPrice={marketPriceForToken}
-                          title={'Amount to borrow'}
-                          amount={borrowAmount}
-                        />
-                        <div className={'flex flex-col mt-2'}>
-                          <Button
-                            onClick={handleBorrow}
-                            disabled={
-                              transactionStarted
-                              // !userReserve ||
-                              // parseFloat(userReserve.underlyingBalance) === 0 ||
-                              // (withdrawAmount && userReserve?.underlyingBalance
-                              //   ? withdrawAmount > parseFloat(userReserve.underlyingBalance)
-                              //   : false)
-                            }
-                            className={'flex-row-center justify-center'}
-                          >
-                            <span className={'ml-2'}>
-                              {borrowSubmitting ? 'Submitting...' : 'Borrow'}
-                            </span>
-                          </Button>
-                        </div>
-                      </>
+                    {aaveFunction === AaveFunction.Withdraw && (
+                      <AaveFunctionContent
+                        reserveTitle={'Deposited'}
+                        summaryTitle={'Amount to withdraw'}
+                        userBalance={userReserve?.underlyingBalance}
+                        tokenPrice={marketPriceForToken}
+                        amount={withdrawAmount}
+                        setAmount={setWithdrawAmount}
+                        token={token}
+                        buttonOnClick={handleWithdraw}
+                        buttonDisabled={
+                          transactionStarted ||
+                          !userReserve ||
+                          parseFloat(userReserve.underlyingBalance) === 0 ||
+                          (withdrawAmount && userReserve?.underlyingBalance
+                            ? withdrawAmount > parseFloat(userReserve.underlyingBalance)
+                            : false)
+                        }
+                      >
+                        <span className={'ml-2'}>
+                          {withdrawSubmitting ? 'Submitting...' : 'Withdraw'}
+                        </span>
+                      </AaveFunctionContent>
                     )}
-                  </div>
-                  <div className={'flex flex-col w-full md:w-1/2 mt-2 md:mt-0'}>
-                    {aaveFeature === AaveFeature.Lend && (
-                      <>
-                        <UserReserveBalance
-                          title={'Deposited'}
-                          userBalance={userReserve?.underlyingBalance}
-                          tokenPrice={marketPriceForToken}
-                        />
-                        <AmountInputWithPercentages
-                          inputAmount={withdrawAmount}
-                          setInputAmount={setWithdrawAmount}
-                          baseAmount={userReserve?.underlyingBalance}
-                        />
-                        <TransactionAmountSummary
-                          tokenPrice={marketPriceForToken}
-                          title={'Amount to withdraw'}
-                          amount={withdrawAmount}
-                        />
-                        <div className={'flex flex-col mt-2'}>
-                          <Button
-                            onClick={handleWithdraw}
-                            disabled={
-                              transactionStarted ||
-                              !userReserve ||
-                              parseFloat(userReserve.underlyingBalance) === 0 ||
-                              (withdrawAmount && userReserve?.underlyingBalance
-                                ? withdrawAmount > parseFloat(userReserve.underlyingBalance)
-                                : false)
-                            }
-                            className={'flex-row-center justify-center'}
-                          >
-                            <span className={'ml-2'}>
-                              {withdrawSubmitting ? 'Submitting...' : 'Withdraw'}
-                            </span>
-                          </Button>
-                        </div>
-                      </>
+                    {aaveFunction === AaveFunction.Borrow && (
+                      <AaveFunctionContent
+                        reserveTitle={'Borrowing power'}
+                        summaryTitle={'Amount to borrow'}
+                        userBalance={maxBorrowAmount}
+                        tokenPrice={marketPriceForToken}
+                        amount={borrowAmount}
+                        setAmount={setBorrowAmount}
+                        token={token}
+                        buttonOnClick={handleBorrow}
+                        buttonDisabled={transactionStarted}
+                      >
+                        <span className={'ml-2'}>
+                          {borrowSubmitting ? 'Submitting...' : 'Borrow'}
+                        </span>
+                      </AaveFunctionContent>
                     )}
-                    {aaveFeature === AaveFeature.Borrow && (
-                      <>
-                        <UserReserveBalance
-                          title={'Borrowed'}
-                          userBalance={userReserve?.variableBorrows}
-                          tokenPrice={marketPriceForToken}
-                        />
-                        <AmountInputWithPercentages
-                          inputAmount={repayAmount}
-                          setInputAmount={setRepayAmount}
-                          baseAmount={userReserve?.variableBorrows}
-                        />
-                        <TransactionAmountSummary
-                          tokenPrice={marketPriceForToken}
-                          title={'Amount to repay'}
-                          amount={repayAmount}
-                        />
-                        <div className={'flex flex-col mt-2'}>
-                          <Button
-                            onClick={handleRepay}
-                            disabled={
-                              transactionStarted ||
-                              !userReserve ||
-                              parseFloat(userReserve?.variableBorrows) === 0 ||
-                              (repayAmount && userReserve?.variableBorrows
-                                ? repayAmount > parseFloat(userReserve?.variableBorrows)
-                                : false)
-                            }
-                            className={'flex-row-center justify-center'}
-                          >
-                            <span className={'ml-2'}>
-                              {repaySubmitting ? 'Submitting...' : 'Repay'}
-                            </span>
-                          </Button>
-                        </div>
-                      </>
+                    {aaveFunction === AaveFunction.Repay && (
+                      <AaveFunctionContent
+                        reserveTitle={'Borrowed'}
+                        summaryTitle={'Amount to repay'}
+                        userBalance={userReserve?.variableBorrows}
+                        tokenPrice={marketPriceForToken}
+                        amount={repayAmount}
+                        setAmount={setRepayAmount}
+                        token={token}
+                        buttonOnClick={handleRepay}
+                        buttonDisabled={
+                          transactionStarted ||
+                          !userReserve ||
+                          parseFloat(userReserve?.variableBorrows) === 0 ||
+                          (repayAmount && userReserve?.variableBorrows
+                            ? repayAmount > parseFloat(userReserve?.variableBorrows)
+                            : false)
+                        }
+                      >
+                        <span className={'ml-2'}>
+                          {repaySubmitting ? 'Submitting...' : 'Repay'}
+                        </span>
+                      </AaveFunctionContent>
                     )}
                   </div>
                 </div>

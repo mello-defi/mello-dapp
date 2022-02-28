@@ -3,26 +3,22 @@ import { Button, ButtonVariant } from '_components/core/Buttons';
 import { ChevronDownIcon, ChevronUpIcon, LightBulbIcon } from '@heroicons/react/solid';
 import React from 'react';
 import { findTokenByAddress } from '_enums/tokens';
-import { AaveFeature } from '_components/aave/AaveReserve';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
+import { AaveSection } from '_enums/aave';
 
 export default function AaveReserveMarketData({
   reserve,
-  isExpanded,
-  setIsExpanded,
-  aaveFeature
+  aaveSection
 }: {
   reserve: ComputedReserveData;
-  isExpanded: boolean;
-  setIsExpanded: (isExpanded: boolean) => void;
-  aaveFeature: AaveFeature;
+  aaveSection: AaveSection;
 }) {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   return (
     <div
       key={reserve.id}
-      className={'flex flex-col sm:flex-row items-start sm:items-center justify-between'}
+      className={'flex flex-col sm:flex-row items-start sm:items-center w-full justify-between'}
     >
       <div className={'flex flex-col'}>
         <div className={'flex-row-center'}>
@@ -52,29 +48,15 @@ export default function AaveReserveMarketData({
           <span className={'text-title'}>
             {(
               parseFloat(
-                aaveFeature === AaveFeature.Lend ? reserve.supplyAPY : reserve.variableBorrowAPY
+                aaveSection === AaveSection.Deposit ? reserve.supplyAPY : reserve.variableBorrowAPY
               ) * 100
             ).toFixed(2)}
             %
           </span>
           <span className={'text-title-tab-bar text-gray-500'}>
-            {aaveFeature === AaveFeature.Lend ? 'Projected' : 'Variable'} APY
+            {aaveSection === AaveSection.Deposit ? 'Projected' : 'Variable'} APY
           </span>
         </div>
-        <Button
-          variant={ButtonVariant.SECONDARY}
-          onClick={() => setIsExpanded(!isExpanded)}
-          className={'ml-2'}
-        >
-          <div className={'flex-row-center'}>
-            <span>{aaveFeature}</span>
-            {isExpanded ? (
-              <ChevronUpIcon className="-mr-1 ml-1 h-5 w-5" />
-            ) : (
-              <ChevronDownIcon className="-mr-1 ml-1 h-5 w-5" />
-            )}
-          </div>
-        </Button>
       </div>
     </div>
   );

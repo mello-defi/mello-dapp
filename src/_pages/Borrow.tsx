@@ -12,30 +12,13 @@ import {
 } from '@aave/protocol-js';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveListItem';
-import AaveReserve, { AaveFeature } from '_components/aave/AaveReserve';
+import AaveReserve from '_components/aave/AaveReserve';
 import { convertCryptoAmounts, formatTokenValueInFiat } from '_services/priceService';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { findTokenByAddress } from '_enums/tokens';
-
-export function HealthFactor({ healthFactor }: { healthFactor: string }) {
-  const getColor = () => {
-    const healthFactorNumber = parseFloat(healthFactor);
-    if (healthFactorNumber > 1.5) {
-      return 'text-green-500';
-    } else if (healthFactorNumber < 1.5 && healthFactorNumber > 1) {
-      return 'text-yellow-500';
-    } else {
-      return 'text-red-500';
-    }
-  };
-  return (
-    <span className={'text-title flex-row-center justify-between'}>
-      <span>Health factor</span>
-      <span className={`${getColor()}`}>{parseFloat(healthFactor).toFixed(2)}</span>
-    </span>
-  );
-}
+import { AaveSection } from '_enums/aave';
+import HealthFactor from '_components/aave/HealthFactor';
 
 export default function Borrow() {
   const provider = useSelector((state: AppState) => state.web3.provider);
@@ -144,7 +127,7 @@ export default function Borrow() {
             return (
               <AaveReserve
                 token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
-                aaveFeature={AaveFeature.Borrow}
+                aaveSection={AaveSection.Borrow}
                 key={reserve.symbol}
                 reserve={reserve}
                 maxBorrowAmount={convertCryptoAmounts(
