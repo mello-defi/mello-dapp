@@ -4,27 +4,15 @@ import { ADAPTER_EVENTS, CHAIN_NAMESPACES, CONNECTED_EVENT_DATA } from '@web3aut
 import { ethers } from 'ethers';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, ButtonSize, ButtonVariant } from './core/Buttons';
-import { Magic } from 'magic-sdk';
 import { setNetwork, setProvider } from '_redux/effects/web3Effects';
 import Torus from '@toruslabs/torus-embed';
 import { AppState } from '_redux/store';
 import { findEvmNetworkById } from '_enums/networks';
 import Web3Modal, { IProviderOptions } from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import { jitsuClient } from '@jitsu/sdk-js';
 
 const torus = new Torus();
 
-const magic = new Magic('pk_live_55A8A5721C06A247');
-
-//init
-const jitsu = jitsuClient({
-  key: "js.st9cdy1g4fnuhvkv1593er.x7zxx6cblym9uchqahpv",
-  tracking_host: "https://mello-logging-production.herokuapp.com"
-});
-// identify user
-//track page views
-jitsu.track('app_page');
 function App() {
   const dispatch = useDispatch();
   const network = useSelector((state: AppState) => state.web3.network);
@@ -36,7 +24,7 @@ function App() {
     chainConfig: {
       chainNamespace: CHAIN_NAMESPACES.EIP155,
       chainId: network.chainIdHex,
-      rpcTarget: 'https://polygon-mainnet.g.alchemy.com/v2/yAbnaHp8ByhAIrQrplXdhhzQRnB5Lu73',
+      rpcTarget: 'https://polygon-mainnet.g.alchemy.com/v2/yAbnaHp8ByhAIrQrplXdhhzQRnB5Lu73'
     },
     clientId: process.env.REACT_APP_WEB3_AUTH_CLIENT_ID,
     authMode: 'DAPP'
@@ -149,11 +137,6 @@ function App() {
     if (web3auth.provider) {
       const provider = new ethers.providers.Web3Provider(web3auth.provider);
       dispatch(setProvider(provider));
-      const signer = provider.getSigner();
-      const address = signer.getAddress();
-      await jitsu.id({
-        "internal_id": address,
-      });
     }
   };
 

@@ -1,4 +1,4 @@
-import PoweredByLink from '_components/PoweredByLink';
+import PoweredByLink from '_components/core/PoweredByLink';
 import aaveLogo from '_assets/images/logos/aave.svg';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';

@@ -3,7 +3,7 @@ export default function Footer() {
     <footer className={'border-t-2 border-gray-100 bg-white'}>
       <div className={'flex-row-center justify-between max-w-5xl mx-auto py-4 px-2'}>
         <div className={'flex flex-row text-gray-500'}>
-          <span className={'mr-2'}>© 2022 Mello. All rights reserved.</span>
+          <span className={'mr-2'}>© {new Date().getFullYear()} Mello. All rights reserved.</span>
           <svg
             className={'mr-2 cursor-pointer'}
             xmlns="http://www.w3.org/2000/svg"

@@ -8,28 +8,28 @@ import { convertHumanAmountToGwei, formatTokenValueInFiat } from '_services/pric
 import { EVMChainIdNumerical } from '_enums/networks';
 import { ethers } from 'ethers';
 import { Button } from '_components/core/Buttons';
-import PoweredByLink from '_components/PoweredByLink';
+import PoweredByLink from '_components/core/PoweredByLink';
 import { hyphenLogo } from '_assets/images';
-import { TransactionStep } from '_components/core/TransactionStep';
+import { TransactionStep } from '_components/transactions/TransactionStep';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
-import TransactionError from '_components/core/TransactionError';
+import TransactionError from '_components/transactions/TransactionError';
 // @ts-ignore
 import { Hyphen, RESPONSE_CODES, SIGNATURE_TYPES } from '@biconomy/hyphen';
 import useMarketPrices from '_hooks/useMarketPrices';
 
-interface PreTransferStatus {
+interface BiconomyPreTransferStatus {
   code: number;
   depositContract: string;
   message: string;
   responseCode: number;
 }
 
-interface DepositResponse {
+interface BiconomyDepositResponse {
   hash: string;
   wait: (confirmations: number) => Promise<void>;
 }
 
-interface FundsTransferedResponse {
+interface BiconomyFundsTransferedResponse {
   amount: string;
   code: number;
   depositHash: string;
@@ -80,7 +80,7 @@ export default function EthereumToPolygonBridge() {
     }
   }, [provider]);
 
-  const onFundsTransfered = (data: FundsTransferedResponse) => {
+  const onFundsTransfered = (data: BiconomyFundsTransferedResponse) => {
     console.log('FUNDS TRANSFERRED', data);
     setPolygonTransactionHash(data.exitHash);
   };
@@ -103,7 +103,7 @@ export default function EthereumToPolygonBridge() {
       await hyphen.init();
       const token = ethereumTokens.eth;
       const amount = 0.001;
-      const preTransferStatus: PreTransferStatus = await hyphen.preDepositStatus({
+      const preTransferStatus: BiconomyPreTransferStatus = await hyphen.preDepositStatus({
         tokenAddress: token.address, // Token address on fromChain which needs to be transferred
         amount: convertHumanAmountToGwei(amount, token.decimals), // Amount of tokens to be transferred in smallest unit eg wei
         fromChainId: EVMChainIdNumerical.ETHEREUM_TESTNET_GOERLI, // Chain id from where tokens needs to be transferred
@@ -152,7 +152,7 @@ export default function EthereumToPolygonBridge() {
       const weiAmount = ethers.utils.formatUnits(etherVal, 'wei');
       // console.log(ethers.utils.formatUnits(etherVal, 'gwei'))
       // console.log(ethers.utils.formatUnits(etherVal, 'wei'))
-      const depositTx: DepositResponse = await hyphen.deposit({
+      const depositTx: BiconomyDepositResponse = await hyphen.deposit({
         sender: userAddress,
         receiver: userAddress,
         tokenAddress: EthereumTestnetGoerliContracts.ETH,

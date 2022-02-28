@@ -2,14 +2,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { XIcon } from '@heroicons/react/solid';
 import { toggleSidebar } from '_redux/effects/uiEffects';
-import { HorizontalLineBreak } from '_components/onramps/RenBridge';
 import React from 'react';
-import { NavLinkDefinition } from '../App';
 import NavLink from '_components/NavLink';
-import { melloLogoFace, melloLogoFaceWithText } from '_assets/images';
+import { melloLogoFace } from '_assets/images';
+import { NavLinkDefinition } from '_redux/types/uiTypes';
+import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 
-export default function Sidebar({ navLinks }: { navLinks: NavLinkDefinition[] }) {
+export default function Sidebar() {
   const isOpen = useSelector((state: AppState) => state.ui.sidebarOpen);
+  const navLinks = useSelector((state: AppState) => state.ui.navLinks);
   const dispatch = useDispatch();
   return (
     <aside

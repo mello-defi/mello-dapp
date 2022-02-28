@@ -1,4 +1,4 @@
-import { CryptoCurrencyName, CryptoCurrencySymbol, FiatCurrencyName } from '../_enums/currency';
+import { CryptoCurrencyName, CryptoCurrencySymbol, FiatCurrencyName } from '_enums/currency';
 
 export interface CryptoCurrency {
   name: CryptoCurrencyName;

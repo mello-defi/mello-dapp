@@ -34,7 +34,7 @@ export async function getExchangeRate(
     undefined,
     undefined,
     srcDecimals,
-    destDecimals,
+    destDecimals
   );
   if (responseIsError(response)) {
     throw new Error(`Error getting rate: ${response.message}`);

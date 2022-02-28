@@ -45,7 +45,7 @@ export default function SwapAmountInput({
     // if (!value) {
     //   value = '0';
     // }
-    amountChanged(parseFloat(value))
+    amountChanged(parseFloat(value));
   };
 
   return (
@@ -63,9 +63,9 @@ export default function SwapAmountInput({
           <input
             type={'number'}
             disabled={disabled}
-            className={
-              `text-2xl sm:text-3xl bg-gray-100 focus:outline-none px-2 sm:px-0 mt-2 sm:mt-0 py-1 sm:py-0 ${amount === 0 ? 'text-gray-400' : ''}`
-            }
+            className={`text-2xl sm:text-3xl bg-gray-100 focus:outline-none px-2 sm:px-0 mt-2 sm:mt-0 py-1 sm:py-0 ${
+              amount === 0 ? 'text-gray-400' : ''
+            }`}
             // value={Number(amount).toString() === '0' ? '0.0' : Number(amount).toString()}
             value={Number(amount).toString()}
             // value={amount}

@@ -4,12 +4,19 @@ import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { DefaultTransition } from '_components/core/Transition';
 import RampNetwork from '_components/onramps/RampNetwork';
 import MtPellerin from '_components/onramps/MtPellerin';
-import btc from '_assets/images/logos/btc.png';
-import eth from '_assets/images/logos/eth.png';
 import RenBridge from '_components/onramps/RenBridge';
-import { CryptoSource, OnboardingSource } from '../App';
 import EthereumToPolygonBridge from '_components/onramps/EthereumToPolygonBridge';
+import { btcLogo, ethLogo } from '_assets/images';
 
+export enum OnboardingSource {
+  FIAT = 'FIAT',
+  CRYPTO = 'CRYPTO'
+}
+
+export enum CryptoSource {
+  EXCHANGE = 'EXCHANGE',
+  WALLET = 'WALLET'
+}
 export default function Fund() {
   const [onboardingSource, setOnboardingSource] = React.useState<OnboardingSource>();
   const [onboardingSourceSelected, setOnboardingSourceSelected] = React.useState<boolean>(false);
@@ -78,7 +85,7 @@ export default function Fund() {
                   size={ButtonSize.LARGE}
                 >
                   <div className={'flex-row-center justify-center'}>
-                    <img height={30} width={30} src={btc} alt={'bitcoin'} className={'mr-2'} />
+                    <img height={30} width={30} src={btcLogo} alt={'bitcoin'} className={'mr-2'} />
                     Bitcoin
                   </div>
                 </Button>
@@ -91,7 +98,7 @@ export default function Fund() {
                   size={ButtonSize.LARGE}
                 >
                   <div className={'flex-row-center justify-center'}>
-                    <img height={30} width={30} src={eth} alt={'ethereum'} className={'mr-2'} />
+                    <img height={30} width={30} src={ethLogo} alt={'ethereum'} className={'mr-2'} />
                     Ethereum
                   </div>
                 </Button>

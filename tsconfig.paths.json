@@ -10,7 +10,8 @@
       "_interfaces/*": ["./_interfaces/*"],
       "_enums/*": ["./_enums/*"],
       "_assets/*": ["./_assets/*"],
-      "_hooks/*": ["./_hooks/*"]
+      "_hooks/*": ["./_hooks/*"],
+      "_utils/*": ["./_utils/*"]
     }
   }
 }

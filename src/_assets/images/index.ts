@@ -8,6 +8,7 @@ import polygonLogo from '_assets/images/logos/polygon.png';
 import usdcLogo from '_assets/images/logos/usdc.png';
 import renbtcLogo from '_assets/images/logos/renbtc.png';
 import wbtcLogo from '_assets/images/logos/wbtc.png';
+import btcLogo from '_assets/images/logos/btc.png';
 import wethLogo from '_assets/images/logos/weth.png';
 import ethLogo from '_assets/images/logos/eth.png';
 import biconomyLogo from '_assets/images/logos/biconomy.png';
@@ -16,6 +17,7 @@ import melloLogoFace from '_assets/images/logos/mello_logo_face.svg';
 import jeurLogo from '_assets/images/logos/jeur.png';
 import melloLogoFaceWithText from '_assets/images/logos/mello_logo_face_with_text.svg';
 import walletIcon from '_assets/images/icons/wallet.svg';
+
 export {
   daiLogo,
   aaveLogo,
@@ -29,6 +31,7 @@ export {
   wbtcLogo,
   wethLogo,
   ethLogo,
+  btcLogo,
   biconomyLogo,
   hyphenLogo,
   melloLogoFace,

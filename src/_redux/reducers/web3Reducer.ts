@@ -1,10 +1,4 @@
-import {
-  GET_WEB3_BALANCE,
-  SET_NETWORK,
-  SET_PROVIDER,
-  Web3ActionTypes,
-  Web3State
-} from '_redux/types/web3Types';
+import { GET_WEB3_BALANCE, SET_NETWORK, SET_PROVIDER, Web3ActionTypes, Web3State } from '_redux/types/web3Types';
 import { evmNetworks } from '_enums/networks';
 import { polygonMainnetTokens } from '_enums/tokens';
 

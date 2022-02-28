@@ -1,22 +1,20 @@
-import { Button } from '_components/core/Buttons';
-import React, { useEffect, useState } from 'react';
-import { ComputedReserveData, EthereumTransactionTypeExtended } from '@aave/protocol-js';
-import { MarketDataResult } from '_services/marketDataService';
-import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '_redux/store';
-import { DefaultTransition } from '_components/core/Transition';
-import { HorizontalLineBreak } from '_components/onramps/RenBridge';
-import { Spinner, SpinnerSize } from '_components/core/Animations';
+import {Button} from '_components/core/Buttons';
+import React, {useEffect, useState} from 'react';
+import {ComputedReserveData, EthereumTransactionTypeExtended} from '@aave/protocol-js';
+import {ComputedUserReserve} from '@aave/protocol-js/dist/v2/types';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppState} from '_redux/store';
+import {DefaultTransition} from '_components/core/Transition';
+import {Spinner, SpinnerSize} from '_components/core/Animations';
 import AaveReserveMarketData from '_components/aave/AaveReserveMarketData';
 import TransactionAmountSummary from '_components/aave/TransactionAmountSummary';
 import AmountInputWithPercentages from '_components/aave/AmountInputWithPercentages';
 import UserReserveBalance from '_components/aave/UserReserveBalance';
-import { TransactionStep } from '_components/core/TransactionStep';
-import { initialiseParaSwap } from '_services/paraSwapService';
+import {TransactionStep} from '_components/transactions/TransactionStep';
+import {initialiseParaSwap} from '_services/paraSwapService';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
-import TransactionError from '_components/core/TransactionError';
-import { ethers } from 'ethers';
+import TransactionError from '_components/transactions/TransactionError';
+import {ethers} from 'ethers';
 import {
   getBorrowTransactions,
   getDepositTransactions,
@@ -26,11 +24,12 @@ import {
   runAaveActionTransaction,
   runAaveApprovalTransaction
 } from '_services/aaveService';
-import { CryptoCurrencySymbol } from '_enums/currency';
-import { getBalanceForToken } from '_redux/effects/walletEffects';
+import {CryptoCurrencySymbol} from '_enums/currency';
+import {getBalanceForToken} from '_redux/effects/walletEffects';
 import useWalletBalance from '_hooks/useWalletBalance';
-import { TokenDefinition } from '_enums/tokens';
+import {TokenDefinition} from '_enums/tokens';
 import useMarketPrices from '_hooks/useMarketPrices';
+import {HorizontalLineBreak} from '_components/core/HorizontalLineBreak';
 
 export enum AaveFeature {
   Lend = 'Lend',

@@ -97,14 +97,14 @@ export const evmNetworks: EvmNetworks = {
     chainIdHex: EVMChainIdHex.POLYGON_MAINNET,
     name: EVMChainName.POLYGON_MAINNET,
     explorerUrl: 'https://polygonscan.com',
-    imageUrl: polygonLogo,
+    imageUrl: polygonLogo
   },
   ethereumMainnet: {
     chainId: EVMChainIdNumerical.ETHEREUM_MAINNET,
     chainIdHex: EVMChainIdHex.ETHEREUM_MAINNET,
     name: EVMChainName.ETHEREUM_MAINNET,
     explorerUrl: 'https://etherscan.io',
-    imageUrl: ethLogo,
+    imageUrl: ethLogo
   },
   avalancheMainnet: {
     chainId: EVMChainIdNumerical.AVALANCHE_MAINNET,

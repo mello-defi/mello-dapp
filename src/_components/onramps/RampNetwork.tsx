@@ -13,7 +13,7 @@ function RampNetwork() {
     const userAddress = await signer?.getAddress();
     new RampInstantSDK({
       hostAppName: 'Mello',
-      hostLogoUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d2/Headspace-logo.jpg',
+      hostLogoUrl: 'https://mellodefi.com/images/logo-light.svg',
       fiatCurrency: 'EUR',
       defaultAsset: 'MATIC',
       fiatValue: '100',

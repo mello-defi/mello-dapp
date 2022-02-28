@@ -10,9 +10,15 @@ export enum NavTab {
   WALLET = 'WALLET'
 }
 
+export interface NavLinkDefinition {
+  tab: NavTab;
+  title: string;
+}
+
 export interface UIState {
   sidebarOpen: boolean;
   activeTab: NavTab;
+  navLinks: NavLinkDefinition[];
 }
 
 interface ToggleSidebarActionType {

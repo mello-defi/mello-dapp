@@ -27,7 +27,16 @@ export function getMarketData(
   const params: CoinGeckoParams = {
     vs_currency: currency.toLocaleLowerCase(),
     // ids: tokenIds.join(',').toLocaleLowerCase(),
-    ids: ['bitcoin', 'ethereum', 'matic-network', 'usd-coin', 'dai', 'wrapped-bitcoin', 'jarvis-synthetic-euro', 'renbtc']
+    ids: [
+      'bitcoin',
+      'ethereum',
+      'matic-network',
+      'usd-coin',
+      'dai',
+      'wrapped-bitcoin',
+      'jarvis-synthetic-euro',
+      'renbtc'
+    ]
       .join(',')
       .toLocaleLowerCase()
   };

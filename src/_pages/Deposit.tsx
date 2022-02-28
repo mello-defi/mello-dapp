@@ -5,7 +5,7 @@ import { AppState } from '_redux/store';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import { getReserves, getUserReserves } from '_services/aaveService';
 import aaveLogo from '_assets/images/logos/aave.svg';
-import PoweredByLink from '_components/PoweredByLink';
+import PoweredByLink from '_components/core/PoweredByLink';
 import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveListItem';
 import useMarketPrices from '_hooks/useMarketPrices';
 import AaveReserve, { AaveFeature } from '_components/aave/AaveReserve';
@@ -54,9 +54,7 @@ export default function Deposit() {
               (reserve: ComputedUserReserve) =>
                 parseFloat(parseFloat(reserve.underlyingBalance).toFixed(6)) > 0
             )
-            .sort(
-              (a, b) => parseFloat(b.underlyingBalance) - parseFloat(a.underlyingBalance)
-            )
+            .sort((a, b) => parseFloat(b.underlyingBalance) - parseFloat(a.underlyingBalance))
             .map((reserve: ComputedUserReserve) => {
               return (
                 <ComputedUserReserveListItem

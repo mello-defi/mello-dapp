@@ -15,12 +15,12 @@ import {
 } from '_services/paraSwapService';
 import { convertGweiToHumanAmount, convertHumanAmountToGwei } from '_services/priceService';
 import { executeEthTransaction } from '_services/walletService';
-import { TransactionStep } from '_components/core/TransactionStep';
+import { TransactionStep } from '_components/transactions/TransactionStep';
 import { SwitchVerticalIcon } from '@heroicons/react/outline';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
-import TransactionError from '_components/core/TransactionError';
+import TransactionError from '_components/transactions/TransactionError';
 import SwapAmountInput from '_pages/swap/SwapAmountInput';
-import PoweredByLink from '_components/PoweredByLink';
+import PoweredByLink from '_components/core/PoweredByLink';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { paraswapLogo } from '_assets/images';
 
@@ -65,7 +65,13 @@ export default function Swap() {
         setSourceTokenDisabled(true);
         setFetchingPrices(true);
         const srcAmount = convertHumanAmountToGwei(amount, srcToken.decimals);
-        const rate = await getExchangeRate(srcToken.address, destToken.address, srcAmount, srcToken.decimals, destToken.decimals);
+        const rate = await getExchangeRate(
+          srcToken.address,
+          destToken.address,
+          srcAmount,
+          srcToken.decimals,
+          destToken.decimals
+        );
         console.log('rate', rate);
         setPriceRoute(rate);
         setSourceFiatAmount(parseFloat(rate.srcUSD));
@@ -204,16 +210,16 @@ export default function Swap() {
         }
       >
         {fetchingPrices ? (
-         <span>Fetching prices...</span>
-        ): (
+          <span>Fetching prices...</span>
+        ) : (
           <>
             <div>
               {destinationToken && (
                 <>
                   💰
                   <span className={'ml-2'}>
-                1 {sourceToken.symbol} = {destinationAmount} {destinationToken?.symbol}
-              </span>
+                    1 {sourceToken.symbol} = {destinationAmount} {destinationToken?.symbol}
+                  </span>
                 </>
               )}
             </div>
@@ -222,15 +228,15 @@ export default function Swap() {
                 <div>
                   ⛽
                   <span className={'ml-2'}>
-                Gas fees: ~${parseFloat(priceRoute.gasCostUSD).toFixed(2)}
-              </span>
+                    Gas fees: ~${parseFloat(priceRoute.gasCostUSD).toFixed(2)}
+                  </span>
                 </div>
               )}
             </div>
           </>
         )}
       </div>
-      <TransactionError transactionError={fetchingPriceError}/>
+      <TransactionError transactionError={fetchingPriceError} />
       <Button
         disabled={
           isSwapping ||

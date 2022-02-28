@@ -1,7 +1,7 @@
 import { Spinner, SpinnerSize } from '_components/core/Animations';
 import React from 'react';
 import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/solid';
-import { TransactionTransition } from '../../App';
+import { TransactionTransition } from '_components/transactions/TransactionTransition';
 
 export function TransactionStep({
   show,

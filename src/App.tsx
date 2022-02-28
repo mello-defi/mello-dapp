@@ -5,54 +5,16 @@ import { DefaultTransition } from '_components/core/Transition';
 import { useDispatch, useSelector } from 'react-redux';
 import Deposit from '_pages/Deposit';
 import Footer from '_components/Footer';
-import Header from '_components/Header';
+import Header from '_components/header/Header';
 import Swap from '_pages/swap/Swap';
 import Borrow from '_pages/Borrow';
 import { NavTab } from '_redux/types/uiTypes';
 import { AppState } from '_redux/store';
-import Wallet from '_pages/Wallet';
-// declare module '@biconomy/hyphen'
-// @ts-ignore
-import { EthereumTestnetGoerliContracts, ethereumTokens } from '_enums/tokens';
+import Wallet from '_pages/wallet/Wallet';
 import { EVMChainIdNumerical, EvmNetworkDefinition, evmNetworks } from '_enums/networks';
 import { setNetwork } from '_redux/effects/web3Effects';
 import Fund from '_pages/Fund';
 import Sidebar from '_components/Sidebar';
-
-import { jitsuClient } from '@jitsu/sdk-js'
-
-export enum OnboardingSource {
-  FIAT = 'FIAT',
-  CRYPTO = 'CRYPTO'
-}
-
-export enum CryptoSource {
-  EXCHANGE = 'EXCHANGE',
-  WALLET = 'WALLET'
-}
-
-function OnboardingSourceButton({
-  source,
-  selectedSource,
-  children,
-  onClick
-}: {
-  source: OnboardingSource;
-  selectedSource: OnboardingSource | undefined;
-  children: any;
-  onClick: (source: OnboardingSource) => void;
-}) {
-  return (
-    <Button
-      size={ButtonSize.LARGE}
-      variant={ButtonVariant.PRIMARY}
-      className={`mb-2 ${selectedSource === source ? 'bg-gray-600' : ''}`}
-      onClick={() => onClick(source)}
-    >
-      <span className={'text-lg'}>{children}</span>
-    </Button>
-  );
-}
 
 function EthereumMainnetGuard() {
   const dispatch = useDispatch();
@@ -81,20 +43,6 @@ interface TabContentDefinition {
   hideOnEthereumMainnet?: boolean;
   requiresLogin: boolean;
 }
-
-export interface NavLinkDefinition {
-  tab: NavTab;
-  title: string;
-  // hideFromNavBar
-}
-
-const navLinks: NavLinkDefinition[] = [
-  { tab: NavTab.DEPOSIT, title: 'Deposit' },
-  { tab: NavTab.BORROW, title: 'Borrow' },
-  { tab: NavTab.SWAP, title: 'Swap' },
-  { tab: NavTab.FUND, title: 'Fund' }
-  // { tab: NavTab.WALLET, title: 'Wallet' }
-];
 const tabsContent: TabContentDefinition[] = [
   {
     tab: NavTab.DEPOSIT,
@@ -128,18 +76,14 @@ const tabsContent: TabContentDefinition[] = [
   }
 ];
 
-export function TransactionTransition() {
-  return <div className={'border-green-400 ml-8 border-l-2 border-dashed'}>&nbsp;</div>;
-}
-
-function LoginGuard () {
+function LoginGuard() {
   return (
     <div className={'flex flex-col items-center justify-center h-40'}>
       <div className={'flex flex-col items-center justify-center'}>
         <span className={'text-title'}>Please connect your wallet</span>
       </div>
     </div>
-  )
+  );
 }
 
 function App() {
@@ -149,7 +93,7 @@ function App() {
   const activeTab = useSelector((state: AppState) => state.ui.activeTab);
   return (
     <div>
-      <Sidebar navLinks={navLinks} />
+      <Sidebar />
       <div
         // flex flex-col min-h-screen bg-gray-50
         className={`font-sans bg-white-700 ${
@@ -157,7 +101,7 @@ function App() {
         } flex flex-col min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50`}
         // } flex flex-col min-h-screen bg-gray-50`}
       >
-        <Header navLinks={navLinks} />
+        <Header />
         <div className={'flex-grow'}>
           <div
             className={
@@ -179,9 +123,7 @@ function App() {
                               {tab.requiresLogin && !isConnected ? (
                                 <LoginGuard />
                               ) : (
-                                <>
-                                  {tab.component}
-                                </>
+                                <>{tab.component}</>
                               )}
                             </>
                           )}
