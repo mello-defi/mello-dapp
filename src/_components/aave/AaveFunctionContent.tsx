@@ -30,7 +30,7 @@ export default function AaveFunctionContent({
 
 }) {
   return (
-    <div className={"flex flex-col md:flex-row justify-between space-x-0 md:space-x-2"}>
+    <div className={"flex flex-col md:flex-row justify-between space-x-0 md:space-x-2 space-y-2"}>
       <div className={"w-full md:w-1/2"}>
         <UserReserveBalance title={reserveTitle} userBalance={userBalance} tokenPrice={tokenPrice} />
         <AmountInputWithPercentages
@@ -39,7 +39,7 @@ export default function AaveFunctionContent({
           baseAmount={userBalance}
         />
       </div>
-      <div className={"w-full md:w-1/2 my-4 space-y-4 flex flex-col"}>
+      <div className={"w-full md:w-1/2 space-y-4 flex flex-col justify-end py-0 md:py-2"}>
         <TransactionAmountSummary tokenPrice={tokenPrice} title={summaryTitle} amount={amount} />
         {token && (
           <Button

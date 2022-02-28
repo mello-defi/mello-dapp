@@ -145,15 +145,15 @@ export default function AaveReserve({
   };
 
   const handleFunctionButtonClicked = async (functionName: AaveFunction) => {
-    console.log('handleFunctionButtonClicked', functionName);
+    const newIsExpanded = !isExpanded;
     if (!aaveFunction || functionName === aaveFunction) {
-      setIsExpanded(!isExpanded);
+      setIsExpanded(newIsExpanded);
     }
-    // if (isExpanded) {
-    setAaveFunction(functionName);
-    // } else {
-    //   setAaveFunction(null);
-    // }
+    if (newIsExpanded) {
+      setAaveFunction(functionName);
+    } else {
+      setAaveFunction(null);
+    }
   };
 
   return (
