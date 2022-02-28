@@ -39,7 +39,7 @@ export default function AaveFunctionContent({
           baseAmount={userBalance}
         />
       </div>
-      <div className={"w-full md:w-1/2 space-y-4 flex flex-col justify-end py-0 md:py-2"}>
+      <div className={"w-full md:w-1/2 flex flex-col justify-end py-0 md:py-2"}>
         <TransactionAmountSummary tokenPrice={tokenPrice} title={summaryTitle} amount={amount} />
         {token && (
           <Button
