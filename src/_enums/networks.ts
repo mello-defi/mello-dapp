@@ -40,6 +40,7 @@ export interface EvmNetworkDefinition {
   rpcUrl?: string;
   imageUrl?: string;
   explorerUrl: string;
+  gasStationUrl?: string;
 }
 
 export function findEvmNetworkById(id: EVMChainIdNumerical | number | string) {
@@ -97,14 +98,16 @@ export const evmNetworks: EvmNetworks = {
     chainIdHex: EVMChainIdHex.POLYGON_MAINNET,
     name: EVMChainName.POLYGON_MAINNET,
     explorerUrl: 'https://polygonscan.com',
-    imageUrl: polygonLogo
+    imageUrl: polygonLogo,
+    gasStationUrl: 'https://gasstation-mainnet.matic.network/'
   },
   ethereumMainnet: {
     chainId: EVMChainIdNumerical.ETHEREUM_MAINNET,
     chainIdHex: EVMChainIdHex.ETHEREUM_MAINNET,
     name: EVMChainName.ETHEREUM_MAINNET,
     explorerUrl: 'https://etherscan.io',
-    imageUrl: ethLogo
+    imageUrl: ethLogo,
+    gasStationUrl: 'https://gasstation-mainnet.matic.network/'
   },
   avalancheMainnet: {
     chainId: EVMChainIdNumerical.AVALANCHE_MAINNET,

@@ -1,10 +1,12 @@
 import { APIError, NetworkID, ParaSwap } from 'paraswap';
 import { TokenDefinition } from '_enums/tokens';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { OptimalRate } from 'paraswap-core';
 import { Allowance, Transaction } from 'paraswap/build/types';
 import { BigNumberZD } from '@aave/protocol-js';
 import { EVMChainIdNumerical } from '_enums/networks';
+import { SendOptions } from 'web3-eth-contract';
+import { getGasPrice } from '_services/gasService';
 
 let paraSwap: ParaSwap;
 
@@ -56,11 +58,16 @@ export async function getAllowance(
 }
 
 export async function approveToken(
-  amount: string,
+  amount: BigNumber,
   userAddress: string,
-  tokenAddress: string
+  tokenAddress: string,
+  gasPrice?: BigNumber,
 ): Promise<string> {
-  return paraSwap.approveToken(amount, userAddress, tokenAddress);
+  const options: Omit<SendOptions, 'from'> = {};
+  if (gasPrice) {
+    options.gasPrice = gasPrice.toString();
+  }
+  return paraSwap.approveToken(amount.toString(), userAddress, tokenAddress, undefined, options);
 }
 
 export async function buildSwapTransaction(

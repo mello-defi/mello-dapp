@@ -1,10 +1,10 @@
 import React from 'react';
 import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk';
-import OnRampCard from './OnRampCard';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { FiatCurrencyName } from '_enums/currency';
 import { rampNetworkLogo } from '_assets/images';
+import OnRampCard from '_components/onramps/OnRampCard';
 
 function RampNetwork() {
   // const provider = useSelector((state: AppState) => state.web3.provider);

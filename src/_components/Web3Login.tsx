@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { connect } from '_redux/effects/web3Effects';
 import { AppState } from '_redux/store';
-import { setAddressAction } from '_redux/actions/walletActions';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
+import { setAddress } from '_redux/effects/walletEffects';
 
 function App() {
   const dispatch = useDispatch();
@@ -13,16 +13,17 @@ function App() {
   const signer = useSelector((state: AppState) => state.web3.signer);
   useEffect(() => {
     if (isConnected && signer && !address) {
+      console.log('setting address');
       signer.getAddress().then((address) => {
-        dispatch(setAddressAction(address));
+        console.log('GOT ADDRESS', address);
+        dispatch(setAddress(address));
       });
     }
   }, [isConnected, network, dispatch]);
 
   const login = async () => {
-    dispatch(connect())
+    dispatch(connect());
   };
-
 
   return (
     <div>

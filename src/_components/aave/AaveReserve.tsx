@@ -29,7 +29,6 @@ import { AaveFunction, AaveSection } from '_enums/aave';
 import AaveFunctionButton from '_components/aave/AaveFunctionButton';
 import AaveFunctionContent from '_components/aave/AaveFunctionContent';
 
-
 export default function AaveReserve({
   reserve,
   userReserve,
@@ -102,23 +101,33 @@ export default function AaveReserve({
     }
   };
 
-
   const handleAaveFunction = async (
     amount: number,
     setFunctionSubmitting: (value: boolean) => void,
-    getTransactions: (provider: ethers.providers.Web3Provider, userAddress: string, underlyingAsset: string, amount: number) => Promise<EthereumTransactionTypeExtended[]>) => {
+    getTransactions: (
+      provider: ethers.providers.Web3Provider,
+      userAddress: string,
+      underlyingAsset: string,
+      amount: number
+    ) => Promise<EthereumTransactionTypeExtended[]>
+  ) => {
     if (provider) {
       try {
         setTransactionStarted(true);
         setFunctionSubmitting(true);
-        const transactions: EthereumTransactionTypeExtended[] = await getTransactions(provider, userAddress, reserve.underlyingAsset, amount);
+        const transactions: EthereumTransactionTypeExtended[] = await getTransactions(
+          provider,
+          userAddress,
+          reserve.underlyingAsset,
+          amount
+        );
         await runAaveTransactions(provider, transactions);
       } catch (e: any) {
         setTransactionError(transactionError + '\n' + e.message);
       }
       setFunctionSubmitting(false);
     }
-  }
+  };
   const handleBorrow = async () => {
     if (borrowAmount && provider && userAddress) {
       await handleAaveFunction(borrowAmount, setBorrowSubmitting, getBorrowTransactions);
@@ -222,7 +231,7 @@ export default function AaveReserve({
                                 token.symbol.toUpperCase() ===
                                   CryptoCurrencySymbol.WMATIC.toUpperCase() &&
                                 parseFloat(userBalance) > 0 &&
-                                depositAmount === parseFloat(userBalance) 
+                                depositAmount === parseFloat(userBalance)
                                   ? 'You cannot deposit all of your MATIC'
                                   : 'Deposit'
                               }`}

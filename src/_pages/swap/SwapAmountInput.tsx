@@ -67,8 +67,8 @@ export default function SwapAmountInput({
               amount === 0 ? 'text-gray-400' : ''
             }`}
             // value={Number(amount).toString() === '0' ? '0.0' : Number(amount).toString()}
-            value={Number(amount).toString()}
-            // value={amount}
+            // value={Number(amount).toString()}
+            value={amount}
             onChange={handleInputChange}
           />
         </div>

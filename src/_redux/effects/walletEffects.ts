@@ -11,7 +11,8 @@ const cacheExpirationInMs = 10000;
 const cache = new Map<CryptoCurrencySymbol, CacheRecord>();
 
 export const setAddress = (address: string) => {
-  return async (dispatch: Dispatch) => {
+  return async (dispatch: Dispatch<WalletActionTypes>) => {
+    console.log('setAddress', address);
     dispatch(setAddressAction(address));
   };
 };

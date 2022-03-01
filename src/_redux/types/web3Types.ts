@@ -50,8 +50,12 @@ interface ConnectWeb3ActionType {
 interface DisconnectWeb3ActionType {
   type: typeof DISCONNECT;
   payload: {
-    provider: null,
+    provider: null;
     signer: null;
   };
 }
-export type Web3ActionTypes = GetNetworkAction | GetWeb3BalanceActionType | ConnectWeb3ActionType | DisconnectWeb3ActionType;
+export type Web3ActionTypes =
+  | GetNetworkAction
+  | GetWeb3BalanceActionType
+  | ConnectWeb3ActionType
+  | DisconnectWeb3ActionType;

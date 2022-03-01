@@ -12,7 +12,9 @@ export default function TransactionAmountSummary({
 }) {
   return (
     <span
-      className={`my-1 bg-gray-100 w-full px-2 py-2 rounded-xl ${amount === 0 ? 'text-gray-400' : ''}`}
+      className={`my-1 bg-gray-100 w-full px-2 py-2 rounded-xl ${
+        amount === 0 ? 'text-gray-400' : ''
+      }`}
     >
       <span className={`${amount === 0 ? '' : 'text-gray-500'}`}>{title}:</span>{' '}
       {formatTokenValueInFiat(tokenPrice, amount)}

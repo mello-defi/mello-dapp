@@ -40,7 +40,7 @@ export function TransactionStep({
           <span className={'flex-row-center text-title'}>{children}</span>
         </div>
       )}
-      {showTransition && <TransactionTransition />}
+      {showTransition && stepComplete && <TransactionTransition />}
     </div>
   );
 }

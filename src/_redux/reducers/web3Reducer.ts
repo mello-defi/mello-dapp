@@ -1,5 +1,6 @@
 import {
-  CONNECT, DISCONNECT,
+  CONNECT,
+  DISCONNECT,
   GET_WEB3_BALANCE,
   SET_NETWORK,
   Web3ActionTypes,
@@ -42,13 +43,13 @@ export const getWeb3Reducer = (
         ...state,
         provider: action.payload.provider,
         signer: action.payload.signer,
-        isConnected: true,
+        isConnected: true
       };
     case DISCONNECT:
       return {
         ...state,
         provider: undefined,
-        isConnected: false,
+        isConnected: false
       };
     default:
       return state;

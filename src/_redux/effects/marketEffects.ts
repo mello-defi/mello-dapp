@@ -29,6 +29,5 @@ export const getMarketPrices = (currency: FiatCurrencyName = FiatCurrencyName.US
         dispatch(getMarketPricesAction(data));
       });
     }
-
   };
 };

@@ -23,6 +23,8 @@ import SwapAmountInput from '_pages/swap/SwapAmountInput';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { paraswapLogo } from '_assets/images';
+import { BigNumber, ethers } from 'ethers';
+import { getGasPrice } from '_services/gasService';
 
 export default function Swap() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -78,8 +80,10 @@ export default function Swap() {
         setSourceFiatAmount(parseFloat(rate.srcUSD));
         setDestinationFiatAmount(parseFloat(rate.destUSD));
         setDestinationAmount(convertGweiToHumanAmount(rate.destAmount, destToken.decimals));
+        setSwapConfirmed(false);
       } catch (e: any) {
         console.log(e);
+        console.log('ERROR HEREEARAERER')
         setFetchingPriceError(e.message);
       }
       setFetchingPrices(false);
@@ -93,39 +97,19 @@ export default function Swap() {
       try {
         setIsSwapping(true);
         const allowance: Allowance = await getAllowance(userAddress, sourceToken.address);
-        const sourceAmountInGwei = convertHumanAmountToGwei(sourceAmount, sourceToken.decimals);
-        console.log(
-          'SWAPPING',
-          sourceAmountInGwei,
-          'SOURCETOKEN',
-          sourceToken.name,
-          'DESTINATIONTOKEN',
-          destinationToken.name
-        );
-        console.log('ALLOWANCE', allowance);
-        console.log('SOURCE AMOUNT', sourceAmountInGwei);
-        console.log(allowance.allowance < sourceAmountInGwei);
-        // if (allowance.allowance > sourceAmountInGwei) {
-        console.log('GETTING GAS');
-        // console.log(await provider.getGasPrice());
-        const hash = await approveToken(sourceAmountInGwei, userAddress, sourceToken.address);
-        // const tx = ethers.utils.transa
-        setApprovalTransactionHAsh(hash);
-        console.log('APPROVE HASh', hash);
-        const approvalTx: TransactionResponse = await provider.getTransaction(hash);
-        await approvalTx.wait(1);
-        // }
+        const amount: BigNumber = ethers.utils.parseUnits(sourceAmount.toString(), sourceToken.decimals);
+        if (amount.gt(allowance.allowance)) {
+          const gasPriceResult = await getGasPrice(network.gasStationUrl);
+          let gasPrice: BigNumber | undefined;
+          if (gasPriceResult) {
+            gasPrice = ethers.utils.parseUnits(gasPriceResult?.fastest.toString(), 'gwei')
+          }
+          const approvalTxHash = await approveToken(amount, userAddress, sourceToken.address, gasPrice);
+          setApprovalTransactionHAsh(approvalTxHash);
+          const approvalTx: TransactionResponse = await provider.getTransaction(approvalTxHash);
+          await approvalTx.wait(1);
+        }
         setTokenIsApproved(true);
-        const allowance2: Allowance = await getAllowance(userAddress, sourceToken.address);
-        console.log('NEW ALLOWANCE', allowance2);
-        console.log(
-          'SWAPPING',
-          sourceAmountInGwei,
-          'SOURCETOKEN',
-          sourceToken.name,
-          'DESTINATIONTOKEN',
-          destinationToken.name
-        );
         const tx = await buildSwapTransaction(
           sourceToken,
           destinationToken,
@@ -133,12 +117,17 @@ export default function Swap() {
           priceRoute,
           10
         );
-        const txHash = await executeEthTransaction(tx, provider, false);
-        setSwapTransactionHash(txHash);
-        const actionTx: TransactionResponse = await provider.getTransaction(hash);
+        const swapTxHash = await executeEthTransaction(tx, provider, false);
+        setSwapTransactionHash(swapTxHash);
+        setSwapSubmitted(true);
+        const actionTx: TransactionResponse = await provider.getTransaction(swapTxHash);
         await actionTx.wait(1);
-        setSwapConfirmed(true)
+        setSwapConfirmed(true);
+        setSourceAmount(0);
+        setDestinationAmount(0);
         setTransactionError('');
+        setIsSwapping(false);
+        setIsApproving(false);
       } catch (e: any) {
         setTransactionError(e.data?.message || e.message);
         console.log(e);
@@ -260,7 +249,7 @@ export default function Swap() {
         {!isSwapping && !isApproving ? 'Swap' : ''}
       </Button>
       <div className={'text-title px-2 my-2'}>
-        {isSwapping && (
+        {(isSwapping || swapConfirmed) && (
           <div>
             <TransactionStep
               show={true}
@@ -269,13 +258,6 @@ export default function Swap() {
             >
               Token is approved
               <BlockExplorerLink transactionHash={approvalTransactionHash} />
-            </TransactionStep>
-            <TransactionStep
-              show={true}
-              transactionError={transactionError}
-              stepComplete={swapSubmitted}
-            >
-              Transaction submitted to the blockchain
             </TransactionStep>
             <TransactionStep
               show={swapSubmitted}

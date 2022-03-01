@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import Web3Login from '../Web3Login';
 import { AppState } from '_redux/store';
 import { melloLogoFaceWithText } from '_assets/images';
-import NavLink from '../NavLink';
 import { NavLinkDefinition } from '_redux/types/uiTypes';
 import WalletDropdown from '_components/header/WalletDropdown';
 import MobileHamburgerMenu from '_components/header/MobileHamburgerMenu';
+import Web3Login from '_components/Web3Login';
+import NavLink from '_components/NavLink';
 
 function DesktopNavLinks({ navLinks }: { navLinks: NavLinkDefinition[] }) {
   return (
@@ -22,22 +22,11 @@ export default function Header() {
   const provider = useSelector((state: AppState) => state.web3.provider);
   const signer = useSelector((state: AppState) => state.web3.signer);
   const navLinks = useSelector((state: AppState) => state.ui.navLinks);
-  const [userAddress, setUserAddress] = useState<string>('');
-  const [userBalance, setUserBalance] = useState<string>('');
+  const isConnected = useSelector((state: AppState) => state.web3.isConnected);
+  const userAddress = useSelector((state: AppState) => state.wallet.address);
   useEffect(() => {
     const getWalletInfo = async () => {
       if (provider && signer) {
-        const address = await signer.getAddress();
-        const balance = await signer.getBalance();
-        console.log('address', address);
-        setUserAddress(address);
-        setUserBalance(balance.toString());
-        // const walletHistory: WalletHistory = {
-        //   address: address,
-        //   balance: '10',
-        //   source: 'metamask',
-        //   token: 'ETH'
-        // };
         // supabase
         //   .from('wallet_history')
         //   .insert([walletHistory])
@@ -59,7 +48,7 @@ export default function Header() {
         </div>
         <div className={'flex-row-center'}>
           <MobileHamburgerMenu />
-          {!userAddress ? <Web3Login /> : <WalletDropdown />}
+          {!isConnected || !userAddress ? <Web3Login /> : <WalletDropdown />}
         </div>
       </div>
     </header>
