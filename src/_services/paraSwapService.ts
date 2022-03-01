@@ -46,12 +46,17 @@ export async function getAllowance(
   walletAddress: string,
   tokenAddress: string
 ): Promise<Allowance> {
+  console.log('GETTING ALLOWANCE REQUEST', tokenAddress);
   const response: Allowance | APIError = await paraSwap.getAllowance(walletAddress, tokenAddress);
+  console.log('GETTING ALLOWANCE RESPONSE', response);
+
+  // console.log(response);
+  // if (responseIsError(response)) {
+  //   throw new Error(`Error getting allowance: ${response.message}`);
+  // }
   console.log(response);
-  if (responseIsError(response)) {
-    throw new Error(`Error getting allowance: ${response.message}`);
-  }
-  return response;
+  // @ts-ignore
+  return response.tokens[0];
 }
 
 export async function approveToken(

@@ -223,7 +223,8 @@ export default function AaveReserve({
                             : `${
                                 token.symbol.toUpperCase() ===
                                   CryptoCurrencySymbol.WMATIC.toUpperCase() &&
-                                depositAmount === parseFloat(userBalance)
+                                parseFloat(userBalance) > 0 &&
+                                depositAmount === parseFloat(userBalance) 
                                   ? 'You cannot deposit all of your MATIC'
                                   : 'Deposit'
                               }`}

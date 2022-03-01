@@ -5,27 +5,19 @@ import { ethers } from 'ethers';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, ButtonSize, ButtonVariant } from './core/Buttons';
 import { connect, setNetwork } from '_redux/effects/web3Effects';
-import Torus from '@toruslabs/torus-embed';
 import { AppState } from '_redux/store';
-import { findEvmNetworkById } from '_enums/networks';
+import { EVMChainIdNumerical } from '_enums/networks';
 import Web3Modal, { IProviderOptions } from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import { Magic } from 'magic-sdk';
-import Fortmatic from 'fortmatic';
 import { setAddressAction } from '_redux/actions/walletActions';
+import { connectAction } from '_redux/actions/web3Actions';
+
+import Torus from "@toruslabs/torus-embed";
 
 const polygonMainnet = {
   rpcUrl: 'https://polygon-mainnet.g.alchemy.com/v2/yAbnaHp8ByhAIrQrplXdhhzQRnB5Lu73', // Your own node URL
   chainId: 137, // Your own node's chainId
 };
-
-const m = new Magic('pk_live_55A8A5721C06A247', {
-  network: polygonMainnet,
-}); // ✨
-
-const fm = new Fortmatic('pk_live_4241ADEA19D86FC1');
-
-const torus = new Torus();
 
 function App() {
   const dispatch = useDispatch();
@@ -42,90 +34,6 @@ function App() {
     }
   }, [isConnected, network, dispatch]);
 
-  // if (!process.env.REACT_APP_WEB3_AUTH_CLIENT_ID) {
-  //   throw new Error('WEB3_AUTH_CLIENT_ID is not defined');
-  // }
-  //
-  // const web3auth = new Web3Auth({
-  //   chainConfig: {
-  //     chainNamespace: CHAIN_NAMESPACES.EIP155,
-  //     chainId: network.chainIdHex,
-  //     rpcTarget: 'https://polygon-mainnet.g.alchemy.com/v2/yAbnaHp8ByhAIrQrplXdhhzQRnB5Lu73'
-  //   },
-  //   clientId: process.env.REACT_APP_WEB3_AUTH_CLIENT_ID,
-  //   authMode: 'DAPP'
-  // });
-  //
-  // web3auth.clearCache();
-  //
-  // const subscribeAuthEvents = (web3auth: Web3Auth) => {
-  //   web3auth.on(ADAPTER_EVENTS.CONNECTED, (data: CONNECTED_EVENT_DATA) => {
-  //     console.log('Yeah!, you are successfully logged in', data);
-  //     // const signer = web3Provider?.getSigner();
-  //     // console.log(signer);
-  //   });
-  //
-  //   web3auth.on(ADAPTER_EVENTS.CONNECTING, () => {
-  //     console.log('connecting');
-  //   });
-  //
-  //   web3auth.on(ADAPTER_EVENTS.DISCONNECTED, () => {
-  //     console.log('disconnected');
-  //   });
-  //
-  //   web3auth.on(ADAPTER_EVENTS.ERRORED, (error) => {
-  //     console.log('someerror or user have cancelled login request', error);
-  //   });
-  // };
-  //
-  // useEffect(() => {
-  //   if (window && document) {
-  //     // @ts-ignore
-  //     initializeModal();
-  //   }
-  // }, []);
-  //
-  // const web3modalinit = async () => {
-  //   const providerOptions: IProviderOptions = {
-  //     walletconnect: {
-  //       package: WalletConnectProvider, // required
-  //       options: {
-  //         infuraId: '153d6213fae8445cbe45e6fbfc5e15e0'
-  //       }
-  //     }
-  //   };
-  //
-  //   console.log('CALLING MODAL');
-  //   const web3Modal = new Web3Modal({
-  //     // network: "mainnet", // optional
-  //     // disableInjectedProvider: true,
-  //     cacheProvider: false, // optional
-  //     providerOptions
-  //   });
-  //
-  //   web3Modal.clearCachedProvider();
-  //   const instance = await web3Modal.connect();
-  //   console.log('INSRANCE', instance);
-  //
-  //   instance.on('accountsChanged', (accounts: any) => {
-  //     console.log('ACCOUNTS CHANGED', accounts);
-  //   });
-  //
-  //   // Subscribe to chainId change
-  //   instance.on('chainChanged', (chainId: any) => {
-  //     console.log('CHAIN CHANGED', chainId);
-  //   });
-  //
-  //   // Subscribe to networkId change
-  //   instance.on('networkChanged', (networkId: string) => {
-  //     dispatch(setNetwork(findEvmNetworkById(networkId)));
-  //   });
-  //   const provider = new ethers.providers.Web3Provider(instance);
-  //
-  //   // dispatch(setProvider(provider));
-  //   // provider.
-  // };
-  //
   // const torusconnect = async () => {
   //   // const host = network.chainId === EVMChainIdNumerical.POLYGON_MAINNET ? 'matic' : 'mainnet';
   //   // console.log('HOST', host);
@@ -157,22 +65,54 @@ function App() {
   // const initializeModal = () => {
   //   subscribeAuthEvents(web3auth);
   // };
+  // const [searchParams, setSearchParams] = useSearchParams();
 
   const login = async () => {
-    // await web3auth.login();
-    // await web3authcconnectt();
-    // await web3auth.initModal();
-    // await web3auth.connect();
-    // if (web3auth.provider) {
-    //   const provider = new ethers.providers.Web3Provider(web3auth.provider);
-    //   dispatch(setProvider(provider));
-    // }
-    // await m.authenticate();
+    const providerOptions: IProviderOptions = {
+      walletconnect: {
+        package: WalletConnectProvider, // required
+        options: {
+          // infuraId: '153d6213fae8445cbe45e6fbfc5e15e0'
+          rpc: {
+            137: 'https://polygon-mainnet.g.alchemy.com/v2/yAbnaHp8ByhAIrQrplXdhhzQRnB5Lu73',
+          },
+          networkId: 'matic',
+        }
+      },
+      torus: {
+        display: {
+          logo: "https://www.getopensocial.com/wp-content/uploads/2020/12/social-login-COLOR_2.png",
+          name: "Social",
+          description: "Sign in with your social media account",
+        },
+        package: Torus, // required
+        options: {
+          networkParams: {
+            host: "https://polygon-mainnet.g.alchemy.com/v2/yAbnaHp8ByhAIrQrplXdhhzQRnB5Lu73", // optional
+            chainId: EVMChainIdNumerical.POLYGON_MAINNET, // optional
+          },
+        }
+      }
+    };
 
-    // @ts-ignore
-    // dispatch(setProvider(fm.getProvider()));
-    // console.log(fm.getProvider());
-    dispatch(connect());
+    const web3Modal = new Web3Modal({
+      network: "mainnet", // optional
+      // cacheProvider: true, // optional
+      cacheProvider: false, // optional
+      disableInjectedProvider: false, // optional
+      providerOptions // required
+    });
+    web3Modal.clearCachedProvider();
+
+    const provider = await web3Modal.connect();
+    console.log('PROVIDER', provider);
+    // await provider.enable();
+    // console.log('PROVIDER', provider);
+    // console.ll
+    const p = new ethers.providers.Web3Provider(provider, "any");
+    const signer = p.getSigner();
+    console.log('SIGNER', signer);
+    dispatch(connect(p));
   };
 
 

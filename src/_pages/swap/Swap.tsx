@@ -60,6 +60,7 @@ export default function Swap() {
     destToken: TokenDefinition
   ) => {
     if (destToken && amount) {
+      setFetchingPriceError('');
       try {
         setDestinationTokenDisabled(true);
         setSourceTokenDisabled(true);
@@ -136,7 +137,8 @@ export default function Swap() {
         setSwapTransactionHash(txHash);
         const actionTx: TransactionResponse = await provider.getTransaction(hash);
         await actionTx.wait(1);
-        setSwapConfirmed(true);
+        setSwapConfirmed(true)
+        setTransactionError('');
       } catch (e: any) {
         setTransactionError(e.data?.message || e.message);
         console.log(e);
