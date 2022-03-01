@@ -6,7 +6,7 @@ import { TokenDefinition } from '_enums/tokens';
 
 const useWalletBalance = (token?: TokenDefinition) => {
   const dispatch = useDispatch();
-  const userAddress = useSelector((state: AppState) => state.web3.userAddress);
+  const userAddress = useSelector((state: AppState) => state.wallet.address);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const walletBalances = useSelector((state: AppState) => state.wallet.balances);
   const [userBalance, setUserBalance] = useState<string>('');

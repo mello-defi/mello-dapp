@@ -13,7 +13,7 @@ import CopyableText from '_components/core/CopyableText';
 
 function RenBridge() {
   const provider = useSelector((state: AppState) => state.web3.provider);
-  const userAddress = useSelector((state: AppState) => state.web3.userAddress);
+  const userAddress = useSelector((state: AppState) => state.wallet.address);
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
   const [message, setMessage] = React.useState('');
   const [gatewayAddress, setGatewayAddress] = React.useState('');

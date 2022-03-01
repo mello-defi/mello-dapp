@@ -1,7 +1,7 @@
-import { GET_BALANCE_FOR_TOKEN, WalletActionTypes, WalletState } from '_redux/types/walletTypes';
+import { GET_BALANCE_FOR_TOKEN, SET_ADDRESS, WalletActionTypes, WalletState } from '_redux/types/walletTypes';
 
 const initialState: WalletState = {
-  userAddress: undefined,
+  address: '',
   balances: {}
 };
 
@@ -17,6 +17,11 @@ export const getWalletReducer = (
           ...state.balances,
           ...action.payload.balance
         }
+      };
+    case SET_ADDRESS:
+      return {
+        ...state,
+        address: action.payload.address
       };
     default:
       return state;

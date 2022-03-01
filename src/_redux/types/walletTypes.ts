@@ -1,5 +1,6 @@
 import { CryptoCurrencySymbol } from '_enums/currency';
 
+export const SET_ADDRESS = 'SET_ADDRESS';
 export const GET_BALANCE_FOR_TOKEN = 'GET_BALANCE_FOR_TOKEN';
 export const GET_BALANCE_FOR_ALL_TOKENS = 'GET_BALANCE_FOR_ALL_TOKENS';
 
@@ -8,7 +9,7 @@ export type WalletTokenBalances = {
 };
 
 export interface WalletState {
-  userAddress: string | undefined;
+  address: string;
   balances: WalletTokenBalances;
 }
 
@@ -19,6 +20,13 @@ interface GetBalanceForTokenAction {
   };
 }
 
+interface SetAddressAction {
+  type: typeof SET_ADDRESS;
+  payload: {
+    address: string;
+  };
+}
+
 // interface GetBalanceForAllTokensAction {
 //   type: typeof GET_BALANCE_FOR_ALL_TOKENS;
 //   payload: {
@@ -26,5 +34,5 @@ interface GetBalanceForTokenAction {
 //   };
 // }
 
-export type WalletActionTypes = GetBalanceForTokenAction;
+export type WalletActionTypes = GetBalanceForTokenAction | SetAddressAction;
 // | GetBalanceForAllTokensAction;

@@ -18,7 +18,7 @@ export default function WalletDropdown() {
   const dispatch = useDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const network = useSelector((state: AppState) => state.web3.network);
-  const userAddress = useSelector((state: AppState) => state.web3.userAddress);
+  const userAddress = useSelector((state: AppState) => state.wallet.address);
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
     if (dropdownOpen) {

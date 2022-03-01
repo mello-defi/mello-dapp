@@ -43,7 +43,7 @@ interface BiconomyFundsTransferedResponse {
 
 export default function EthereumToPolygonBridge() {
   const provider = useSelector((state: AppState) => state.web3.provider);
-  const userAddress = useSelector((state: AppState) => state.web3.userAddress);
+  const userAddress = useSelector((state: AppState) => state.wallet.address);
   const network = useSelector((state: AppState) => state.web3.network);
   const dispatch = useDispatch();
   const [transferAmount, setTransferAmount] = React.useState<number>(0);

@@ -1,7 +1,7 @@
 import {
+  CONNECT, DISCONNECT,
   GET_WEB3_BALANCE,
   SET_NETWORK,
-  SET_PROVIDER,
   Web3ActionTypes,
   Web3State
 } from '_redux/types/web3Types';
@@ -17,7 +17,6 @@ const initialState: Web3State = {
   provider: undefined,
   isConnected: false,
   balance: 0,
-  userAddress: '',
   network,
   tokenSet: polygonMainnetTokens
 };
@@ -37,12 +36,17 @@ export const getWeb3Reducer = (
         ...state,
         balance: action.payload.balance
       };
-    case SET_PROVIDER:
+    case CONNECT:
       return {
         ...state,
         provider: action.payload.provider,
         isConnected: true,
-        userAddress: action.payload.address
+      };
+    case DISCONNECT:
+      return {
+        ...state,
+        provider: undefined,
+        isConnected: false,
       };
     default:
       return state;

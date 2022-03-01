@@ -25,7 +25,7 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { paraswapLogo } from '_assets/images';
 
 export default function Swap() {
-  const userAddress = useSelector((state: AppState) => state.web3.userAddress);
+  const userAddress = useSelector((state: AppState) => state.wallet.address);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const network = useSelector((state: AppState) => state.web3.network);
   const tokens = useSelector((state: AppState) => state.web3.tokenSet);

@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { ethers } from 'ethers';
 import { getErc20TokenBalance } from '_services/walletService';
-import { getBalanceForTokenAction } from '_redux/actions/walletActions';
+import { getBalanceForTokenAction, setAddressAction } from '_redux/actions/walletActions';
 import { WalletActionTypes, WalletTokenBalances } from '_redux/types/walletTypes';
 import { TokenDefinition } from '_enums/tokens';
 import { CryptoCurrencySymbol } from '_enums/currency';
@@ -9,6 +9,12 @@ import { CacheRecord } from '_interfaces/cache';
 
 const cacheExpirationInMs = 10000;
 const cache = new Map<CryptoCurrencySymbol, CacheRecord>();
+
+export const setAddress = (address: string) => {
+  return async (dispatch: Dispatch) => {
+    dispatch(setAddressAction(address));
+  };
+};
 
 export const getBalanceForToken = (
   token: TokenDefinition,

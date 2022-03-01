@@ -1,8 +1,9 @@
 import { ethers } from 'ethers';
 import {
+  CONNECT,
+  DISCONNECT,
   GET_WEB3_BALANCE,
   SET_NETWORK,
-  SET_PROVIDER,
   Web3ActionTypes
 } from '_redux/types/web3Types';
 import { EvmNetworkDefinition } from '_enums/networks';
@@ -25,15 +26,34 @@ export const getWalletBalanceAction = (balance: number): Web3ActionTypes => {
   };
 };
 
-export const setProviderAction = (
+// export const setProviderAction = (
+//   provider: ethers.providers.Web3Provider,
+//   address: string
+// ): Web3ActionTypes => {
+//   return {
+//     type: SET_PROVIDER,
+//     payload: {
+//       provider,
+//       address
+//     }
+//   };
+// };
+export const connectAction = (
   provider: ethers.providers.Web3Provider,
-  address: string
 ): Web3ActionTypes => {
   return {
-    type: SET_PROVIDER,
+    type: CONNECT,
     payload: {
       provider,
-      address
+    }
+  };
+};
+export const disconnectAction = (
+): Web3ActionTypes => {
+  return {
+    type: DISCONNECT,
+    payload: {
+      provider: null,
     }
   };
 };

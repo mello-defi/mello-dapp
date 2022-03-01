@@ -8,7 +8,7 @@ import { DefaultTransition } from '_components/core/Transition';
 import QRCode from 'react-qr-code';
 
 export default function Receive() {
-  const userAddress = useSelector((state: AppState) => state.web3.userAddress);
+  const userAddress = useSelector((state: AppState) => state.wallet.address);
   const [addressCopied, setAddressCopied] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
   const copyToClipboard = async () => {

@@ -24,7 +24,7 @@ export default function Borrow() {
   const provider = useSelector((state: AppState) => state.web3.provider);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const marketPrices = useMarketPrices();
-  const userAddress = useSelector((state: AppState) => state.web3.userAddress);
+  const userAddress = useSelector((state: AppState) => state.wallet.address);
   const [computedReserves, setComputedReserves] = useState<ComputedReserveData[] | undefined>(
     undefined
   );

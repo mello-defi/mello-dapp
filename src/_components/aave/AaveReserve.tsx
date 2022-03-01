@@ -48,7 +48,7 @@ export default function AaveReserve({
   const [isExpanded, setIsExpanded] = useState(false);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const network = useSelector((state: AppState) => state.web3.network);
-  const userAddress = useSelector((state: AppState) => state.web3.userAddress);
+  const userAddress = useSelector((state: AppState) => state.wallet.address);
   const marketPrices = useMarketPrices();
   const [marketPriceForToken, setMarketPriceForToken] = useState<number | undefined>(undefined);
   const [depositAmount, setDepositAmount] = useState<number>(0.0);
