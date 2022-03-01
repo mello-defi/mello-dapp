@@ -10,6 +10,7 @@ export const GET_WEB3_BALANCE = 'GET_WEB3_BALANCE';
 
 export interface Web3State {
   provider?: ethers.providers.Web3Provider;
+  signer?: ethers.Signer;
   isConnected: boolean;
   balance: number;
   network: EvmNetworkDefinition;
@@ -42,6 +43,7 @@ interface ConnectWeb3ActionType {
   type: typeof CONNECT;
   payload: {
     provider: ethers.providers.Web3Provider;
+    signer: ethers.Signer;
   };
 }
 
@@ -49,6 +51,7 @@ interface DisconnectWeb3ActionType {
   type: typeof DISCONNECT;
   payload: {
     provider: null,
+    signer: null;
   };
 }
 export type Web3ActionTypes = GetNetworkAction | GetWeb3BalanceActionType | ConnectWeb3ActionType | DisconnectWeb3ActionType;

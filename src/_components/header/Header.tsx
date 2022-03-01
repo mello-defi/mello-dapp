@@ -20,13 +20,13 @@ function DesktopNavLinks({ navLinks }: { navLinks: NavLinkDefinition[] }) {
 
 export default function Header() {
   const provider = useSelector((state: AppState) => state.web3.provider);
+  const signer = useSelector((state: AppState) => state.web3.signer);
   const navLinks = useSelector((state: AppState) => state.ui.navLinks);
   const [userAddress, setUserAddress] = useState<string>('');
   const [userBalance, setUserBalance] = useState<string>('');
   useEffect(() => {
     const getWalletInfo = async () => {
-      if (provider) {
-        const signer = provider.getSigner();
+      if (provider && signer) {
         const address = await signer.getAddress();
         const balance = await signer.getBalance();
         console.log('address', address);

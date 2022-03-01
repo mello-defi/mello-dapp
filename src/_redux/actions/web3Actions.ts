@@ -40,11 +40,13 @@ export const getWalletBalanceAction = (balance: number): Web3ActionTypes => {
 // };
 export const connectAction = (
   provider: ethers.providers.Web3Provider,
+  signer: ethers.Signer,
 ): Web3ActionTypes => {
   return {
     type: CONNECT,
     payload: {
       provider,
+      signer,
     }
   };
 };
@@ -54,6 +56,7 @@ export const disconnectAction = (
     type: DISCONNECT,
     payload: {
       provider: null,
+      signer: null,
     }
   };
 };

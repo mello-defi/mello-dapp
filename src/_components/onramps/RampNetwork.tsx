@@ -7,10 +7,9 @@ import { FiatCurrencyName } from '_enums/currency';
 import { rampNetworkLogo } from '_assets/images';
 
 function RampNetwork() {
-  const provider = useSelector((state: AppState) => state.web3.provider);
+  // const provider = useSelector((state: AppState) => state.web3.provider);
+  const userAddress = useSelector((state: AppState) => state.wallet.address);
   const openWidget = async () => {
-    const signer = provider?.getSigner();
-    const userAddress = await signer?.getAddress();
     new RampInstantSDK({
       hostAppName: 'Mello',
       hostLogoUrl: 'https://mellodefi.com/images/logo-light.svg',

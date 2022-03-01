@@ -5,7 +5,6 @@ import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { DefaultTransition } from '_components/core/Transition';
-import { Spinner, SpinnerSize } from '_components/core/Animations';
 import AaveReserveMarketData from '_components/aave/AaveReserveMarketData';
 import { TransactionStep } from '_components/transactions/TransactionStep';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
@@ -216,7 +215,6 @@ export default function AaveReserve({
                             depositAmount === parseFloat(userBalance))
                         }
                       >
-                        <Spinner show={depositSubmitting} size={SpinnerSize.SMALL} />
                         <span>
                           {depositSubmitting
                             ? 'Submitting...'

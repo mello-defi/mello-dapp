@@ -13,6 +13,7 @@ import CopyableText from '_components/core/CopyableText';
 
 function RenBridge() {
   const provider = useSelector((state: AppState) => state.web3.provider);
+  const signer = useSelector((state: AppState) => state.web3.signer);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
   const [message, setMessage] = React.useState('');
@@ -32,8 +33,7 @@ function RenBridge() {
     // console.log('userAddress', userAddress);
     // logError(""); // Reset error
     // log(`Generating deposit address...`);
-    if (provider) {
-      const signer = provider.getSigner();
+    if (provider && signer) {
       const web3Provider: EthProvider = {
         signer,
         provider

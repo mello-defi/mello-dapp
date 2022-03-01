@@ -15,6 +15,7 @@ const network = evmNetworks.polygonMainnet;
 // }
 const initialState: Web3State = {
   provider: undefined,
+  signer: undefined,
   isConnected: false,
   balance: 0,
   network,
@@ -40,6 +41,7 @@ export const getWeb3Reducer = (
       return {
         ...state,
         provider: action.payload.provider,
+        signer: action.payload.signer,
         isConnected: true,
       };
     case DISCONNECT:

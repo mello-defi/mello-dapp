@@ -18,33 +18,6 @@ export enum WalletPageTab {
 export default function Wallet() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const [walletPageTab, setWalletPageTab] = useState<WalletPageTab | undefined>();
-  const provider = useSelector((state: AppState) => state.web3.provider);
-  const [requestSent, setRequestSent] = useState(false);
-  useEffect(() => {
-    if (provider && !requestSent) {
-      setRequestSent(true);
-      // console.log('requesting');
-      // const signer = provider.getSigner();
-      // // const originalMessage = 'YOUR_MESSAGE';
-      // // signer.signMessage(originalMessage).then((message: string) => {
-      // //   console.log(message);
-      // // })
-      // const destination = '0x4BbC19D4Ff3917f14a62C27bf870E22728891D21';
-      // const amount = ethers.utils.parseEther('1.0'); // Convert 1 ether to wei
-
-// Submit transaction to the blockchain
-//       signer.sendTransaction({
-//         to: destination,
-//         value: amount,
-//       }).then((tx: ethers.providers.TransactionResponse) => {
-//         tx.wait(1).then(() => {
-//           console.log('Transaction complete!');
-//         });
-//       });
-
-// Wait for transaction to be mined
-    }
-  }, [provider, requestSent])
   const handleSend = () => {
     setWalletPageTab(WalletPageTab.SEND);
     // setSendVisible(true);
