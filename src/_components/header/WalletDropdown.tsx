@@ -9,6 +9,7 @@ import { ArrowRightIcon, ClipboardCheckIcon, LinkIcon, LogoutIcon } from '@heroi
 import { ClipboardCopyIcon } from '@heroicons/react/outline';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { shortenBlockchainAddress } from '_utils/index';
+import { disconnect } from '_redux/effects/web3Effects';
 
 function WalletDropdownListItem({ children }: { children: any }) {
   return <div className={'py-2 cursor-pointer'}>{children}</div>;
@@ -29,8 +30,8 @@ export default function WalletDropdown() {
     dispatch(setActiveTab(NavTab.WALLET));
     setDropdownOpen(false);
   };
-  const disconnect = () => {
-    console.log('disconnecting');
+  const handleDisconnect = () => {
+    dispatch(disconnect())
   };
   const [copied, setCopied] = useState(false);
   const copyToClipboard = async (text: string) => {
@@ -94,7 +95,9 @@ export default function WalletDropdown() {
               </WalletDropdownListItem>
               <HorizontalLineBreak />
               <WalletDropdownListItem>
-                <div className={'flex-row-center justify-between'} onClick={disconnect}>
+                <div className={'flex-row-center justify-between'} onClick={()=> {
+                  console.log('logout')
+                }}>
                   <span>Network</span>
                   <span className={'flex-row-center'}>
                     <span>{network.name}</span>
@@ -108,7 +111,7 @@ export default function WalletDropdown() {
               </WalletDropdownListItem>
               <HorizontalLineBreak />
               <WalletDropdownListItem>
-                <div className={'flex-row-center justify-between'} onClick={disconnect}>
+                <div className={'flex-row-center justify-between'} onClick={handleDisconnect}>
                   <span>Disconnect</span>
                   <LogoutIcon className={'ml-2 h-5 text-gray-600'} />
                 </div>
