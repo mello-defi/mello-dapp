@@ -36,7 +36,6 @@ export const getBalanceForToken = (
       console.log('cache miss');
       getErc20TokenBalance(token, provider, userAddress)
         .then((balance) => {
-          console.log('GOT BALANCE', balance);
           const balanceObj: WalletTokenBalances = {};
           balanceObj[token.symbol] = balance;
           const record: CacheRecord = {

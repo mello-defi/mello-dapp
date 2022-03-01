@@ -15,9 +15,7 @@ import HealthFactor from '_components/aave/HealthFactor';
 
 export default function Deposit() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const marketPrices = useMarketPrices();
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
-  // const marketPrices = useSelector((state: AppState) => state.markets.prices);
   const [computedReserves, setComputedReserves] = useState<ComputedReserveData[] | undefined>(
     undefined
   );
@@ -65,8 +63,6 @@ export default function Deposit() {
       )}
       {userSummaryData && <HealthFactor healthFactor={userSummaryData.healthFactor} />}
       {userSummaryData &&
-        marketPrices &&
-        marketPrices.length > 0 &&
         computedReserves?.map((reserve: ComputedReserveData) => {
           return (
             // <></>

@@ -12,9 +12,13 @@ export default function HealthFactor({ healthFactor }: { healthFactor: string })
     }
   };
   return (
-    <span className={'text-title flex-row-center justify-between'}>
-      <span>Health factor</span>
-      <span className={`${getColor()}`}>{parseFloat(healthFactor).toFixed(2)}</span>
-    </span>
+    <>
+      {parseInt(healthFactor) !== -1 && (
+        <span className={'text-title flex-row-center justify-between'}>
+          <span>Health factor</span>
+          <span className={`${getColor()}`}>{parseFloat(healthFactor).toFixed(2)}</span>
+        </span>
+      )}
+    </>
   );
 }
