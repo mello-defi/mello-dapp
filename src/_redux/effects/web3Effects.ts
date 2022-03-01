@@ -51,6 +51,7 @@ export const connect = () => {
 export const disconnect = () => {
   return async (dispatch: Dispatch<Web3ActionTypes>) => {
     web3Modal.clearCachedProvider();
+    window.location.reload();
     dispatch(disconnectAction());
   };
 };
