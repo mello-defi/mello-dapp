@@ -69,11 +69,9 @@ export default function Swap() {
         setFetchingPrices(true);
         const srcAmount = convertHumanAmountToGwei(amount, srcToken.decimals);
         const rate = await getExchangeRate(
-          srcToken.address,
-          destToken.address,
+          srcToken,
+          destToken,
           srcAmount,
-          srcToken.decimals,
-          destToken.decimals
         );
         console.log('rate', rate);
         setPriceRoute(rate);
@@ -96,18 +94,20 @@ export default function Swap() {
     if (provider && destinationToken && priceRoute) {
       try {
         setIsSwapping(true);
-        const allowance: Allowance = await getAllowance(userAddress, sourceToken.address);
-        const amount: BigNumber = ethers.utils.parseUnits(sourceAmount.toString(), sourceToken.decimals);
-        if (amount.gt(allowance.allowance)) {
-          const gasPriceResult = await getGasPrice(network.gasStationUrl);
-          let gasPrice: BigNumber | undefined;
-          if (gasPriceResult) {
-            gasPrice = ethers.utils.parseUnits(gasPriceResult?.fastest.toString(), 'gwei')
+        if (!sourceToken.isGasToken) {
+          const allowance: Allowance = await getAllowance(userAddress, sourceToken.address);
+          const amount: BigNumber = ethers.utils.parseUnits(sourceAmount.toString(), sourceToken.decimals);
+          if (amount.gt(allowance.allowance)) {
+            const gasPriceResult = await getGasPrice(network.gasStationUrl);
+            let gasPrice: BigNumber | undefined;
+            if (gasPriceResult) {
+              gasPrice = ethers.utils.parseUnits(gasPriceResult?.fastest.toString(), 'gwei')
+            }
+            const approvalTxHash = await approveToken(amount, userAddress, sourceToken.address, gasPrice);
+            setApprovalTransactionHAsh(approvalTxHash);
+            const approvalTx: TransactionResponse = await provider.getTransaction(approvalTxHash);
+            await approvalTx.wait(1);
           }
-          const approvalTxHash = await approveToken(amount, userAddress, sourceToken.address, gasPrice);
-          setApprovalTransactionHAsh(approvalTxHash);
-          const approvalTx: TransactionResponse = await provider.getTransaction(approvalTxHash);
-          await approvalTx.wait(1);
         }
         setTokenIsApproved(true);
         const tx = await buildSwapTransaction(

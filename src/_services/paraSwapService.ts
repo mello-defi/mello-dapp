@@ -1,5 +1,5 @@
 import { APIError, NetworkID, ParaSwap } from 'paraswap';
-import { TokenDefinition } from '_enums/tokens';
+import { EvmGasTokenBurnAddress, TokenDefinition } from '_enums/tokens';
 import { BigNumber, ethers } from 'ethers';
 import { OptimalRate } from 'paraswap-core';
 import { Allowance, Transaction } from 'paraswap/build/types';
@@ -22,21 +22,21 @@ function responseIsError(response: APIError | any): response is APIError {
 }
 
 export async function getExchangeRate(
-  sourceToken: string,
-  destinationToken: string,
+  sourceToken: TokenDefinition,
+  destinationToken: TokenDefinition,
   srcAmount: string,
-  srcDecimals: number,
-  destDecimals: number
 ): Promise<OptimalRate> {
+  const srcAddress = sourceToken.isGasToken ? EvmGasTokenBurnAddress : sourceToken.address;
+  const destAddress = destinationToken.isGasToken ? EvmGasTokenBurnAddress : destinationToken.address;
   const response: OptimalRate | APIError = await paraSwap.getRate(
-    sourceToken,
-    destinationToken,
+    srcAddress,
+    destAddress,
     srcAmount,
     undefined,
     undefined,
     undefined,
-    srcDecimals,
-    destDecimals
+    sourceToken.decimals,
+    destinationToken.decimals,
   );
   if (responseIsError(response)) {
     throw new Error(`Error getting rate: ${response.message}`);
@@ -81,9 +81,11 @@ export async function buildSwapTransaction(
     .multipliedBy(100 - slippagePercentage)
     .dividedBy(100)
     .toFixed(0);
+  const srcAddress = sourceToken.isGasToken ? EvmGasTokenBurnAddress : sourceToken.address;
+  const destAddress = destinationToken.isGasToken ? EvmGasTokenBurnAddress : destinationToken.address;
   const response: Transaction | APIError = await paraSwap.buildTx(
-    sourceToken.address,
-    destinationToken.address,
+    srcAddress,
+    destAddress,
     route.srcAmount,
     destinationAmountWithSlippage,
     route,

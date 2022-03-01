@@ -26,6 +26,8 @@ export const validPolygonTokenSymbolsUppercase: string[] = validPolygonTokenSymb
   symbol.toUpperCase()
 );
 
+export const EvmGasTokenBurnAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+
 export enum EthereumTestnetRinkebyContracts {
   ETH = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
 }
@@ -84,6 +86,7 @@ export interface TokenDefinition {
   image: string;
   name: CryptoCurrencyName;
   abi: any;
+  isGasToken?: boolean;
 }
 
 export interface EthereumTokens {
@@ -98,7 +101,8 @@ export const ethereumTokens: EthereumTokens = {
     address: EthereumMainnetTokenContracts.ETH,
     image: ethLogo,
     name: CryptoCurrencyName.ETHEREUM,
-    abi: WETHAbi
+    abi: WETHAbi,
+    isGasToken: true
   },
   weth: {
     symbol: CryptoCurrencySymbol.WETH,
@@ -264,7 +268,8 @@ export const polygonMainnetTokens: PolygonTokenSet = {
     address: PolygonMainnetTokenContracts.MATIC,
     image: polygonLogo,
     name: CryptoCurrencyName.MATIC,
-    abi: ERC20Abi
+    abi: ERC20Abi,
+    isGasToken: true
   },
   [CryptoCurrencySymbol.WMATIC]: {
     symbol: CryptoCurrencySymbol.WMATIC,
