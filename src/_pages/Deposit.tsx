@@ -40,7 +40,7 @@ export default function Deposit() {
     <div className={'space-y-2'}>
       {userSummaryData && userSummaryData.reservesData && userSummaryData.reservesData.length > 0 && (
         <div>
-          <div className={'flex-row-center justify-between'}>
+          <div className={'flex-row-center justify-between mb-2'}>
             <span className={'text-title'}>My deposits</span>
             <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
           </div>
