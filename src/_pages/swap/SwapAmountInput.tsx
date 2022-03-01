@@ -41,10 +41,13 @@ export default function SwapAmountInput({
   }, [token, marketPrices]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // if (!value) {
-    //   value = '0';
-    // }
+    let value = e.target.value;
+    if (value > userBalance) {
+      value = userBalance;
+    }
+    if (!value) {
+      value = '0';
+    }
     amountChanged(parseFloat(value));
   };
 

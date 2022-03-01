@@ -60,9 +60,8 @@ export default function AaveReserve({
   const [tokenApproved, setTokenApproved] = useState<boolean>(false);
   const [approvalTransactionHash, setApprovalTransactionHash] = useState<string>('');
   const [actionTransactionHash, setActionTransactionHash] = useState<string>();
-  const [transactionStarted, setTransactionStarted] = useState<boolean>(false);
+  const [transactionInProgress, setTransactionInProgress] = useState<boolean>(false);
   const [transactionError, setTransactionError] = useState<string>('');
-  const [transactionSubmitted, setTransactionSubmitted] = useState<boolean>(false);
   const [transactionConfirmed, setTransactionConfirmed] = useState<boolean>(false);
   const [aaveFunction, setAaveFunction] = useState<AaveFunction | null>();
   const userBalance = useWalletBalance(token);
@@ -88,14 +87,13 @@ export default function AaveReserve({
     }
     setTokenApproved(true);
     const actionHash = await runAaveActionTransaction(transactions, provider);
-    setTransactionSubmitted(true);
-    console.log('actionHash', actionHash);
     setActionTransactionHash(actionHash);
     if (actionHash) {
       const tx = await provider.getTransaction(actionHash);
       await tx.wait(1);
     }
     setTransactionConfirmed(true);
+
     if (token) {
       dispatch(getBalanceForToken(token, provider, userAddress, true));
     }
@@ -103,6 +101,7 @@ export default function AaveReserve({
 
   const handleAaveFunction = async (
     amount: number,
+    setAmount: (amount: number) => void,
     setFunctionSubmitting: (value: boolean) => void,
     getTransactions: (
       provider: ethers.providers.Web3Provider,
@@ -113,7 +112,7 @@ export default function AaveReserve({
   ) => {
     if (provider) {
       try {
-        setTransactionStarted(true);
+        setTransactionInProgress(true);
         setFunctionSubmitting(true);
         const transactions: EthereumTransactionTypeExtended[] = await getTransactions(
           provider,
@@ -122,33 +121,35 @@ export default function AaveReserve({
           amount
         );
         await runAaveTransactions(provider, transactions);
+        setAmount(0);
       } catch (e: any) {
         setTransactionError(transactionError + '\n' + e.message);
       }
+      setTransactionInProgress(false);
       setFunctionSubmitting(false);
     }
   };
   const handleBorrow = async () => {
     if (borrowAmount && provider && userAddress) {
-      await handleAaveFunction(borrowAmount, setBorrowSubmitting, getBorrowTransactions);
+      await handleAaveFunction(borrowAmount, setBorrowAmount, setBorrowSubmitting, getBorrowTransactions);
     }
   };
 
   const handleRepay = async () => {
     if (repayAmount && provider && userAddress) {
-      await handleAaveFunction(repayAmount, setRepaySubmitting, getRepayTransactions);
+      await handleAaveFunction(repayAmount, setRepayAmount, setRepaySubmitting, getRepayTransactions);
     }
   };
 
   const handleDeposit = async () => {
     if (depositAmount && provider && userAddress) {
-      await handleAaveFunction(depositAmount, setDepositSubmitting, getDepositTransactions);
+      await handleAaveFunction(depositAmount, setDepositAmount, setDepositSubmitting, getDepositTransactions);
     }
   };
 
   const handleWithdraw = async () => {
     if (withdrawAmount && provider) {
-      await handleAaveFunction(withdrawAmount, setWithdrawSubmitting, getWithdrawTransactions);
+      await handleAaveFunction(withdrawAmount, setWithdrawAmount, setWithdrawSubmitting, getWithdrawTransactions);
     }
   };
 
@@ -216,7 +217,7 @@ export default function AaveReserve({
                         token={token}
                         buttonOnClick={handleDeposit}
                         buttonDisabled={
-                          transactionStarted ||
+                          transactionInProgress ||
                           parseFloat(userBalance) === 0 ||
                           (!depositAmount ? false : depositAmount > parseFloat(userBalance)) ||
                           (token.symbol.toUpperCase() ===
@@ -249,7 +250,7 @@ export default function AaveReserve({
                         token={token}
                         buttonOnClick={handleWithdraw}
                         buttonDisabled={
-                          transactionStarted ||
+                          transactionInProgress ||
                           !userReserve ||
                           parseFloat(userReserve.underlyingBalance) === 0 ||
                           (withdrawAmount && userReserve?.underlyingBalance
@@ -272,7 +273,7 @@ export default function AaveReserve({
                         setAmount={setBorrowAmount}
                         token={token}
                         buttonOnClick={handleBorrow}
-                        buttonDisabled={transactionStarted}
+                        buttonDisabled={transactionInProgress}
                       >
                         <span className={'ml-2'}>
                           {borrowSubmitting ? 'Submitting...' : 'Borrow'}
@@ -290,7 +291,7 @@ export default function AaveReserve({
                         token={token}
                         buttonOnClick={handleRepay}
                         buttonDisabled={
-                          transactionStarted ||
+                          transactionInProgress ||
                           !userReserve ||
                           parseFloat(userReserve?.variableBorrows) === 0 ||
                           (repayAmount && userReserve?.variableBorrows
@@ -306,7 +307,7 @@ export default function AaveReserve({
                   </div>
                 </div>
               )}
-              {transactionStarted && (
+              {(transactionInProgress || transactionConfirmed) && (
                 <div className={'my-2'}>
                   <TransactionStep
                     show={true}
@@ -317,20 +318,13 @@ export default function AaveReserve({
                     <BlockExplorerLink transactionHash={approvalTransactionHash} />
                   </TransactionStep>
                   <TransactionStep
-                    show={tokenApproved}
-                    transactionError={transactionError}
-                    stepComplete={transactionSubmitted}
-                  >
-                    Transaction submitted
-                    <BlockExplorerLink transactionHash={actionTransactionHash} />
-                  </TransactionStep>
-                  <TransactionStep
                     showTransition={false}
-                    show={transactionSubmitted}
+                    show={tokenApproved}
                     transactionError={transactionError}
                     stepComplete={transactionConfirmed}
                   >
-                    Transaction confirmed
+                    {aaveFunction} confirmed
+                    <BlockExplorerLink transactionHash={actionTransactionHash} />
                   </TransactionStep>
                   <TransactionError transactionError={transactionError} />
                 </div>

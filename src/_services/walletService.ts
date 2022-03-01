@@ -8,13 +8,9 @@ export async function getErc20TokenBalance(
   userAddress: string,
   precision = 2
 ): Promise<string> {
-  console.log('getErc20TokenBalance', token.symbol);
-  console.log('initialisin contract');
   const newContract = new ethers.Contract(token.address, token.abi, provider);
-  console.log('calling balanceOf');
   const balance = await newContract.balanceOf(userAddress);
-  console.log('retrurning balance', balance);
-  return (balance / 10 ** token.decimals).toFixed(precision);
+  return parseFloat(ethers.utils.formatUnits(balance.toString(), token.decimals)).toPrecision(precision);
 }
 
 export async function getTokenAllowance(
@@ -35,41 +31,41 @@ export async function getTokenAllowance(
   // console.log('TX ALLOWANCE', tx);
 }
 
-export async function approveToken(
-  token: TokenDefinition,
-  provider: ethers.providers.Web3Provider,
-  amount: number,
-  userAddress: string,
-  contractAddress: string,
-  waitForConfirmation = true
-): Promise<string> {
-  console.log('Approving token...');
-  console.log(`Token: ${token.name}`);
-  console.log(`Address: ${token.address}`);
-  console.log(`Amount: ${amount}`);
-  const abi = [
-    'function totalSupply() public view returns (uint)',
-    'function balanceOf(address tokenOwner) public view returns (uint balance)',
-    'function decimals() public view returns (uint decimals)',
-    'function allowance(address tokenOwner, address spender) public view returns (uint remaining)',
-    'function transfer(address to, uint tokens) public returns (bool success)',
-    'function approve(address spender, uint tokens) public returns (bool success)',
-    'function transferFrom(address from, address to, uint tokens) public returns (bool success)',
-    'function symbol() public view returns (string)',
-
-    'event Transfer(address indexed from, address indexed to, uint tokens)',
-    'event Approval(address indexed tokenOwner, address indexed spender, uint tokens)'
-  ];
-  const contract = new ethers.Contract(token.address, abi, provider);
-  const tx = await contract.approve(userAddress, amount);
-  console.log('TX IN APPROVe', tx);
-  const txHash = 'hello';
-  // if (waitForReceipt) {
-  //   const receipt = await txResponse.wait(1);
-  //   return receipt.transactionHash;
-  // }
-  return txHash;
-}
+// export async function approveToken(
+//   token: TokenDefinition,
+//   provider: ethers.providers.Web3Provider,
+//   amount: number,
+//   userAddress: string,
+//   contractAddress: string,
+//   waitForConfirmation = true
+// ): Promise<string> {
+//   console.log('Approving token...');
+//   console.log(`Token: ${token.name}`);
+//   console.log(`Address: ${token.address}`);
+//   console.log(`Amount: ${amount}`);
+//   const abi = [
+//     'function totalSupply() public view returns (uint)',
+//     'function balanceOf(address tokenOwner) public view returns (uint balance)',
+//     'function decimals() public view returns (uint decimals)',
+//     'function allowance(address tokenOwner, address spender) public view returns (uint remaining)',
+//     'function transfer(address to, uint tokens) public returns (bool success)',
+//     'function approve(address spender, uint tokens) public returns (bool success)',
+//     'function transferFrom(address from, address to, uint tokens) public returns (bool success)',
+//     'function symbol() public view returns (string)',
+//
+//     'event Transfer(address indexed from, address indexed to, uint tokens)',
+//     'event Approval(address indexed tokenOwner, address indexed spender, uint tokens)'
+//   ];
+//   const contract = new ethers.Contract(token.address, abi, provider);
+//   const tx = await contract.approve(userAddress, amount);
+//   console.log('TX IN APPROVe', tx);
+//   const txHash = 'hello';
+//   // if (waitForReceipt) {
+//   //   const receipt = await txResponse.wait(1);
+//   //   return receipt.transactionHash;
+//   // }
+//   return txHash;
+// }
 
 export async function executeEthTransaction(
   txData: TransactionRequest,
@@ -92,7 +88,7 @@ export async function executeEthTransaction(
     });
     const txHash = txResponse?.hash;
     if (waitForReceipt) {
-      const receipt = await txResponse.wait(10);
+      const receipt = await txResponse.wait(1);
       return receipt.transactionHash;
     }
     return txHash;
