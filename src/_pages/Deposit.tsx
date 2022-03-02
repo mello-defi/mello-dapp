@@ -10,7 +10,7 @@ import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveLis
 import { findTokenByAddress } from '_enums/tokens';
 import { AaveSection } from '_enums/aave';
 import AaveReserve from '_components/aave/AaveReserve';
-import HealthFactor from '_components/aave/HealthFactor';
+import CurrentHealthFactor from '_components/aave/CurrentHealthFactor';
 
 export default function Deposit() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -61,7 +61,7 @@ export default function Deposit() {
             })}
         </div>
       )}
-      {userSummaryData && <HealthFactor healthFactor={userSummaryData.healthFactor} />}
+      {userSummaryData && <CurrentHealthFactor healthFactor={userSummaryData.healthFactor} />}
       {userSummaryData &&
         computedReserves?.map((reserve: ComputedReserveData) => {
           return (

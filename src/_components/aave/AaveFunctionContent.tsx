@@ -5,6 +5,9 @@ import TransactionAmountSummary from '_components/aave/TransactionAmountSummary'
 import { Button } from '_components/core/Buttons';
 import React from 'react';
 import { BigNumber, ethers } from 'ethers';
+import CurrentHealthFactor from '_components/aave/CurrentHealthFactor';
+import HealthFactorNumber from '_components/aave/HealthFactorNumber';
+import NextHealthFactor from '_components/aave/NextHealthFactor';
 
 export default function AaveFunctionContent({
   reserveTitle,
@@ -50,6 +53,7 @@ export default function AaveFunctionContent({
       </div>
 
       <div className={'w-full md:w-1/2 flex flex-col justify-end py-0 md:py-2'}>
+        <NextHealthFactor />
         <TransactionAmountSummary tokenPrice={tokenPrice} title={summaryTitle} amount={amount} />
         {token && (
           <Button

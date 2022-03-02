@@ -66,7 +66,7 @@ export default function AaveReserve({
   const [transactionInProgress, setTransactionInProgress] = useState<boolean>(false);
   const [transactionError, setTransactionError] = useState<string>('');
   const [transactionConfirmed, setTransactionConfirmed] = useState<boolean>(false);
-  const [aaveFunction, setAaveFunction] = useState<AaveFunction | null>();
+  const [aaveFunction, setAaveFunction] = useState<AaveFunction | null>(null);
   const userBalance = useWalletBalance(token);
 
   useEffect(() => {
@@ -233,29 +233,26 @@ export default function AaveReserve({
                 <div className={'flex flex-col md:flex-row justify-between space-x-0 sm:space-x-2'}>
                   <div className={'flex flex-col w-full'}>
                     {aaveFunction === AaveFunction.Deposit && (
-                      <>
-                        <h3>healht factor {updatedHealthFactor}</h3>
-                        <AaveFunctionContent
-                          reserveTitle={'Wallet'}
-                          summaryTitle={'Amount to deposit'}
-                          userBalance={userBalance}
-                          tokenPrice={marketPriceForToken}
-                          amount={depositAmount}
-                          setAmount={setDepositAmount}
-                          token={token}
-                          buttonOnClick={handleDeposit}
-                          buttonDisabled={
-                            !userBalance ||
-                            userBalance.isZero() ||
-                            transactionInProgress ||
-                            (depositAmount
-                              ? userBalance.lt(ethers.utils.parseUnits(depositAmount, token.decimals))
-                              : true)
-                          }
-                        >
-                          <span>{depositSubmitting ? 'Submitting...' : 'Deposit'}</span>
-                        </AaveFunctionContent>
-                      </>
+                      <AaveFunctionContent
+                        reserveTitle={'Wallet'}
+                        summaryTitle={'Amount to deposit'}
+                        userBalance={userBalance}
+                        tokenPrice={marketPriceForToken}
+                        amount={depositAmount}
+                        setAmount={setDepositAmount}
+                        token={token}
+                        buttonOnClick={handleDeposit}
+                        buttonDisabled={
+                          !userBalance ||
+                          userBalance.isZero() ||
+                          transactionInProgress ||
+                          (depositAmount
+                            ? userBalance.lt(ethers.utils.parseUnits(depositAmount, token.decimals))
+                            : true)
+                        }
+                      >
+                        <span>{depositSubmitting ? 'Submitting...' : 'Deposit'}</span>
+                      </AaveFunctionContent>
                     )}
                     {aaveFunction === AaveFunction.Withdraw && (
                       <AaveFunctionContent
@@ -286,28 +283,25 @@ export default function AaveReserve({
                       </AaveFunctionContent>
                     )}
                     {aaveFunction === AaveFunction.Borrow && (
-                      <>
-                        <h3>{updatedHealthFactor}</h3>
-                        <AaveFunctionContent
-                          reserveTitle={'Borrowing power'}
-                          summaryTitle={'Amount to borrow'}
-                          userBalance={
-                            maxBorrowAmount
-                              ? ethers.utils.parseUnits(maxBorrowAmount, token.decimals)
-                              : BigNumber.from('0')
-                          }
-                          tokenPrice={marketPriceForToken}
-                          amount={borrowAmount}
-                          setAmount={setBorrowAmount}
-                          token={token}
-                          buttonOnClick={handleBorrow}
-                          buttonDisabled={transactionInProgress}
-                        >
+                      <AaveFunctionContent
+                        reserveTitle={'Borrowing power'}
+                        summaryTitle={'Amount to borrow'}
+                        userBalance={
+                          maxBorrowAmount
+                            ? ethers.utils.parseUnits(maxBorrowAmount, token.decimals)
+                            : BigNumber.from('0')
+                        }
+                        tokenPrice={marketPriceForToken}
+                        amount={borrowAmount}
+                        setAmount={setBorrowAmount}
+                        token={token}
+                        buttonOnClick={handleBorrow}
+                        buttonDisabled={transactionInProgress}
+                      >
                         <span className={'ml-2'}>
                           {borrowSubmitting ? 'Submitting...' : 'Borrow'}
                         </span>
-                        </AaveFunctionContent>
-                      </>
+                      </AaveFunctionContent>
                     )}
                     {aaveFunction === AaveFunction.Repay && (
                       <AaveFunctionContent

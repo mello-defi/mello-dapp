@@ -204,9 +204,6 @@ async function runAaveTransactionType(
 }
 
 export function calculateNewHealthFactor (reserveData: ComputedReserveData, userSummaryData: UserSummaryData, amount: string): string {
-  // Ref
-  // https://sourcegraph.com/github.com/aave/aave-ui/-/blob/src/components/basic/RiskBar/index.tsx?L41:27
-  // https://sourcegraph.com/github.com/aave/aave-ui/-/blob/src/libs/pool-data-provider/hooks/use-v2-protocol-data-with-rpc.tsx?L109:26
   const formattedUsdPriceEth = BigNumber.from(10)
     .pow(18 + 8)
     // @ts-ignore

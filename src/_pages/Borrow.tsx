@@ -18,7 +18,7 @@ import { CryptoCurrencySymbol } from '_enums/currency';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { findTokenByAddress, PolygonMainnetTokenContracts, PolygonTokenSet } from '_enums/tokens';
 import { AaveSection } from '_enums/aave';
-import HealthFactor from '_components/aave/HealthFactor';
+import CurrentHealthFactor from '_components/aave/CurrentHealthFactor';
 
 export default function Borrow() {
   const provider = useSelector((state: AppState) => state.web3.provider);
@@ -97,7 +97,7 @@ export default function Borrow() {
             formatTokenValueInFiat(ethPrice, userSummaryData?.availableBorrowsETH)}
         </span>
       </span>
-      {userSummaryData && <HealthFactor healthFactor={userSummaryData.healthFactor} />}
+      {userSummaryData && <CurrentHealthFactor healthFactor={userSummaryData.healthFactor} />}
       <div>
         {userSummaryData &&
           marketPrices &&
