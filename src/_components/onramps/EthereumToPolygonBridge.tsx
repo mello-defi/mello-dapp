@@ -5,7 +5,7 @@ import { MarketDataResult } from '_services/marketDataService';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { EthereumTestnetGoerliContracts, ethereumTokens } from '_enums/tokens';
 import { EVMChainIdNumerical } from '_enums/networks';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { Button } from '_components/core/Buttons';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { hyphenLogo } from '_assets/images';
@@ -44,9 +44,7 @@ interface BiconomyFundsTransferedResponse {
 export default function EthereumToPolygonBridge() {
   const provider = useSelector((state: AppState) => state.web3.provider);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const network = useSelector((state: AppState) => state.web3.network);
-  const dispatch = useDispatch();
-  const [transferAmount, setTransferAmount] = React.useState<number>(0);
+  const [transferAmount, setTransferAmount] = React.useState<string>('0');
   const [depositAddress, setDepositAddress] = React.useState<string | undefined>(undefined);
   const [ethereumPrice, setEthereumPrice] = React.useState<MarketDataResult | undefined>();
   const [transactionError, setTransactionError] = React.useState<string>('');
@@ -189,7 +187,7 @@ export default function EthereumToPolygonBridge() {
                   'text-2xl sm:text-3xl bg-gray-50 focus:outline-none px-2 sm:px-0 sm:mt-0 py-1 sm:py-0 w-full'
                 }
                 value={transferAmount}
-                onChange={(e) => setTransferAmount(parseFloat(e.target.value))}
+                onChange={(e) => setTransferAmount(e.target.value)}
               />
             </div>
             <div className={'text-gray-500 w-1/5 text-md'}>
@@ -215,7 +213,7 @@ export default function EthereumToPolygonBridge() {
           <TransactionStep
             show={depositAddress !== ''}
             transactionError={transactionError}
-            stepComplete={transferAmount > 0}
+            stepComplete={BigNumber.from(transferAmount).gt(0)}
           >
             Transfer amount set
           </TransactionStep>

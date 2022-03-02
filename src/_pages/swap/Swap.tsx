@@ -61,7 +61,7 @@ export default function Swap() {
     srcToken: TokenDefinition,
     destToken: TokenDefinition
   ) => {
-    if (destToken && amount && parseFloat(amount) > 0) {
+    if (destToken && amount && BigNumber.from(amount).gt(0)) {
       setFetchingPriceError('');
       try {
         setDestinationTokenDisabled(true);

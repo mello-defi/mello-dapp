@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
+import { BigNumber, ethers } from 'ethers';
 
 function PercentageButton({
   setAmountAsPercentage,
@@ -39,20 +40,23 @@ export default function AmountInputWithPercentages({
       if (percentage === 100) {
         setInputAmount(baseAmount);
       } else {
-        setInputAmount(((parseFloat(baseAmount) * percentage) / 100).toFixed(6));
+        const percentageAsBigNumber = ethers.utils.parseUnits(baseAmount, tokenDecimals).div(100).mul(percentage);
+        setInputAmount(ethers.utils.formatUnits(percentageAsBigNumber, tokenDecimals));
       }
     }
   };
 
   const handleAmountChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let val = parseFloat(event.target.value);
-    if (baseAmount && val > parseFloat(baseAmount)) {
-      val = parseFloat(baseAmount);
+    if (baseAmount) {
+      let val: BigNumber = ethers.utils.parseUnits(event.target.value, tokenDecimals);
+      const baseAmountBigNumber = ethers.utils.parseUnits(baseAmount, tokenDecimals);
+      if (val.gt(baseAmountBigNumber)) {
+        val = baseAmountBigNumber;
+      } else if (val.lt('0')) {
+        val = BigNumber.from('0');
+      }
+      setInputAmount(ethers.utils.formatUnits(val, tokenDecimals));
     }
-    if (val < 0) {
-      val = 0;
-    }
-    setInputAmount(val.toString());
   };
   return (
     <div className={'my-1'}>
