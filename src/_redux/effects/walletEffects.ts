@@ -24,9 +24,9 @@ export const getBalanceForToken = (
 ) => {
   return async function (dispatch: Dispatch<WalletActionTypes>) {
     const now = Date.now();
-    console.log('getBalanceForToken', token.symbol);
+    // console.log('getBalanceForToken', token.symbol);
     if (!forceRefresh && walletCache.has(token.symbol) && walletCache.get(token.symbol)!.expiration > now) {
-      console.log('CACHE HIT', token.symbol);
+      // console.log('CACHE HIT', token.symbol);
       const record = walletCache.get(token.symbol);
       const balanceObj: WalletTokenBalances = {};
       // @ts-ignore
@@ -34,21 +34,17 @@ export const getBalanceForToken = (
       // console.log('balanceObj', balanceObj);
       dispatch(getBalanceForTokenAction(balanceObj));
     } else {
-      try {
-        console.log('CACHE MISS', token.symbol);
-        const balance = await getErc20TokenBalance(token, provider, userAddress);
-        console.log('GOT WALLET BALANCE', token.symbol, balance.toString());
-        const balanceObj: WalletTokenBalances = {};
-        balanceObj[token.symbol] = balance;
-        const record: CacheRecord = {
-          value: balance,
-          expiration: now + cacheExpirationInMs
-        };
-        walletCache.set(token.symbol, record);
-        dispatch(getBalanceForTokenAction(balanceObj));
-      } catch (e) {
-        console.log('ERROR GETTING WALLET BALANCE', token.symbol, e);
-      }
+      // console.log('CACHE MISS', token.symbol);
+      const balance = await getErc20TokenBalance(token, provider, userAddress);
+      // console.log('GOT WALLET BALANCE', token.symbol, balance.toString());
+      const balanceObj: WalletTokenBalances = {};
+      balanceObj[token.symbol] = balance;
+      const record: CacheRecord = {
+        value: balance,
+        expiration: now + cacheExpirationInMs
+      };
+      walletCache.set(token.symbol, record);
+      dispatch(getBalanceForTokenAction(balanceObj));
     }
   };
 };

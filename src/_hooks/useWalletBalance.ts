@@ -20,25 +20,23 @@ const useWalletBalance = (token?: TokenDefinition) => {
 
   useEffect(() => {
     if (token && provider && userAddress) {
-      console.log('WALLET BALANCE', walletBalances);
-      console.log(provider);
+      // console.log('WALLET BALANCE', walletBalances);
       if (!walletBalances[token.symbol] && (!(token.symbol in fetching) || !fetching[token.symbol])) {
         fetching[token.symbol] = true;
         dispatch(getBalanceForToken(token, provider, userAddress));
       } else {
         const tokenBalance = walletBalances[token.symbol];
-        console.log('tokenBalance', tokenBalance, token.symbol);
+        // console.log('tokenBalance', tokenBalance, token.symbol);
         if (tokenBalance) {
           setUserBalance(tokenBalance);
         }
         fetching[token.symbol] = false;
       }
     }
-    // return () => {
-      // if (token) {
-      // }
+    // // return () => {
+    //   // cleanup
     // };
-  }, [walletBalances, token]);
+  }, [walletBalances, token, userAddress]);
 
   return userBalance;
 };

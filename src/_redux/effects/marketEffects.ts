@@ -15,22 +15,24 @@ export const toggleIsFetchingPrices = (isFetching: boolean) => {
 };
 
 export const getMarketPrices = (currency: FiatCurrencyName = FiatCurrencyName.USD) => {
-  return function (dispatch: Dispatch<MarketActionTypes>) {
+  return async function (dispatch: Dispatch<MarketActionTypes>) {
     const now = Date.now();
     console.log('getMarketPrices');
     if (marketCache.has(currency) && marketCache.get(currency)!.expiration > now) {
       const record = marketCache.get(currency);
       // @ts-ignore
+      console.log('DISPATCHIN GT MARKET PRICE ACTION FROM CACHE', record.value);
+      // @ts-ignore
       dispatch(getMarketPricesAction(record.value));
     } else {
-      getMarketData(currency).then((data: MarketDataResult[]) => {
-        const record: CacheRecord = {
-          value: data,
-          expiration: now + cacheExpirationInMs
-        };
-        marketCache.set(currency, record);
-        dispatch(getMarketPricesAction(data));
-      });
+      const data = await getMarketData(currency);
+      const record: CacheRecord = {
+        value: data,
+        expiration: now + cacheExpirationInMs
+      };
+      marketCache.set(currency, record);
+      console.log('DISPATCHIN GT MARKET PRICE ACTION FROM FRESH', data);
+      dispatch(getMarketPricesAction(data));
     }
   };
 };
