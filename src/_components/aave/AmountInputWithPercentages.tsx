@@ -28,7 +28,7 @@ export default function AmountInputWithPercentages({
   baseAmount,
   inputAmount,
   setInputAmount,
-  tokenDecimals,
+  tokenDecimals
 }: {
   baseAmount?: string;
   inputAmount: string;
@@ -40,7 +40,10 @@ export default function AmountInputWithPercentages({
       if (percentage === 100) {
         setInputAmount(baseAmount);
       } else {
-        const percentageAsBigNumber = ethers.utils.parseUnits(baseAmount, tokenDecimals).div(100).mul(percentage);
+        const percentageAsBigNumber = ethers.utils
+          .parseUnits(baseAmount, tokenDecimals)
+          .div(100)
+          .mul(percentage);
         setInputAmount(ethers.utils.formatUnits(percentageAsBigNumber, tokenDecimals));
       }
     }

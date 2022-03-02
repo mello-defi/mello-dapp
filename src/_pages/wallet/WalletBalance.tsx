@@ -32,12 +32,18 @@ export default function WalletBalance({ token }: { token: TokenDefinition }) {
             <div className={'flex flex-col ml-3'}>
               <span>{token.name}</span>
               <span className={'text-gray-500'}>
-                {ethers.utils.formatUnits(userBalance.toString(), token.decimals).toString()} {token.symbol}
+                {ethers.utils.formatUnits(userBalance.toString(), token.decimals).toString()}{' '}
+                {token.symbol}
               </span>
             </div>
           </div>
           <div className={'flex flex-col items-end space-y-1'}>
-            <span>{formatTokenValueInFiat(marketData.current_price, ethers.utils.formatUnits(userBalance, token.decimals))}</span>
+            <span>
+              {formatTokenValueInFiat(
+                marketData.current_price,
+                ethers.utils.formatUnits(userBalance, token.decimals)
+              )}
+            </span>
             <span className={'text-gray-500'}> </span>
           </div>
         </div>

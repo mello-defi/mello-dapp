@@ -77,8 +77,6 @@ export async function executeEthTransaction(
   customGasLimit?: BigNumber
 ): Promise<string> {
   const signer = provider.getSigner(txData.from);
-  console.log('SIGNER', signer);
-  console.log('TXDATA', txData);
   try {
     // const gasPrice = await provider.getGasPrice();
     // if (customGasPrice) txData.gasPrice = BigNumber.from(gasPrice);
@@ -95,8 +93,8 @@ export async function executeEthTransaction(
       return receipt.transactionHash;
     }
     return txHash;
-  } catch (e) {
-    console.error('send-ethereum-tx', e);
+  } catch (e: any) {
+    console.error('executeEthTransaction error', e);
     throw e;
   }
 }

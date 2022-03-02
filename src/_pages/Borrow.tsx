@@ -100,7 +100,7 @@ export default function Borrow() {
           )
           .sort(
             (a: ComputedUserReserve, b: ComputedUserReserve) =>
-              parseFloat(b.totalBorrows) - parseFloat(a.totalBorrows)
+              parseFloat(b.totalBorrowsETH) - parseFloat(a.totalBorrowsETH)
           )
           .map((reserve: ComputedUserReserve) => {
             return (

@@ -12,7 +12,7 @@ export function TransactionStep({
 }: {
   show: boolean;
   children: any;
-  transactionError: string | undefined;
+  transactionError?: string;
   stepComplete: boolean;
   showTransition?: boolean;
 }) {
@@ -20,7 +20,9 @@ export function TransactionStep({
     <div>
       {show && (
         <div
-          className={'flex flex-row my-4 md:my-2 items-center rounded-full shadow-sm bg-white px-4 py-2'}
+          className={
+            'flex flex-row my-4 md:my-2 items-center rounded-full shadow-sm bg-white px-4 py-2'
+          }
         >
           <div className={'mr-4'}>
             {transactionError ? (
@@ -40,7 +42,9 @@ export function TransactionStep({
           <span className={'flex-row-center text-title'}>{children}</span>
         </div>
       )}
-      {showTransition && stepComplete && <TransactionTransition />}
+      {((transactionError && transactionError.length > 0) || (showTransition && stepComplete)) && (
+        <TransactionTransition transactionError={transactionError} />
+      )}
     </div>
   );
 }

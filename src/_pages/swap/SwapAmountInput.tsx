@@ -44,7 +44,10 @@ export default function SwapAmountInput({
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (userBalance) {
       let value = e.target.value;
-      if (/^[0-9.]*$/.test(value) && userBalance.lt(ethers.utils.parseUnits(value, token?.decimals))) {
+      if (
+        /^[0-9.]*$/.test(value) &&
+        userBalance.lt(ethers.utils.parseUnits(value, token?.decimals))
+      ) {
         value = ethers.utils.formatUnits(userBalance, token?.decimals);
       }
       if (!value) {
@@ -98,7 +101,11 @@ export default function SwapAmountInput({
         )}
         <div className={'text-right px-1 flex-row-center'}>
           Balance:{' '}
-          {userBalance ? `${ethers.utils.formatUnits(userBalance, token?.decimals)}` : <Spinner show={true} size={SpinnerSize.SMALL} />}
+          {userBalance ? (
+            `${ethers.utils.formatUnits(userBalance, token?.decimals)}`
+          ) : (
+            <Spinner show={true} size={SpinnerSize.SMALL} />
+          )}
         </div>
       </div>
     </div>

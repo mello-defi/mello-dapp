@@ -47,7 +47,7 @@ export default function Deposit() {
               (reserve: ComputedUserReserve) =>
                 parseFloat(parseFloat(reserve.underlyingBalance).toFixed(6)) > 0
             )
-            .sort((a, b) => parseFloat(b.underlyingBalance) - parseFloat(a.underlyingBalance))
+            .sort((a, b) => parseFloat(b.underlyingBalanceETH) - parseFloat(a.underlyingBalanceETH))
             .map((reserve: ComputedUserReserve) => {
               return (
                 <ComputedUserReserveListItem

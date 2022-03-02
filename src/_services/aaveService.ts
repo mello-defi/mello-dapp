@@ -116,7 +116,13 @@ const GET_INCENTIVES_CONTROLLER = gql`
     }
   }
 `;
-
+const GET_ETH_PRICE = gql`
+  query GetEthPrice {
+    priceOracle(id: "1") {
+      usdPriceEth
+    }
+  }
+`;
 export async function runAaveApprovalTransaction(
   txs: EthereumTransactionTypeExtended[],
   provider: ethers.providers.Web3Provider,
@@ -176,9 +182,9 @@ async function runAaveTransactionType(
     try {
       const txData = await tx.tx();
       transactionHash = await executeEthTransaction(txData, provider, waitForConfirmation);
-      console.log('transactionHash', transactionHash);
     } catch (e: any) {
-      console.log('error', e);
+      console.log('runAaveTransactionType error', e);
+      throw e;
     }
   }
   return transactionHash;
@@ -190,13 +196,14 @@ export async function getUserReserves(userAddress: string): Promise<UserSummaryD
     variables: { userAddress: userAddress.toLocaleLowerCase() }
   });
   const reserves = await client.query({ query: GET_RESERVES });
-  // console.log('RAW USER RESEVES', userReservesResults.data.userReserves);
+  const price = await client.query({ query: GET_ETH_PRICE });
+
   const incentivesControllerResults = await client.query({ query: GET_INCENTIVES_CONTROLLER });
   return v2.formatUserSummaryData(
     reserves.data.reserves,
     userReservesResults.data.userReserves,
     userAddress.toLocaleLowerCase(),
-    ((1 / 2950.59) * 10) ^ 18,
+    price.data.priceOracle.usdPriceEth,
     Math.floor(Date.now() / 1000),
     incentivesControllerResults.data.incentivesController
   );
@@ -222,7 +229,7 @@ export async function getDepositTransactions(
   return lendingPool.deposit({
     user: userAddress.toLocaleLowerCase(),
     reserve: reserveTokenAddress,
-    amount,
+    amount
   });
 }
 
@@ -237,7 +244,7 @@ export async function getWithdrawTransactions(
   return lendingPool.withdraw({
     user: userAddress.toLocaleLowerCase(),
     reserve: reserveTokenAddress,
-    amount,
+    amount
   });
 }
 

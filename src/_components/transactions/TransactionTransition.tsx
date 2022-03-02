@@ -1,5 +1,11 @@
 import React from 'react';
 
-export function TransactionTransition() {
-  return <div className={'border-green-400 ml-8 border-l-2 border-dashed'}>&nbsp;</div>;
+export function TransactionTransition({ transactionError }: { transactionError?: string }) {
+  return (
+    <div
+      className={`border-${transactionError ? 'red' : 'green'}-400 ml-8 border-l-2 border-dashed`}
+    >
+      &nbsp;
+    </div>
+  );
 }

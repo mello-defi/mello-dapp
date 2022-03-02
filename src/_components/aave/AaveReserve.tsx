@@ -28,6 +28,7 @@ import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { AaveFunction, AaveSection } from '_enums/aave';
 import AaveFunctionButton from '_components/aave/AaveFunctionButton';
 import AaveFunctionContent from '_components/aave/AaveFunctionContent';
+import { EthereumTransactionError } from '_interfaces/errors';
 
 export default function AaveReserve({
   reserve,
@@ -76,9 +77,7 @@ export default function AaveReserve({
     provider: ethers.providers.Web3Provider,
     transactions: EthereumTransactionTypeExtended[]
   ) => {
-    console.log('runAaveTransactions', transactions);
     const approvalHash = await runAaveApprovalTransaction(transactions, provider);
-    console.log('approvalHash', approvalHash);
     if (approvalHash) {
       const tx = await provider.getTransaction(approvalHash);
       await tx.wait(1);
@@ -121,10 +120,13 @@ export default function AaveReserve({
         );
         await runAaveTransactions(provider, transactions);
         setAmount('0.0');
+        setTransactionInProgress(false);
       } catch (e: any) {
-        setTransactionError(transactionError + '\n' + e.message);
+        const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
+        setTransactionError(
+          `${errorParsed.message}${errorParsed.data ? ' - ' + errorParsed.data.message : ''}`
+        );
       }
-      setTransactionInProgress(false);
       setFunctionSubmitting(false);
     }
   };
@@ -234,19 +236,23 @@ export default function AaveReserve({
                           !userBalance ||
                           userBalance.isZero() ||
                           transactionInProgress ||
-                          (depositAmount ? userBalance.lt(ethers.utils.parseUnits(depositAmount, token.decimals)) : true)
+                          (depositAmount
+                            ? userBalance.lt(ethers.utils.parseUnits(depositAmount, token.decimals))
+                            : true)
                         }
                       >
-                        <span>
-                          {depositSubmitting ? 'Submitting...' : 'Deposit'}
-                        </span>
+                        <span>{depositSubmitting ? 'Submitting...' : 'Deposit'}</span>
                       </AaveFunctionContent>
                     )}
                     {aaveFunction === AaveFunction.Withdraw && (
                       <AaveFunctionContent
                         reserveTitle={'Deposited'}
                         summaryTitle={'Amount to withdraw'}
-                        userBalance={userReserve ? ethers.utils.parseUnits(userReserve.underlyingBalance, token.decimals) : BigNumber.from('0')}
+                        userBalance={
+                          userReserve
+                            ? ethers.utils.parseUnits(userReserve.underlyingBalance, token.decimals)
+                            : BigNumber.from('0')
+                        }
                         tokenPrice={marketPriceForToken}
                         amount={withdrawAmount}
                         setAmount={setWithdrawAmount}
@@ -270,7 +276,11 @@ export default function AaveReserve({
                       <AaveFunctionContent
                         reserveTitle={'Borrowing power'}
                         summaryTitle={'Amount to borrow'}
-                        userBalance={maxBorrowAmount ? ethers.utils.parseUnits(maxBorrowAmount, token.decimals) : BigNumber.from('0')}
+                        userBalance={
+                          maxBorrowAmount
+                            ? ethers.utils.parseUnits(maxBorrowAmount, token.decimals)
+                            : BigNumber.from('0')
+                        }
                         tokenPrice={marketPriceForToken}
                         amount={borrowAmount}
                         setAmount={setBorrowAmount}
@@ -287,7 +297,11 @@ export default function AaveReserve({
                       <AaveFunctionContent
                         reserveTitle={'Borrowed'}
                         summaryTitle={'Amount to repay'}
-                        userBalance={userReserve ? ethers.utils.parseUnits(userReserve.variableBorrows, token.decimals) : BigNumber.from('0')}
+                        userBalance={
+                          userReserve
+                            ? ethers.utils.parseUnits(userReserve.variableBorrows, token.decimals)
+                            : BigNumber.from('0')
+                        }
                         tokenPrice={marketPriceForToken}
                         amount={repayAmount}
                         setAmount={setRepayAmount}

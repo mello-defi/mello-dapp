@@ -1,11 +1,19 @@
 import React from 'react';
+import { ExclamationCircleIcon } from '@heroicons/react/solid';
 
 export default function TransactionError({ transactionError }: { transactionError: string }) {
   return (
     <>
       {transactionError !== '' && (
-        <div className={'bg-red-200 my-1 px-2 py-2 text-title-tab-bar rounded-md'}>
-          {transactionError}
+        <div
+          className={
+            'flex flex-row my-4 md:my-2 items-center rounded-full shadow-sm bg-red-300 px-4 py-2'
+          }
+        >
+          <div className={'mr-4'}>
+            <ExclamationCircleIcon className={'text-white h-8 w-8'} />
+          </div>
+          <span className={'flex-row-center text-title'}>{transactionError}</span>
         </div>
       )}
     </>
