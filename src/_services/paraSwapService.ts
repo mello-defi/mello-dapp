@@ -24,10 +24,12 @@ function responseIsError(response: APIError | any): response is APIError {
 export async function getExchangeRate(
   sourceToken: TokenDefinition,
   destinationToken: TokenDefinition,
-  srcAmount: string,
+  srcAmount: string
 ): Promise<OptimalRate> {
   const srcAddress = sourceToken.isGasToken ? EvmGasTokenBurnAddress : sourceToken.address;
-  const destAddress = destinationToken.isGasToken ? EvmGasTokenBurnAddress : destinationToken.address;
+  const destAddress = destinationToken.isGasToken
+    ? EvmGasTokenBurnAddress
+    : destinationToken.address;
   const response: OptimalRate | APIError = await paraSwap.getRate(
     srcAddress,
     destAddress,
@@ -36,7 +38,7 @@ export async function getExchangeRate(
     undefined,
     undefined,
     sourceToken.decimals,
-    destinationToken.decimals,
+    destinationToken.decimals
   );
   if (responseIsError(response)) {
     throw new Error(`Error getting rate: ${response.message}`);
@@ -61,7 +63,7 @@ export async function approveToken(
   amount: BigNumber,
   userAddress: string,
   tokenAddress: string,
-  gasPrice?: BigNumber,
+  gasPrice?: BigNumber
 ): Promise<string> {
   const options: Omit<SendOptions, 'from'> = {};
   if (gasPrice) {
@@ -82,7 +84,9 @@ export async function buildSwapTransaction(
     .dividedBy(100)
     .toFixed(0);
   const srcAddress = sourceToken.isGasToken ? EvmGasTokenBurnAddress : sourceToken.address;
-  const destAddress = destinationToken.isGasToken ? EvmGasTokenBurnAddress : destinationToken.address;
+  const destAddress = destinationToken.isGasToken
+    ? EvmGasTokenBurnAddress
+    : destinationToken.address;
   const response: Transaction | APIError = await paraSwap.buildTx(
     srcAddress,
     destAddress,

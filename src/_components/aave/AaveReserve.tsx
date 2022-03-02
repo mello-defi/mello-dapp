@@ -131,25 +131,45 @@ export default function AaveReserve({
   };
   const handleBorrow = async () => {
     if (borrowAmount && provider && userAddress) {
-      await handleAaveFunction(borrowAmount, setBorrowAmount, setBorrowSubmitting, getBorrowTransactions);
+      await handleAaveFunction(
+        borrowAmount,
+        setBorrowAmount,
+        setBorrowSubmitting,
+        getBorrowTransactions
+      );
     }
   };
 
   const handleRepay = async () => {
     if (repayAmount && provider && userAddress) {
-      await handleAaveFunction(repayAmount, setRepayAmount, setRepaySubmitting, getRepayTransactions);
+      await handleAaveFunction(
+        repayAmount,
+        setRepayAmount,
+        setRepaySubmitting,
+        getRepayTransactions
+      );
     }
   };
 
   const handleDeposit = async () => {
     if (depositAmount && provider && userAddress) {
-      await handleAaveFunction(depositAmount, setDepositAmount, setDepositSubmitting, getDepositTransactions);
+      await handleAaveFunction(
+        depositAmount,
+        setDepositAmount,
+        setDepositSubmitting,
+        getDepositTransactions
+      );
     }
   };
 
   const handleWithdraw = async () => {
     if (withdrawAmount && provider) {
-      await handleAaveFunction(withdrawAmount, setWithdrawAmount, setWithdrawSubmitting, getWithdrawTransactions);
+      await handleAaveFunction(
+        withdrawAmount,
+        setWithdrawAmount,
+        setWithdrawSubmitting,
+        getWithdrawTransactions
+      );
     }
   };
 

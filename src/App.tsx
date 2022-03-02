@@ -92,7 +92,7 @@ function App() {
   const network = useSelector((state: AppState) => state.web3.network);
   const activeTab = useSelector((state: AppState) => state.ui.activeTab);
   return (
-    <div>
+    <div id={'app'}>
       <Sidebar />
       <div
         // flex flex-col min-h-screen bg-gray-50

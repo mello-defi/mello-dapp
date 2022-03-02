@@ -10,7 +10,9 @@ export async function getErc20TokenBalance(
 ): Promise<string> {
   const newContract = new ethers.Contract(token.address, token.abi, provider);
   const balance = await newContract.balanceOf(userAddress);
-  return parseFloat(ethers.utils.formatUnits(balance.toString(), token.decimals)).toPrecision(precision);
+  return parseFloat(ethers.utils.formatUnits(balance.toString(), token.decimals)).toPrecision(
+    precision
+  );
 }
 
 export async function getTokenAllowance(

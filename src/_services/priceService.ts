@@ -1,14 +1,5 @@
 import { currencies, CurrencyDefinition } from '_enums/currency';
 
-export function convertHumanAmountToGwei(amount: number, decimals: number): string {
-  // ethers.
-  return (amount * 10 ** decimals).toString();
-}
-
-export function convertGweiToHumanAmount(amount: string, decimals: number): number {
-  return parseFloat(amount) / 10 ** decimals;
-}
-
 export function convertCryptoAmounts(
   amount: string | number,
   sourcePrice: number,

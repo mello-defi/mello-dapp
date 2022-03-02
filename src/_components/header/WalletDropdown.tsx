@@ -31,7 +31,7 @@ export default function WalletDropdown() {
     setDropdownOpen(false);
   };
   const handleDisconnect = () => {
-    dispatch(disconnect())
+    dispatch(disconnect());
   };
   const [copied, setCopied] = useState(false);
   const copyToClipboard = async (text: string) => {
@@ -95,9 +95,12 @@ export default function WalletDropdown() {
               </WalletDropdownListItem>
               <HorizontalLineBreak />
               <WalletDropdownListItem>
-                <div className={'flex-row-center justify-between'} onClick={()=> {
-                  console.log('logout')
-                }}>
+                <div
+                  className={'flex-row-center justify-between'}
+                  onClick={() => {
+                    console.log('logout');
+                  }}
+                >
                   <span>Network</span>
                   <span className={'flex-row-center'}>
                     <span>{network.name}</span>

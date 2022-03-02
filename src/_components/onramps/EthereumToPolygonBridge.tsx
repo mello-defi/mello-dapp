@@ -4,7 +4,6 @@ import React, { useEffect } from 'react';
 import { MarketDataResult } from '_services/marketDataService';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { EthereumTestnetGoerliContracts, ethereumTokens } from '_enums/tokens';
-import { convertHumanAmountToGwei, formatTokenValueInFiat } from '_services/priceService';
 import { EVMChainIdNumerical } from '_enums/networks';
 import { ethers } from 'ethers';
 import { Button } from '_components/core/Buttons';
@@ -16,6 +15,7 @@ import TransactionError from '_components/transactions/TransactionError';
 // @ts-ignore
 import { Hyphen, RESPONSE_CODES, SIGNATURE_TYPES } from '@biconomy/hyphen';
 import useMarketPrices from '_hooks/useMarketPrices';
+import { formatTokenValueInFiat } from '_services/priceService';
 
 interface BiconomyPreTransferStatus {
   code: number;
@@ -58,8 +58,6 @@ export default function EthereumToPolygonBridge() {
   const [ethereumTransactionHash, setEthereumTransactionHash] = React.useState<string>('');
   const [polygonTransactionHash, setPolygonTransactionHash] = React.useState<string>('');
   const marketPrices = useMarketPrices();
-  // console.log(ethers.utils.parseUnits('0.1', 'wei'))
-  // console.log(ethers.utils.parseUnits('0.1', 'gwei'))
   useEffect(() => {
     if (marketPrices) {
       const eth = marketPrices.find(
@@ -105,7 +103,7 @@ export default function EthereumToPolygonBridge() {
       const amount = 0.001;
       const preTransferStatus: BiconomyPreTransferStatus = await hyphen.preDepositStatus({
         tokenAddress: token.address, // Token address on fromChain which needs to be transferred
-        amount: convertHumanAmountToGwei(amount, token.decimals), // Amount of tokens to be transferred in smallest unit eg wei
+        amount: ethers.utils.formatUnits(amount, token.decimals).toString(), // Amount of tokens to be transferred in smallest unit eg wei
         fromChainId: EVMChainIdNumerical.ETHEREUM_TESTNET_GOERLI, // Chain id from where tokens needs to be transferred
         toChainId: EVMChainIdNumerical.POLYGON_TESTNET_MUMBAI, // Chain id where tokens are supposed to be sent
         userAddress: userAddress // User wallet address who want's to do the transfer

@@ -42,6 +42,11 @@ const web3Modal = new Web3Modal({
 export const connect = () => {
   return async (dispatch: Dispatch<Web3ActionTypes>) => {
     const web3ModalProvider = await web3Modal.connect();
+    // Subscribe to session disconnection
+    web3ModalProvider.on('disconnect', (code: number, reason: string) => {
+      console.log(code, reason);
+    });
+
     const provider = new ethers.providers.Web3Provider(web3ModalProvider, 'any');
     const signer = provider.getSigner();
     dispatch(connectAction(provider, signer));

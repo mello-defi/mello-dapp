@@ -13,7 +13,6 @@ import {
   getExchangeRate,
   initialiseParaSwap
 } from '_services/paraSwapService';
-import { convertGweiToHumanAmount, convertHumanAmountToGwei } from '_services/priceService';
 import { executeEthTransaction } from '_services/walletService';
 import { TransactionStep } from '_components/transactions/TransactionStep';
 import { SwitchVerticalIcon } from '@heroicons/react/outline';
@@ -38,10 +37,10 @@ export default function Swap() {
   );
   const [sourceTokenDisabled, setSourceTokenDisabled] = useState<boolean>(false);
   const [destinationTokenDisabled, setDestinationTokenDisabled] = useState<boolean>(false);
-  const [sourceAmount, setSourceAmount] = useState<number>(0.0);
+  const [sourceAmount, setSourceAmount] = useState<string>('0.0');
+  const [destinationAmount, setDestinationAmount] = useState<string>('0.0');
   const [sourceFiatAmount, setSourceFiatAmount] = useState<number>(0.0);
   const [destinationFiatAmount, setDestinationFiatAmount] = useState<number>(0.0);
-  const [destinationAmount, setDestinationAmount] = useState<number>(0.0);
   const [fetchingPrices, setFetchingPrices] = useState<boolean>(false);
   const [approvalTransactionHash, setApprovalTransactionHAsh] = useState<string>('');
   const [swapTransactionHash, setSwapTransactionHash] = useState<string>('');
@@ -57,31 +56,32 @@ export default function Swap() {
   const [swapConfirmed, setSwapConfirmed] = useState<boolean>(false);
 
   const updateExchangeRate = async (
-    amount: number,
+    amount: string,
     srcToken: TokenDefinition,
     destToken: TokenDefinition
   ) => {
-    if (destToken && amount) {
+    if (destToken && amount && parseFloat(amount) > 0) {
       setFetchingPriceError('');
       try {
         setDestinationTokenDisabled(true);
         setSourceTokenDisabled(true);
         setFetchingPrices(true);
-        const srcAmount = convertHumanAmountToGwei(amount, srcToken.decimals);
-        const rate = await getExchangeRate(
-          srcToken,
-          destToken,
-          srcAmount,
+        const srcAmount: BigNumber = ethers.utils.parseUnits(
+          amount,
+          sourceToken.decimals
         );
-        console.log('rate', rate);
+        const rate = await getExchangeRate(srcToken, destToken, srcAmount.toString());
         setPriceRoute(rate);
         setSourceFiatAmount(parseFloat(rate.srcUSD));
         setDestinationFiatAmount(parseFloat(rate.destUSD));
-        setDestinationAmount(convertGweiToHumanAmount(rate.destAmount, destToken.decimals));
+        console.log('RATE');
+        console.log(rate.destAmount);
+        console.log(ethers.utils.parseUnits(rate.destAmount, destToken.decimals));
+        console.log(ethers.utils.formatUnits(rate.destAmount, destToken.decimals));
+        setDestinationAmount(ethers.utils.formatUnits(rate.destAmount, destToken.decimals));
         setSwapConfirmed(false);
       } catch (e: any) {
         console.log(e);
-        console.log('ERROR HEREEARAERER')
         setFetchingPriceError(e.message);
       }
       setFetchingPrices(false);
@@ -96,14 +96,22 @@ export default function Swap() {
         setIsSwapping(true);
         if (!sourceToken.isGasToken) {
           const allowance: Allowance = await getAllowance(userAddress, sourceToken.address);
-          const amount: BigNumber = ethers.utils.parseUnits(sourceAmount.toString(), sourceToken.decimals);
+          const amount: BigNumber = ethers.utils.parseUnits(
+            sourceAmount.toString(),
+            sourceToken.decimals
+          );
           if (amount.gt(allowance.allowance)) {
             const gasPriceResult = await getGasPrice(network.gasStationUrl);
             let gasPrice: BigNumber | undefined;
             if (gasPriceResult) {
-              gasPrice = ethers.utils.parseUnits(gasPriceResult?.fastest.toString(), 'gwei')
+              gasPrice = ethers.utils.parseUnits(gasPriceResult?.fastest.toString(), 'gwei');
             }
-            const approvalTxHash = await approveToken(amount, userAddress, sourceToken.address, gasPrice);
+            const approvalTxHash = await approveToken(
+              amount,
+              userAddress,
+              sourceToken.address,
+              gasPrice
+            );
             setApprovalTransactionHAsh(approvalTxHash);
             const approvalTx: TransactionResponse = await provider.getTransaction(approvalTxHash);
             await approvalTx.wait(1);
@@ -123,8 +131,8 @@ export default function Swap() {
         const actionTx: TransactionResponse = await provider.getTransaction(swapTxHash);
         await actionTx.wait(1);
         setSwapConfirmed(true);
-        setSourceAmount(0);
-        setDestinationAmount(0);
+        setSourceAmount('0.0');
+        setDestinationAmount('0.0');
         setTransactionError('');
         setIsSwapping(false);
         setIsApproving(false);
@@ -143,7 +151,7 @@ export default function Swap() {
     [] // will be created only once initially
   );
 
-  const sourceAmountChanged = (amount: number) => {
+  const sourceAmountChanged = (amount: string) => {
     setSourceAmount(amount);
     debouncedSave(amount, sourceToken, destinationToken);
   };
@@ -232,8 +240,8 @@ export default function Swap() {
         disabled={
           isSwapping ||
           isApproving ||
-          sourceAmount === 0 ||
-          destinationAmount === 0 ||
+          parseFloat(sourceAmount) === 0 ||
+          parseFloat(destinationAmount) === 0 ||
           sourceToken === undefined ||
           destinationToken === undefined ||
           sourceTokenDisabled ||
