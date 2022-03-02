@@ -13,9 +13,7 @@ function App() {
   const signer = useSelector((state: AppState) => state.web3.signer);
   useEffect(() => {
     if (isConnected && signer && !address) {
-      console.log('setting address');
       signer.getAddress().then((address) => {
-        console.log('GOT ADDRESS', address);
         dispatch(setAddress(address));
       });
     }

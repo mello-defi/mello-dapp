@@ -26,14 +26,12 @@ export const getBalanceForToken = (
   return function (dispatch: Dispatch<WalletActionTypes>) {
     const now = Date.now();
     if (!forceRefresh && cache.has(token.symbol) && cache.get(token.symbol)!.expiration > now) {
-      console.log('using cache');
       const record = cache.get(token.symbol);
       const balanceObj: WalletTokenBalances = {};
       // @ts-ignore
       balanceObj[token.symbol] = record.value;
       dispatch(getBalanceForTokenAction(balanceObj));
     } else {
-      console.log('cache miss');
       getErc20TokenBalance(token, provider, userAddress)
         .then((balance) => {
           const balanceObj: WalletTokenBalances = {};
@@ -42,7 +40,6 @@ export const getBalanceForToken = (
             value: balance,
             expiration: now + cacheExpirationInMs
           };
-          console.log('Setting cache', token.symbol);
           cache.set(token.symbol, record);
           dispatch(getBalanceForTokenAction(balanceObj));
         })

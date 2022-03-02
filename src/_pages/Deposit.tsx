@@ -7,7 +7,6 @@ import { getReserves, getUserReserves } from '_services/aaveService';
 import aaveLogo from '_assets/images/logos/aave.svg';
 import PoweredByLink from '_components/core/PoweredByLink';
 import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveListItem';
-import useMarketPrices from '_hooks/useMarketPrices';
 import { findTokenByAddress } from '_enums/tokens';
 import { AaveSection } from '_enums/aave';
 import AaveReserve from '_components/aave/AaveReserve';

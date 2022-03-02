@@ -30,8 +30,15 @@ export default function Borrow() {
   );
   const [userSummaryData, setUserSummaryData] = useState<UserSummaryData | undefined>(undefined);
   const [ethPrice, setEthPrice] = React.useState<number | undefined>(undefined);
+  console.log('\nBorrow.tsx: market prices', marketPrices);
+  // console.log('Borrow.tsx: eth price', ethPrice);
+  // console.log('Borrow.tsx: computed reserves', computedReserves);
+  // console.log('Borrow.tsx: user summary data', userSummaryData);
   useEffect(() => {
-    if (provider && userAddress) {
+    if (provider && userAddress && (!userSummaryData || !computedReserves)) {
+      console.log(
+        'Borrow.tsx: useEffect: provider, userAddress, userSummaryData, computedReserves'
+      );
       if (!userSummaryData) {
         getUserReserves(userAddress).then((data: UserSummaryData) => {
           setUserSummaryData(data);
@@ -44,43 +51,43 @@ export default function Borrow() {
         });
       }
     }
-  });
+  }, [provider, userAddress, userSummaryData, computedReserves]);
 
   useEffect(() => {
-    if (marketPrices) {
-      const ethPrice = marketPrices.find(
-        (item) => item.symbol.toLowerCase() === CryptoCurrencySymbol.ETH.toLowerCase()
-      );
-      if (ethPrice) {
-        setEthPrice(ethPrice.current_price);
-      }
-    }
+    // if (marketPrices && marketPrices.length > 0 && !ethPrice) {
+    //   const ethPrice = marketPrices.find(
+    //     (item) => item.symbol.toLowerCase() === CryptoCurrencySymbol.ETH.toLowerCase()
+    //   );
+    //   if (ethPrice) {
+    //     setEthPrice(ethPrice.current_price);
+    //   }
+    // }
   }, [marketPrices]);
   const amount = -0.05;
-  if (userSummaryData && computedReserves) {
-    // https://sourcegraph.com/github.com/MyEtherWallet/MyEtherWallet/-/blob/src/dapps/aave-dapp/components/AaveSummary.vue?L224:28
-    const selectedToken = computedReserves.find(
-      (reserve) => reserve.symbol.toUpperCase() === 'USDC'
-    );
-    let nextHealthFactor = userSummaryData.healthFactor;
-    let collateralBalanceETH: string | BigNumber = userSummaryData.totalCollateralETH;
-    const totalBorrowsETH = userSummaryData.totalBorrowsETH;
-    // console.log('totalBorrowsETH', totalBorrowsETH);
-    if (selectedToken?.price) {
-      const ethBalance = new BigNumber(amount).times(selectedToken?.price?.priceInEth);
-      // console.log('ETHBAAL', ethBalance);
-      collateralBalanceETH = new BigNumber(userSummaryData.totalCollateralETH).plus(ethBalance);
-      // console.log('COLLATERAL BALANCE', collateralBalanceETH);
-      nextHealthFactor = calculateHealthFactorFromBalancesBigUnits(
-        collateralBalanceETH,
-        totalBorrowsETH,
-        // userSummaryData.totalFeesETH,
-        userSummaryData.currentLiquidationThreshold
-      ).toFixed(3);
-    }
-    // console.log('NEW HEALTH FACTOr')
-    // console.log(nextHealthFactor);
-  }
+  // if (userSummaryData && computedReserves) {
+  //   // https://sourcegraph.com/github.com/MyEtherWallet/MyEtherWallet/-/blob/src/dapps/aave-dapp/components/AaveSummary.vue?L224:28
+  //   const selectedToken = computedReserves.find(
+  //     (reserve) => reserve.symbol.toUpperCase() === 'USDC'
+  //   );
+  //   let nextHealthFactor = userSummaryData.healthFactor;
+  //   let collateralBalanceETH: string | BigNumber = userSummaryData.totalCollateralETH;
+  //   const totalBorrowsETH = userSummaryData.totalBorrowsETH;
+  //   // console.log('totalBorrowsETH', totalBorrowsETH);
+  //   if (selectedToken?.price) {
+  //     const ethBalance = new BigNumber(amount).times(selectedToken?.price?.priceInEth);
+  //     // console.log('ETHBAAL', ethBalance);
+  //     collateralBalanceETH = new BigNumber(userSummaryData.totalCollateralETH).plus(ethBalance);
+  //     // console.log('COLLATERAL BALANCE', collateralBalanceETH);
+  //     nextHealthFactor = calculateHealthFactorFromBalancesBigUnits(
+  //       collateralBalanceETH,
+  //       totalBorrowsETH,
+  //       // userSummaryData.totalFeesETH,
+  //       userSummaryData.currentLiquidationThreshold
+  //     ).toFixed(3);
+  //   }
+  //   // console.log('NEW HEALTH FACTOr')
+  //   // console.log(nextHealthFactor);
+  // }
 
   return (
     <div className={'space-y-2'}>

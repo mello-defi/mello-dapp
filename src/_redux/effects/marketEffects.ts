@@ -3,20 +3,25 @@ import { CryptoCurrencySymbol, FiatCurrencyName } from '_enums/currency';
 import { CacheRecord } from '_interfaces/cache';
 import { MarketActionTypes } from '_redux/types/marketTypes';
 import { getMarketData, MarketDataResult } from '_services/marketDataService';
-import { getMarketPricesAction } from '_redux/actions/marketActions';
-import { WalletTokenBalances } from '_redux/types/walletTypes';
-import { getBalanceForTokenAction } from '_redux/actions/walletActions';
-import { getErc20TokenBalance } from '_services/walletService';
+import { getMarketPricesAction, toggleIsFetchingPricesAction } from '_redux/actions/marketActions';
 
 const cacheExpirationInMs = 10000;
 const cache = new Map<FiatCurrencyName, CacheRecord>();
 
+export const toggleIsFetchingPrices = (isFetching: boolean) => {
+  return function (dispatch: Dispatch<MarketActionTypes>) {
+    dispatch(toggleIsFetchingPricesAction(isFetching));
+  };
+};
+
 export const getMarketPrices = (currency: FiatCurrencyName = FiatCurrencyName.USD) => {
   return function (dispatch: Dispatch<MarketActionTypes>) {
     const now = Date.now();
+    console.log('getMarketPrices');
     if (cache.has(currency) && cache.get(currency)!.expiration > now) {
-      console.log('using cache');
       const record = cache.get(currency);
+      // @ts-ignore
+      console.log('SENDING GET MACKER PRICE ACTION FROM ACHE', record.value);
       // @ts-ignore
       dispatch(getMarketPricesAction(record.value));
     } else {
@@ -26,7 +31,9 @@ export const getMarketPrices = (currency: FiatCurrencyName = FiatCurrencyName.US
           expiration: now + cacheExpirationInMs
         };
         cache.set(currency, record);
+        console.log('SENDING GET MACKER PRICE ACTION FROM LIVE', data);
         dispatch(getMarketPricesAction(data));
+        dispatch(toggleIsFetchingPricesAction(false));
       });
     }
   };

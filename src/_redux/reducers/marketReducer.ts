@@ -1,7 +1,13 @@
-import { GET_MARKET_PRICES, MarketActionTypes, MarketState } from '_redux/types/marketTypes';
+import {
+  GET_MARKET_PRICES,
+  MarketActionTypes,
+  MarketState,
+  TOGGLE_IS_FETCHING_PRICES
+} from '_redux/types/marketTypes';
 
 const initialState: MarketState = {
-  prices: []
+  prices: [],
+  isFetchingPrices: false
 };
 
 export const getMarketReducer = (
@@ -13,6 +19,11 @@ export const getMarketReducer = (
       return {
         ...state,
         prices: action.payload.prices
+      };
+    case TOGGLE_IS_FETCHING_PRICES:
+      return {
+        ...state,
+        isFetchingPrices: action.payload.isFetchingPrices
       };
     default:
       return state;

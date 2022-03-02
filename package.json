@@ -12,6 +12,7 @@
     "@heroicons/react": "^1.0.5",
     "@magic-ext/oauth": "^2.0.1",
     "@maticnetwork/wallet-widget": "^1.3.10",
+    "@mui/icons-material": "^5.4.4",
     "@ramp-network/ramp-instant-sdk": "^3.0.0",
     "@renproject/chains": "^2.5.11",
     "@renproject/ren": "^2.5.11",

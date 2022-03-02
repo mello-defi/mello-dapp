@@ -24,6 +24,7 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { paraswapLogo } from '_assets/images';
 import { BigNumber, ethers } from 'ethers';
 import { getGasPrice } from '_services/gasService';
+import SwapPriceInformation from '_pages/swap/SwapPriceInformation';
 
 export default function Swap() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -66,18 +67,12 @@ export default function Swap() {
         setDestinationTokenDisabled(true);
         setSourceTokenDisabled(true);
         setFetchingPrices(true);
-        const srcAmount: BigNumber = ethers.utils.parseUnits(
-          amount,
-          sourceToken.decimals
-        );
+        const srcAmount: BigNumber = ethers.utils.parseUnits(amount, sourceToken.decimals);
         const rate = await getExchangeRate(srcToken, destToken, srcAmount.toString());
+        console.log('rate', rate);
         setPriceRoute(rate);
         setSourceFiatAmount(parseFloat(rate.srcUSD));
         setDestinationFiatAmount(parseFloat(rate.destUSD));
-        console.log('RATE');
-        console.log(rate.destAmount);
-        console.log(ethers.utils.parseUnits(rate.destAmount, destToken.decimals));
-        console.log(ethers.utils.formatUnits(rate.destAmount, destToken.decimals));
         setDestinationAmount(ethers.utils.formatUnits(rate.destAmount, destToken.decimals));
         setSwapConfirmed(false);
       } catch (e: any) {
@@ -164,6 +159,7 @@ export default function Swap() {
     setDestinationAmount(sourceAmount);
     setSourceAmount(tempAmount);
   };
+
   return (
     <div>
       <div className={'px-2 flex-row-center justify-between'}>
@@ -203,39 +199,13 @@ export default function Swap() {
         disabled={isSwapping || destinationTokenDisabled}
         source={SwapSide.BUY}
       />
-      <div
-        className={
-          'bg-gray-100 text-gray-500 rounded-2xl px-4 space-y-2 sm:space-y-0 sm:px-6 py-4 my-3 flex flex-col sm:flex-row items-start sm:items-center justify-between'
-        }
-      >
-        {fetchingPrices ? (
-          <span>Fetching prices...</span>
-        ) : (
-          <>
-            <div>
-              {destinationToken && (
-                <>
-                  💰
-                  <span className={'ml-2'}>
-                    1 {sourceToken.symbol} = {destinationAmount} {destinationToken?.symbol}
-                  </span>
-                </>
-              )}
-            </div>
-            <div>
-              {priceRoute && (
-                <div>
-                  ⛽
-                  <span className={'ml-2'}>
-                    Gas fees: ~${parseFloat(priceRoute.gasCostUSD).toFixed(2)}
-                  </span>
-                </div>
-              )}
-            </div>
-          </>
-        )}
-      </div>
       <TransactionError transactionError={fetchingPriceError} />
+      <SwapPriceInformation
+        fetchingPrices={fetchingPrices}
+        destinationToken={destinationToken}
+        priceRoute={priceRoute}
+        sourceToken={sourceToken}
+      />
       <Button
         disabled={
           isSwapping ||
