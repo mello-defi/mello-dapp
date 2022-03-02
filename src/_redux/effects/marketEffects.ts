@@ -6,7 +6,7 @@ import { getMarketData, MarketDataResult } from '_services/marketDataService';
 import { getMarketPricesAction, toggleIsFetchingPricesAction } from '_redux/actions/marketActions';
 
 const cacheExpirationInMs = 10000;
-const cache = new Map<FiatCurrencyName, CacheRecord>();
+const marketCache = new Map<FiatCurrencyName, CacheRecord>();
 
 export const toggleIsFetchingPrices = (isFetching: boolean) => {
   return function (dispatch: Dispatch<MarketActionTypes>) {
@@ -18,10 +18,8 @@ export const getMarketPrices = (currency: FiatCurrencyName = FiatCurrencyName.US
   return function (dispatch: Dispatch<MarketActionTypes>) {
     const now = Date.now();
     console.log('getMarketPrices');
-    if (cache.has(currency) && cache.get(currency)!.expiration > now) {
-      const record = cache.get(currency);
-      // @ts-ignore
-      console.log('SENDING GET MACKER PRICE ACTION FROM ACHE', record.value);
+    if (marketCache.has(currency) && marketCache.get(currency)!.expiration > now) {
+      const record = marketCache.get(currency);
       // @ts-ignore
       dispatch(getMarketPricesAction(record.value));
     } else {
@@ -30,10 +28,8 @@ export const getMarketPrices = (currency: FiatCurrencyName = FiatCurrencyName.US
           value: data,
           expiration: now + cacheExpirationInMs
         };
-        cache.set(currency, record);
-        console.log('SENDING GET MACKER PRICE ACTION FROM LIVE', data);
+        marketCache.set(currency, record);
         dispatch(getMarketPricesAction(data));
-        dispatch(toggleIsFetchingPricesAction(false));
       });
     }
   };

@@ -10,7 +10,7 @@ export type WalletTokenBalances = {
 };
 
 export interface WalletState {
-  address: string;
+  address?: string;
   balances: WalletTokenBalances;
 }
 

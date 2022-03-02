@@ -6,7 +6,7 @@ import {
 } from '_redux/types/walletTypes';
 
 const initialState: WalletState = {
-  address: '',
+  address: undefined,
   balances: {}
 };
 
@@ -16,6 +16,8 @@ export const getWalletReducer = (
 ): WalletState => {
   switch (action.type) {
     case GET_BALANCE_FOR_TOKEN:
+      console.log('walletreducer action.type', action.type);
+      console.log('walleteducer action.payload', action.payload);
       return {
         ...state,
         balances: {

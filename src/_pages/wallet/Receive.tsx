@@ -12,8 +12,10 @@ export default function Receive() {
   const [addressCopied, setAddressCopied] = useState(false);
   const [showQrCode, setShowQrCode] = useState(false);
   const copyToClipboard = async () => {
-    await navigator.clipboard.writeText(userAddress);
-    setAddressCopied(true);
+    if (userAddress) {
+      await navigator.clipboard.writeText(userAddress);
+      setAddressCopied(true);
+    }
   };
 
   const toggleShowQrCode = () => {
@@ -44,11 +46,13 @@ export default function Receive() {
           <QrcodeIcon className={'h-6 w-6'} />
           Display QR Code
         </Button>
-        <DefaultTransition isOpen={showQrCode}>
-          <div className={'mt-2'}>
-            <QRCode value={userAddress} size={256} />
-          </div>
-        </DefaultTransition>
+        {userAddress && (
+          <DefaultTransition isOpen={showQrCode}>
+            <div className={'mt-2'}>
+              <QRCode value={userAddress} size={256} />
+            </div>
+          </DefaultTransition>
+        )}
       </div>
     </div>
   );

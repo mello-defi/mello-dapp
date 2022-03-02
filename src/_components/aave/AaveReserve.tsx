@@ -95,7 +95,7 @@ export default function AaveReserve({
     }
     setTransactionConfirmed(true);
 
-    if (token) {
+    if (token && userAddress) {
       dispatch(getBalanceForToken(token, provider, userAddress, true));
     }
   };
@@ -118,7 +118,7 @@ export default function AaveReserve({
       amount: string
     ) => Promise<EthereumTransactionTypeExtended[]>
   ) => {
-    if (provider) {
+    if (provider && userAddress) {
       try {
         setTransactionInProgress(true);
         setFunctionSubmitting(true);

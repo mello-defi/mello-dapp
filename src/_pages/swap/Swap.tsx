@@ -86,7 +86,7 @@ export default function Swap() {
   };
 
   const handleSwap = async () => {
-    if (provider && destinationToken && priceRoute) {
+    if (provider && destinationToken && priceRoute && userAddress) {
       try {
         setIsSwapping(true);
         if (!sourceToken.isGasToken) {
