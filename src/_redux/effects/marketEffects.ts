@@ -7,7 +7,7 @@ import { getMarketPricesAction, toggleIsFetchingPricesAction } from '_redux/acti
 
 const cacheExpirationInMs = 10000;
 const marketCache = new Map<FiatCurrencyName, CacheRecord>();
-
+let isMarketDataFetching = false;
 export const toggleIsFetchingPrices = (isFetching: boolean) => {
   return function (dispatch: Dispatch<MarketActionTypes>) {
     dispatch(toggleIsFetchingPricesAction(isFetching));
@@ -17,15 +17,16 @@ export const toggleIsFetchingPrices = (isFetching: boolean) => {
 export const getMarketPrices = (currency: FiatCurrencyName = FiatCurrencyName.USD) => {
   return async function (dispatch: Dispatch<MarketActionTypes>) {
     const now = Date.now();
-    console.log('getMarketPrices');
-    if (marketCache.has(currency) && marketCache.get(currency)!.expiration > now) {
+    if (marketCache.has(currency) && (marketCache.get(currency)!.expiration > now || isMarketDataFetching)) {
       const record = marketCache.get(currency);
       // @ts-ignore
       console.log('DISPATCHIN GT MARKET PRICE ACTION FROM CACHE', record.value);
       // @ts-ignore
       dispatch(getMarketPricesAction(record.value));
     } else {
+      isMarketDataFetching = true;
       const data = await getMarketData(currency);
+      isMarketDataFetching = false;
       const record: CacheRecord = {
         value: data,
         expiration: now + cacheExpirationInMs
