@@ -123,6 +123,14 @@ const GET_ETH_PRICE = gql`
     }
   }
 `;
+
+
+export async function getEthPrice(): Promise<string> {
+  const { data } = await client.query({
+    query: GET_ETH_PRICE
+  });
+  return data.priceOracle.usdPriceEth;
+}
 export async function runAaveApprovalTransaction(
   txs: EthereumTransactionTypeExtended[],
   provider: ethers.providers.Web3Provider,
@@ -196,14 +204,13 @@ export async function getUserReserves(userAddress: string): Promise<UserSummaryD
     variables: { userAddress: userAddress.toLocaleLowerCase() }
   });
   const reserves = await client.query({ query: GET_RESERVES });
-  const price = await client.query({ query: GET_ETH_PRICE });
-
+  const ethPrice = await getEthPrice();
   const incentivesControllerResults = await client.query({ query: GET_INCENTIVES_CONTROLLER });
   return v2.formatUserSummaryData(
     reserves.data.reserves,
     userReservesResults.data.userReserves,
     userAddress.toLocaleLowerCase(),
-    price.data.priceOracle.usdPriceEth,
+    ethPrice,
     Math.floor(Date.now() / 1000),
     incentivesControllerResults.data.incentivesController
   );
