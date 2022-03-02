@@ -20,7 +20,6 @@ const useWalletBalance = (token?: TokenDefinition) => {
 
   useEffect(() => {
     if (token && provider && userAddress) {
-      // console.log('WALLET BALANCE', walletBalances);
       if (!walletBalances[token.symbol] && (!(token.symbol in fetching) || !fetching[token.symbol])) {
         fetching[token.symbol] = true;
         dispatch(getBalanceForToken(token, provider, userAddress));
