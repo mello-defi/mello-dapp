@@ -53,7 +53,7 @@ export default function AaveFunctionContent({
       </div>
 
       <div className={'w-full md:w-1/2 flex flex-col justify-end py-0 md:py-2'}>
-        <NextHealthFactor />
+        {/*<NextHealthFactor />*/}
         <TransactionAmountSummary tokenPrice={tokenPrice} title={summaryTitle} amount={amount} />
         {token && (
           <Button
