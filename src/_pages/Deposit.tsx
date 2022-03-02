@@ -70,6 +70,7 @@ export default function Deposit() {
               token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
               aaveSection={AaveSection.Deposit}
               key={reserve.symbol}
+              userSummaryData={userSummaryData}
               reserve={reserve}
               userReserve={userSummaryData.reservesData.find(
                 (r: ComputedUserReserve) => r.reserve.symbol === reserve.symbol

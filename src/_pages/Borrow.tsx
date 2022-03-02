@@ -19,7 +19,6 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import { findTokenByAddress, PolygonMainnetTokenContracts, PolygonTokenSet } from '_enums/tokens';
 import { AaveSection } from '_enums/aave';
 import HealthFactor from '_components/aave/HealthFactor';
-import { ethers } from 'ethers';
 
 export default function Borrow() {
   const provider = useSelector((state: AppState) => state.web3.provider);
@@ -61,35 +60,6 @@ export default function Borrow() {
       }
     }
   }, [marketPrices]);
-  if (userSummaryData && computedReserves) {
-    // https://sourcegraph.com/github.com/MyEtherWallet/MyEtherWallet/-/blob/src/dapps/aave-dapp/components/AaveSummary.vue?L224:28
-    // https://sourcegraph.com/github.com/aave/aave-ui/-/blob/src/components/basic/RiskBar/index.tsx?L41:27
-    // const poolReserve = computedReserves.find(
-    //   (reserve) => reserve.symbol.toUpperCase() === 'USDC'
-    // );
-    // if (poolReserve?.price) {
-      getEthPrice().then((ethPrice: string) => {
-        const reserveETHPrice = computedReserves.find(
-          (reserve) => reserve.symbol.toUpperCase() === 'USDC'
-        )?.price.priceInEth;
-
-        // const amountToBorrowInUsd = valueToBigNumber('1000000000')
-        const amountToBorrowInUsd = valueToBigNumber(ethers.utils.parseUnits('0.1', 10).toString())
-          .multipliedBy(ethers.utils.formatUnits('338846535458060', 18) || '0')
-          // .multipliedBy(338846535458060)
-          // .multipliedBy(ethers.utils.formatUnits(ethPrice, 18))
-          .multipliedBy(ethers.utils.formatUnits('295810000000', 18))
-
-        const newHealthFactor = calculateHealthFactorFromBalancesBigUnits(
-          userSummaryData.totalCollateralUSD,
-          valueToBigNumber(userSummaryData.totalBorrowsUSD).plus(amountToBorrowInUsd),
-          userSummaryData.currentLiquidationThreshold
-        );
-
-        console.log('\nBorrow.tsx: newHealthFactor', newHealthFactor.toString());
-      });
-    // }
-  }
 
   return (
     <div className={'space-y-2'}>
@@ -138,6 +108,7 @@ export default function Borrow() {
                 token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
                 aaveSection={AaveSection.Borrow}
                 key={reserve.symbol}
+                userSummaryData={userSummaryData}
                 reserve={reserve}
                 maxBorrowAmount={convertCryptoAmounts(
                   userSummaryData.availableBorrowsETH,

@@ -1,4 +1,5 @@
 import {
+  calculateHealthFactorFromBalancesBigUnits,
   ComputedReserveData,
   eEthereumTxType,
   EthereumTransactionTypeExtended,
@@ -8,10 +9,10 @@ import {
   ReserveData,
   TxBuilderV2,
   UserSummaryData,
-  v2
+  v2, valueToBigNumber
 } from '@aave/protocol-js';
 import { executeEthTransaction } from '_services/walletService';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
 import { validPolygonTokenSymbolsUppercase } from '_enums/tokens';
 import LendingPoolInterface from '@aave/protocol-js/dist/tx-builder/interfaces/v2/LendingPool';
@@ -68,6 +69,9 @@ const GET_RESERVES = gql`
       reserveLiquidationBonus
       price {
         priceInEth
+        oracle {
+          usdPriceEth
+        }
       }
       lastUpdateTimestamp
       stableDebtLastUpdateTimestamp
@@ -129,6 +133,7 @@ export async function getEthPrice(): Promise<string> {
   const { data } = await client.query({
     query: GET_ETH_PRICE
   });
+  // (1 / 337741366207540) * (10 ** 18)
   return data.priceOracle.usdPriceEth;
 }
 export async function runAaveApprovalTransaction(
@@ -196,6 +201,25 @@ async function runAaveTransactionType(
     }
   }
   return transactionHash;
+}
+
+export function calculateNewHealthFactor (reserveData: ComputedReserveData, userSummaryData: UserSummaryData, amount: string): string {
+  // Ref
+  // https://sourcegraph.com/github.com/aave/aave-ui/-/blob/src/components/basic/RiskBar/index.tsx?L41:27
+  // https://sourcegraph.com/github.com/aave/aave-ui/-/blob/src/libs/pool-data-provider/hooks/use-v2-protocol-data-with-rpc.tsx?L109:26
+  const formattedUsdPriceEth = BigNumber.from(10)
+    .pow(18 + 8)
+    // @ts-ignore
+    .div(reserveData.price.oracle.usdPriceEth.toString())
+  const amountToBorrowInUsd = valueToBigNumber(ethers.utils.parseUnits(amount, 10).toString())
+    .multipliedBy(reserveData.price.priceInEth)
+    .multipliedBy(ethers.utils.formatUnits(formattedUsdPriceEth, 18))
+
+  return calculateHealthFactorFromBalancesBigUnits(
+    userSummaryData.totalCollateralUSD,
+    valueToBigNumber(userSummaryData.totalBorrowsUSD).plus(amountToBorrowInUsd),
+    userSummaryData.currentLiquidationThreshold
+  ).toFixed(2)
 }
 
 export async function getUserReserves(userAddress: string): Promise<UserSummaryData> {
