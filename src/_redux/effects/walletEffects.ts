@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { getErc20TokenBalance } from '_services/walletService';
 import { getBalanceForTokenAction, setAddressAction } from '_redux/actions/walletActions';
 import { WalletActionTypes, WalletTokenBalances } from '_redux/types/walletTypes';
@@ -33,7 +33,7 @@ export const getBalanceForToken = (
       dispatch(getBalanceForTokenAction(balanceObj));
     } else {
       getErc20TokenBalance(token, provider, userAddress)
-        .then((balance) => {
+        .then((balance: BigNumber) => {
           const balanceObj: WalletTokenBalances = {};
           balanceObj[token.symbol] = balance;
           const record: CacheRecord = {

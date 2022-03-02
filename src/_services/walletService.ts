@@ -7,12 +7,13 @@ export async function getErc20TokenBalance(
   provider: ethers.providers.Web3Provider,
   userAddress: string,
   precision = 2
-): Promise<string> {
+): Promise<BigNumber> {
   const newContract = new ethers.Contract(token.address, token.abi, provider);
   const balance = await newContract.balanceOf(userAddress);
-  return parseFloat(ethers.utils.formatUnits(balance.toString(), token.decimals)).toPrecision(
-    precision
-  );
+  return BigNumber.from(balance);
+  // return parseFloat(ethers.utils.formatUnits(balance.toString(), token.decimals)).toPrecision(
+  //   precision
+  // );
 }
 
 export async function getTokenAllowance(

@@ -23,6 +23,7 @@ export default function Deposit() {
   useEffect(() => {
     if (userAddress && computedReserves) {
       getUserReserves(userAddress).then((data: UserSummaryData) => {
+        console.log('userSummaryData', data);
         setUserSummaryData(data);
       });
     }

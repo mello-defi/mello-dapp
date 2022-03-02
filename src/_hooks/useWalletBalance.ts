@@ -3,13 +3,14 @@ import { AppState } from '_redux/store';
 import { useEffect, useState } from 'react';
 import { getBalanceForToken } from '_redux/effects/walletEffects';
 import { TokenDefinition } from '_enums/tokens';
+import { BigNumber } from 'ethers';
 
 const useWalletBalance = (token?: TokenDefinition) => {
   const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const walletBalances = useSelector((state: AppState) => state.wallet.balances);
-  const [userBalance, setUserBalance] = useState<string>('');
+  const [userBalance, setUserBalance] = useState<BigNumber>();
 
   useEffect(() => {
     if (token && provider) {
@@ -17,6 +18,7 @@ const useWalletBalance = (token?: TokenDefinition) => {
         dispatch(getBalanceForToken(token, provider, userAddress));
       } else {
         const tokenBalance = walletBalances[token.symbol];
+        console.log('tokenBalance', tokenBalance, token.symbol);
         if (tokenBalance) {
           setUserBalance(tokenBalance);
         }

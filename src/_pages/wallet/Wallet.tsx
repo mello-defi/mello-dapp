@@ -8,7 +8,6 @@ import { DefaultTransition } from '_components/core/Transition';
 import WalletBalance from '_pages/wallet/WalletBalance';
 import Receive from '_pages/wallet/Receive';
 import Send from '_pages/wallet/Send';
-import { ethers } from 'ethers';
 
 export enum WalletPageTab {
   RECEIVE = 'Receive',

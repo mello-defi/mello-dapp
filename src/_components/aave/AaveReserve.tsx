@@ -9,7 +9,7 @@ import AaveReserveMarketData from '_components/aave/AaveReserveMarketData';
 import { TransactionStep } from '_components/transactions/TransactionStep';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import {
   getBorrowTransactions,
   getDepositTransactions,
@@ -43,18 +43,17 @@ export default function AaveReserve({
   token: TokenDefinition;
 }) {
   const dispatch = useDispatch();
-  const [isExpanded, setIsExpanded] = useState(false);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const network = useSelector((state: AppState) => state.web3.network);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const marketPrices = useMarketPrices();
   const [marketPriceForToken, setMarketPriceForToken] = useState<number | undefined>(undefined);
-  const [depositAmount, setDepositAmount] = useState<number>(0.0);
-  const [borrowAmount, setBorrowAmount] = useState<number>(0.0);
-  const [repayAmount, setRepayAmount] = useState<number>(0.0);
+  const [depositAmount, setDepositAmount] = useState<string>('');
+  const [borrowAmount, setBorrowAmount] = useState<string>('');
+  const [repayAmount, setRepayAmount] = useState<string>('');
   const [borrowSubmitting, setBorrowSubmitting] = useState(false);
   const [repaySubmitting, setRepaySubmitting] = useState(false);
-  const [withdrawAmount, setWithdrawAmount] = useState<number>(0.0);
+  const [withdrawAmount, setWithdrawAmount] = useState<string>('0.0');
   const [depositSubmitting, setDepositSubmitting] = useState<boolean>(false);
   const [withdrawSubmitting, setWithdrawSubmitting] = useState<boolean>(false);
   const [tokenApproved, setTokenApproved] = useState<boolean>(false);
@@ -100,14 +99,14 @@ export default function AaveReserve({
   };
 
   const handleAaveFunction = async (
-    amount: number,
-    setAmount: (amount: number) => void,
+    amount: string,
+    setAmount: (amount: string) => void,
     setFunctionSubmitting: (value: boolean) => void,
     getTransactions: (
       provider: ethers.providers.Web3Provider,
       userAddress: string,
       underlyingAsset: string,
-      amount: number
+      amount: string
     ) => Promise<EthereumTransactionTypeExtended[]>
   ) => {
     if (provider) {
@@ -121,7 +120,7 @@ export default function AaveReserve({
           amount
         );
         await runAaveTransactions(provider, transactions);
-        setAmount(0);
+        setAmount('0.0');
       } catch (e: any) {
         setTransactionError(transactionError + '\n' + e.message);
       }
@@ -174,17 +173,12 @@ export default function AaveReserve({
   };
 
   const handleFunctionButtonClicked = async (functionName: AaveFunction) => {
-    const newIsExpanded = !isExpanded;
-    if (!aaveFunction || functionName === aaveFunction) {
-      setIsExpanded(newIsExpanded);
-    }
-    if (newIsExpanded) {
+    if (!aaveFunction || (aaveFunction && aaveFunction !== functionName)) {
       setAaveFunction(functionName);
     } else {
       setAaveFunction(null);
     }
   };
-
   return (
     <>
       {marketPrices && (
@@ -220,7 +214,7 @@ export default function AaveReserve({
               </div>
             )}
           </div>
-          <DefaultTransition isOpen={isExpanded}>
+          <DefaultTransition isOpen={aaveFunction !== null}>
             <div>
               <HorizontalLineBreak />
               {marketPriceForToken && (
@@ -237,25 +231,14 @@ export default function AaveReserve({
                         token={token}
                         buttonOnClick={handleDeposit}
                         buttonDisabled={
+                          !userBalance ||
+                          userBalance.isZero() ||
                           transactionInProgress ||
-                          parseFloat(userBalance) === 0 ||
-                          (!depositAmount ? false : depositAmount > parseFloat(userBalance)) ||
-                          (token.symbol.toUpperCase() ===
-                            CryptoCurrencySymbol.WMATIC.toUpperCase() &&
-                            depositAmount === parseFloat(userBalance))
+                          (depositAmount ? userBalance.lt(ethers.utils.parseUnits(depositAmount, token.decimals)) : true)
                         }
                       >
                         <span>
-                          {depositSubmitting
-                            ? 'Submitting...'
-                            : `${
-                                token.symbol.toUpperCase() ===
-                                  CryptoCurrencySymbol.WMATIC.toUpperCase() &&
-                                parseFloat(userBalance) > 0 &&
-                                depositAmount === parseFloat(userBalance)
-                                  ? 'You cannot deposit all of your MATIC'
-                                  : 'Deposit'
-                              }`}
+                          {depositSubmitting ? 'Submitting...' : 'Deposit'}
                         </span>
                       </AaveFunctionContent>
                     )}
@@ -263,7 +246,7 @@ export default function AaveReserve({
                       <AaveFunctionContent
                         reserveTitle={'Deposited'}
                         summaryTitle={'Amount to withdraw'}
-                        userBalance={userReserve?.underlyingBalance}
+                        userBalance={userReserve ? ethers.utils.parseUnits(userReserve.underlyingBalance, token.decimals) : BigNumber.from('0')}
                         tokenPrice={marketPriceForToken}
                         amount={withdrawAmount}
                         setAmount={setWithdrawAmount}
@@ -274,7 +257,7 @@ export default function AaveReserve({
                           !userReserve ||
                           parseFloat(userReserve.underlyingBalance) === 0 ||
                           (withdrawAmount && userReserve?.underlyingBalance
-                            ? withdrawAmount > parseFloat(userReserve.underlyingBalance)
+                            ? parseFloat(withdrawAmount) > parseFloat(userReserve.underlyingBalance)
                             : false)
                         }
                       >
@@ -287,7 +270,7 @@ export default function AaveReserve({
                       <AaveFunctionContent
                         reserveTitle={'Borrowing power'}
                         summaryTitle={'Amount to borrow'}
-                        userBalance={maxBorrowAmount}
+                        userBalance={maxBorrowAmount ? ethers.utils.parseUnits(maxBorrowAmount, token.decimals) : BigNumber.from('0')}
                         tokenPrice={marketPriceForToken}
                         amount={borrowAmount}
                         setAmount={setBorrowAmount}
@@ -304,7 +287,7 @@ export default function AaveReserve({
                       <AaveFunctionContent
                         reserveTitle={'Borrowed'}
                         summaryTitle={'Amount to repay'}
-                        userBalance={userReserve?.variableBorrows}
+                        userBalance={userReserve ? ethers.utils.parseUnits(userReserve.variableBorrows, token.decimals) : BigNumber.from('0')}
                         tokenPrice={marketPriceForToken}
                         amount={repayAmount}
                         setAmount={setRepayAmount}
@@ -315,7 +298,7 @@ export default function AaveReserve({
                           !userReserve ||
                           parseFloat(userReserve?.variableBorrows) === 0 ||
                           (repayAmount && userReserve?.variableBorrows
-                            ? repayAmount > parseFloat(userReserve?.variableBorrows)
+                            ? parseFloat(repayAmount) > parseFloat(userReserve?.variableBorrows)
                             : false)
                         }
                       >

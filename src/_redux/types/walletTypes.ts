@@ -1,11 +1,12 @@
 import { CryptoCurrencySymbol } from '_enums/currency';
+import { BigNumber } from 'ethers';
 
 export const SET_ADDRESS = 'SET_ADDRESS';
 export const GET_BALANCE_FOR_TOKEN = 'GET_BALANCE_FOR_TOKEN';
 export const GET_BALANCE_FOR_ALL_TOKENS = 'GET_BALANCE_FOR_ALL_TOKENS';
 
 export type WalletTokenBalances = {
-  [key in CryptoCurrencySymbol]?: string;
+  [key in CryptoCurrencySymbol]?: BigNumber;
 };
 
 export interface WalletState {

@@ -9,9 +9,9 @@ const useMarketPrices = () => {
   const isFetchingPrices = useSelector((state: AppState) => state.markets.isFetchingPrices);
   const dispatch = useDispatch();
   useEffect(() => {
-    if ((!marketPrices || marketPrices.length === 0) && !isFetchingPrices) {
-      console.log('fetching prices from hook');
-      dispatch(toggleIsFetchingPrices(true));
+    if ((!marketPrices || marketPrices.length === 0)) {
+      // console.log('fetching prices from hook');
+      // dispatch(toggleIsFetchingPrices(true));
       dispatch(getMarketPrices());
     }
   }, [marketPrices, isFetchingPrices]);

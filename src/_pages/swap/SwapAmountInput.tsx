@@ -6,6 +6,7 @@ import { SwapSide } from 'paraswap-core';
 import { Spinner, SpinnerSize } from '_components/core/Animations';
 import useWalletBalance from '_hooks/useWalletBalance';
 import useMarketPrices from '_hooks/useMarketPrices';
+import { BigNumber, ethers } from 'ethers';
 
 export default function SwapAmountInput({
   token,
@@ -24,7 +25,7 @@ export default function SwapAmountInput({
   source: SwapSide;
   amountInFiat: number;
 }) {
-  const userBalance = useWalletBalance(token);
+  const userBalance: BigNumber | undefined = useWalletBalance(token);
   const marketPrices = useMarketPrices();
   const [tokenPrice, setTokenPrice] = useState<number>();
 
@@ -41,14 +42,16 @@ export default function SwapAmountInput({
   }, [token, marketPrices]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
-    if (value > userBalance) {
-      value = userBalance;
+    if (userBalance) {
+      let value = e.target.value;
+      if (/^[0-9.]*$/.test(value) && userBalance.lt(ethers.utils.parseUnits(value, token?.decimals))) {
+        value = ethers.utils.formatUnits(userBalance, token?.decimals);
+      }
+      if (!value) {
+        value = '0';
+      }
+      amountChanged(value);
     }
-    if (!value) {
-      value = '0';
-    }
-    amountChanged(value);
   };
 
   return (
@@ -95,7 +98,7 @@ export default function SwapAmountInput({
         )}
         <div className={'text-right px-1 flex-row-center'}>
           Balance:{' '}
-          {userBalance ? `${userBalance}` : <Spinner show={true} size={SpinnerSize.SMALL} />}
+          {userBalance ? `${ethers.utils.formatUnits(userBalance, token?.decimals)}` : <Spinner show={true} size={SpinnerSize.SMALL} />}
         </div>
       </div>
     </div>

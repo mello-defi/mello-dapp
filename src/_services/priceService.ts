@@ -1,4 +1,5 @@
 import { currencies, CurrencyDefinition } from '_enums/currency';
+import { BigNumber } from 'ethers';
 
 export function convertCryptoAmounts(
   amount: string | number,
@@ -23,6 +24,7 @@ export function formatTokenValueInFiat(
   if (typeof price === 'string') {
     price = parseFloat(price);
   }
+  // if (amo)
   let total = amount * price;
   if (isNaN(total)) {
     total = 0;

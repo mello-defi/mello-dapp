@@ -31,9 +31,6 @@ export default function Borrow() {
   const [userSummaryData, setUserSummaryData] = useState<UserSummaryData | undefined>(undefined);
   const [ethPrice, setEthPrice] = React.useState<number | undefined>(undefined);
   console.log('\nBorrow.tsx: market prices', marketPrices);
-  // console.log('Borrow.tsx: eth price', ethPrice);
-  // console.log('Borrow.tsx: computed reserves', computedReserves);
-  // console.log('Borrow.tsx: user summary data', userSummaryData);
   useEffect(() => {
     if (provider && userAddress && (!userSummaryData || !computedReserves)) {
       console.log(

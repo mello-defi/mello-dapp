@@ -214,7 +214,7 @@ export async function getDepositTransactions(
   provider: ethers.providers.Web3Provider,
   userAddress: string,
   reserveTokenAddress: string,
-  amount: number
+  amount: string
 ): Promise<EthereumTransactionTypeExtended[]> {
   const lendingPool = getLendingPool(provider);
   console.log(`Depositing ${amount} ${reserveTokenAddress} to ${userAddress}`);
@@ -222,7 +222,7 @@ export async function getDepositTransactions(
   return lendingPool.deposit({
     user: userAddress.toLocaleLowerCase(),
     reserve: reserveTokenAddress,
-    amount: amount.toString()
+    amount,
   });
 }
 
@@ -230,14 +230,14 @@ export async function getWithdrawTransactions(
   provider: ethers.providers.Web3Provider,
   userAddress: string,
   reserveTokenAddress: string,
-  amount: number
+  amount: string
 ): Promise<EthereumTransactionTypeExtended[]> {
   const lendingPool = getLendingPool(provider);
   console.log(`Withdrawing ${amount} ${reserveTokenAddress} to ${userAddress}`);
   return lendingPool.withdraw({
     user: userAddress.toLocaleLowerCase(),
     reserve: reserveTokenAddress,
-    amount: amount.toString()
+    amount,
   });
 }
 
@@ -245,14 +245,14 @@ export async function getBorrowTransactions(
   provider: ethers.providers.Web3Provider,
   userAddress: string,
   reserveTokenAddress: string,
-  amount: number
+  amount: string
 ): Promise<EthereumTransactionTypeExtended[]> {
   const lendingPool = getLendingPool(provider);
   console.log(`Borrowing ${amount} ${reserveTokenAddress} to ${userAddress}`);
   return lendingPool.borrow({
     user: userAddress.toLocaleLowerCase(),
     reserve: reserveTokenAddress,
-    amount: amount.toString(),
+    amount,
     interestRateMode: InterestRate.Variable
   });
 }
@@ -261,14 +261,14 @@ export async function getRepayTransactions(
   provider: ethers.providers.Web3Provider,
   userAddress: string,
   reserveTokenAddress: string,
-  amount: number
+  amount: string
 ): Promise<EthereumTransactionTypeExtended[]> {
   const lendingPool = getLendingPool(provider);
   console.log(`Repaying ${amount} ${reserveTokenAddress} to ${userAddress}`);
   return lendingPool.repay({
     user: userAddress.toLocaleLowerCase(),
     reserve: reserveTokenAddress,
-    amount: amount.toString(),
+    amount,
     interestRateMode: InterestRate.Variable
   });
 }

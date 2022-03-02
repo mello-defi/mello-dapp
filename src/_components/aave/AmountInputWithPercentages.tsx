@@ -26,18 +26,20 @@ function PercentageButton({
 export default function AmountInputWithPercentages({
   baseAmount,
   inputAmount,
-  setInputAmount
+  setInputAmount,
+  tokenDecimals,
 }: {
   baseAmount?: string;
-  inputAmount: number;
-  setInputAmount: (amount: number) => void;
+  inputAmount: string;
+  setInputAmount: (amount: string) => void;
+  tokenDecimals: number;
 }) {
   const setAmountAsPercentage = (percentage: number) => {
     if (baseAmount) {
       if (percentage === 100) {
-        setInputAmount(parseFloat(baseAmount));
+        setInputAmount(baseAmount);
       } else {
-        setInputAmount((parseFloat(baseAmount) * percentage) / 100);
+        setInputAmount(((parseFloat(baseAmount) * percentage) / 100).toFixed(6));
       }
     }
   };
@@ -50,7 +52,7 @@ export default function AmountInputWithPercentages({
     if (val < 0) {
       val = 0;
     }
-    setInputAmount(val);
+    setInputAmount(val.toString());
   };
   return (
     <div className={'my-1'}>
