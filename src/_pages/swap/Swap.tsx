@@ -71,7 +71,7 @@ export default function Swap() {
         setDestinationTokenDisabled(true);
         setSourceTokenDisabled(true);
         setFetchingPrices(true);
-        const srcAmount: BigNumber = ethers.utils.parseUnits(amount, sourceToken.decimals);
+        const srcAmount: BigNumber = ethers.utils.parseUnits(amount, srcToken.decimals);
         const rate = await getExchangeRate(srcToken, destToken, srcAmount.toString());
         console.log('rate', rate);
         setPriceRoute(rate);

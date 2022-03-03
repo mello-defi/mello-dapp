@@ -14,7 +14,7 @@ function AaveReserveSkeletonButton () {
 
 export default function AaveReservesSkeleton () {
   return (
-    <div className="w-full mx-auto">
+    <div className="w-full mx-auto mt-4">
       <div className="flex animate-pulse flex-col items-start h-full justify-center space-x-5">
         <div className="flex flex-col space-y-3 w-full">
           <div className={"flex-row-center justify-between w-full border-2 rounded-2xl p-4"}>
