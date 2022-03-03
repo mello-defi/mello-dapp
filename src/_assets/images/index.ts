@@ -16,7 +16,6 @@ import hyphenLogo from '_assets/images/logos/hyphen.svg';
 import melloLogoFace from '_assets/images/logos/mello_logo_face.svg';
 import jeurLogo from '_assets/images/logos/jeur.png';
 import melloLogoFaceWithText from '_assets/images/logos/mello_logo_face_with_text.svg';
-import walletIcon from '_assets/images/icons/wallet.svg';
 
 export {
   daiLogo,
@@ -37,5 +36,4 @@ export {
   melloLogoFace,
   melloLogoFaceWithText,
   jeurLogo,
-  walletIcon
 };

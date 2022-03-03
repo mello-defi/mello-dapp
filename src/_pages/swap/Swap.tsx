@@ -48,7 +48,7 @@ export default function Swap() {
   const [fetchingPrices, setFetchingPrices] = useState<boolean>(false);
   const [approvalTransactionHash, setApprovalTransactionHAsh] = useState<string>('');
   const [swapTransactionHash, setSwapTransactionHash] = useState<string>('');
-  const [slippage, setSlippage] = useState<number>(0);
+  const [slippagePercentage, setSlippagePercentage] = useState<number>(1);
   const [transactionError, setTransactionError] = useState<string>('');
   const [priceRoute, setPriceRoute] = useState<OptimalRate>();
   const [isApproving, setIsApproving] = useState<boolean>(false);
@@ -164,6 +164,7 @@ export default function Swap() {
     setSourceAmount(tempAmount);
   };
 
+  console.log('priceRoute', priceRoute);
   return (
     <div>
       <div className={'px-2 flex-row-center justify-between'}>
@@ -204,12 +205,13 @@ export default function Swap() {
         // source={SwapSide.BUY}
       />
       <TransactionError transactionError={fetchingPriceError} />
-      <SlippageControl slippage={slippage}/>
+      {/*<SlippageControl slippage={slippage}/>*/}
       <SwapPriceInformation
         fetchingPrices={fetchingPrices}
         destinationToken={destinationToken}
         priceRoute={priceRoute}
         sourceToken={sourceToken}
+        slippagePercentage={slippagePercentage}
       />
       <Button
         disabled={

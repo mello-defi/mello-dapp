@@ -26,7 +26,7 @@ export function TransactionStep({
         >
           <div className={'mr-4'}>
             {transactionError ? (
-              <ErrorOutlineOutlined className={'text-red-400 h-8 w-8'} />
+              <ErrorOutlineOutlined className={'text-red-200 h-8 w-8'} />
             ) : (
               <>
                 {stepComplete ? (

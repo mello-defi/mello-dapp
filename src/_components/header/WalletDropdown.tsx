@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 import { AppState } from '_redux/store';
 import { setActiveTab } from '_redux/effects/uiEffects';
 import { NavTab } from '_redux/types/uiTypes';
-import { walletIcon } from '_assets/images';
 import { DefaultTransition } from '_components/core/Transition';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { shortenBlockchainAddress } from '_utils/index';
 import { disconnect } from '_redux/effects/web3Effects';
 import {
+  AccountBalanceWallet,
   AssignmentTurnedInOutlined,
   ChevronRightOutlined,
   ContentCopyOutlined, Link,
@@ -57,15 +57,14 @@ export default function WalletDropdown() {
               >
                 {shortenBlockchainAddress(userAddress)}
               </div>
-              <div className={'block sm:hidden'}>
-                <img
+              <div className={'block sm:hidden text-4xl'}>
+                <AccountBalanceWallet
                   onClick={toggleDropdown}
-                  src={walletIcon}
-                  alt={'a'}
+                  fontSize={'inherit'}
                   className={
-                    'h-11 w-11 -mt-1 cursor-pointer ml-2 rounded-full hover:border-gray-200 border-gray-100 border transition p-2'
+                    'text-color-light cursor-pointer mb-2 ml-2 transition hover:text-gray-400'
                   }
-                />
+                  />
               </div>
             </div>
             <DefaultTransition isOpen={dropdownOpen}>
@@ -73,8 +72,9 @@ export default function WalletDropdown() {
                 <div className={'flex flex-col px-4 py-2'}>
                   <WalletDropdownListItem>
                     <div className={'flex-row-center justify-between'}>
-                      <span>{shortenBlockchainAddress(userAddress)}</span>
                       <span className={'flex-row-center'}>
+                      <span>{shortenBlockchainAddress(userAddress)}</span>
+                        <span className={"ml-2"}>
                         {copied ? (
                           <AssignmentTurnedInOutlined className={'h-5 w-5 text-color-light'} />
                         ) : (
@@ -83,6 +83,10 @@ export default function WalletDropdown() {
                             className={'h-5 w-5 text-color-light transition hover:text-gray-400'}
                           />
                         )}
+                        </span>
+                      </span>
+
+                      <span className={'flex-row-center'}>
                         <Link
                           onClick={() =>
                             window.open(`${network.explorerUrl}/address/${userAddress}`, '_blank')
@@ -122,7 +126,7 @@ export default function WalletDropdown() {
                   <WalletDropdownListItem>
                     <div className={'flex-row-center justify-between'} onClick={handleDisconnect}>
                       <span>Disconnect</span>
-                      <LogoutOutlined className={'ml-2 h-5 text-color-light'} />
+                      <LogoutOutlined className={'ml-2 h-5 text-color-light hover:text-gray-400 transition'} />
                     </div>
                   </WalletDropdownListItem>
                 </div>
