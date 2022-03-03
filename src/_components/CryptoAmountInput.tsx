@@ -6,6 +6,7 @@ import { Spinner, SpinnerSize } from '_components/core/Animations';
 import useWalletBalance from '_hooks/useWalletBalance';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { BigNumber, ethers } from 'ethers';
+import { decimalPlacesAreValid } from '_utils/index';
 
 export default function CryptoAmountInput({
   token,
@@ -41,6 +42,9 @@ export default function CryptoAmountInput({
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (userBalance) {
       let value = e.target.value;
+      if (token && value && !decimalPlacesAreValid(value, token?.decimals)) {
+        value = value.substring(0, value.length - 1);
+      }
       if (
         value &&
         /^[0-9.]*$/.test(value) &&

@@ -27,6 +27,7 @@ import SwapPriceInformation from '_pages/swap/SwapPriceInformation';
 import useWalletBalance from '_hooks/useWalletBalance';
 import SlippageControl from '_pages/swap/SlippageControl';
 import { SwapVert } from '@mui/icons-material';
+import { decimalPlacesAreValid } from '_utils/index';
 
 export default function Swap() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -164,7 +165,6 @@ export default function Swap() {
     setSourceAmount(tempAmount);
   };
 
-  console.log('priceRoute', priceRoute);
   return (
     <div>
       <div className={'px-2 flex-row-center justify-between'}>
