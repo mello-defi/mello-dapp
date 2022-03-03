@@ -26,7 +26,7 @@ export default function OnRampCard({
       <img src={imageUrl} height={150} width={150} />
       <div className={'text-left md:text-right mt-2 md:mt-0'}>
         <span>{transferMethods}</span>
-        <span className={'text-gray-500'}>
+        <span className={'text-color-light'}>
           <br />
           Fees: {fees}
           <br />

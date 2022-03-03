@@ -18,7 +18,7 @@ export default function PoweredByLink({
       }
       href={url}
     >
-      <span className={'text-gray-500'}>Powered by</span>
+      <span className={'text-color-light'}>Powered by</span>
       <img src={logo} className={`h-8 ml-2 ${isRound ? 'rounded-full' : ''}`} />
     </a>
   );

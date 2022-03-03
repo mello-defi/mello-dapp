@@ -25,7 +25,7 @@ export default function SwapPriceInformation({
   return (
     <div
       className={
-        'bg-gray-100 text-gray-500 rounded-2xl px-4 space-y-2 sm:space-y-0 sm:px-6 py-4 my-3 flex flex-col sm:flex-row items-start sm:items-center justify-between'
+        'bg-gray-100 text-color-light rounded-2xl px-4 space-y-2 sm:space-y-0 sm:px-6 py-4 my-3 flex flex-col sm:flex-row items-start sm:items-center justify-between'
       }
     >
       {fetchingPrices ? (

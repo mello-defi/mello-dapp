@@ -52,7 +52,7 @@ export default function AaveReserveMarketData({
             ).toFixed(2)}
             %
           </span>
-          <span className={'text-body-smaller text-gray-500'}>
+          <span className={'text-body-smaller text-color-light'}>
             {aaveSection === AaveSection.Deposit ? 'Projected' : 'Variable'} APY
           </span>
         </div>

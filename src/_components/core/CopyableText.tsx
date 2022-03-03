@@ -23,7 +23,7 @@ export default function CopyableText({
       {copied ? (
         <ClipboardCheckIcon className={`ml-2 text-green-500 h-7 w-7`} />
       ) : (
-        <ClipboardCopyIcon className={'ml-2 text-gray-500 h-7 w-7'} />
+        <ClipboardCopyIcon className={'ml-2 text-color-light h-7 w-7'} />
       )}
     </div>
   );

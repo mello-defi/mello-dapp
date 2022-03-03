@@ -22,7 +22,7 @@ export default function Sidebar() {
         <div className={'my-2 flex-row-center justify-between px-2'}>
           <img src={melloLogoFace} alt={'mello'} className={'h-16'} />
           <XIcon
-            className={'cursor-pointer hover:text-gray-500 h-7 w-7'}
+            className={'cursor-pointer h-7 w-7 transition hover:text-gray-400'}
             onClick={() => dispatch(toggleSidebar(false))}
           />
         </div>

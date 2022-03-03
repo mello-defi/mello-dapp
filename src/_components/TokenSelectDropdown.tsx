@@ -78,7 +78,7 @@ export default function TokenSelectDropdown({
                           />
                           <div className={'flex flex-col ml-3 block font-normal truncate'}>
                             <span className="">{token.symbol}</span>
-                            <span className={'text-gray-500 text-xs'}>{token.name}</span>
+                            <span className={'text-color-light text-xs'}>{token.name}</span>
                           </div>
                         </div>
                         {token.address === selectedToken?.address && (

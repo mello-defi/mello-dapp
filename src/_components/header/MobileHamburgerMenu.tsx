@@ -11,7 +11,7 @@ export default function MobileHamburgerMenu() {
     <div>
       <div
         onClick={() => dispatch(toggleSidebar(!sidebarOpen))}
-        className="md:hidden mr-2 cursor-pointer hover:text-gray-500 transition"
+        className="md:hidden mr-2 cursor-pointer transition text-color-dark hover:text-gray-400"
         aria-controls="mobile-menu"
         aria-expanded="false"
       >

@@ -190,7 +190,7 @@ export default function EthereumToPolygonBridge() {
                 onChange={(e) => setTransferAmount(e.target.value)}
               />
             </div>
-            <div className={'text-gray-500 w-1/5 text-md'}>
+            <div className={'text-color-light w-1/5 text-md'}>
               {ethereumPrice ? (
                 <div className={'text-right'}>
                   {formatTokenValueInFiat(ethereumPrice.current_price, transferAmount)}

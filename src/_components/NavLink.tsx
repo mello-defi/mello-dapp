@@ -11,8 +11,8 @@ export default function NavLink({ tab, title }: { tab: NavTab; title: string }) 
     dispatch(setActiveTab(tab));
     dispatch(toggleSidebar(false));
   };
-  const textColor = `hover:text-gray-800 transition ${
-    tab !== activeTab ? 'text-gray-500' : 'text-black'
+  const textColor = `hover:text-gray-700 transition ${
+    tab !== activeTab ? 'text-color-light' : 'text-color-dark'
   }`;
   return (
     <div onClick={handleClick} className={'cursor-pointer'}>

@@ -31,7 +31,7 @@ export default function WalletBalance({ token }: { token: TokenDefinition }) {
             <img src={token.image} className={'w-10 h-10 rounded-full'} alt={token.symbol} />
             <div className={'flex flex-col ml-3'}>
               <span>{token.name}</span>
-              <span className={'text-gray-500'}>
+              <span className={'text-color-light'}>
                 <span className={'font-mono mr-1'}>
                   {ethers.utils.formatUnits(userBalance.toString(), token.decimals).toString()}
                 </span>
@@ -46,7 +46,7 @@ export default function WalletBalance({ token }: { token: TokenDefinition }) {
                 ethers.utils.formatUnits(userBalance, token.decimals)
               )}
             </span>
-            <span className={'text-gray-500'}> </span>
+            <span className={'text-color-light'}> </span>
           </div>
         </div>
       )}

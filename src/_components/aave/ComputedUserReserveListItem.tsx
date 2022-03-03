@@ -34,7 +34,7 @@ export default function ComputedUserReserveListItem({
         {marketPrices && (
           <span className={'text-body-smaller'}>
             {parseFloat(reserveAmount).toFixed(5)}
-            <span className={'ml-1 text-gray-500'}>
+            <span className={'ml-1 text-color-light'}>
               ({getFiatValueForUserReserve(marketPrices, reserveAmount, reserveSymbol)})
             </span>
           </span>

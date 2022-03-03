@@ -41,8 +41,8 @@ export default function Fund() {
 
   return (
     <div className={'rounded-2xl w-full text-center'}>
-      <h4 className={'text-gray-500 hidden md:block'}>I want to transfer</h4>
-      <h5 className={'text-gray-500 md:hidden'}>I want to transfer</h5>
+      <h4 className={'text-color-light hidden md:block'}>I want to transfer</h4>
+      <h5 className={'text-color-light md:hidden'}>I want to transfer</h5>
       <div className={'flex flex-col mt-2'}>
         <Button
           className={`mb-2 ${onboardingSource === OnboardingSource.CRYPTO ? 'bg-gray-300' : ''}`}

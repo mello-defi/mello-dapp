@@ -91,7 +91,7 @@ export default function CryptoAmountInput({
           </div>
         </div>
       </div>
-      <div className={'flex flex-row my-3 sm:my-2 w-full justify-between text-gray-500 text-md'}>
+      <div className={'flex flex-row my-3 sm:my-2 w-full justify-between text-color-light text-md'}>
         {tokenPrice ? (
           <div className={'text-left font-mono'}>
             ${amountInFiat.toLocaleString(undefined, { maximumFractionDigits: 6 })}
