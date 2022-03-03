@@ -18,7 +18,7 @@ export async function sendErc20Token(
   signer: ethers.Signer,
   userAddress: string,
   amount: BigNumber,
-  gasPrice?: BigNumber,
+  gasPrice?: BigNumber
 ): Promise<TransactionResponse> {
   const newContract = new ethers.Contract(token.address, token.abi, signer);
   const options: TransactionRequest = {};
@@ -31,9 +31,9 @@ export async function sendErc20Token(
 export async function getTokenAllowance(
   token: TokenDefinition,
   provider: ethers.providers.Web3Provider,
-  userAddress: string,
+  userAddress: string
 ): Promise<BigNumber> {
-  const contract = new ethers.Contract(token.address, token.abi, provider)
+  const contract = new ethers.Contract(token.address, token.abi, provider);
   return contract.allowance(userAddress, contract.address);
 }
 
@@ -42,9 +42,9 @@ export async function approveToken(
   signer: ethers.Signer,
   userAddress: string,
   amount: BigNumber,
-  gasPrice?: BigNumber,
+  gasPrice?: BigNumber
 ): Promise<TransactionResponse> {
-  const contract = new ethers.Contract(token.address, token.abi, signer)
+  const contract = new ethers.Contract(token.address, token.abi, signer);
   const options: TransactionRequest = {};
   if (gasPrice) {
     options.gasPrice = gasPrice.toString();

@@ -6,7 +6,6 @@ import { Allowance, Transaction } from 'paraswap/build/types';
 import { BigNumberZD } from '@aave/protocol-js';
 import { EVMChainIdNumerical } from '_enums/networks';
 import { SendOptions } from 'web3-eth-contract';
-import { getGasPrice } from '_services/gasService';
 
 let paraSwap: ParaSwap;
 

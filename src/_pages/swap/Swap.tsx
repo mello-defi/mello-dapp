@@ -3,7 +3,7 @@ import { AppState } from '_redux/store';
 import React, { useCallback, useState } from 'react';
 import { TokenDefinition } from '_enums/tokens';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
-import { OptimalRate, SwapSide } from 'paraswap-core';
+import { OptimalRate } from 'paraswap-core';
 import { Allowance } from 'paraswap/build/types';
 import debounce from 'lodash/debounce';
 import {

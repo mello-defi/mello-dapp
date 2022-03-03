@@ -1,6 +1,5 @@
 import { formatTokenValueInFiat } from '_services/priceService';
 import React from 'react';
-import { BigNumber } from 'ethers';
 
 export default function TransactionAmountSummary({
   amount,

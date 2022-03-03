@@ -1,7 +1,7 @@
 import { AppState } from '_redux/store';
 import { useSelector } from 'react-redux';
 import { TokenDefinition } from '_enums/tokens';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '_components/core/Buttons';
 import { InboxInIcon, PaperAirplaneIcon } from '@heroicons/react/solid';
 import { DefaultTransition } from '_components/core/Transition';

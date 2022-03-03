@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { melloLogoFaceWithText } from '_assets/images';

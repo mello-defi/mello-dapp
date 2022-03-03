@@ -5,9 +5,6 @@ import TransactionAmountSummary from '_components/aave/TransactionAmountSummary'
 import { Button } from '_components/core/Buttons';
 import React from 'react';
 import { BigNumber, ethers } from 'ethers';
-import CurrentHealthFactor from '_components/aave/CurrentHealthFactor';
-import HealthFactorNumber from '_components/aave/HealthFactorNumber';
-import NextHealthFactor from '_components/aave/NextHealthFactor';
 
 export default function AaveFunctionContent({
   reserveTitle,

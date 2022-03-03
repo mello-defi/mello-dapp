@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { getErc20TokenBalance } from '_services/walletService';
 import { getBalanceForTokenAction, setAddressAction } from '_redux/actions/walletActions';
 import { WalletActionTypes, WalletTokenBalances } from '_redux/types/walletTypes';

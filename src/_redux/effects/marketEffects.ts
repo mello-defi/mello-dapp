@@ -1,8 +1,8 @@
 import { Dispatch } from 'redux';
-import { CryptoCurrencySymbol, FiatCurrencyName } from '_enums/currency';
+import { FiatCurrencyName } from '_enums/currency';
 import { CacheRecord } from '_interfaces/cache';
 import { MarketActionTypes } from '_redux/types/marketTypes';
-import { getMarketData, MarketDataResult } from '_services/marketDataService';
+import { getMarketData } from '_services/marketDataService';
 import { getMarketPricesAction, toggleIsFetchingPricesAction } from '_redux/actions/marketActions';
 
 const cacheExpirationInMs = 10000;

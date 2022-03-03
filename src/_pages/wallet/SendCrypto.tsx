@@ -55,22 +55,22 @@ export default function SendCrypto() {
 
       setAmountInFiat(data ? data.current_price * parseFloat(amountToSend) : 0);
     }
-  }
+  };
 
   useEffect(() => {
-    updateMarketPrice()
-  }, [amountToSend, token])
+    updateMarketPrice();
+  }, [amountToSend, token]);
   const amountChange = (amount: string) => {
     setAmountToSend(amount);
-  }
+  };
 
   const handleDestinationAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
     setDestinationAddress(e.target.value);
-  }
+  };
 
   const tokenChanged = (token: TokenDefinition) => {
     setToken(token);
-  }
+  };
 
   const sendCrypto = async () => {
     if (signer && token && userAddress && provider) {
@@ -79,27 +79,34 @@ export default function SendCrypto() {
         setTransactionSubmitting(true);
 
         const allowance: BigNumber = await getTokenAllowance(token, provider, userAddress);
-        console.log(amountInUnits.toString())
-        console.log(allowance.toString())
+        console.log(amountInUnits.toString());
+        console.log(allowance.toString());
         if (allowance.lt(amountInUnits)) {
-          console.log('approving token');
           const gasPriceResult = await getGasPrice(network.gasStationUrl);
           let gasPrice: BigNumber | undefined;
           if (gasPriceResult) {
             gasPrice = ethers.utils.parseUnits(gasPriceResult?.fastest.toString(), 'gwei');
           }
-          const tx: TransactionResponse = await approveToken(token, signer, userAddress, amountInUnits, gasPrice);
+          const tx: TransactionResponse = await approveToken(
+            token,
+            signer,
+            userAddress,
+            amountInUnits,
+            gasPrice
+          );
           setApproveTransactionHash(tx.hash);
-          await tx.wait(1)
+          await tx.wait(1);
         }
         setTokenApproved(true);
-        console.log('allowance', allowance.toString());
-        const txResponse: TransactionResponse = await sendErc20Token(token, signer, userAddress, ethers.utils.parseUnits(amountToSend, token.decimals));
-        console.log('txResponse', txResponse);
+        const txResponse: TransactionResponse = await sendErc20Token(
+          token,
+          signer,
+          userAddress,
+          ethers.utils.parseUnits(amountToSend, token.decimals)
+        );
         setSendTransactionHash(txResponse.hash);
         await txResponse.wait(1);
         setTransactionCompleted(true);
-        // dispatch()
       } catch (e: any) {
         const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
         setTransactionError(
@@ -108,39 +115,66 @@ export default function SendCrypto() {
       }
       setTransactionSubmitting(false);
     }
-  }
+  };
   return (
-    <div className={"flex flex-col"}>
-      <CryptoAmountInput token={token} tokenChanged={tokenChanged} amount={amountToSend} amountChanged={amountChange} disabled={false} amountInFiat={amountInFiat}/>
+    <div className={'flex flex-col'}>
+      <CryptoAmountInput
+        token={token}
+        tokenChanged={tokenChanged}
+        amount={amountToSend}
+        amountChanged={amountChange}
+        disabled={false}
+        amountInFiat={amountInFiat}
+      />
       <div className="my-2">
-        <label htmlFor="large-input" className={"mb-2 text-title-tab-bar my-2 px-1"}>Destination address</label>
+        <label htmlFor="large-input" className={'mb-2 text-title-tab-bar my-2 px-1'}>
+          Destination address
+        </label>
         <input
           spellCheck={false}
           value={destinationAddress}
           onChange={handleDestinationAddressChange}
-
-          type="text" id="large-input"
-               className="block font-mono p-4 w-full rounded-2xl focus:outline-none border border-gray-100 transition hover:border-gray-300 focus:border-gray-300"/>
+          type="text"
+          id="large-input"
+          className="block font-mono p-4 w-full rounded-2xl focus:outline-none border border-gray-100 transition hover:border-gray-300 focus:border-gray-300"
+        />
       </div>
       <Button
-        disabled={transactionSubmitting || !ethers.utils.isAddress(destinationAddress) || !token || !amountToSend || parseFloat(amountToSend) === 0 ||
-        (walletBalance && ethers.utils.parseUnits(amountToSend, token.decimals).gt(walletBalance))}
+        disabled={
+          transactionSubmitting ||
+          !ethers.utils.isAddress(destinationAddress) ||
+          !token ||
+          !amountToSend ||
+          parseFloat(amountToSend) === 0 ||
+          (walletBalance && ethers.utils.parseUnits(amountToSend, token.decimals).gt(walletBalance))
+        }
         size={ButtonSize.LARGE}
-        onClick={sendCrypto}>
-        {(destinationAddress.length > 0 && !ethers.utils.isAddress(destinationAddress)) ? 'Invalid address' : 'Send'}
-
-        </Button>
+        onClick={sendCrypto}
+      >
+        {destinationAddress.length > 0 && !ethers.utils.isAddress(destinationAddress)
+          ? 'Invalid address'
+          : 'Send'}
+      </Button>
       {(transactionSubmitting || transactionCompleted || transactionError) && (
         <>
-          <TransactionStep transactionError={transactionError} show={true} stepComplete={tokenApproved}>
+          <TransactionStep
+            transactionError={transactionError}
+            show={true}
+            stepComplete={tokenApproved}
+          >
             Token approved
-            <BlockExplorerLink transactionHash={approveTransactionHash}/>
+            <BlockExplorerLink transactionHash={approveTransactionHash} />
           </TransactionStep>
-          <TransactionStep showTransition={false} transactionError={transactionError} show={tokenApproved} stepComplete={transactionCompleted}>
+          <TransactionStep
+            showTransition={false}
+            transactionError={transactionError}
+            show={tokenApproved}
+            stepComplete={transactionCompleted}
+          >
             Transaction complete
-            <BlockExplorerLink transactionHash={sendTransactionHash}/>
+            <BlockExplorerLink transactionHash={sendTransactionHash} />
           </TransactionStep>
-          <TransactionError transactionError={transactionError}/>
+          <TransactionError transactionError={transactionError} />
         </>
       )}
     </div>

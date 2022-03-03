@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import React, { useEffect } from 'react';
 import { MarketDataResult } from '_services/marketDataService';

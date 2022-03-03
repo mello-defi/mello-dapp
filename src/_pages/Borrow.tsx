@@ -3,26 +3,15 @@ import aaveLogo from '_assets/images/logos/aave.svg';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import {
-  getEthPrice,
-  getMarketDataForSymbol,
-  getReserves,
-  getUserReserves
-} from '_services/aaveService';
-import {
-  calculateHealthFactorFromBalancesBigUnits,
-  ComputedReserveData,
-  UserSummaryData,
-  valueToBigNumber,
-  calculateHealthFactorFromBalances
-} from '@aave/protocol-js';
+import { getMarketDataForSymbol, getReserves, getUserReserves } from '_services/aaveService';
+import { ComputedReserveData, UserSummaryData } from '@aave/protocol-js';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveListItem';
 import AaveReserve from '_components/aave/AaveReserve';
 import { convertCryptoAmounts, formatTokenValueInFiat } from '_services/priceService';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import useMarketPrices from '_hooks/useMarketPrices';
-import { findTokenByAddress, PolygonMainnetTokenContracts, PolygonTokenSet } from '_enums/tokens';
+import { findTokenByAddress } from '_enums/tokens';
 import { AaveSection } from '_enums/aave';
 import CurrentHealthFactor from '_components/aave/CurrentHealthFactor';
 

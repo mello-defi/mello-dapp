@@ -1,10 +1,5 @@
-import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import React, { useEffect, useState } from 'react';
-import {
-  ComputedReserveData,
-  EthereumTransactionTypeExtended,
-  UserSummaryData
-} from '@aave/protocol-js';
+import { ComputedReserveData, EthereumTransactionTypeExtended, UserSummaryData } from '@aave/protocol-js';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
@@ -24,7 +19,6 @@ import {
   runAaveActionTransaction,
   runAaveApprovalTransaction
 } from '_services/aaveService';
-import { CryptoCurrencySymbol } from '_enums/currency';
 import { getBalanceForToken } from '_redux/effects/walletEffects';
 import useWalletBalance from '_hooks/useWalletBalance';
 import { TokenDefinition } from '_enums/tokens';

@@ -2,7 +2,6 @@ import { TokenDefinition } from '_enums/tokens';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { MarketDataResult } from '_services/marketDataService';
 import TokenSelectDropdown from '_components/TokenSelectDropdown';
-import { SwapSide } from 'paraswap-core';
 import { Spinner, SpinnerSize } from '_components/core/Animations';
 import useWalletBalance from '_hooks/useWalletBalance';
 import useMarketPrices from '_hooks/useMarketPrices';

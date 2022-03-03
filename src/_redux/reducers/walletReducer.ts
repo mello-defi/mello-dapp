@@ -1,9 +1,4 @@
-import {
-  GET_BALANCE_FOR_TOKEN,
-  SET_ADDRESS,
-  WalletActionTypes,
-  WalletState
-} from '_redux/types/walletTypes';
+import { GET_BALANCE_FOR_TOKEN, SET_ADDRESS, WalletActionTypes, WalletState } from '_redux/types/walletTypes';
 
 const initialState: WalletState = {
   address: undefined,

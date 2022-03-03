@@ -1,5 +1,4 @@
 import { currencies, CurrencyDefinition } from '_enums/currency';
-import { BigNumber } from 'ethers';
 
 export function convertCryptoAmounts(
   amount: string | number,
