@@ -163,7 +163,7 @@ export default function Swap() {
   return (
     <div>
       <div className={'px-2 flex-row-center justify-between'}>
-        <span className={'text-title'}>Swap</span>
+        <span className={'text-header'}>Swap</span>
         <PoweredByLink url={'https://paraswap.io'} logo={paraswapLogo} />
       </div>
       <CryptoAmountInput

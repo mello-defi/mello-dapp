@@ -29,14 +29,14 @@ export default function AaveReserveMarketData({
               alt={reserve.name}
             />
           )}
-          <span className={'ml-2 text-lg flex flex-row items-center'}>
+          <span className={'ml-2 text-title flex flex-row items-center'}>
             <div>{reserve.name}</div>
             <div>
-              <LightBulbIcon
-                className={
-                  'ml-2 rounded-full bg-gray-300 text-white h-7 w-7 p-1 cursor-pointer transition hover:bg-gray-400'
-                }
-              />
+              {/*<LightBulbIcon*/}
+              {/*  className={*/}
+              {/*    'ml-2 rounded-full bg-gray-300 text-white h-7 w-7 p-1 cursor-pointer transition hover:bg-gray-400'*/}
+              {/*  }*/}
+              {/*/>*/}
             </div>
           </span>
         </div>

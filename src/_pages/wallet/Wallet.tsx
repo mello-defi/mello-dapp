@@ -1,7 +1,7 @@
 import { AppState } from '_redux/store';
 import { useSelector } from 'react-redux';
 import { TokenDefinition } from '_enums/tokens';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '_components/core/Buttons';
 import { InboxInIcon, PaperAirplaneIcon } from '@heroicons/react/solid';
 import { DefaultTransition } from '_components/core/Transition';
@@ -54,6 +54,7 @@ export default function Wallet() {
   };
   return (
     <div className={'flex flex-col'}>
+      <span className={'text-header'}>Wallet</span>
       <div
         className={
           'flex flex-col my-2 md:flex-row space-x-0 md:space-x-2 space-y-2 md:space-y-0 items-center'
