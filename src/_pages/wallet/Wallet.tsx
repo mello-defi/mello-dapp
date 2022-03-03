@@ -8,6 +8,7 @@ import { DefaultTransition } from '_components/core/Transition';
 import WalletBalance from '_pages/wallet/WalletBalance';
 import ReceiveCrypto from '_pages/wallet/ReceiveCrypto';
 import SendCrypto from '_pages/wallet/SendCrypto';
+import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 
 export enum WalletPageTab {
   RECEIVE = 'Receive',
@@ -44,16 +45,13 @@ export default function Wallet() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const [walletPageTab, setWalletPageTab] = useState<WalletPageTab | undefined>();
 
-  const handleSend = () => {
-    setWalletPageTab(WalletPageTab.SEND);
-    // setSendVisible(true);
+  const handleWalletPageTabClick = (tab: WalletPageTab) => {
+    if (tab === walletPageTab) {
+      setWalletPageTab(undefined);
+    } else {
+      setWalletPageTab(tab);
+    }
   };
-
-  const handleReceive = () => {
-    setWalletPageTab(WalletPageTab.RECEIVE);
-    // setReceiveVisible(true);
-  };
-
   return (
     <div className={'flex flex-col'}>
       <div
@@ -66,14 +64,14 @@ export default function Wallet() {
           text={'Send'}
           walletPageTab={WalletPageTab.SEND}
           selectedWalletPageTab={walletPageTab}
-          onClick={setWalletPageTab}
+          onClick={handleWalletPageTabClick}
         />
         <WalletActionButton
           icon={<InboxInIcon className={'mr-2 h-5 w-5'} />}
           text={'Receive'}
           walletPageTab={WalletPageTab.RECEIVE}
           selectedWalletPageTab={walletPageTab}
-          onClick={setWalletPageTab}
+          onClick={handleWalletPageTabClick}
         />
       </div>
       <DefaultTransition isOpen={walletPageTab !== undefined}>
@@ -82,6 +80,7 @@ export default function Wallet() {
           {walletPageTab === WalletPageTab.SEND && <SendCrypto />}
         </div>
       </DefaultTransition>
+      {/*<HorizontalLineBreak/>*/}
       <div className={'rounded-2xl bg-gray-50 p-2'}>
         {Object.values(tokenSet).map((token: TokenDefinition) => (
           <WalletBalance key={token.symbol} token={token} />

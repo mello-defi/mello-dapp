@@ -18,24 +18,23 @@ import { approveToken, getTokenAllowance, sendErc20Token } from '_services/walle
 import { getGasPrice } from '_services/gasService';
 
 export default function SendCrypto() {
+  const marketPrices = useMarketPrices();
   const [token, setToken] = useState<TokenDefinition | undefined>();
+  const signer = useSelector((state: AppState) => state.web3.signer);
+  const provider = useSelector((state: AppState) => state.web3.provider);
+  const userAddress = useSelector((state: AppState) => state.wallet.address);
+  const network = useSelector((state: AppState) => state.web3.network);
+  const walletBalance = useWalletBalance(token);
   const [amountToSend, setAmountToSend] = useState<string>('0.0');
   const [amountInFiat, setAmountInFiat] = useState<number>(0);
   const [destinationAddress, setDestinationAddress] = useState<string>('');
-  const marketPrices = useMarketPrices();
-  const network = useSelector((state: AppState) => state.web3.network);
   const [transactionSubmitting, setTransactionSubmitting] = useState<boolean>(false);
   const [transactionCompleted, setTransactionCompleted] = useState<boolean>(false);
   const [sendTransactionHash, setSendTransactionHash] = useState<string>('');
   const [approveTransactionHash, setApproveTransactionHash] = useState<string>('');
   const [tokenApproved, setTokenApproved] = useState<boolean>(false);
-
   const [transactionError, setTransactionError] = useState<string>('');
-  const signer = useSelector((state: AppState) => state.web3.signer);
-  const provider = useSelector((state: AppState) => state.web3.provider);
-  const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const walletBalance = useWalletBalance(token);
-  console.log('wallet balance in sendcrypto', walletBalance);
+
   const updateMarketPrice = () => {
     if (token && amountToSend) {
       let symbol = token.symbol;
@@ -60,17 +59,6 @@ export default function SendCrypto() {
   useEffect(() => {
     updateMarketPrice();
   }, [amountToSend, token]);
-  const amountChange = (amount: string) => {
-    setAmountToSend(amount);
-  };
-
-  const handleDestinationAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setDestinationAddress(e.target.value);
-  };
-
-  const tokenChanged = (token: TokenDefinition) => {
-    setToken(token);
-  };
 
   const sendCrypto = async () => {
     if (signer && token && userAddress && provider) {
@@ -120,9 +108,9 @@ export default function SendCrypto() {
     <div className={'flex flex-col'}>
       <CryptoAmountInput
         token={token}
-        tokenChanged={tokenChanged}
+        tokenChanged={setToken}
         amount={amountToSend}
-        amountChanged={amountChange}
+        amountChanged={(amount: string) => setAmountToSend(amount)}
         disabled={false}
         amountInFiat={amountInFiat}
       />
@@ -133,7 +121,7 @@ export default function SendCrypto() {
         <input
           spellCheck={false}
           value={destinationAddress}
-          onChange={handleDestinationAddressChange}
+          onChange={(e) => setDestinationAddress(e.target.value)}
           type="text"
           id="large-input"
           className="block font-mono p-4 w-full rounded-2xl focus:outline-none border border-gray-100 transition hover:border-gray-300 focus:border-gray-300"
