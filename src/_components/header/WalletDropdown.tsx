@@ -71,21 +71,21 @@ export default function WalletDropdown() {
                     <div className={'flex-row-center justify-between'}>
                       <span>{shortenBlockchainAddress(userAddress)}</span>
                       <span className={'flex-row-center'}>
-        {copied ? (
-          <ClipboardCheckIcon className={'h-5 w-5 text-gray-600'} />
-        ) : (
-          <ClipboardCopyIcon
-            onClick={() => copyToClipboard(userAddress)}
-            className={'h-5 w-5 text-gray-600 transition hover:text-gray-400'}
-          />
-        )}
+                        {copied ? (
+                          <ClipboardCheckIcon className={'h-5 w-5 text-gray-600'} />
+                        ) : (
+                          <ClipboardCopyIcon
+                            onClick={() => copyToClipboard(userAddress)}
+                            className={'h-5 w-5 text-gray-600 transition hover:text-gray-400'}
+                          />
+                        )}
                         <LinkIcon
                           onClick={() =>
                             window.open(`${network.explorerUrl}/address/${userAddress}`, '_blank')
                           }
                           className={'h-5 w-5 ml-2 transition text-gray-600 hover:text-gray-400'}
                         />
-          </span>
+                      </span>
                     </div>
                   </WalletDropdownListItem>
                   <HorizontalLineBreak />
@@ -105,13 +105,13 @@ export default function WalletDropdown() {
                     >
                       <span>Network</span>
                       <span className={'flex-row-center'}>
-          <span>{network.name}</span>
-          <img
-            src={network.imageUrl}
-            alt={`${network.name} logo`}
-            className={'h-5 ml-1'}
-          />
-          </span>
+                        <span>{network.name}</span>
+                        <img
+                          src={network.imageUrl}
+                          alt={`${network.name} logo`}
+                          className={'h-5 ml-1'}
+                        />
+                      </span>
                     </div>
                   </WalletDropdownListItem>
                   <HorizontalLineBreak />
@@ -125,7 +125,7 @@ export default function WalletDropdown() {
               </div>
             </DefaultTransition>
           </>
-          )}
+        )}
       </div>
     </div>
   );

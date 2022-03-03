@@ -30,7 +30,7 @@ export default function ComputedUserReserveListItem({
           {findTokenByAddress(tokenSet, reserveAddress).symbol}
         </span>
       </div>
-      <div className={'flex flex-col'}>
+      <div className={'flex flex-col font-mono'}>
         {marketPrices && (
           <span className={'text-title-tab-bar'}>
             {parseFloat(reserveAmount).toFixed(5)}

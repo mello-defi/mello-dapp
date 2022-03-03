@@ -3,12 +3,18 @@ import aaveLogo from '_assets/images/logos/aave.svg';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import { getEthPrice, getMarketDataForSymbol, getReserves, getUserReserves } from '_services/aaveService';
+import {
+  getEthPrice,
+  getMarketDataForSymbol,
+  getReserves,
+  getUserReserves
+} from '_services/aaveService';
 import {
   calculateHealthFactorFromBalancesBigUnits,
   ComputedReserveData,
-  UserSummaryData, valueToBigNumber,
-   calculateHealthFactorFromBalances
+  UserSummaryData,
+  valueToBigNumber,
+  calculateHealthFactorFromBalances
 } from '@aave/protocol-js';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveListItem';

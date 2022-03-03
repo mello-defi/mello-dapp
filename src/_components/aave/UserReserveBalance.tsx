@@ -15,7 +15,7 @@ export default function UserReserveBalance({
     <span className={'text-title text-left'}>
       <span className={'text-gray-500 mr-1'}>{title}:</span>
       {formattedUserAmount ? (
-        <span>
+        <span className={'font-mono'}>
           {formattedUserAmount}
           <span className={'text-gray-500 ml-2'}>
             ({formatTokenValueInFiat(tokenPrice, formattedUserAmount)})

@@ -2,6 +2,7 @@ const defaultTheme = require('tailwindcss/defaultTheme');
 
 const fontFamily = defaultTheme.fontFamily;
 fontFamily['sans'] = ['Outfit', 'system-ui'];
+fontFamily['mono'] = ['Roboto Mono', 'system-ui'];
 
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],

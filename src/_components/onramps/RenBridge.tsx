@@ -42,7 +42,7 @@ function RenBridge() {
       // 0x880Ad65DC5B3F33123382416351Eef98B4aAd7F1
       // await addTokenToWallet(mumbaiBtc, provider);
       const mint = await renJS.lockAndMint({
-        // Send BTC from the Bitcoin blockchain to the Ethereum blockchain.
+        // SendCrypto BTC from the Bitcoin blockchain to the Ethereum blockchain.
         asset: 'BTC',
         from: Bitcoin(),
         to: Polygon(web3Provider, 'testnet').Account({

@@ -17,7 +17,10 @@ export const toggleIsFetchingPrices = (isFetching: boolean) => {
 export const getMarketPrices = (currency: FiatCurrencyName = FiatCurrencyName.USD) => {
   return async function (dispatch: Dispatch<MarketActionTypes>) {
     const now = Date.now();
-    if (marketCache.has(currency) && (marketCache.get(currency)!.expiration > now || isMarketDataFetching)) {
+    if (
+      marketCache.has(currency) &&
+      (marketCache.get(currency)!.expiration > now || isMarketDataFetching)
+    ) {
       const record = marketCache.get(currency);
       // @ts-ignore
       console.log('DISPATCHIN GT MARKET PRICE ACTION FROM CACHE', record.value);

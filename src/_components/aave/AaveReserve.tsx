@@ -1,6 +1,10 @@
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import React, { useEffect, useState } from 'react';
-import { ComputedReserveData, EthereumTransactionTypeExtended, UserSummaryData } from '@aave/protocol-js';
+import {
+  ComputedReserveData,
+  EthereumTransactionTypeExtended,
+  UserSummaryData
+} from '@aave/protocol-js';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
@@ -42,7 +46,7 @@ export default function AaveReserve({
   reserve: ComputedReserveData;
   userReserve?: ComputedUserReserve;
   aaveSection: AaveSection;
-  userSummaryData: UserSummaryData,
+  userSummaryData: UserSummaryData;
   maxBorrowAmount?: string;
   token: TokenDefinition;
 }) {
@@ -105,7 +109,7 @@ export default function AaveReserve({
       // sethh calculateNewHealthFactor(reserve)
       setUpdatedHealthFactor(calculateNewHealthFactor(reserve, userSummaryData, depositAmount));
     }
-  }, [depositAmount])
+  }, [depositAmount]);
 
   const handleAaveFunction = async (
     amount: string,

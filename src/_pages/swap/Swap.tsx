@@ -18,7 +18,7 @@ import { TransactionStep } from '_components/transactions/TransactionStep';
 import { SwitchVerticalIcon } from '@heroicons/react/outline';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
-import SwapAmountInput from '_pages/swap/SwapAmountInput';
+import CryptoAmountInput from '_components/CryptoAmountInput';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { paraswapLogo } from '_assets/images';
@@ -61,7 +61,7 @@ export default function Swap() {
     srcToken: TokenDefinition,
     destToken: TokenDefinition
   ) => {
-    if (destToken && amount && BigNumber.from(amount).gt(0)) {
+    if (destToken && amount && parseFloat(amount) > 0) {
       setFetchingPriceError('');
       try {
         setDestinationTokenDisabled(true);
@@ -166,14 +166,14 @@ export default function Swap() {
         <span className={'text-title'}>Swap</span>
         <PoweredByLink url={'https://paraswap.io'} logo={paraswapLogo} />
       </div>
-      <SwapAmountInput
+      <CryptoAmountInput
         amountInFiat={sourceFiatAmount}
         token={sourceToken}
         tokenChanged={setSourceToken}
         amount={sourceAmount}
         amountChanged={sourceAmountChanged}
         disabled={isSwapping || sourceTokenDisabled}
-        source={SwapSide.SELL}
+        // source={SwapSide.SELL}
       />
       <div
         className={
@@ -190,14 +190,14 @@ export default function Swap() {
           </Button>
         </div>
       </div>
-      <SwapAmountInput
+      <CryptoAmountInput
         amountInFiat={destinationFiatAmount}
         token={destinationToken}
         tokenChanged={setDestinationToken}
         amount={destinationAmount}
         amountChanged={setDestinationAmount}
         disabled={isSwapping || destinationTokenDisabled}
-        source={SwapSide.BUY}
+        // source={SwapSide.BUY}
       />
       <TransactionError transactionError={fetchingPriceError} />
       <SwapPriceInformation

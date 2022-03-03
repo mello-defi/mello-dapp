@@ -9,7 +9,8 @@ import {
   ReserveData,
   TxBuilderV2,
   UserSummaryData,
-  v2, valueToBigNumber
+  v2,
+  valueToBigNumber
 } from '@aave/protocol-js';
 import { executeEthTransaction } from '_services/walletService';
 import { BigNumber, ethers } from 'ethers';
@@ -128,7 +129,6 @@ const GET_ETH_PRICE = gql`
   }
 `;
 
-
 export async function getEthPrice(): Promise<string> {
   const { data } = await client.query({
     query: GET_ETH_PRICE
@@ -203,20 +203,24 @@ async function runAaveTransactionType(
   return transactionHash;
 }
 
-export function calculateNewHealthFactor (reserveData: ComputedReserveData, userSummaryData: UserSummaryData, amount: string): string {
+export function calculateNewHealthFactor(
+  reserveData: ComputedReserveData,
+  userSummaryData: UserSummaryData,
+  amount: string
+): string {
   const formattedUsdPriceEth = BigNumber.from(10)
     .pow(18 + 8)
     // @ts-ignore
-    .div(reserveData.price.oracle.usdPriceEth.toString())
+    .div(reserveData.price.oracle.usdPriceEth.toString());
   const amountToBorrowInUsd = valueToBigNumber(ethers.utils.parseUnits(amount, 10).toString())
     .multipliedBy(reserveData.price.priceInEth)
-    .multipliedBy(ethers.utils.formatUnits(formattedUsdPriceEth, 18))
+    .multipliedBy(ethers.utils.formatUnits(formattedUsdPriceEth, 18));
 
   return calculateHealthFactorFromBalancesBigUnits(
     userSummaryData.totalCollateralUSD,
     valueToBigNumber(userSummaryData.totalBorrowsUSD).plus(amountToBorrowInUsd),
     userSummaryData.currentLiquidationThreshold
-  ).toFixed(2)
+  ).toFixed(2);
 }
 
 export async function getUserReserves(userAddress: string): Promise<UserSummaryData> {

@@ -1,0 +1,148 @@
+import CryptoAmountInput from '_components/CryptoAmountInput';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { TokenDefinition } from '_enums/tokens';
+import useMarketPrices from '_hooks/useMarketPrices';
+import { CryptoCurrencySymbol } from '_enums/currency';
+import { MarketDataResult } from '_services/marketDataService';
+import { BigNumber, ethers } from 'ethers';
+import { Button, ButtonSize } from '_components/core/Buttons';
+import useWalletBalance from '_hooks/useWalletBalance';
+import { useSelector } from 'react-redux';
+import { AppState } from '_redux/store';
+import { TransactionResponse } from '@ethersproject/abstract-provider';
+import { TransactionStep } from '_components/transactions/TransactionStep';
+import BlockExplorerLink from '_components/core/BlockExplorerLink';
+import TransactionError from '_components/transactions/TransactionError';
+import { EthereumTransactionError } from '_interfaces/errors';
+import { approveToken, getTokenAllowance, sendErc20Token } from '_services/walletService';
+import { getGasPrice } from '_services/gasService';
+
+export default function SendCrypto() {
+  const [token, setToken] = useState<TokenDefinition | undefined>();
+  const [amountToSend, setAmountToSend] = useState<string>('0.0');
+  const [amountInFiat, setAmountInFiat] = useState<number>(0);
+  const [destinationAddress, setDestinationAddress] = useState<string>('');
+  const marketPrices = useMarketPrices();
+  const network = useSelector((state: AppState) => state.web3.network);
+  const [transactionSubmitting, setTransactionSubmitting] = useState<boolean>(false);
+  const [transactionCompleted, setTransactionCompleted] = useState<boolean>(false);
+  const [sendTransactionHash, setSendTransactionHash] = useState<string>('');
+  const [approveTransactionHash, setApproveTransactionHash] = useState<string>('');
+  const [tokenApproved, setTokenApproved] = useState<boolean>(false);
+
+  const [transactionError, setTransactionError] = useState<string>('');
+  const signer = useSelector((state: AppState) => state.web3.signer);
+  const provider = useSelector((state: AppState) => state.web3.provider);
+  const userAddress = useSelector((state: AppState) => state.wallet.address);
+  const walletBalance = useWalletBalance(token);
+  console.log('wallet balance in sendcrypto', walletBalance);
+  const updateMarketPrice = () => {
+    if (token && amountToSend) {
+      let symbol = token.symbol;
+      if (symbol === CryptoCurrencySymbol.WMATIC) {
+        symbol = CryptoCurrencySymbol.MATIC;
+      }
+      if (symbol === CryptoCurrencySymbol.WETH) {
+        symbol = CryptoCurrencySymbol.ETH;
+      }
+      if (symbol === CryptoCurrencySymbol.WBTC) {
+        symbol = CryptoCurrencySymbol.BTC;
+      }
+
+      const data = marketPrices.find(
+        (m: MarketDataResult) => m.symbol.toLocaleLowerCase() === symbol.toLowerCase()
+      );
+
+      setAmountInFiat(data ? data.current_price * parseFloat(amountToSend) : 0);
+    }
+  }
+
+  useEffect(() => {
+    updateMarketPrice()
+  }, [amountToSend, token])
+  const amountChange = (amount: string) => {
+    setAmountToSend(amount);
+  }
+
+  const handleDestinationAddressChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setDestinationAddress(e.target.value);
+  }
+
+  const tokenChanged = (token: TokenDefinition) => {
+    setToken(token);
+  }
+
+  const sendCrypto = async () => {
+    if (signer && token && userAddress && provider) {
+      try {
+        const amountInUnits = ethers.utils.parseUnits(amountToSend, token.decimals);
+        setTransactionSubmitting(true);
+
+        const allowance: BigNumber = await getTokenAllowance(token, provider, userAddress);
+        console.log(amountInUnits.toString())
+        console.log(allowance.toString())
+        if (allowance.lt(amountInUnits)) {
+          console.log('approving token');
+          const gasPriceResult = await getGasPrice(network.gasStationUrl);
+          let gasPrice: BigNumber | undefined;
+          if (gasPriceResult) {
+            gasPrice = ethers.utils.parseUnits(gasPriceResult?.fastest.toString(), 'gwei');
+          }
+          const tx: TransactionResponse = await approveToken(token, signer, userAddress, amountInUnits, gasPrice);
+          setApproveTransactionHash(tx.hash);
+          await tx.wait(1)
+        }
+        setTokenApproved(true);
+        console.log('allowance', allowance.toString());
+        const txResponse: TransactionResponse = await sendErc20Token(token, signer, userAddress, ethers.utils.parseUnits(amountToSend, token.decimals));
+        console.log('txResponse', txResponse);
+        setSendTransactionHash(txResponse.hash);
+        await txResponse.wait(1);
+        setTransactionCompleted(true);
+        // dispatch()
+      } catch (e: any) {
+        const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
+        setTransactionError(
+          `${errorParsed.message}${errorParsed.data ? ' - ' + errorParsed.data.message : ''}`
+        );
+      }
+      setTransactionSubmitting(false);
+    }
+  }
+  return (
+    <div className={"flex flex-col"}>
+      <CryptoAmountInput token={token} tokenChanged={tokenChanged} amount={amountToSend} amountChanged={amountChange} disabled={false} amountInFiat={amountInFiat}/>
+      <div className="my-2">
+        <label htmlFor="large-input" className={"mb-2 text-title-tab-bar my-2 px-1"}>Destination address</label>
+        <input
+          spellCheck={false}
+          value={destinationAddress}
+          onChange={handleDestinationAddressChange}
+
+          type="text" id="large-input"
+               className="block font-mono p-4 w-full rounded-2xl focus:outline-none border border-gray-100 transition hover:border-gray-300 focus:border-gray-300"/>
+      </div>
+      <Button
+        disabled={transactionSubmitting || !ethers.utils.isAddress(destinationAddress) || !token || !amountToSend || parseFloat(amountToSend) === 0 ||
+        (walletBalance && ethers.utils.parseUnits(amountToSend, token.decimals).gt(walletBalance))}
+        size={ButtonSize.LARGE}
+        onClick={sendCrypto}>
+        {(destinationAddress.length > 0 && !ethers.utils.isAddress(destinationAddress)) ? 'Invalid address' : 'Send'}
+
+        </Button>
+      {(transactionSubmitting || transactionCompleted || transactionError) && (
+        <>
+          <TransactionStep transactionError={transactionError} show={true} stepComplete={tokenApproved}>
+            Token approved
+            <BlockExplorerLink transactionHash={approveTransactionHash}/>
+          </TransactionStep>
+          <TransactionStep showTransition={false} transactionError={transactionError} show={tokenApproved} stepComplete={transactionCompleted}>
+            Transaction complete
+            <BlockExplorerLink transactionHash={sendTransactionHash}/>
+          </TransactionStep>
+          <TransactionError transactionError={transactionError}/>
+        </>
+      )}
+    </div>
+  );
+}

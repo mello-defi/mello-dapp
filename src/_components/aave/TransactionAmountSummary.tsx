@@ -17,8 +17,8 @@ export default function TransactionAmountSummary({
         parseFloat(amount) === 0 ? 'text-gray-400' : ''
       }`}
     >
-      <span className={`${parseFloat(amount) === 0 ? '' : 'text-gray-500'}`}>{title}:</span>{' '}
-      {formatTokenValueInFiat(tokenPrice, amount)}
+      <span className={`${parseFloat(amount) === 0 ? '' : 'text-gray-500 '}`}>{title}:</span>{' '}
+      <span className={'font-mono'}>{formatTokenValueInFiat(tokenPrice, amount)}</span>
     </span>
   );
 }

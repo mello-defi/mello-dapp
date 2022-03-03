@@ -25,7 +25,11 @@ export const getBalanceForToken = (
   return async function (dispatch: Dispatch<WalletActionTypes>) {
     const now = Date.now();
     // console.log('getBalanceForToken', token.symbol);
-    if (!forceRefresh && walletCache.has(token.symbol) && walletCache.get(token.symbol)!.expiration > now) {
+    if (
+      !forceRefresh &&
+      walletCache.has(token.symbol) &&
+      walletCache.get(token.symbol)!.expiration > now
+    ) {
       // console.log('CACHE HIT', token.symbol);
       const record = walletCache.get(token.symbol);
       const balanceObj: WalletTokenBalances = {};

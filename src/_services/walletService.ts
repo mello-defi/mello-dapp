@@ -11,27 +11,45 @@ export async function getErc20TokenBalance(
   const newContract = new ethers.Contract(token.address, token.abi, provider);
   const balance = await newContract.balanceOf(userAddress);
   return BigNumber.from(balance);
-  // return parseFloat(ethers.utils.formatUnits(balance.toString(), token.decimals)).toPrecision(
-  //   precision
-  // );
+}
+
+export async function sendErc20Token(
+  token: TokenDefinition,
+  signer: ethers.Signer,
+  userAddress: string,
+  amount: BigNumber,
+  gasPrice?: BigNumber,
+): Promise<TransactionResponse> {
+  const newContract = new ethers.Contract(token.address, token.abi, signer);
+  const options: TransactionRequest = {};
+  if (gasPrice) {
+    options.gasPrice = gasPrice.toString();
+  }
+  return newContract.transferFrom(userAddress, userAddress, amount.toString(), options);
 }
 
 export async function getTokenAllowance(
   token: TokenDefinition,
   provider: ethers.providers.Web3Provider,
-  amount: number,
   userAddress: string,
-  contractAddress: string,
-  waitForConfirmation = true
-) {
-  // const signer = provider.getSigner();
-  //
-  // console.log('token', token);
-  //
-  // const contract = new ethers.Contract(token.address, abi, provider)
-  // console.log('contract', contract);
-  // const tx = await contract.allowance(userAddress, contract);
-  // console.log('TX ALLOWANCE', tx);
+): Promise<BigNumber> {
+  const contract = new ethers.Contract(token.address, token.abi, provider)
+  return contract.allowance(userAddress, contract.address);
+}
+
+export async function approveToken(
+  token: TokenDefinition,
+  signer: ethers.Signer,
+  userAddress: string,
+  amount: BigNumber,
+  gasPrice?: BigNumber,
+): Promise<TransactionResponse> {
+  const contract = new ethers.Contract(token.address, token.abi, signer)
+  const options: TransactionRequest = {};
+  if (gasPrice) {
+    options.gasPrice = gasPrice.toString();
+  }
+  return contract.approve(userAddress, amount, options);
 }
 
 // export async function approveToken(

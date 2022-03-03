@@ -36,7 +36,8 @@ export default function SwapPriceInformation({
             {destinationToken && priceRoute && (
               <>
                 <span className={''}>
-                  1 {sourceToken.symbol} = {getDestinationTokenPriceComparison()}{' '}
+                  1 {sourceToken.symbol} ={' '}
+                  <span className={'font-mono'}>{getDestinationTokenPriceComparison()}</span>{' '}
                   {destinationToken.symbol}
                 </span>
               </>
@@ -45,9 +46,11 @@ export default function SwapPriceInformation({
           <div>
             {priceRoute && (
               <div>
-                ⛽
                 <span className={'ml-2'}>
-                  Gas fees: ~${parseFloat(priceRoute.gasCostUSD).toFixed(2)}
+                  Gas fees:{' '}
+                  <span className={'font-mono'}>
+                    ~${parseFloat(priceRoute.gasCostUSD).toFixed(2)}
+                  </span>
                 </span>
               </div>
             )}

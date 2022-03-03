@@ -32,12 +32,14 @@ export default function WalletBalance({ token }: { token: TokenDefinition }) {
             <div className={'flex flex-col ml-3'}>
               <span>{token.name}</span>
               <span className={'text-gray-500'}>
-                {ethers.utils.formatUnits(userBalance.toString(), token.decimals).toString()}{' '}
+                <span className={'font-mono mr-1'}>
+                  {ethers.utils.formatUnits(userBalance.toString(), token.decimals).toString()}
+                </span>
                 {token.symbol}
               </span>
             </div>
           </div>
-          <div className={'flex flex-col items-end space-y-1'}>
+          <div className={'flex flex-col items-end space-y-1 font-mono'}>
             <span>
               {formatTokenValueInFiat(
                 marketData.current_price,

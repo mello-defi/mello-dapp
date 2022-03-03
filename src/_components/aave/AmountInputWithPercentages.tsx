@@ -71,7 +71,7 @@ export default function AmountInputWithPercentages({
           value={inputAmount}
           onChange={handleAmountChanged}
           type={'number'}
-          className={`bg-white w-full border-2 my-2 border-gray-100 focus:outline-none rounded-lg px-4 py-2 ${
+          className={`bg-white font-mono w-full my-2 border border-gray-100 transition hover:border-gray-300 focus:border-gray-300 focus:outline-none rounded-lg px-4 py-2 ${
             !baseAmount || parseFloat(baseAmount) === 0 ? 'text-gray-500' : ''
           }`}
         />
