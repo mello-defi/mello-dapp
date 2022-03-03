@@ -26,7 +26,7 @@ export default function TokenSelectDropdown({
           onClick={() => {
             !disabled && setDropdownOpen(!dropdownOpen);
           }}
-          className="cursor-pointer w-full bg-white rounded-2xl shadow-md pl-3 pr-10 py-3 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
+          className="cursor-pointer w-full bg-white rounded-2xl shadow-sm pl-3 pr-10 py-3 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-500 sm:text-sm"
         >
           {selectedToken ? (
             <span className="flex items-center">

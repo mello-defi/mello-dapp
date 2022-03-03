@@ -72,29 +72,29 @@
     @apply text-sm tracking-tight text-gray-700;
   }
 
-  .text-main-body {
-    @apply text-base tracking-tight;
-  }
+  /*.text-main-body {*/
+  /*  @apply text-base tracking-tight;*/
+  /*}*/
 
-  .text-secondary-body {
-    @apply text-sm tracking-wide;
-  }
+  /*.text-secondary-body {*/
+  /*  @apply text-sm tracking-wide;*/
+  /*}*/
 
-  .text-tertiary-body {
-    @apply text-xs tracking-wide;
-  }
+  /*.text-tertiary-body {*/
+  /*  @apply text-xs tracking-wide;*/
+  /*}*/
 
-  .text-button {
-    @apply text-sm tracking-wide;
-  }
+  /*.text-button {*/
+  /*  @apply text-sm tracking-wide;*/
+  /*}*/
 
-  .text-caption-regular {
-    @apply text-xs tracking-wider;
-  }
+  /*.text-caption-regular {*/
+  /*  @apply text-xs tracking-wider;*/
+  /*}*/
 
-  .border-light {
-    @apply border-2 border-gray-200;
-  }
+  /*.border-light {*/
+  /*  @apply border-2 border-gray-200;*/
+  /*}*/
 
   .flex-row-center {
     @apply flex flex-row items-center;

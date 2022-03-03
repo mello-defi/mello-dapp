@@ -72,18 +72,18 @@ export default function WalletDropdown() {
                       <span>{shortenBlockchainAddress(userAddress)}</span>
                       <span className={'flex-row-center'}>
                         {copied ? (
-                          <ClipboardCheckIcon className={'h-5 w-5 text-gray-600'} />
+                          <ClipboardCheckIcon className={'h-5 w-5 text-gray-500'} />
                         ) : (
                           <ClipboardCopyIcon
                             onClick={() => copyToClipboard(userAddress)}
-                            className={'h-5 w-5 text-gray-600 transition hover:text-gray-400'}
+                            className={'h-5 w-5 text-gray-500 transition hover:text-gray-400'}
                           />
                         )}
                         <LinkIcon
                           onClick={() =>
                             window.open(`${network.explorerUrl}/address/${userAddress}`, '_blank')
                           }
-                          className={'h-5 w-5 ml-2 transition text-gray-600 hover:text-gray-400'}
+                          className={'h-5 w-5 ml-2 transition text-gray-500 hover:text-gray-400'}
                         />
                       </span>
                     </div>
@@ -92,7 +92,7 @@ export default function WalletDropdown() {
                   <WalletDropdownListItem>
                     <div onClick={navigateToWallet} className={'flex-row-center justify-between'}>
                       <span>Balance</span>
-                      <ArrowRightIcon className={'ml-2 h-5 text-gray-600'} />
+                      <ArrowRightIcon className={'ml-2 h-5 text-gray-500'} />
                     </div>
                   </WalletDropdownListItem>
                   <HorizontalLineBreak />
@@ -118,7 +118,7 @@ export default function WalletDropdown() {
                   <WalletDropdownListItem>
                     <div className={'flex-row-center justify-between'} onClick={handleDisconnect}>
                       <span>Disconnect</span>
-                      <LogoutIcon className={'ml-2 h-5 text-gray-600'} />
+                      <LogoutIcon className={'ml-2 h-5 text-gray-500'} />
                     </div>
                   </WalletDropdownListItem>
                 </div>

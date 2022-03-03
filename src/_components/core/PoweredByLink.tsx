@@ -14,7 +14,7 @@ export default function PoweredByLink({
       target="_blank"
       rel="noreferrer"
       className={
-        'flex-row-center cursor-pointer bg-gray-100 hover:bg-gray-200 transition rounded-full px-4 py-2'
+        'flex-row-center cursor-pointer shadow-sm bg-gray-100 hover:bg-gray-200 transition rounded-full px-4 py-2'
       }
       href={url}
     >
