@@ -2,7 +2,7 @@ import React from 'react';
 
 export enum ButtonVariant {
   PRIMARY = 'bg-gray-700 text-white hover:bg-gray-600',
-  SECONDARY = 'bg-gray-100 border-gray-150 border-2 text-black hover:bg-gray-200'
+  SECONDARY = 'bg-gray-100 border-gray-150 border text-black hover:bg-gray-200'
   // PRIMARY = 'bg-orange-500 text-white font-extrabold hover:bg-orange-600',
   // SECONDARY = 'bg-gray-100 border-gray-150 border-2 text-black hover:bg-gray-200'
 }

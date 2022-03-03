@@ -48,7 +48,7 @@ export default function WalletDropdown() {
               <div
                 onClick={toggleDropdown}
                 className={
-                  'hidden sm:block rounded-2xl w-full border-gray-100 border-2 px-4 py-2 cursor-pointer hover:border-gray-300 transition'
+                  'hidden sm:block rounded-2xl w-full border-gray-100 border px-4 py-2 cursor-pointer hover:border-gray-300 transition'
                 }
               >
                 {shortenBlockchainAddress(userAddress)}
@@ -59,7 +59,7 @@ export default function WalletDropdown() {
                   src={walletIcon}
                   alt={'a'}
                   className={
-                    'h-11 w-11 -mt-1 cursor-pointer ml-2 rounded-full hover:border-gray-200 border-gray-100 border-2 transition p-2'
+                    'h-11 w-11 -mt-1 cursor-pointer ml-2 rounded-full hover:border-gray-200 border-gray-100 border transition p-2'
                   }
                 />
               </div>
