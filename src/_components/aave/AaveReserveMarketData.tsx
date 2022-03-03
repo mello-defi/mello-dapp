@@ -29,7 +29,7 @@ export default function AaveReserveMarketData({
               alt={reserve.name}
             />
           )}
-          <span className={'ml-2 text-title flex flex-row items-center'}>
+          <span className={'ml-2 text-body flex flex-row items-center'}>
             <div>{reserve.name}</div>
             <div>
               {/*<LightBulbIcon*/}
@@ -44,7 +44,7 @@ export default function AaveReserveMarketData({
 
       <div className={'flex-row-center w-full sm:w-auto justify-between mt-2 sm:mt-0'}>
         <div className={'flex flex-col text-left sm:text-center'}>
-          <span className={'text-title font-mono'}>
+          <span className={'text-body font-mono'}>
             {(
               parseFloat(
                 aaveSection === AaveSection.Deposit ? reserve.supplyAPY : reserve.variableBorrowAPY
@@ -52,7 +52,7 @@ export default function AaveReserveMarketData({
             ).toFixed(2)}
             %
           </span>
-          <span className={'text-title-tab-bar text-gray-500'}>
+          <span className={'text-body-smaller text-gray-500'}>
             {aaveSection === AaveSection.Deposit ? 'Projected' : 'Variable'} APY
           </span>
         </div>

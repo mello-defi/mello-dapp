@@ -61,35 +61,15 @@
   /*  @apply text-xl font-semibold !important;*/
   /*}*/
   .text-header {
-    @apply text-xl tracking-tight;
+    @apply text-xl tracking-tight text-gray-700;
   }
 
-  .text-title {
-    @apply text-lg tracking-tight;
+  .text-body {
+    @apply text-lg tracking-tight text-gray-700;
   }
 
-  .bg-light {
-    @apply bg-white dark:bg-black;
-  }
-
-  .text-light {
-    @apply text-white dark:text-black;
-  }
-
-  .text-dark {
-    @apply text-black dark:text-white;
-  }
-
-  .text-light-hover {
-    @apply text-white hover:text-gray-200 dark:text-black dark:hover:text-gray-500 cursor-pointer transition;
-  }
-
-  .text-dark-hover {
-    @apply text-black hover:text-gray-500 dark:text-white dark:hover:text-gray-200 cursor-pointer transition;
-  }
-
-  .text-title-tab-bar {
-    @apply text-sm tracking-tight;
+  .text-body-smaller {
+    @apply text-sm tracking-tight text-gray-700;
   }
 
   .text-main-body {

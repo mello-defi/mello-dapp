@@ -116,7 +116,7 @@ export default function SendCrypto() {
         amountInFiat={amountInFiat}
       />
       <div className="my-2">
-        <label htmlFor="large-input" className={'mb-2 text-title-tab-bar my-2 px-1'}>
+        <label htmlFor="large-input" className={'mb-2 text-body-smaller my-2 px-1'}>
           Destination address
         </label>
         <input

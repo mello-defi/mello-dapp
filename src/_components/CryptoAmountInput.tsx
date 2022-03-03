@@ -58,7 +58,7 @@ export default function CryptoAmountInput({
   return (
     <div
       className={
-        'rounded-2xl text-title-tab-bar transition border border-gray-50 bg-gray-100 px-2 sm:px-4 flex flex-col items-center justify-between hover:border-gray-200 transition mt-2'
+        'rounded-2xl text-body-smaller transition border border-gray-50 bg-gray-100 px-2 sm:px-4 flex flex-col items-center justify-between hover:border-gray-200 transition mt-2'
       }
     >
       <div
@@ -73,7 +73,7 @@ export default function CryptoAmountInput({
             disabled={disabled}
             // style={{fontFamily: 'monospace'}}
             className={`text-2xl font-mono sm:text-3xl bg-gray-100 focus:outline-none px-2 sm:px-0 mt-2 sm:mt-0 py-1 sm:py-0 ${
-              parseFloat(amount) === 0 ? 'text-gray-400' : ''
+              parseFloat(amount) === 0 ? 'text-gray-400' : 'text-gray-700'
             }`}
             // value={Number(amount).toString() === '0' ? '0.0' : Number(amount).toString()}
             // value={Number(amount).toString()}
@@ -117,7 +117,7 @@ export default function CryptoAmountInput({
                   amountChanged(ethers.utils.formatUnits(userBalance, token?.decimals));
                 }}
                 className={
-                  'rounded-2xl text-title-tab-bar px-2 py-1 bg-gray-200 hover:bg-gray-300  transition  ml-1 flex-row-center my-auto cursor-pointer'
+                  'rounded-2xl text-body-smaller px-2 py-1 bg-gray-200 hover:bg-gray-300  transition  ml-1 flex-row-center my-auto cursor-pointer'
                 }
               >
                 Max

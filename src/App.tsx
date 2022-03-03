@@ -24,7 +24,7 @@ function EthereumMainnetGuard() {
   return (
     <div className={'flex flex-col items-center justify-center'}>
       <div className={'flex flex-col items-center justify-center'}>
-        <span className={'text-title'}>Please switch to Polygon network</span>
+        <span className={'text-body'}>Please switch to Polygon network</span>
         <Button
           onClick={() => changeNetwork(evmNetworks.polygonMainnet)}
           variant={ButtonVariant.SECONDARY}
@@ -80,7 +80,7 @@ function LoginGuard() {
   return (
     <div className={'flex flex-col items-center justify-center h-40'}>
       <div className={'flex flex-col items-center justify-center'}>
-        <span className={'text-title'}>Please connect your wallet</span>
+        <span className={'text-body'}>Please connect your wallet</span>
       </div>
     </div>
   );

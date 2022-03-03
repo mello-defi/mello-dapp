@@ -13,7 +13,7 @@ export default function TransactionError({ transactionError }: { transactionErro
           <div className={'mr-4'}>
             <ExclamationCircleIcon className={'text-white h-8 w-8'} />
           </div>
-          <span className={'flex-row-center text-title'}>{transactionError}</span>
+          <span className={'flex-row-center text-body'}>{transactionError}</span>
         </div>
       )}
     </>

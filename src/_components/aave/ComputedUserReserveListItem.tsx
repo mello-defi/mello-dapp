@@ -26,13 +26,13 @@ export default function ComputedUserReserveListItem({
           src={findTokenByAddress(tokenSet, reserveAddress).image}
           className={'w-5 h-5'}
         />
-        <span className={'ml-2 text-title-tab-bar'}>
+        <span className={'ml-2 text-body-smaller'}>
           {findTokenByAddress(tokenSet, reserveAddress).symbol}
         </span>
       </div>
       <div className={'flex flex-col font-mono'}>
         {marketPrices && (
-          <span className={'text-title-tab-bar'}>
+          <span className={'text-body-smaller'}>
             {parseFloat(reserveAmount).toFixed(5)}
             <span className={'ml-1 text-gray-500'}>
               ({getFiatValueForUserReserve(marketPrices, reserveAmount, reserveSymbol)})

@@ -204,7 +204,7 @@ function RenBridge() {
               target="_blank"
               href={transactionExplorerLink}
               className={
-                'flex text-title-tab-bar px-2 py-1 ml-2 cursor-pointer rounded-full bg-gray-200'
+                'flex text-body-smaller px-2 py-1 ml-2 cursor-pointer rounded-full bg-gray-200'
               }
               rel="noreferrer"
             >

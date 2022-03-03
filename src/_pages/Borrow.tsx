@@ -84,7 +84,7 @@ export default function Borrow() {
             );
           })}
       </div>
-      <span className={'text-title flex-row-center justify-between'}>
+      <span className={'text-body flex-row-center justify-between'}>
         <span>Available to borrow</span>
         <span className={"font-mono"}>
           {userSummaryData &&

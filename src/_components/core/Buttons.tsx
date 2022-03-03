@@ -8,7 +8,7 @@ export enum ButtonVariant {
 }
 
 export enum ButtonSize {
-  SMALL = 'px-3 py-1 rounded-md',
+  SMALL = 'px-3 py-1 rounded-xl',
   MEDIUM = 'px-6 py-3.5 rounded-2xl',
   LARGE = 'px-8 py-4 rounded-2xl'
 }

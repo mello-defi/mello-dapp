@@ -171,10 +171,10 @@ export default function EthereumToPolygonBridge() {
       {depositAddress && (
         <div className={'flex flex-col'}>
           <div className={'flex flex-row justify-between'}>
-            <span className={'text-title'}>Bridge ETH</span>
+            <span className={'text-body'}>Bridge ETH</span>
             <PoweredByLink url={'https://hyphen.biconomy.io/'} logo={hyphenLogo} isRound={false} />
           </div>
-          <span className={'text-title'}>How much ETH do you want to deposit?</span>
+          <span className={'text-body'}>How much ETH do you want to deposit?</span>
           <div
             className={
               'rounded-2xl transition border-2 py-2 border-gray-50 bg-gray-50 px-2 sm:px-4 flex flex-row items-center justify-between hover:border-gray-100 transition mt-2'

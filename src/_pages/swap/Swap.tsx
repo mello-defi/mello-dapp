@@ -25,6 +25,7 @@ import { paraswapLogo } from '_assets/images';
 import { BigNumber, ethers } from 'ethers';
 import { getGasPrice } from '_services/gasService';
 import SwapPriceInformation from '_pages/swap/SwapPriceInformation';
+import useWalletBalance from '_hooks/useWalletBalance';
 
 export default function Swap() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -33,6 +34,7 @@ export default function Swap() {
   const tokens = useSelector((state: AppState) => state.web3.tokenSet);
   const [fetchingPriceError, setFetchingPriceError] = useState('');
   const [sourceToken, setSourceToken] = useState<TokenDefinition>(Object.values(tokens)[0]);
+  const sourceTokenBalance = useWalletBalance(sourceToken);
   const [destinationToken, setDestinationToken] = useState<TokenDefinition>(
     Object.values(tokens)[1]
   );
@@ -61,7 +63,7 @@ export default function Swap() {
     srcToken: TokenDefinition,
     destToken: TokenDefinition
   ) => {
-    if (destToken && amount && parseFloat(amount) > 0) {
+    if (destToken && amount && parseFloat(amount) > 0 && srcToken.symbol !== destToken.symbol) {
       setFetchingPriceError('');
       try {
         setDestinationTokenDisabled(true);
@@ -215,7 +217,9 @@ export default function Swap() {
           sourceToken === undefined ||
           destinationToken === undefined ||
           sourceTokenDisabled ||
-          destinationTokenDisabled
+          destinationTokenDisabled ||
+          sourceToken.symbol === destinationToken.symbol ||
+          sourceTokenBalance && sourceToken.isGasToken && ethers.utils.parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance)
         }
         onClick={handleSwap}
         className={'w-full mt-2 flex-row-center justify-center'}
@@ -224,9 +228,9 @@ export default function Swap() {
       >
         {isSwapping ? 'Swapping...' : ''}
         {isApproving ? 'Approving...' : ''}
-        {!isSwapping && !isApproving ? 'Swap' : ''}
+        {!isSwapping && !isApproving ? sourceTokenBalance && sourceToken && sourceToken.isGasToken && ethers.utils.parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance) ? 'You cannot swap all of your gas token' : 'Swap' : ''}
       </Button>
-      <div className={'text-title px-2 my-2'}>
+      <div className={'text-body px-2 my-2'}>
         {(isSwapping || swapConfirmed) && (
           <div>
             <TransactionStep
