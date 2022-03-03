@@ -12,7 +12,7 @@ export default function TransactionAmountSummary({
 }) {
   return (
     <span
-      className={`my-1 bg-gray-100 w-full px-2 py-2 rounded-xl ${
+      className={`my-1 bg-gray-100 w-full px-2 py-2 rounded-2xl ${
         parseFloat(amount) === 0 ? 'text-gray-400' : ''
       }`}
     >

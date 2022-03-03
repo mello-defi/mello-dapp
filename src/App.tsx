@@ -105,10 +105,10 @@ function App() {
         <div className={'flex-grow'}>
           <div
             className={
-              'mx-2 md:mx-auto md:w-full bg-gray-50 flex flex-col max-w-2xl rounded-xl shadow-xl mb-2'
+              'mx-2 md:mx-auto md:w-full bg-gray-50 flex flex-col max-w-2xl rounded-2xl shadow-xl mb-2'
             }
           >
-            <div className={'rounded-xl py-4 px-2 sm:px-4'}>
+            <div className={'rounded-2xl py-4 px-2 sm:px-4'}>
               {tabsContent.map((tab) => {
                 return (
                   <DefaultTransition key={tab.tab} isOpen={activeTab === tab.tab}>

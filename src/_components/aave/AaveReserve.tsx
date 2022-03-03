@@ -192,7 +192,7 @@ export default function AaveReserve({
   return (
     <>
       {marketPrices && (
-        <div className={'bg-white rounded-xl px-4 py-4 mb-2 border-2 -mx-1 border-gray-50'}>
+        <div className={'bg-white rounded-2xl px-4 py-4 mb-2 border-2 -mx-1 border-gray-50'}>
           <div className={'flex-row-center justify-between'}>
             <AaveReserveMarketData reserve={reserve} aaveSection={aaveSection} />
             {aaveSection === AaveSection.Borrow && (

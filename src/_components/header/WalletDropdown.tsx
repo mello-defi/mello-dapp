@@ -65,7 +65,7 @@ export default function WalletDropdown() {
               </div>
             </div>
             <DefaultTransition isOpen={dropdownOpen}>
-              <div className="absolute mt-1 w-80 right-0 z-10 rounded-xl bg-white shadow-lg px-2">
+              <div className="absolute mt-1 w-80 right-0 z-10 rounded-2xl bg-white shadow-lg px-2">
                 <div className={'flex flex-col px-4 py-2'}>
                   <WalletDropdownListItem>
                     <div className={'flex-row-center justify-between'}>
