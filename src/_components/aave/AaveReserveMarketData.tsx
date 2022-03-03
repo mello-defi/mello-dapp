@@ -1,5 +1,4 @@
 import { ComputedReserveData } from '@aave/protocol-js';
-import { LightBulbIcon } from '@heroicons/react/solid';
 import React from 'react';
 import { findTokenByAddress } from '_enums/tokens';
 import { useSelector } from 'react-redux';

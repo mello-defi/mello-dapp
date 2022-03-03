@@ -3,12 +3,12 @@ import { useSelector } from 'react-redux';
 import { TokenDefinition } from '_enums/tokens';
 import React, { useState } from 'react';
 import { Button } from '_components/core/Buttons';
-import { InboxInIcon, PaperAirplaneIcon } from '@heroicons/react/solid';
 import { DefaultTransition } from '_components/core/Transition';
 import WalletBalance from '_pages/wallet/WalletBalance';
 import ReceiveCrypto from '_pages/wallet/ReceiveCrypto';
 import SendCrypto from '_pages/wallet/SendCrypto';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
+import { MoveToInbox, Send } from '@mui/icons-material';
 
 export enum WalletPageTab {
   RECEIVE = 'Receive',
@@ -61,14 +61,14 @@ export default function Wallet() {
         }
       >
         <WalletActionButton
-          icon={<PaperAirplaneIcon className={'mr-2 h-5 w-5'} />}
+          icon={<Send className={'mr-2 h-5 w-5'} />}
           text={'Send'}
           walletPageTab={WalletPageTab.SEND}
           selectedWalletPageTab={walletPageTab}
           onClick={handleWalletPageTabClick}
         />
         <WalletActionButton
-          icon={<InboxInIcon className={'mr-2 h-5 w-5'} />}
+          icon={<MoveToInbox className={'mr-2 h-5 w-5'} />}
           text={'Receive'}
           walletPageTab={WalletPageTab.RECEIVE}
           selectedWalletPageTab={walletPageTab}

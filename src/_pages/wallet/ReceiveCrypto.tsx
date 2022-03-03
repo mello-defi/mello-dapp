@@ -1,10 +1,9 @@
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { useState } from 'react';
-import { ClipboardCopyIcon } from '@heroicons/react/outline';
 import { Button } from '_components/core/Buttons';
-import { QrcodeIcon } from '@heroicons/react/solid';
 import { DefaultTransition } from '_components/core/Transition';
+import QrCodeOutlinedIcon from '@mui/icons-material/QrCodeOutlined';
 import QRCode from 'react-qr-code';
 
 export default function ReceiveCrypto() {
@@ -33,7 +32,7 @@ export default function ReceiveCrypto() {
           Display address
         </Button>
         <Button onClick={toggleShowQrCode} className={'flex-row-center w-full md:w-1/2 justify-center'}>
-          <QrcodeIcon className={'h-5 w-5'} />
+          <QrCodeOutlinedIcon className={'h-5 w-5'} />
           Display QR Code
         </Button>
       </div>

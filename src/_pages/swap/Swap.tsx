@@ -15,7 +15,6 @@ import {
 } from '_services/paraSwapService';
 import { executeEthTransaction } from '_services/walletService';
 import { TransactionStep } from '_components/transactions/TransactionStep';
-import { SwitchVerticalIcon } from '@heroicons/react/outline';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
 import CryptoAmountInput from '_components/CryptoAmountInput';
@@ -26,6 +25,8 @@ import { BigNumber, ethers } from 'ethers';
 import { getGasPrice } from '_services/gasService';
 import SwapPriceInformation from '_pages/swap/SwapPriceInformation';
 import useWalletBalance from '_hooks/useWalletBalance';
+import SlippageControl from '_pages/swap/SlippageControl';
+import { SwapVert } from '@mui/icons-material';
 
 export default function Swap() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -47,6 +48,7 @@ export default function Swap() {
   const [fetchingPrices, setFetchingPrices] = useState<boolean>(false);
   const [approvalTransactionHash, setApprovalTransactionHAsh] = useState<string>('');
   const [swapTransactionHash, setSwapTransactionHash] = useState<string>('');
+  const [slippage, setSlippage] = useState<number>(0);
   const [transactionError, setTransactionError] = useState<string>('');
   const [priceRoute, setPriceRoute] = useState<OptimalRate>();
   const [isApproving, setIsApproving] = useState<boolean>(false);
@@ -188,7 +190,7 @@ export default function Swap() {
             onClick={swapSourceDestination}
             className={'z-20 opacity-95 bg-gray-400 rounded-full p-2 mt-2'}
           >
-            <SwitchVerticalIcon className={'h-4 w-4'} />
+            <SwapVert className={'h-4 w-4'} />
           </Button>
         </div>
       </div>
@@ -202,6 +204,7 @@ export default function Swap() {
         // source={SwapSide.BUY}
       />
       <TransactionError transactionError={fetchingPriceError} />
+      <SlippageControl slippage={slippage}/>
       <SwapPriceInformation
         fetchingPrices={fetchingPrices}
         destinationToken={destinationToken}

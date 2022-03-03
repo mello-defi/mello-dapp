@@ -2,6 +2,7 @@ import React from 'react';
 import { ethers } from 'ethers';
 import { TokenDefinition } from '_enums/tokens';
 import { OptimalRate } from 'paraswap-core';
+import { EvStation } from '@mui/icons-material';
 
 export default function SwapPriceInformation({
   fetchingPrices,
@@ -46,11 +47,12 @@ export default function SwapPriceInformation({
           <div>
             {priceRoute && (
               <div>
-                <span className={'ml-2'}>
+                <span className={'ml-2 flex-row-center'}>
                   Gas fees:{' '}
-                  <span className={'font-mono'}>
+                  <span className={'font-mono ml-1'}>
                     ~${parseFloat(priceRoute.gasCostUSD).toFixed(2)}
                   </span>
+                  <EvStation className={"h-5"}/>
                 </span>
               </div>
             )}

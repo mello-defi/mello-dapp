@@ -5,11 +5,15 @@ import { setActiveTab } from '_redux/effects/uiEffects';
 import { NavTab } from '_redux/types/uiTypes';
 import { walletIcon } from '_assets/images';
 import { DefaultTransition } from '_components/core/Transition';
-import { ArrowRightIcon, ClipboardCheckIcon, LinkIcon, LogoutIcon } from '@heroicons/react/solid';
-import { ClipboardCopyIcon } from '@heroicons/react/outline';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { shortenBlockchainAddress } from '_utils/index';
 import { disconnect } from '_redux/effects/web3Effects';
+import {
+  AssignmentTurnedInOutlined,
+  ChevronRightOutlined,
+  ContentCopyOutlined, Link,
+  LogoutOutlined
+} from '@mui/icons-material';
 
 function WalletDropdownListItem({ children }: { children: any }) {
   return <div className={'py-2 cursor-pointer'}>{children}</div>;
@@ -72,14 +76,14 @@ export default function WalletDropdown() {
                       <span>{shortenBlockchainAddress(userAddress)}</span>
                       <span className={'flex-row-center'}>
                         {copied ? (
-                          <ClipboardCheckIcon className={'h-5 w-5 text-color-light'} />
+                          <AssignmentTurnedInOutlined className={'h-5 w-5 text-color-light'} />
                         ) : (
-                          <ClipboardCopyIcon
+                          <ContentCopyOutlined
                             onClick={() => copyToClipboard(userAddress)}
                             className={'h-5 w-5 text-color-light transition hover:text-gray-400'}
                           />
                         )}
-                        <LinkIcon
+                        <Link
                           onClick={() =>
                             window.open(`${network.explorerUrl}/address/${userAddress}`, '_blank')
                           }
@@ -92,7 +96,7 @@ export default function WalletDropdown() {
                   <WalletDropdownListItem>
                     <div onClick={navigateToWallet} className={'flex-row-center justify-between'}>
                       <span>Balance</span>
-                      <ArrowRightIcon className={'ml-2 h-5 text-color-light'} />
+                      <ChevronRightOutlined className={'ml-2 h-5 text-color-light'} />
                     </div>
                   </WalletDropdownListItem>
                   <HorizontalLineBreak />
@@ -118,7 +122,7 @@ export default function WalletDropdown() {
                   <WalletDropdownListItem>
                     <div className={'flex-row-center justify-between'} onClick={handleDisconnect}>
                       <span>Disconnect</span>
-                      <LogoutIcon className={'ml-2 h-5 text-color-light'} />
+                      <LogoutOutlined className={'ml-2 h-5 text-color-light'} />
                     </div>
                   </WalletDropdownListItem>
                 </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExclamationCircleIcon } from '@heroicons/react/solid';
+import { ErrorOutlineOutlined } from '@mui/icons-material';
 
 export default function TransactionError({ transactionError }: { transactionError: string }) {
   return (
@@ -11,7 +11,7 @@ export default function TransactionError({ transactionError }: { transactionErro
           }
         >
           <div className={'mr-4'}>
-            <ExclamationCircleIcon className={'text-white h-8 w-8'} />
+            <ErrorOutlineOutlined className={'text-white h-8 w-8'} />
           </div>
           <span className={'flex-row-center text-body'}>{transactionError}</span>
         </div>

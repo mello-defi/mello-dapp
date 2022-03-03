@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import { XIcon } from '@heroicons/react/solid';
 import { toggleSidebar } from '_redux/effects/uiEffects';
 import React from 'react';
 import NavLink from '_components/NavLink';
 import { melloLogoFace } from '_assets/images';
 import { NavLinkDefinition } from '_redux/types/uiTypes';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
+import { Close } from '@mui/icons-material';
 
 export default function Sidebar() {
   const isOpen = useSelector((state: AppState) => state.ui.sidebarOpen);
@@ -21,7 +21,7 @@ export default function Sidebar() {
       <div className={'mx-4'}>
         <div className={'my-2 flex-row-center justify-between px-2'}>
           <img src={melloLogoFace} alt={'mello'} className={'h-16'} />
-          <XIcon
+          <Close
             className={'cursor-pointer h-7 w-7 transition hover:text-gray-400'}
             onClick={() => dispatch(toggleSidebar(false))}
           />

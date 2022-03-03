@@ -1,9 +1,9 @@
 import { TokenDefinition } from '_enums/tokens';
 import React, { useState } from 'react';
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
 import { DefaultTransition } from '_components/core/Transition';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
+import { Check, ExpandLess, ExpandMore } from '@mui/icons-material';
 
 export default function TokenSelectDropdown({
   selectedToken,
@@ -42,9 +42,9 @@ export default function TokenSelectDropdown({
           )}
           <span className="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
             {dropdownOpen ? (
-              <ChevronUpIcon className="-mr-1 ml-2 h-5 w-5" />
+              <ExpandLess className="-mr-1 ml-2 h-5 w-5" />
             ) : (
-              <ChevronDownIcon className="-mr-1 ml-2 h-5 w-5" />
+              <ExpandMore className="-mr-1 ml-2 h-5 w-5" />
             )}
           </span>
         </button>
@@ -82,7 +82,7 @@ export default function TokenSelectDropdown({
                           </div>
                         </div>
                         {token.address === selectedToken?.address && (
-                          <CheckIcon className="h-5 w-5" />
+                          <Check className="h-5 w-5" />
                         )}
                       </div>
                     </div>

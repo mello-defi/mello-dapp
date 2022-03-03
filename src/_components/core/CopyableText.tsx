@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { ClipboardCheckIcon } from '@heroicons/react/solid';
-import { ClipboardCopyIcon } from '@heroicons/react/outline';
-
+import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
+import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
 export default function CopyableText({
   text,
   textSize = 'text-title'
@@ -21,9 +20,9 @@ export default function CopyableText({
     >
       {text}
       {copied ? (
-        <ClipboardCheckIcon className={`ml-2 text-green-500 h-7 w-7`} />
+        <AssignmentTurnedInOutlinedIcon className={`ml-2 text-green-500 h-7 w-7`} />
       ) : (
-        <ClipboardCopyIcon className={'ml-2 text-color-light h-7 w-7'} />
+        <ContentCopyOutlinedIcon className={'ml-2 text-color-light h-7 w-7'} />
       )}
     </div>
   );

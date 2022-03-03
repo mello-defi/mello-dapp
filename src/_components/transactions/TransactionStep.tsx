@@ -1,7 +1,7 @@
 import { Spinner, SpinnerSize } from '_components/core/Animations';
 import React from 'react';
-import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/solid';
 import { TransactionTransition } from '_components/transactions/TransactionTransition';
+import { CheckCircleOutlineOutlined, ErrorOutlineOutlined } from '@mui/icons-material';
 
 export function TransactionStep({
   show,
@@ -26,11 +26,11 @@ export function TransactionStep({
         >
           <div className={'mr-4'}>
             {transactionError ? (
-              <ExclamationCircleIcon className={'text-red-400 h-8 w-8'} />
+              <ErrorOutlineOutlined className={'text-red-400 h-8 w-8'} />
             ) : (
               <>
                 {stepComplete ? (
-                  <CheckCircleIcon className={'text-green-400 h-8 w-8'} />
+                  <CheckCircleOutlineOutlined className={'text-green-400 h-8 w-8'} />
                 ) : (
                   <div className={'ml-1.5'}>
                     <Spinner show={!stepComplete} size={SpinnerSize.SMALL} />
