@@ -21,16 +21,16 @@ export function TransactionStep({
       {show && (
         <div
           className={
-            'flex flex-row my-4 md:my-2 items-center rounded-full shadow-sm bg-white px-4 py-2'
+            'flex flex-row my-1 md:my-2 items-center rounded-full shadow-sm bg-white px-4 py-2'
           }
         >
-          <div className={'mr-4'}>
+          <div className={'mr-4 text-3xl'}>
             {transactionError ? (
-              <ErrorOutlineOutlined className={'text-red-200 h-8 w-8'} />
+              <ErrorOutlineOutlined className={'text-red-400 mb-0.5'} fontSize={'inherit'} />
             ) : (
               <>
                 {stepComplete ? (
-                  <CheckCircleOutlineOutlined className={'text-green-400 h-8 w-8'} />
+                  <CheckCircleOutlineOutlined className={'text-green-400'} fontSize={'inherit'} />
                 ) : (
                   <div className={'ml-1.5'}>
                     <Spinner show={!stepComplete} size={SpinnerSize.SMALL} />
