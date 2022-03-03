@@ -11,6 +11,8 @@ import { findTokenByAddress } from '_enums/tokens';
 import { AaveSection } from '_enums/aave';
 import AaveReserve from '_components/aave/AaveReserve';
 import CurrentHealthFactor from '_components/aave/CurrentHealthFactor';
+import UserReservesSkeleton from '_components/aave/UserReservesSkeleton';
+import AaveReservesSkeleton from '_components/aave/AaveReservesSkeleton';
 
 export default function Deposit() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -36,12 +38,12 @@ export default function Deposit() {
 
   return (
     <div className={'space-y-2'}>
-      {userSummaryData && userSummaryData.reservesData && userSummaryData.reservesData.length > 0 && (
+      <div className={'flex-row-center justify-between mb-2'}>
+        <span className={'text-header'}>My deposits</span>
+        <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
+      </div>
+      {userSummaryData && userSummaryData.reservesData && userSummaryData.reservesData.length > 0 ? (
         <div>
-          <div className={'flex-row-center justify-between mb-2'}>
-            <span className={'text-header'}>My deposits</span>
-            <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
-          </div>
           {userSummaryData.reservesData
             .filter(
               (reserve: ComputedUserReserve) =>
@@ -60,9 +62,11 @@ export default function Deposit() {
               );
             })}
         </div>
+      ) : (
+        <UserReservesSkeleton />
       )}
       {userSummaryData && <CurrentHealthFactor healthFactor={userSummaryData.healthFactor} />}
-      {userSummaryData &&
+      {userSummaryData ?
         computedReserves?.map((reserve: ComputedReserveData) => {
           return (
             // <></>
@@ -77,7 +81,9 @@ export default function Deposit() {
               )}
             />
           );
-        })}
+        }): (
+          <AaveReservesSkeleton />
+        )}
     </div>
   );
 }
