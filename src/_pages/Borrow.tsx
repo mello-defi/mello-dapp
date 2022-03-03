@@ -86,7 +86,7 @@ export default function Borrow() {
       </div>
       <span className={'text-title flex-row-center justify-between'}>
         <span>Available to borrow</span>
-        <span>
+        <span className={"font-mono"}>
           {userSummaryData &&
             ethPrice &&
             formatTokenValueInFiat(ethPrice, userSummaryData?.availableBorrowsETH)}

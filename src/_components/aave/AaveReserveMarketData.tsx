@@ -44,7 +44,7 @@ export default function AaveReserveMarketData({
 
       <div className={'flex-row-center w-full sm:w-auto justify-between mt-2 sm:mt-0'}>
         <div className={'flex flex-col text-left sm:text-center'}>
-          <span className={'text-title'}>
+          <span className={'text-title font-mono'}>
             {(
               parseFloat(
                 aaveSection === AaveSection.Deposit ? reserve.supplyAPY : reserve.variableBorrowAPY

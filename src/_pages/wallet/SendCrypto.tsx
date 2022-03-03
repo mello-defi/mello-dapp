@@ -90,6 +90,7 @@ export default function SendCrypto() {
           token,
           signer,
           userAddress,
+          destinationAddress,
           ethers.utils.parseUnits(amountToSend, token.decimals)
         );
         setSendTransactionHash(txResponse.hash);
@@ -134,14 +135,18 @@ export default function SendCrypto() {
           !token ||
           !amountToSend ||
           parseFloat(amountToSend) === 0 ||
-          (walletBalance && ethers.utils.parseUnits(amountToSend, token.decimals).gt(walletBalance))
+          (walletBalance &&
+            (ethers.utils.parseUnits(amountToSend, token.decimals).gt(walletBalance) ||
+            (token.isGasToken && ethers.utils.parseUnits(amountToSend, token.decimals).eq(walletBalance)))
+          )
         }
         size={ButtonSize.LARGE}
         onClick={sendCrypto}
       >
         {destinationAddress.length > 0 && !ethers.utils.isAddress(destinationAddress)
           ? 'Invalid address'
-          : 'Send'}
+          : token && walletBalance && token.isGasToken && ethers.utils.parseUnits(amountToSend, token.decimals).eq(walletBalance)
+            ? 'You cannot send all of your gas token' : 'Send'}
       </Button>
       {(transactionSubmitting || transactionCompleted || transactionError) && (
         <>

@@ -17,6 +17,7 @@ export async function sendErc20Token(
   token: TokenDefinition,
   signer: ethers.Signer,
   userAddress: string,
+  destinationAddress: string,
   amount: BigNumber,
   gasPrice?: BigNumber
 ): Promise<TransactionResponse> {
@@ -25,7 +26,7 @@ export async function sendErc20Token(
   if (gasPrice) {
     options.gasPrice = gasPrice.toString();
   }
-  return newContract.transferFrom(userAddress, userAddress, amount.toString(), options);
+  return newContract.transferFrom(userAddress, destinationAddress, amount.toString(), options);
 }
 
 export async function getTokenAllowance(
@@ -34,7 +35,7 @@ export async function getTokenAllowance(
   userAddress: string
 ): Promise<BigNumber> {
   const contract = new ethers.Contract(token.address, token.abi, provider);
-  return contract.allowance(userAddress, contract.address);
+  return contract.allowance(contract.address, userAddress);
 }
 
 export async function approveToken(

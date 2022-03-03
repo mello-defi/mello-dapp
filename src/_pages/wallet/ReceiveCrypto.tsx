@@ -23,29 +23,21 @@ export default function ReceiveCrypto() {
   };
 
   return (
-    <div className={'space-y-2'}>
-      <div className={'flex flex-col md:flex-row justify-between'}>
-        <span className={'text-title'}>Copy your wallet address by clicking the button below</span>
-        <span className={'text-title text-gray-600'}>
-          Address {!addressCopied ? ' not ' : ''} copied{' '}
-          <span className={'ml-1'}>{addressCopied ? '✅' : '☑️'}</span>
-        </span>
-      </div>
-      <div
-        onClick={copyToClipboard}
-        className={
-          'flex-row-center text-title bg-gray-100 hover:bg-gray-200 transition justify-center rounded-2xl px-4 py-2 w-full mx-auto cursor-pointer'
-        }
-      >
-        {userAddress}
-        <ClipboardCopyIcon className={'ml-2 text-gray-500 h-7 w-7'} />
-      </div>
-      <div className={'flex flex-col items-center'}>
-        <span className={'text-title'}>Or</span>
-        <Button onClick={toggleShowQrCode} className={'flex-row-center justify-center'}>
-          <QrcodeIcon className={'h-6 w-6'} />
+    <div className={''}>
+      {/*<div className={""}*/}
+      <div className={'flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 space-x-0 md:space-x-2'}>
+        <Button
+          className={"w-full md:w-1/2"}
+          onClick={copyToClipboard}
+          disabled={!userAddress}>
+          Display address
+        </Button>
+        <Button onClick={toggleShowQrCode} className={'flex-row-center w-full md:w-1/2 justify-center'}>
+          <QrcodeIcon className={'h-5 w-5'} />
           Display QR Code
         </Button>
+      </div>
+      <div className={"flex flex-col items-center"}>
         {userAddress && (
           <DefaultTransition isOpen={showQrCode}>
             <div className={'mt-2'}>

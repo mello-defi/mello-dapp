@@ -39,7 +39,7 @@ export function TransactionStep({
               </>
             )}
           </div>
-          <span className={'flex-row-center text-title'}>{children}</span>
+          <span className={'flex-row-center my-2 text-title'}>{children}</span>
         </div>
       )}
       {((transactionError && transactionError.length > 0) || (showTransition && stepComplete)) && (
