@@ -7,7 +7,7 @@ import { MarketDataResult } from '_services/marketDataService';
 import { BigNumber, ethers } from 'ethers';
 import { Button, ButtonSize } from '_components/core/Buttons';
 import useWalletBalance from '_hooks/useWalletBalance';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { TransactionStep } from '_components/transactions/TransactionStep';
@@ -16,6 +16,8 @@ import TransactionError from '_components/transactions/TransactionError';
 import { EthereumTransactionError } from '_interfaces/errors';
 import { approveToken, getTokenAllowance, sendErc20Token } from '_services/walletService';
 import { getGasPrice } from '_services/gasService';
+import { toggleBalancesAreStaleAction } from '_redux/actions/walletActions';
+import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 
 export default function SendCrypto() {
   const marketPrices = useMarketPrices();
@@ -60,6 +62,7 @@ export default function SendCrypto() {
     updateMarketPrice();
   }, [amountToSend, token]);
 
+  const dispatch = useDispatch();
   const sendCrypto = async () => {
     if (signer && token && userAddress && provider) {
       try {
@@ -96,6 +99,7 @@ export default function SendCrypto() {
         setSendTransactionHash(txResponse.hash);
         await txResponse.wait(1);
         setTransactionCompleted(true);
+        dispatch(toggleBalancesAreStale(true))
       } catch (e: any) {
         const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
         setTransactionError(

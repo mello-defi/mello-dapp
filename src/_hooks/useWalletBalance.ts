@@ -14,6 +14,7 @@ const fetching: FetchingStuff = {};
 const useWalletBalance = (token?: TokenDefinition) => {
   const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
+  const balancesAreStale = useSelector((state: AppState) => state.wallet.balancesAreStale);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const walletBalances = useSelector((state: AppState) => state.wallet.balances);
   const [userBalance, setUserBalance] = useState<BigNumber>();
@@ -21,14 +22,14 @@ const useWalletBalance = (token?: TokenDefinition) => {
   useEffect(() => {
     if (token && provider && userAddress) {
       if (
-        !walletBalances[token.symbol] &&
-        (!(token.symbol in fetching) || !fetching[token.symbol])
+        balancesAreStale ||
+        (!walletBalances[token.symbol] &&
+        (!(token.symbol in fetching) || !fetching[token.symbol]))
       ) {
         fetching[token.symbol] = true;
-        dispatch(getBalanceForToken(token, provider, userAddress));
+        dispatch(getBalanceForToken(token, provider, userAddress, balancesAreStale));
       } else {
         const tokenBalance = walletBalances[token.symbol];
-        // console.log('tokenBalance', tokenBalance, token.symbol);
         if (tokenBalance) {
           setUserBalance(tokenBalance);
         }
@@ -38,7 +39,9 @@ const useWalletBalance = (token?: TokenDefinition) => {
     // // return () => {
     //   // cleanup
     // };
-  }, [walletBalances, token, userAddress]);
+  }, [walletBalances, token, userAddress, balancesAreStale]);
+
+
 
   return userBalance;
 };

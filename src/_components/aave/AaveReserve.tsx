@@ -19,7 +19,7 @@ import {
   runAaveActionTransaction,
   runAaveApprovalTransaction
 } from '_services/aaveService';
-import { getBalanceForToken } from '_redux/effects/walletEffects';
+import { getBalanceForToken, toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import useWalletBalance from '_hooks/useWalletBalance';
 import { TokenDefinition } from '_enums/tokens';
 import useMarketPrices from '_hooks/useMarketPrices';
@@ -129,6 +129,7 @@ export default function AaveReserve({
         await runAaveTransactions(provider, transactions);
         setAmount('0.0');
         setTransactionInProgress(false);
+        dispatch(toggleBalancesAreStale(true))
       } catch (e: any) {
         const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
         setTransactionError(

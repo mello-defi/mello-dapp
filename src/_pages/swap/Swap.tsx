@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import React, { useCallback, useState } from 'react';
 import { TokenDefinition } from '_enums/tokens';
@@ -28,6 +28,7 @@ import useWalletBalance from '_hooks/useWalletBalance';
 import SlippageControl from '_pages/swap/SlippageControl';
 import { SwapVert } from '@mui/icons-material';
 import { decimalPlacesAreValid } from '_utils/index';
+import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 
 export default function Swap() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -90,6 +91,8 @@ export default function Swap() {
     }
   };
 
+  const dispatch = useDispatch();
+
   const handleSwap = async () => {
     if (provider && destinationToken && priceRoute && userAddress) {
       try {
@@ -136,6 +139,7 @@ export default function Swap() {
         setTransactionError('');
         setIsSwapping(false);
         setIsApproving(false);
+        dispatch(toggleBalancesAreStale(true))
       } catch (e: any) {
         setTransactionError(e.data?.message || e.message);
         console.log(e);

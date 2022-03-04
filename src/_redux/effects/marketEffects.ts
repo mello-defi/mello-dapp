@@ -23,8 +23,6 @@ export const getMarketPrices = (currency: FiatCurrencyName = FiatCurrencyName.US
     ) {
       const record = marketCache.get(currency);
       // @ts-ignore
-      console.log('DISPATCHIN GT MARKET PRICE ACTION FROM CACHE', record.value);
-      // @ts-ignore
       dispatch(getMarketPricesAction(record.value));
     } else {
       isMarketDataFetching = true;
