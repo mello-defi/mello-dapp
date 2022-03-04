@@ -19,7 +19,7 @@ export const toggleBalancesAreStaleAction = (balancesAreStale: boolean): WalletA
   return {
     type: BALANCES_ARE_STALE,
     payload: {
-      balancesAreStale,
+      balancesAreStale
     }
   };
 };

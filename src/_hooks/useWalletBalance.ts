@@ -16,6 +16,21 @@ const useWalletBalance = (token?: TokenDefinition) => {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const balancesAreStale = useSelector((state: AppState) => state.wallet.balancesAreStale);
   const provider = useSelector((state: AppState) => state.web3.provider);
+  // if (provider) {
+  //   provider.on('pending', async (txHash) => {
+  //     console.log('HASH', txHash);
+  //     // const tx = await provider.getTransaction(txHash)
+  //     // if (!tx || !tx.to) return
+  //
+  //     // if (tx.from === myWallet) {
+  //     //   console.log('Found my wallet!')
+  //     //   provider.removeAllListeners()
+  //     //   completion(tx)
+  //     // }
+  //
+  //   });
+  // }
+
   const walletBalances = useSelector((state: AppState) => state.wallet.balances);
   const [userBalance, setUserBalance] = useState<BigNumber>();
 
@@ -23,8 +38,7 @@ const useWalletBalance = (token?: TokenDefinition) => {
     if (token && provider && userAddress) {
       if (
         balancesAreStale ||
-        (!walletBalances[token.symbol] &&
-        (!(token.symbol in fetching) || !fetching[token.symbol]))
+        (!walletBalances[token.symbol] && (!(token.symbol in fetching) || !fetching[token.symbol]))
       ) {
         fetching[token.symbol] = true;
         dispatch(getBalanceForToken(token, provider, userAddress, balancesAreStale));
@@ -40,8 +54,6 @@ const useWalletBalance = (token?: TokenDefinition) => {
     //   // cleanup
     // };
   }, [walletBalances, token, userAddress, balancesAreStale]);
-
-
 
   return userBalance;
 };

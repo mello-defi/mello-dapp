@@ -24,19 +24,23 @@ export default function ReceiveCrypto() {
   return (
     <div className={''}>
       {/*<div className={""}*/}
-      <div className={'flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 space-x-0 md:space-x-2'}>
-        <Button
-          className={"w-full md:w-1/2"}
-          onClick={copyToClipboard}
-          disabled={!userAddress}>
+      <div
+        className={
+          'flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 space-x-0 md:space-x-2'
+        }
+      >
+        <Button className={'w-full md:w-1/2'} onClick={copyToClipboard} disabled={!userAddress}>
           Display address
         </Button>
-        <Button onClick={toggleShowQrCode} className={'flex-row-center w-full md:w-1/2 justify-center'}>
+        <Button
+          onClick={toggleShowQrCode}
+          className={'flex-row-center w-full md:w-1/2 justify-center'}
+        >
           <QrCodeOutlinedIcon className={'h-5 w-5'} />
           Display QR Code
         </Button>
       </div>
-      <div className={"flex flex-col items-center"}>
+      <div className={'flex flex-col items-center'}>
         {userAddress && (
           <DefaultTransition isOpen={showQrCode}>
             <div className={'mt-2'}>

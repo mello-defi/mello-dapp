@@ -10,7 +10,7 @@ const rootReducer = combineReducers({
   web3: getWeb3Reducer,
   wallet: getWalletReducer,
   markets: getMarketReducer,
-  aave: getAaveReducer,
+  aave: getAaveReducer
 });
 
 export default rootReducer;

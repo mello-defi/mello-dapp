@@ -14,17 +14,27 @@ import {
 } from '@aave/protocol-js';
 import { executeEthTransaction } from '_services/walletService';
 import { BigNumber, ethers } from 'ethers';
-import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
-// import { validPolygonTokenSymbolsUppercase } from '_enums/tokens';
+import { ApolloClient, DefaultOptions, gql, InMemoryCache } from '@apollo/client';
 import LendingPoolInterface from '@aave/protocol-js/dist/tx-builder/interfaces/v2/LendingPool';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { MarketDataResult } from '_services/marketDataService';
 import { formatTokenValueInFiat } from '_services/priceService';
-import { GenericTokenSet } from '_enums/tokens';
+
+const defaultOptions: DefaultOptions = {
+  watchQuery: {
+    fetchPolicy: 'no-cache',
+    errorPolicy: 'ignore'
+  },
+  query: {
+    fetchPolicy: 'no-cache',
+    errorPolicy: 'all'
+  }
+};
 
 const client = new ApolloClient({
   uri: 'https://api.thegraph.com/subgraphs/name/aave/aave-v2-matic',
-  cache: new InMemoryCache()
+  cache: new InMemoryCache({ resultCaching: false }),
+  defaultOptions
 });
 
 const GET_RESERVES = gql`
@@ -293,10 +303,12 @@ export async function getRepayTransactions(
     amount,
     interestRateMode: InterestRate.Variable
   });
-
 }
 
-export async function getUserSummaryData(userAddress: string, reserves: ReserveData[]): Promise<UserSummaryData> {
+export async function getUserSummaryData(
+  userAddress: string,
+  reserves: ReserveData[]
+): Promise<UserSummaryData> {
   const userReservesResults = await client.query({
     query: GET_USER_RESERVES,
     variables: { userAddress: userAddress.toLocaleLowerCase() }

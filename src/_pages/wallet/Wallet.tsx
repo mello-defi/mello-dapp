@@ -7,7 +7,6 @@ import { DefaultTransition } from '_components/core/Transition';
 import WalletBalance from '_pages/wallet/WalletBalance';
 import ReceiveCrypto from '_pages/wallet/ReceiveCrypto';
 import SendCrypto from '_pages/wallet/SendCrypto';
-import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { MoveToInbox, Send } from '@mui/icons-material';
 
 export enum WalletPageTab {

@@ -9,7 +9,7 @@ import {
 const initialState: WalletState = {
   address: undefined,
   balances: {},
-  balancesAreStale: false,
+  balancesAreStale: false
 };
 
 export const getWalletReducer = (
@@ -33,7 +33,7 @@ export const getWalletReducer = (
     case BALANCES_ARE_STALE:
       return {
         ...state,
-        balancesAreStale: action.payload.balancesAreStale,
+        balancesAreStale: action.payload.balancesAreStale
       };
     default:
       return state;

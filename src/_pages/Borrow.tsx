@@ -1,10 +1,10 @@
 import PoweredByLink from '_components/core/PoweredByLink';
 import aaveLogo from '_assets/images/logos/aave.svg';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import { getMarketDataForSymbol,  getUserSummaryData } from '_services/aaveService';
-import { ComputedReserveData, UserSummaryData } from '@aave/protocol-js';
+import { getMarketDataForSymbol } from '_services/aaveService';
+import { ComputedReserveData } from '@aave/protocol-js';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveListItem';
 import AaveReserve from '_components/aave/AaveReserve';
@@ -40,7 +40,10 @@ export default function Borrow() {
     }
   }, [marketPrices]);
 
-  console.log('userSummary && userSummary.reservesData', userSummary && userSummary.reservesData ? 'true' : 'false');
+  console.log(
+    'userSummary && userSummary.reservesData',
+    userSummary && userSummary.reservesData ? 'true' : 'false'
+  );
   return (
     <div className={'space-y-2'}>
       <div className={'flex-row-center justify-between'}>
@@ -48,32 +51,34 @@ export default function Borrow() {
         <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
       </div>
       <div>
-        {(userSummary && userSummary.reservesData) ? userSummary.reservesData
-          .filter(
-            (reserve: ComputedUserReserve) =>
-              parseFloat(parseFloat(reserve.totalBorrows).toFixed(6)) > 0
-          )
-          .sort(
-            (a: ComputedUserReserve, b: ComputedUserReserve) =>
-              parseFloat(b.totalBorrowsETH) - parseFloat(a.totalBorrowsETH)
-          )
-          .map((reserve: ComputedUserReserve) => {
-            return (
-              <ComputedUserReserveListItem
-                key={reserve.reserve.symbol}
-                reserveName={reserve.reserve.name}
-                reserveSymbol={reserve.reserve.symbol}
-                reserveAddress={reserve.reserve.underlyingAsset}
-                reserveAmount={reserve.totalBorrows}
-              />
-            );
-          }): (
-            <UserReservesSkeleton />
+        {userSummary && userSummary.reservesData ? (
+          userSummary.reservesData
+            .filter(
+              (reserve: ComputedUserReserve) =>
+                parseFloat(parseFloat(reserve.totalBorrows).toFixed(6)) > 0
+            )
+            .sort(
+              (a: ComputedUserReserve, b: ComputedUserReserve) =>
+                parseFloat(b.totalBorrowsETH) - parseFloat(a.totalBorrowsETH)
+            )
+            .map((reserve: ComputedUserReserve) => {
+              return (
+                <ComputedUserReserveListItem
+                  key={reserve.reserve.symbol}
+                  reserveName={reserve.reserve.name}
+                  reserveSymbol={reserve.reserve.symbol}
+                  reserveAddress={reserve.reserve.underlyingAsset}
+                  reserveAmount={reserve.totalBorrows}
+                />
+              );
+            })
+        ) : (
+          <UserReservesSkeleton />
         )}
       </div>
       <span className={'text-body flex-row-center justify-between'}>
         <span>Available to borrow</span>
-        <span className={"font-mono"}>
+        <span className={'font-mono'}>
           {userSummary &&
             ethPrice &&
             formatTokenValueInFiat(ethPrice, userSummary?.availableBorrowsETH)}
@@ -81,28 +86,27 @@ export default function Borrow() {
       </span>
       {userSummary && <CurrentHealthFactor healthFactor={userSummary.healthFactor} />}
       <div>
-        {userSummary &&
-        marketPrices &&
-        marketPrices.length > 0 ?
-        aaveReserves?.map((reserve: ComputedReserveData) => {
-          return (
-            <AaveReserve
-              token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
-              aaveSection={AaveSection.Borrow}
-              key={reserve.symbol}
-              userSummaryData={userSummary}
-              reserve={reserve}
-              maxBorrowAmount={convertCryptoAmounts(
-                userSummary.availableBorrowsETH,
-                getMarketDataForSymbol(marketPrices, CryptoCurrencySymbol.ETH).current_price,
-                getMarketDataForSymbol(marketPrices, reserve.symbol).current_price
-              ).toFixed(6)}
-              userReserve={userSummary.reservesData.find(
-                (r) => r.reserve.symbol === reserve.symbol
-              )}
-            />
-          );
-        }): (
+        {userSummary && marketPrices && marketPrices.length > 0 ? (
+          aaveReserves?.map((reserve: ComputedReserveData) => {
+            return (
+              <AaveReserve
+                token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
+                aaveSection={AaveSection.Borrow}
+                key={reserve.symbol}
+                userSummaryData={userSummary}
+                reserve={reserve}
+                maxBorrowAmount={convertCryptoAmounts(
+                  userSummary.availableBorrowsETH,
+                  getMarketDataForSymbol(marketPrices, CryptoCurrencySymbol.ETH).current_price,
+                  getMarketDataForSymbol(marketPrices, reserve.symbol).current_price
+                ).toFixed(6)}
+                userReserve={userSummary.reservesData.find(
+                  (r) => r.reserve.symbol === reserve.symbol
+                )}
+              />
+            );
+          })
+        ) : (
           <AaveReservesSkeleton />
         )}
       </div>

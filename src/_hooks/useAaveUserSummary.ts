@@ -6,13 +6,14 @@ import { getUserSummary } from '_redux/effects/aaveEffects';
 const useAaveUserSummary = () => {
   const rawReserves = useSelector((state: AppState) => state.aave.rawReserves);
   const userSummary = useSelector((state: AppState) => state.aave.userSummary);
+  const userSummaryStale = useSelector((state: AppState) => state.aave.userSummaryStale);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const dispatch = useDispatch();
   useEffect(() => {
-    if (rawReserves && userAddress && !userSummary) {
+    if (rawReserves && userAddress && (userSummaryStale || !userSummary)) {
       dispatch(getUserSummary(userAddress, rawReserves));
     }
-  }, [rawReserves, userSummary]);
+  }, [rawReserves, userSummary, userSummaryStale]);
   return userSummary;
 };
 

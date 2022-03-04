@@ -44,5 +44,8 @@ interface ToggleBalancesAreStaleAction {
 //   };
 // }
 
-export type WalletActionTypes = GetBalanceForTokenAction | SetAddressAction | ToggleBalancesAreStaleAction;
+export type WalletActionTypes =
+  | GetBalanceForTokenAction
+  | SetAddressAction
+  | ToggleBalancesAreStaleAction;
 // | GetBalanceForAllTokensAction;

@@ -1,5 +1,5 @@
-import { ComputedReserveData, UserSummaryData } from '@aave/protocol-js';
-import React, { useEffect, useState } from 'react';
+import { ComputedReserveData } from '@aave/protocol-js';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
@@ -52,7 +52,7 @@ export default function Deposit() {
         <UserReservesSkeleton />
       )}
       {userSummary && <CurrentHealthFactor healthFactor={userSummary.healthFactor} />}
-      {userSummary ?
+      {userSummary ? (
         aaveReserves?.map((reserve: ComputedReserveData) => {
           return (
             // <></>
@@ -67,9 +67,10 @@ export default function Deposit() {
               )}
             />
           );
-        }): (
-          <AaveReservesSkeleton />
-        )}
+        })
+      ) : (
+        <AaveReservesSkeleton />
+      )}
     </div>
   );
 }

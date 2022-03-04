@@ -1,7 +1,14 @@
-import { AaveActionTypes, AaveState, GET_AAVE_RESERVES, GET_USER_SUMMARY } from '_redux/types/aaveTypes';
+import {
+  AaveActionTypes,
+  AaveState,
+  GET_AAVE_RESERVES,
+  GET_USER_SUMMARY,
+  TOGGLE_USER_SUMMARY_STALE
+} from '_redux/types/aaveTypes';
 
 const initialState: AaveState = {
   userSummary: undefined,
+  userSummaryStale: false,
   reserves: undefined,
   rawReserves: undefined
 };
@@ -11,6 +18,11 @@ export const getAaveReducer = (
   action: AaveActionTypes
 ): AaveState => {
   switch (action.type) {
+    case TOGGLE_USER_SUMMARY_STALE:
+      return {
+        ...state,
+        userSummaryStale: action.payload.userSummaryStale
+      };
     case GET_AAVE_RESERVES:
       return {
         ...state,
@@ -20,7 +32,7 @@ export const getAaveReducer = (
     case GET_USER_SUMMARY:
       return {
         ...state,
-        userSummary: action.payload.userSummary,
+        userSummary: action.payload.userSummary
       };
     default:
       return state;

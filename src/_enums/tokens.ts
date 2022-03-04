@@ -1,7 +1,16 @@
 import ERC20Abi from '_enums/erc20.js';
 import WETHAbi from '_enums/weth.json';
 import { CryptoCurrencyName, CryptoCurrencySymbol } from '_enums/currency';
-import { daiLogo, ethLogo, jeurLogo, polygonLogo, renbtcLogo, usdcLogo, wbtcLogo, wethLogo } from '_assets/images';
+import {
+  daiLogo,
+  ethLogo,
+  jeurLogo,
+  polygonLogo,
+  renbtcLogo,
+  usdcLogo,
+  wbtcLogo,
+  wethLogo
+} from '_assets/images';
 
 export const validPolygonTokenSymbols: CryptoCurrencySymbol | string[] = [
   CryptoCurrencySymbol.ETH,

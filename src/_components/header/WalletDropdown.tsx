@@ -11,7 +11,8 @@ import {
   AccountBalanceWallet,
   AssignmentTurnedInOutlined,
   ChevronRightOutlined,
-  ContentCopyOutlined, Link,
+  ContentCopyOutlined,
+  Link,
   LogoutOutlined
 } from '@mui/icons-material';
 
@@ -64,7 +65,7 @@ export default function WalletDropdown() {
                   className={
                     'text-color-light cursor-pointer mb-2 ml-2 transition hover:text-gray-400'
                   }
-                  />
+                />
               </div>
             </div>
             <DefaultTransition isOpen={dropdownOpen}>
@@ -73,16 +74,16 @@ export default function WalletDropdown() {
                   <WalletDropdownListItem>
                     <div className={'flex-row-center justify-between'}>
                       <span className={'flex-row-center'}>
-                      <span>{shortenBlockchainAddress(userAddress)}</span>
-                        <span className={"ml-2"}>
-                        {copied ? (
-                          <AssignmentTurnedInOutlined className={'h-5 w-5 text-color-light'} />
-                        ) : (
-                          <ContentCopyOutlined
-                            onClick={() => copyToClipboard(userAddress)}
-                            className={'h-5 w-5 text-color-light transition hover:text-gray-400'}
-                          />
-                        )}
+                        <span>{shortenBlockchainAddress(userAddress)}</span>
+                        <span className={'ml-2'}>
+                          {copied ? (
+                            <AssignmentTurnedInOutlined className={'h-5 w-5 text-color-light'} />
+                          ) : (
+                            <ContentCopyOutlined
+                              onClick={() => copyToClipboard(userAddress)}
+                              className={'h-5 w-5 text-color-light transition hover:text-gray-400'}
+                            />
+                          )}
                         </span>
                       </span>
 
@@ -126,7 +127,9 @@ export default function WalletDropdown() {
                   <WalletDropdownListItem>
                     <div className={'flex-row-center justify-between'} onClick={handleDisconnect}>
                       <span>Disconnect</span>
-                      <LogoutOutlined className={'ml-2 h-5 text-color-light hover:text-gray-400 transition'} />
+                      <LogoutOutlined
+                        className={'ml-2 h-5 text-color-light hover:text-gray-400 transition'}
+                      />
                     </div>
                   </WalletDropdownListItem>
                 </div>

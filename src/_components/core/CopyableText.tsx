@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
+
 export default function CopyableText({
   text,
   textSize = 'text-title'

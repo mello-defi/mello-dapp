@@ -1,7 +1,4 @@
-import React, { useState } from 'react';
-import { DefaultTransition } from '_components/core/Transition';
-import SettingsIcon from '@mui/icons-material/Settings';
-import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
+import React from 'react';
 
 // // const slippageOptions = [0.5, 1, 2];
 // function SlippageButton ({slippage}: {slippage: number}) {
@@ -18,11 +15,6 @@ import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 //   )
 //
 // }
-export default function SlippageControl({slippagePercentage}: {slippagePercentage: number}){
-  return (
-    <div>
-
-    </div>
-  )
-
+export default function SlippageControl({ slippagePercentage }: { slippagePercentage: number }) {
+  return <div></div>;
 }

@@ -81,9 +81,7 @@ export default function TokenSelectDropdown({
                             <span className={'text-color-light text-xs'}>{token.name}</span>
                           </div>
                         </div>
-                        {token.address === selectedToken?.address && (
-                          <Check className="h-5 w-5" />
-                        )}
+                        {token.address === selectedToken?.address && <Check className="h-5 w-5" />}
                       </div>
                     </div>
                   </li>

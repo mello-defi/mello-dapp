@@ -1,5 +1,5 @@
 import CryptoAmountInput from '_components/CryptoAmountInput';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TokenDefinition } from '_enums/tokens';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { CryptoCurrencySymbol } from '_enums/currency';
@@ -16,7 +16,6 @@ import TransactionError from '_components/transactions/TransactionError';
 import { EthereumTransactionError } from '_interfaces/errors';
 import { approveToken, getTokenAllowance, sendErc20Token } from '_services/walletService';
 import { getGasPrice } from '_services/gasService';
-import { toggleBalancesAreStaleAction } from '_redux/actions/walletActions';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 
 export default function SendCrypto() {
@@ -99,7 +98,7 @@ export default function SendCrypto() {
         setSendTransactionHash(txResponse.hash);
         await txResponse.wait(1);
         setTransactionCompleted(true);
-        dispatch(toggleBalancesAreStale(true))
+        dispatch(toggleBalancesAreStale(true));
       } catch (e: any) {
         const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
         setTransactionError(
@@ -141,16 +140,20 @@ export default function SendCrypto() {
           parseFloat(amountToSend) === 0 ||
           (walletBalance &&
             (ethers.utils.parseUnits(amountToSend, token.decimals).gt(walletBalance) ||
-            (token.isGasToken && ethers.utils.parseUnits(amountToSend, token.decimals).eq(walletBalance)))
-          )
+              (token.isGasToken &&
+                ethers.utils.parseUnits(amountToSend, token.decimals).eq(walletBalance))))
         }
         size={ButtonSize.LARGE}
         onClick={sendCrypto}
       >
         {destinationAddress.length > 0 && !ethers.utils.isAddress(destinationAddress)
           ? 'Invalid address'
-          : token && walletBalance && token.isGasToken && ethers.utils.parseUnits(amountToSend, token.decimals).eq(walletBalance)
-            ? 'You cannot send all of your gas token' : 'Send'}
+          : token &&
+            walletBalance &&
+            token.isGasToken &&
+            ethers.utils.parseUnits(amountToSend, token.decimals).eq(walletBalance)
+          ? 'You cannot send all of your gas token'
+          : 'Send'}
       </Button>
       {(transactionSubmitting || transactionCompleted || transactionError) && (
         <>

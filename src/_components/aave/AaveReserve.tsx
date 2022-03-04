@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { ComputedReserveData, EthereumTransactionTypeExtended, UserSummaryData } from '@aave/protocol-js';
+import {
+  ComputedReserveData,
+  EthereumTransactionTypeExtended,
+  UserSummaryData
+} from '@aave/protocol-js';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
@@ -10,7 +14,6 @@ import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
 import { BigNumber, ethers } from 'ethers';
 import {
-  calculateNewHealthFactor,
   getBorrowTransactions,
   getDepositTransactions,
   getMarketDataForSymbol,
@@ -28,6 +31,7 @@ import { AaveFunction, AaveSection } from '_enums/aave';
 import AaveFunctionButton from '_components/aave/AaveFunctionButton';
 import AaveFunctionContent from '_components/aave/AaveFunctionContent';
 import { EthereumTransactionError } from '_interfaces/errors';
+import { toggleUserSummaryStale } from '_redux/effects/aaveEffects';
 
 export default function AaveReserve({
   reserve,
@@ -101,7 +105,7 @@ export default function AaveReserve({
   useEffect(() => {
     if (reserve && depositAmount && parseFloat(depositAmount) > 0) {
       // sethh calculateNewHealthFactor(reserve)
-      setUpdatedHealthFactor(calculateNewHealthFactor(reserve, userSummaryData, depositAmount));
+      // setUpdatedHealthFactor(calculateNewHealthFactor(reserve, userSummaryData, depositAmount));
     }
   }, [depositAmount]);
 
@@ -129,7 +133,8 @@ export default function AaveReserve({
         await runAaveTransactions(provider, transactions);
         setAmount('0.0');
         setTransactionInProgress(false);
-        dispatch(toggleBalancesAreStale(true))
+        dispatch(toggleBalancesAreStale(true));
+        dispatch(toggleUserSummaryStale(true));
       } catch (e: any) {
         const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
         setTransactionError(
@@ -193,7 +198,9 @@ export default function AaveReserve({
   return (
     <>
       {marketPrices && (
-        <div className={'bg-white rounded-2xl px-4 py-4 mb-2 border-2 -mx-1 border-gray-50 shadow-sm'}>
+        <div
+          className={'bg-white rounded-2xl px-4 py-4 mb-2 border-2 -mx-1 border-gray-50 shadow-sm'}
+        >
           <div className={'flex-row-center justify-between'}>
             <AaveReserveMarketData reserve={reserve} aaveSection={aaveSection} />
             {aaveSection === AaveSection.Borrow && (

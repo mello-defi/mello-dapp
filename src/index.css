@@ -72,7 +72,6 @@
     @apply text-xl tracking-tight text-color-dark;
   }
 
-
   .text-body {
     @apply text-lg tracking-tight text-color-dark;
   }

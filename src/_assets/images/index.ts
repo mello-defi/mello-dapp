@@ -35,5 +35,5 @@ export {
   hyphenLogo,
   melloLogoFace,
   melloLogoFaceWithText,
-  jeurLogo,
+  jeurLogo
 };

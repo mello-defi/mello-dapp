@@ -13,7 +13,9 @@ export function initialiseParaSwap(
   provider: ethers.providers.Web3Provider,
   chainId: EVMChainIdNumerical
 ) {
-  paraSwap = new ParaSwap(chainId as NetworkID).setWeb3Provider(provider.provider);
+  if (!paraSwap) {
+    paraSwap = new ParaSwap(chainId as NetworkID).setWeb3Provider(provider.provider);
+  }
 }
 
 function responseIsError(response: APIError | any): response is APIError {
