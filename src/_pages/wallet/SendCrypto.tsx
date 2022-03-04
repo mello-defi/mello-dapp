@@ -108,6 +108,21 @@ export default function SendCrypto() {
       setTransactionSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (transactionSubmitting) {
+      setTransactionSubmitting(false);
+    }
+    if (transactionCompleted) {
+      setTransactionCompleted(false);
+    }
+    if (transactionError) {
+      setTransactionError('');
+    }
+    if (sendTransactionHash) {
+      setSendTransactionHash('');
+    }
+  }, [token, amountToSend])
   return (
     <div className={'flex flex-col'}>
       <CryptoAmountInput

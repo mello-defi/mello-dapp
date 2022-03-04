@@ -9,12 +9,10 @@ export default function TokenSelectDropdown({
   selectedToken,
   onSelectToken,
   disabled,
-  zIndex
 }: {
   selectedToken?: TokenDefinition;
   onSelectToken: (token: TokenDefinition) => void;
   disabled: boolean;
-  zIndex?: string;
 }) {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const [dropdownOpen, setDropdownOpen] = useState(false);

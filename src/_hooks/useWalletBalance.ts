@@ -36,6 +36,7 @@ const useWalletBalance = (token?: TokenDefinition) => {
 
   useEffect(() => {
     if (token && provider && userAddress) {
+      console.log('balancesAreStale', token.symbol, balancesAreStale);
       if (
         balancesAreStale ||
         (!walletBalances[token.symbol] && (!(token.symbol in fetching) || !fetching[token.symbol]))

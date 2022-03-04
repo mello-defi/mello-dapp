@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TokenDefinition } from '_enums/tokens';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { OptimalRate } from 'paraswap-core';
@@ -29,6 +29,7 @@ import { SwapVert } from '@mui/icons-material';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 
 export default function Swap() {
+  const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const network = useSelector((state: AppState) => state.web3.network);
@@ -60,12 +61,37 @@ export default function Swap() {
   const [swapSubmitted, setSwapSubmitted] = useState<boolean>(false);
   const [swapConfirmed, setSwapConfirmed] = useState<boolean>(false);
 
+  const resetTransactionSteps = () => {
+    if (swapConfirmed) {
+      setSwapConfirmed(false);
+    }
+    if (isSwapping) {
+      setIsSwapping(false);
+    }
+    if (swapSubmitted) {
+      setSwapSubmitted(false);
+    }
+    if (approvalTransactionHash) {
+      setApprovalTransactionHAsh('');
+    }
+    if (swapTransactionHash) {
+      setSwapTransactionHash('');
+    }
+    if (transactionError) {
+      setTransactionError('');
+    }
+    if (fetchingPriceError) {
+      setFetchingPriceError('');
+    }
+  }
+
   const updateExchangeRate = async (
     amount: string,
     srcToken: TokenDefinition,
     destToken: TokenDefinition
   ) => {
     if (destToken && amount && parseFloat(amount) > 0 && srcToken.symbol !== destToken.symbol) {
+      resetTransactionSteps();
       setFetchingPriceError('');
       try {
         setDestinationTokenDisabled(true);
@@ -73,7 +99,6 @@ export default function Swap() {
         setFetchingPrices(true);
         const srcAmount: BigNumber = ethers.utils.parseUnits(amount, srcToken.decimals);
         const rate = await getExchangeRate(srcToken, destToken, srcAmount.toString());
-        console.log('rate', rate);
         setPriceRoute(rate);
         setSourceFiatAmount(parseFloat(rate.srcUSD));
         setDestinationFiatAmount(parseFloat(rate.destUSD));
@@ -89,7 +114,6 @@ export default function Swap() {
     }
   };
 
-  const dispatch = useDispatch();
 
   const handleSwap = async () => {
     if (provider && destinationToken && priceRoute && userAddress) {
@@ -97,6 +121,7 @@ export default function Swap() {
         setIsSwapping(true);
         if (!sourceToken.isGasToken) {
           const allowance: Allowance = await getAllowance(userAddress, sourceToken.address);
+          console.log('ALLOWANCE', allowance.allowance.toString());
           const amount: BigNumber = ethers.utils.parseUnits(
             sourceAmount.toString(),
             sourceToken.decimals
@@ -116,6 +141,8 @@ export default function Swap() {
             setApprovalTransactionHAsh(approvalTxHash);
             const approvalTx: TransactionResponse = await provider.getTransaction(approvalTxHash);
             await approvalTx.wait(1);
+            const allowance2: Allowance = await getAllowance(userAddress, sourceToken.address);
+            console.log('ALLOWANCE2', allowance2.allowance.toString());
           }
         }
         setTokenIsApproved(true);
