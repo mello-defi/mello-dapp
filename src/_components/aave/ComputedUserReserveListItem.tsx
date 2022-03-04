@@ -1,9 +1,9 @@
-import { findTokenByAddress } from '_enums/tokens';
 import { getFiatValueForUserReserve } from '_services/aaveService';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import useMarketPrices from '_hooks/useMarketPrices';
+import { findTokenByAddress } from '_utils/index';
 
 export default function ComputedUserReserveListItem({
   reserveName,

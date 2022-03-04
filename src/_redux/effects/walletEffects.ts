@@ -4,7 +4,7 @@ import { getErc20TokenBalance } from '_services/walletService';
 import {
   getBalanceForTokenAction,
   setAddressAction,
-  toggleBalancesAreStaleAction
+  toggleBalanceIsStaleAction
 } from '_redux/actions/walletActions';
 import { WalletActionTypes, WalletTokenBalances } from '_redux/types/walletTypes';
 import { TokenDefinition } from '_enums/tokens';
@@ -20,9 +20,9 @@ export const setAddress = (address: string) => {
   };
 };
 
-export const toggleBalancesAreStale = (balancesAreStale: boolean) => {
+export const toggleBalanceIsStale = (tokenSymbol: CryptoCurrencySymbol, isStale: boolean) => {
   return (dispatch: Dispatch<WalletActionTypes>) => {
-    dispatch(toggleBalancesAreStaleAction(balancesAreStale));
+    dispatch(toggleBalanceIsStaleAction(tokenSymbol, isStale));
   };
 };
 
@@ -45,18 +45,18 @@ export const getBalanceForToken = (
       balanceObj[token.symbol] = record.value;
       dispatch(getBalanceForTokenAction(balanceObj));
     } else {
-      console.log('CACHE MISS', token.symbol);
       const balance = await getErc20TokenBalance(token, provider, userAddress);
       const balanceObj: WalletTokenBalances = {};
-      balanceObj[token.symbol] = balance;
+      balanceObj[token.symbol] = {
+        balance,
+        isStale: false
+      };
       const record: CacheRecord = {
         value: balance,
         expiration: now + cacheExpirationInMs
       };
       walletCache.set(token.symbol, record);
-      // toggleBalancesAreStale(false);
-      // dispatch(getBalanceForTokenAction(balanceObj));
-      dispatch(toggleBalancesAreStaleAction(false));
+      dispatch(toggleBalanceIsStaleAction(token.symbol, false));
       dispatch(getBalanceForTokenAction(balanceObj));
     }
   };

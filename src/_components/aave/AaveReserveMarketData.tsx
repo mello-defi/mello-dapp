@@ -1,9 +1,9 @@
 import { ComputedReserveData } from '@aave/protocol-js';
 import React from 'react';
-import { findTokenByAddress } from '_enums/tokens';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { AaveSection } from '_enums/aave';
+import { findTokenByAddress } from '_utils/index';
 
 export default function AaveReserveMarketData({
   reserve,

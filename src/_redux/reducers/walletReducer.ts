@@ -1,5 +1,5 @@
 import {
-  BALANCES_ARE_STALE,
+  TOGGLE_BALANCE_IS_STALE,
   GET_BALANCE_FOR_TOKEN,
   SET_ADDRESS,
   WalletActionTypes,
@@ -9,7 +9,6 @@ import {
 const initialState: WalletState = {
   address: undefined,
   balances: {},
-  balancesAreStale: false
 };
 
 export const getWalletReducer = (
@@ -30,11 +29,22 @@ export const getWalletReducer = (
         ...state,
         address: action.payload.address
       };
-    case BALANCES_ARE_STALE:
+    case TOGGLE_BALANCE_IS_STALE:
+      if (state.balances[action.payload.tokenSymbol]) {
+        return {
+          ...state,
+          balances: {
+            ...state.balances,
+            [action.payload.tokenSymbol]: {
+              ...state.balances[action.payload.tokenSymbol],
+              isStale: action.payload.isStale
+            }
+          }
+        };
+      }
       return {
-        ...state,
-        balancesAreStale: action.payload.balancesAreStale
-      };
+        ...state
+      }
     default:
       return state;
   }

@@ -1,19 +1,22 @@
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { BigNumber } from 'ethers';
 
-export const BALANCES_ARE_STALE = 'BALANCES_ARE_STALE';
+export const TOGGLE_BALANCE_IS_STALE = 'TOGGLE_BALANCE_IS_STALE';
 export const SET_ADDRESS = 'SET_ADDRESS';
 export const GET_BALANCE_FOR_TOKEN = 'GET_BALANCE_FOR_TOKEN';
 export const GET_BALANCE_FOR_ALL_TOKENS = 'GET_BALANCE_FOR_ALL_TOKENS';
 
+export interface WalletTokenBalance {
+  balance: BigNumber;
+  isStale: boolean;
+}
 export type WalletTokenBalances = {
-  [key in CryptoCurrencySymbol]?: BigNumber;
+  [key in CryptoCurrencySymbol]?: WalletTokenBalance;
 };
 
 export interface WalletState {
   address?: string;
   balances: WalletTokenBalances;
-  balancesAreStale: boolean;
 }
 
 interface GetBalanceForTokenAction {
@@ -30,10 +33,11 @@ interface SetAddressAction {
   };
 }
 
-interface ToggleBalancesAreStaleAction {
-  type: typeof BALANCES_ARE_STALE;
+interface ToggleBalanceIsStaleAction {
+  type: typeof TOGGLE_BALANCE_IS_STALE;
   payload: {
-    balancesAreStale: boolean;
+    tokenSymbol: CryptoCurrencySymbol;
+    isStale: boolean;
   };
 }
 
@@ -47,5 +51,4 @@ interface ToggleBalancesAreStaleAction {
 export type WalletActionTypes =
   | GetBalanceForTokenAction
   | SetAddressAction
-  | ToggleBalancesAreStaleAction;
-// | GetBalanceForAllTokensAction;
+  | ToggleBalanceIsStaleAction;

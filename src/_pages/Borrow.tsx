@@ -11,13 +11,13 @@ import AaveReserve from '_components/aave/AaveReserve';
 import { convertCryptoAmounts, formatTokenValueInFiat } from '_services/priceService';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import useMarketPrices from '_hooks/useMarketPrices';
-import { findTokenByAddress } from '_enums/tokens';
 import { AaveSection } from '_enums/aave';
 import CurrentHealthFactor from '_components/aave/CurrentHealthFactor';
 import UserReservesSkeleton from '_components/aave/UserReservesSkeleton';
 import AaveReservesSkeleton from '_components/aave/AaveReservesSkeleton';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import useAaveReserves from '_hooks/useAaveReserves';
+import { findTokenByAddress } from '_utils/index';
 
 export default function Borrow() {
   const provider = useSelector((state: AppState) => state.web3.provider);

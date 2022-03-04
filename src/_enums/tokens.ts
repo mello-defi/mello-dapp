@@ -176,16 +176,6 @@ export interface PolygonTokenSet extends GenericTokenSet {
   [CryptoCurrencySymbol.JEUR]?: TokenDefinition;
 }
 
-export function findTokenByAddress(tokenSet: GenericTokenSet, address: string): TokenDefinition {
-  const token = Object.values(tokenSet).find(
-    (token) => token.address.toLowerCase() === address.toLowerCase()
-  );
-  if (!token) {
-    throw new Error(`Token with address ${address} not found`);
-  }
-  return token;
-}
-
 export const polygonTestnetMumbaiTokens: PolygonTokenSet = {
   [CryptoCurrencySymbol.DAI]: {
     symbol: CryptoCurrencySymbol.DAI,

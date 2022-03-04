@@ -26,7 +26,7 @@ import { getGasPrice } from '_services/gasService';
 import SwapPriceInformation from '_pages/swap/SwapPriceInformation';
 import useWalletBalance from '_hooks/useWalletBalance';
 import { SwapVert } from '@mui/icons-material';
-import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
+import { toggleBalanceIsStale } from '_redux/effects/walletEffects';
 
 export default function Swap() {
   const dispatch = useDispatch();
@@ -164,7 +164,8 @@ export default function Swap() {
         setTransactionError('');
         setIsSwapping(false);
         setIsApproving(false);
-        dispatch(toggleBalancesAreStale(true));
+        dispatch(toggleBalanceIsStale(sourceToken.symbol, true));
+        dispatch(toggleBalanceIsStale(destinationToken.symbol, true));
       } catch (e: any) {
         setTransactionError(e.data?.message || e.message);
         console.log(e);

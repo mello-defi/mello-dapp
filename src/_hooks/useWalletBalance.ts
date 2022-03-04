@@ -14,39 +14,23 @@ const fetching: FetchingStuff = {};
 const useWalletBalance = (token?: TokenDefinition) => {
   const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const balancesAreStale = useSelector((state: AppState) => state.wallet.balancesAreStale);
   const provider = useSelector((state: AppState) => state.web3.provider);
-  // if (provider) {
-  //   provider.on('pending', async (txHash) => {
-  //     console.log('HASH', txHash);
-  //     // const tx = await provider.getTransaction(txHash)
-  //     // if (!tx || !tx.to) return
-  //
-  //     // if (tx.from === myWallet) {
-  //     //   console.log('Found my wallet!')
-  //     //   provider.removeAllListeners()
-  //     //   completion(tx)
-  //     // }
-  //
-  //   });
-  // }
-
   const walletBalances = useSelector((state: AppState) => state.wallet.balances);
   const [userBalance, setUserBalance] = useState<BigNumber>();
 
   useEffect(() => {
     if (token && provider && userAddress) {
-      console.log('balancesAreStale', token.symbol, balancesAreStale);
+      console.log('balancesAreStale', token.symbol, walletBalances[token.symbol]?.isStale);
       if (
-        balancesAreStale ||
+        walletBalances[token.symbol]?.isStale ||
         (!walletBalances[token.symbol] && (!(token.symbol in fetching) || !fetching[token.symbol]))
       ) {
         fetching[token.symbol] = true;
-        dispatch(getBalanceForToken(token, provider, userAddress, balancesAreStale));
+        dispatch(getBalanceForToken(token, provider, userAddress, walletBalances[token.symbol]?.isStale));
       } else {
         const tokenBalance = walletBalances[token.symbol];
         if (tokenBalance) {
-          setUserBalance(tokenBalance);
+          setUserBalance(tokenBalance.balance);
         }
         fetching[token.symbol] = false;
       }
@@ -54,7 +38,7 @@ const useWalletBalance = (token?: TokenDefinition) => {
     // // return () => {
     //   // cleanup
     // };
-  }, [walletBalances, token, userAddress, balancesAreStale]);
+  }, [walletBalances, token, userAddress]);
 
   return userBalance;
 };

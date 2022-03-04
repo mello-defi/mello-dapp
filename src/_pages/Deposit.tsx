@@ -6,7 +6,6 @@ import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import aaveLogo from '_assets/images/logos/aave.svg';
 import PoweredByLink from '_components/core/PoweredByLink';
 import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveListItem';
-import { findTokenByAddress } from '_enums/tokens';
 import { AaveSection } from '_enums/aave';
 import AaveReserve from '_components/aave/AaveReserve';
 import CurrentHealthFactor from '_components/aave/CurrentHealthFactor';
@@ -14,6 +13,7 @@ import UserReservesSkeleton from '_components/aave/UserReservesSkeleton';
 import AaveReservesSkeleton from '_components/aave/AaveReservesSkeleton';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import useAaveReserves from '_hooks/useAaveReserves';
+import { findTokenByAddress } from '_utils/index';
 
 export default function Deposit() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);

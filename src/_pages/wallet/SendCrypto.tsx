@@ -16,7 +16,7 @@ import TransactionError from '_components/transactions/TransactionError';
 import { EthereumTransactionError } from '_interfaces/errors';
 import { approveToken, getTokenAllowance, sendErc20Token } from '_services/walletService';
 import { getGasPrice } from '_services/gasService';
-import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
+import { toggleBalanceIsStale } from '_redux/effects/walletEffects';
 
 export default function SendCrypto() {
   const marketPrices = useMarketPrices();
@@ -98,7 +98,7 @@ export default function SendCrypto() {
         setSendTransactionHash(txResponse.hash);
         await txResponse.wait(1);
         setTransactionCompleted(true);
-        dispatch(toggleBalancesAreStale(true));
+        dispatch(toggleBalanceIsStale(token.symbol, true));
       } catch (e: any) {
         const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
         setTransactionError(

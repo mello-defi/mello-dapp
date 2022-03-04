@@ -22,7 +22,7 @@ import {
   runAaveActionTransaction,
   runAaveApprovalTransaction
 } from '_services/aaveService';
-import { getBalanceForToken, toggleBalancesAreStale } from '_redux/effects/walletEffects';
+import { getBalanceForToken, toggleBalanceIsStale } from '_redux/effects/walletEffects';
 import useWalletBalance from '_hooks/useWalletBalance';
 import { TokenDefinition } from '_enums/tokens';
 import useMarketPrices from '_hooks/useMarketPrices';
@@ -32,6 +32,7 @@ import AaveFunctionButton from '_components/aave/AaveFunctionButton';
 import AaveFunctionContent from '_components/aave/AaveFunctionContent';
 import { EthereumTransactionError } from '_interfaces/errors';
 import { toggleUserSummaryStale } from '_redux/effects/aaveEffects';
+import { findTokenByAddress } from '_utils/index';
 
 export default function AaveReserve({
   reserve,
@@ -51,6 +52,7 @@ export default function AaveReserve({
   const dispatch = useDispatch();
   const provider = useSelector((state: AppState) => state.web3.provider);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
+  const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const marketPrices = useMarketPrices();
   const [marketPriceForToken, setMarketPriceForToken] = useState<number | undefined>(undefined);
   const [depositAmount, setDepositAmount] = useState<string>('');
@@ -133,8 +135,8 @@ export default function AaveReserve({
         await runAaveTransactions(provider, transactions);
         setAmount('0.0');
         setTransactionInProgress(false);
-        dispatch(toggleBalancesAreStale(true));
         dispatch(toggleUserSummaryStale(true));
+        dispatch(toggleBalanceIsStale(findTokenByAddress(tokenSet, reserve.underlyingAsset).symbol, true));
       } catch (e: any) {
         const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
         setTransactionError(
