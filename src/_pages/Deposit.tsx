@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
-import { getReserves, getUserReserves } from '_services/aaveService';
 import aaveLogo from '_assets/images/logos/aave.svg';
 import PoweredByLink from '_components/core/PoweredByLink';
 import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveListItem';
@@ -13,28 +12,15 @@ import AaveReserve from '_components/aave/AaveReserve';
 import CurrentHealthFactor from '_components/aave/CurrentHealthFactor';
 import UserReservesSkeleton from '_components/aave/UserReservesSkeleton';
 import AaveReservesSkeleton from '_components/aave/AaveReservesSkeleton';
+import useAaveUserSummary from '_hooks/useAaveUserSummary';
+import useAaveReserves from '_hooks/useAaveReserves';
 
 export default function Deposit() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
-  const [computedReserves, setComputedReserves] = useState<ComputedReserveData[] | undefined>(
-    undefined
-  );
-  const [userSummaryData, setUserSummaryData] = useState<UserSummaryData | undefined>(undefined);
 
-  useEffect(() => {
-    if (userAddress && computedReserves) {
-      getUserReserves(userAddress).then((data: UserSummaryData) => {
-        console.log('userSummaryData', data);
-        setUserSummaryData(data);
-      });
-    }
-    if (!computedReserves) {
-      getReserves().then((reserves: ComputedReserveData[]) => {
-        setComputedReserves(reserves);
-      });
-    }
-  }, [computedReserves]);
+  const userSummary = useAaveUserSummary();
+  const aaveReserves = useAaveReserves();
 
   return (
     <div className={'space-y-2'}>
@@ -42,9 +28,9 @@ export default function Deposit() {
         <span className={'text-header'}>My deposits</span>
         <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
       </div>
-      {userSummaryData && userSummaryData.reservesData && userSummaryData.reservesData.length > 0 ? (
+      {userSummary && userSummary.reservesData && userSummary.reservesData.length > 0 ? (
         <div>
-          {userSummaryData.reservesData
+          {userSummary.reservesData
             .filter(
               (reserve: ComputedUserReserve) =>
                 parseFloat(parseFloat(reserve.underlyingBalance).toFixed(6)) > 0
@@ -65,18 +51,18 @@ export default function Deposit() {
       ) : (
         <UserReservesSkeleton />
       )}
-      {userSummaryData && <CurrentHealthFactor healthFactor={userSummaryData.healthFactor} />}
-      {userSummaryData ?
-        computedReserves?.map((reserve: ComputedReserveData) => {
+      {userSummary && <CurrentHealthFactor healthFactor={userSummary.healthFactor} />}
+      {userSummary ?
+        aaveReserves?.map((reserve: ComputedReserveData) => {
           return (
             // <></>
             <AaveReserve
               token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
               aaveSection={AaveSection.Deposit}
               key={reserve.symbol}
-              userSummaryData={userSummaryData}
+              userSummaryData={userSummary}
               reserve={reserve}
-              userReserve={userSummaryData.reservesData.find(
+              userReserve={userSummary.reservesData.find(
                 (r: ComputedUserReserve) => r.reserve.symbol === reserve.symbol
               )}
             />

@@ -13,9 +13,9 @@ export const validPolygonTokenSymbols: CryptoCurrencySymbol | string[] = [
   CryptoCurrencySymbol.USDC,
   CryptoCurrencySymbol.WETH
 ];
-export const validPolygonTokenSymbolsUppercase: string[] = validPolygonTokenSymbols.map((symbol) =>
-  symbol.toUpperCase()
-);
+// export const validPolygonTokenSymbolsUppercase: string[] = validPolygonTokenSymbols.map((symbol) =>
+//   symbol.toUpperCase()
+// );
 
 export const EvmGasTokenBurnAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 

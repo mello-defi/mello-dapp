@@ -15,11 +15,12 @@ import {
 import { executeEthTransaction } from '_services/walletService';
 import { BigNumber, ethers } from 'ethers';
 import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
-import { validPolygonTokenSymbolsUppercase } from '_enums/tokens';
+// import { validPolygonTokenSymbolsUppercase } from '_enums/tokens';
 import LendingPoolInterface from '@aave/protocol-js/dist/tx-builder/interfaces/v2/LendingPool';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { MarketDataResult } from '_services/marketDataService';
 import { formatTokenValueInFiat } from '_services/priceService';
+import { GenericTokenSet } from '_enums/tokens';
 
 const client = new ApolloClient({
   uri: 'https://api.thegraph.com/subgraphs/name/aave/aave-v2-matic',
@@ -223,24 +224,6 @@ export function calculateNewHealthFactor(
   ).toFixed(2);
 }
 
-export async function getUserReserves(userAddress: string): Promise<UserSummaryData> {
-  const userReservesResults = await client.query({
-    query: GET_USER_RESERVES,
-    variables: { userAddress: userAddress.toLocaleLowerCase() }
-  });
-  const reserves = await client.query({ query: GET_RESERVES });
-  const ethPrice = await getEthPrice();
-  const incentivesControllerResults = await client.query({ query: GET_INCENTIVES_CONTROLLER });
-  return v2.formatUserSummaryData(
-    reserves.data.reserves,
-    userReservesResults.data.userReserves,
-    userAddress.toLocaleLowerCase(),
-    ethPrice,
-    Math.floor(Date.now() / 1000),
-    incentivesControllerResults.data.incentivesController
-  );
-}
-
 function getLendingPool(
   provider: ethers.providers.Web3Provider,
   network: Network = Network.polygon
@@ -310,71 +293,26 @@ export async function getRepayTransactions(
     amount,
     interestRateMode: InterestRate.Variable
   });
+
 }
 
-// export async function borrow(
-//   provider: ethers.providers.Web3Provider,
-//   userAddress: string,
-//   reserveTokenAddress: string,
-//   amount: number
-// ): Promise<string> {
-//   const lendingPool = getLendingPool(provider);
-//   const txs: EthereumTransactionTypeExtended[] = await lendingPool.borrow({
-//     user: userAddress.toLocaleLowerCase(),
-//     reserve: reserveTokenAddress,
-//     amount: amount.toString(),
-//     interestRateMode: InterestRate.Variable
-//   });
-//   return runAaveTransaction(txs, provider, true);
-// }
-//
-// export async function repay(
-//   provider: ethers.providers.Web3Provider,
-//   userAddress: string,
-//   reserveTokenAddress: string,
-//   amount: number
-// ): Promise<string> {
-//   const lendingPool = getLendingPool(provider);
-//   const txs: EthereumTransactionTypeExtended[] = await lendingPool.repay({
-//     user: userAddress.toLocaleLowerCase(),
-//     reserve: reserveTokenAddress,
-//     amount: amount.toString(),
-//     interestRateMode: InterestRate.Variable
-//   });
-//   return runAaveTransaction(txs, provider, true);
-// }
-
-export async function getReserves(): Promise<ComputedReserveData[]> {
-  const reserveResults = await client.query({ query: GET_RESERVES });
-  const reserves: ReserveData[] = reserveResults.data.reserves;
-  const computed: ComputedReserveData[] = v2.formatReserves(
-    reserves.filter((r: ReserveData) =>
-      validPolygonTokenSymbolsUppercase.includes(r.symbol.toUpperCase())
-    )
+export async function getUserSummaryData(userAddress: string, reserves: ReserveData[]): Promise<UserSummaryData> {
+  const userReservesResults = await client.query({
+    query: GET_USER_RESERVES,
+    variables: { userAddress: userAddress.toLocaleLowerCase() }
+  });
+  const ethPrice = await getEthPrice();
+  const incentivesControllerResults = await client.query({ query: GET_INCENTIVES_CONTROLLER });
+  return v2.formatUserSummaryData(
+    reserves,
+    userReservesResults.data.userReserves,
+    userAddress.toLocaleLowerCase(),
+    ethPrice,
+    Math.floor(Date.now() / 1000),
+    incentivesControllerResults.data.incentivesController
   );
-  // computed.map((r: ComputedReserveData) => {
-  //   let formattedName = '';
-  //   switch (r.symbol) {
-  //     case 'WBTC':
-  //       formattedName = 'Bitcoin';
-  //       break;
-  //     case 'USDC':
-  //       formattedName = 'USD Coin';
-  //       break;
-  //     case 'DAI':
-  //       formattedName = 'DAI Stablecoin';
-  //       break;
-  //     case 'WETH':
-  //       formattedName = 'Ethereum';
-  //       break;
-  //     case 'WMATIC':
-  //       formattedName = 'MATIC';
-  //       break;
-  //     default:
-  //       formattedName = r.name;
-  //   }
-  //   r.name = formattedName;
-  //   return r;
-  // })
-  return computed;
+}
+export async function getReserves(): Promise<ReserveData[]> {
+  const reserveResults = await client.query({ query: GET_RESERVES });
+  return reserveResults.data.reserves as ReserveData[];
 }
