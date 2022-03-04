@@ -10,6 +10,7 @@ const useAaveUserSummary = () => {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const dispatch = useDispatch();
   useEffect(() => {
+    console.log('useAaveUserSummary useeffect', userSummaryStale);
     if (rawReserves && userAddress && (userSummaryStale || !userSummary)) {
       dispatch(getUserSummary(userAddress, rawReserves));
     }

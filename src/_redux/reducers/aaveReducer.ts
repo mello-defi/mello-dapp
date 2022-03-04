@@ -32,7 +32,8 @@ export const getAaveReducer = (
     case GET_USER_SUMMARY:
       return {
         ...state,
-        userSummary: action.payload.userSummary
+        userSummary: action.payload.userSummary,
+        userSummaryStale: false
       };
     default:
       return state;

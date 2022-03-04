@@ -11,6 +11,7 @@ import { GenericTokenSet } from '_enums/tokens';
 
 export const toggleUserSummaryStale = (userSummaryStale: boolean) => {
   return function (dispatch: Dispatch<AaveActionTypes>) {
+    console.log('toggleUserSummaryStale', userSummaryStale);
     dispatch(toggleUserSummaryStaleAction(userSummaryStale));
   };
 };
@@ -19,7 +20,6 @@ export const getUserSummary = (userAddress: string, reserves: ReserveData[]) => 
   return async function (dispatch: Dispatch<AaveActionTypes>) {
     const userSummary = await getUserSummaryData(userAddress, reserves);
     dispatch(getUserSummaryAction(userSummary));
-    dispatch(toggleUserSummaryStaleAction(false));
   };
 };
 
