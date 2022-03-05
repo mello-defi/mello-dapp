@@ -54,20 +54,21 @@ export default function Deposit() {
       )}
       {userSummary && <CurrentHealthFactor healthFactor={userSummary.healthFactor} />}
       {userSummary && aaveReserves ? (
-        sortUserReservesByKey(aaveReserves, userSummary.reservesData, 'underlyingBalanceUSD')
-          .map((reserve: ComputedReserveData) => {
-          return (
-            <AaveReserve
-              token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
-              aaveSection={AaveSection.Deposit}
-              key={reserve.symbol}
-              reserve={reserve}
-              userReserve={userSummary.reservesData.find(
-                (r: ComputedUserReserve) => r.reserve.symbol === reserve.symbol
-              )}
-            />
-          );
-        })
+        sortUserReservesByKey(aaveReserves, userSummary.reservesData, 'underlyingBalanceUSD').map(
+          (reserve: ComputedReserveData) => {
+            return (
+              <AaveReserve
+                token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
+                aaveSection={AaveSection.Deposit}
+                key={reserve.symbol}
+                reserve={reserve}
+                userReserve={userSummary.reservesData.find(
+                  (r: ComputedUserReserve) => r.reserve.symbol === reserve.symbol
+                )}
+              />
+            );
+          }
+        )
       ) : (
         <AaveReservesSkeleton />
       )}

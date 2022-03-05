@@ -126,7 +126,9 @@ export default function AaveReserve({
         setAmount('0.0');
         setTransactionInProgress(false);
         dispatch(toggleUserSummaryStale(true));
-        dispatch(toggleBalanceIsStale(findTokenByAddress(tokenSet, reserve.underlyingAsset).symbol, true));
+        dispatch(
+          toggleBalanceIsStale(findTokenByAddress(tokenSet, reserve.underlyingAsset).symbol, true)
+        );
       } catch (e: any) {
         const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
         setTransactionError(

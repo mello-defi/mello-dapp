@@ -195,22 +195,24 @@ export async function runAaveActionTransaction(
   return runAaveTransactionType(txs, provider, eEthereumTxType.DLP_ACTION, waitForConfirmation);
 }
 
-export type ComputedUserReserveProperty =
-  | 'underlyingBalanceUSD'
-  | 'totalBorrowsUSD';
+export type ComputedUserReserveProperty = 'underlyingBalanceUSD' | 'totalBorrowsUSD';
 
-export function sortUserReservesByKey(aaveReserves: ComputedReserveData[], userReserves: ComputedUserReserve[], key: ComputedUserReserveProperty): ComputedReserveData[] {
+export function sortUserReservesByKey(
+  aaveReserves: ComputedReserveData[],
+  userReserves: ComputedUserReserve[],
+  key: ComputedUserReserveProperty
+): ComputedReserveData[] {
   return aaveReserves.sort((a, b) => {
     const userReserveA = userReserves.find(
       (r: ComputedUserReserve) => r.reserve.symbol === a.symbol
     );
     const userReserveB = userReserves.find(
       (r: ComputedUserReserve) => r.reserve.symbol === b.symbol
-    )
+    );
     const totalA = userReserveA ? userReserveA[key] : '0';
     const totalB = userReserveB ? userReserveB[key] : '0';
     return parseFloat(totalB) - parseFloat(totalA);
-  })
+  });
 }
 
 async function runAaveTransactionType(
@@ -239,7 +241,6 @@ export function calculateNewHealthFactor(
   userSummaryData: UserSummaryData,
   amount: string
 ): string {
-
   // https://sourcegraph.com/github.com/aave/aave-ui/-/blob/src/libs/pool-data-provider/hooks/use-v2-protocol-data-with-rpc.tsx?L108
   const formattedUsdPriceEth = BigNumber.from(10)
     .pow(18 + 8)

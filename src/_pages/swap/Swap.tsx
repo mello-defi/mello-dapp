@@ -83,7 +83,7 @@ export default function Swap() {
     if (fetchingPriceError) {
       setFetchingPriceError('');
     }
-  }
+  };
 
   const updateExchangeRate = async (
     amount: string,
@@ -99,6 +99,7 @@ export default function Swap() {
         setFetchingPrices(true);
         const srcAmount: BigNumber = ethers.utils.parseUnits(amount, srcToken.decimals);
         const rate = await getExchangeRate(srcToken, destToken, srcAmount.toString());
+        console.log('rate', rate);
         setPriceRoute(rate);
         setSourceFiatAmount(parseFloat(rate.srcUSD));
         setDestinationFiatAmount(parseFloat(rate.destUSD));
@@ -113,7 +114,6 @@ export default function Swap() {
       setSourceTokenDisabled(false);
     }
   };
-
 
   const handleSwap = async () => {
     if (provider && destinationToken && priceRoute && userAddress) {
@@ -151,7 +151,7 @@ export default function Swap() {
           destinationToken,
           userAddress,
           priceRoute,
-          10
+          slippagePercentage
         );
         const swapTxHash = await executeEthTransaction(tx, provider, false);
         setSwapTransactionHash(swapTxHash);
@@ -237,6 +237,7 @@ export default function Swap() {
       <TransactionError transactionError={fetchingPriceError} />
       {/*<SlippageControl slippage={slippage}/>*/}
       <SwapPriceInformation
+        setSlippagePercentage={setSlippagePercentage}
         fetchingPrices={fetchingPrices}
         destinationToken={destinationToken}
         priceRoute={priceRoute}

@@ -122,7 +122,7 @@ export default function SendCrypto() {
     if (sendTransactionHash) {
       setSendTransactionHash('');
     }
-  }, [token, amountToSend])
+  }, [token, amountToSend]);
   return (
     <div className={'flex flex-col'}>
       <CryptoAmountInput

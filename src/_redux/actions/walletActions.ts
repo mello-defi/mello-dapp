@@ -16,12 +16,15 @@ export const getBalanceForTokenAction = (balance: WalletTokenBalances): WalletAc
   };
 };
 
-export const toggleBalanceIsStaleAction = (tokenSymbol: CryptoCurrencySymbol, isStale: boolean): WalletActionTypes => {
+export const toggleBalanceIsStaleAction = (
+  tokenSymbol: CryptoCurrencySymbol,
+  isStale: boolean
+): WalletActionTypes => {
   return {
     type: TOGGLE_BALANCE_IS_STALE,
     payload: {
       isStale,
-      tokenSymbol: tokenSymbol,
+      tokenSymbol: tokenSymbol
     }
   };
 };

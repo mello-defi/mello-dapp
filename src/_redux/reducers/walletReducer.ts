@@ -8,7 +8,7 @@ import {
 
 const initialState: WalletState = {
   address: undefined,
-  balances: {},
+  balances: {}
 };
 
 export const getWalletReducer = (
@@ -44,7 +44,7 @@ export const getWalletReducer = (
       }
       return {
         ...state
-      }
+      };
     default:
       return state;
   }

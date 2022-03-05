@@ -22,7 +22,7 @@ export default function AaveFunctionContent({
   children
 }: {
   reserveTitle: string;
-  reserve: ComputedReserveData,
+  reserve: ComputedReserveData;
   summaryTitle: string;
   userBalance: BigNumber | undefined;
   tokenPrice: number;
@@ -54,7 +54,7 @@ export default function AaveFunctionContent({
       </div>
 
       <div className={'w-full md:w-1/2 flex flex-col my-2 md:my-0'}>
-        <NextHealthFactor reserve={reserve} amount={amount}  />
+        <NextHealthFactor reserve={reserve} amount={amount} />
         <TransactionAmountSummary tokenPrice={tokenPrice} title={summaryTitle} amount={amount} />
         {token && (
           <Button

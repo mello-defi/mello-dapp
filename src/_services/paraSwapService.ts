@@ -78,7 +78,7 @@ export async function buildSwapTransaction(
   destinationToken: TokenDefinition,
   userAddress: string,
   route: OptimalRate,
-  slippagePercentage = 1
+  slippagePercentage: number
 ): Promise<Transaction> {
   const destinationAmountWithSlippage = new BigNumberZD(route.destAmount)
     .multipliedBy(100 - slippagePercentage)

@@ -8,7 +8,7 @@ import { Check, ExpandLess, ExpandMore } from '@mui/icons-material';
 export default function TokenSelectDropdown({
   selectedToken,
   onSelectToken,
-  disabled,
+  disabled
 }: {
   selectedToken?: TokenDefinition;
   onSelectToken: (token: TokenDefinition) => void;

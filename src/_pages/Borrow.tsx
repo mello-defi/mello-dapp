@@ -87,25 +87,26 @@ export default function Borrow() {
       {userSummary && <CurrentHealthFactor healthFactor={userSummary.healthFactor} />}
       <div>
         {userSummary && marketPrices && marketPrices.length > 0 && aaveReserves ? (
-          sortUserReservesByKey(aaveReserves, userSummary.reservesData, 'totalBorrowsUSD')
-            .map((reserve: ComputedReserveData) => {
-            return (
-              <AaveReserve
-                token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
-                aaveSection={AaveSection.Borrow}
-                key={reserve.symbol}
-                reserve={reserve}
-                maxBorrowAmount={convertCryptoAmounts(
-                  userSummary.availableBorrowsETH,
-                  getMarketDataForSymbol(marketPrices, CryptoCurrencySymbol.ETH).current_price,
-                  getMarketDataForSymbol(marketPrices, reserve.symbol).current_price
-                ).toFixed(6)}
-                userReserve={userSummary.reservesData.find(
-                  (r) => r.reserve.symbol === reserve.symbol
-                )}
-              />
-            );
-          })
+          sortUserReservesByKey(aaveReserves, userSummary.reservesData, 'totalBorrowsUSD').map(
+            (reserve: ComputedReserveData) => {
+              return (
+                <AaveReserve
+                  token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
+                  aaveSection={AaveSection.Borrow}
+                  key={reserve.symbol}
+                  reserve={reserve}
+                  maxBorrowAmount={convertCryptoAmounts(
+                    userSummary.availableBorrowsETH,
+                    getMarketDataForSymbol(marketPrices, CryptoCurrencySymbol.ETH).current_price,
+                    getMarketDataForSymbol(marketPrices, reserve.symbol).current_price
+                  ).toFixed(6)}
+                  userReserve={userSummary.reservesData.find(
+                    (r) => r.reserve.symbol === reserve.symbol
+                  )}
+                />
+              );
+            }
+          )
         ) : (
           <AaveReservesSkeleton />
         )}

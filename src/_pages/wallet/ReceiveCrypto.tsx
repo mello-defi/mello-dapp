@@ -9,7 +9,7 @@ import { AssignmentTurnedInOutlined, ContentCopyOutlined } from '@mui/icons-mate
 
 enum ReceiveCryptoOption {
   ShowQrCode = 0,
-  ShowAddress = 1,
+  ShowAddress = 1
 }
 
 export default function ReceiveCrypto() {
@@ -31,9 +31,11 @@ export default function ReceiveCrypto() {
           'flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0 space-x-0 md:space-x-2'
         }
       >
-        <Button className={'w-full md:w-1/2'}
-                onClick={() => setOption(ReceiveCryptoOption.ShowAddress)}
-                disabled={!userAddress}>
+        <Button
+          className={'w-full md:w-1/2'}
+          onClick={() => setOption(ReceiveCryptoOption.ShowAddress)}
+          disabled={!userAddress}
+        >
           Display address
         </Button>
         <Button
@@ -54,9 +56,12 @@ export default function ReceiveCrypto() {
               {option === ReceiveCryptoOption.ShowAddress && (
                 <div
                   onClick={copyToClipboard}
-                  className={'text-center w-full text-body-smaller sm:text-lg bg-gray-100 hover:bg-gray-200 cursor-pointer transition rounded-2xl py-4 px-2 flex-row-center'}>
+                  className={
+                    'text-center w-full text-body-smaller sm:text-lg bg-gray-100 hover:bg-gray-200 cursor-pointer transition rounded-2xl py-4 px-2 flex-row-center'
+                  }
+                >
                   <span>{userAddress}</span>
-                  <span className={"ml-2 mb-1"}>
+                  <span className={'ml-2 mb-1'}>
                     {addressCopied ? (
                       <AssignmentTurnedInOutlined className={'h-5 w-5 text-color-light'} />
                     ) : (

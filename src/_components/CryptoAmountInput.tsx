@@ -95,7 +95,11 @@ export default function CryptoAmountInput({
           </div>
         </div>
       </div>
-      <div className={'flex flex-row my-3 sm:my-2 w-full justify-between text-color-light text-md'}>
+      <div
+        className={
+          'flex flex-col items-start sm:items-center sm:flex-row my-3 sm:my-2 w-full justify-between text-color-light text-md'
+        }
+      >
         {tokenPrice ? (
           <div className={'text-left font-mono'}>
             ${amountInFiat.toLocaleString(undefined, { maximumFractionDigits: 6 })}
@@ -104,7 +108,7 @@ export default function CryptoAmountInput({
           <span>&nbsp;</span>
         )}
         {token && (
-          <div className={'text-right px-1 flex-row-center'}>
+          <div className={'text-right px-0 sm:px-1 flex-row-center'}>
             Balance:{' '}
             {userBalance ? (
               <div className={'font-mono ml-1'}>
@@ -121,7 +125,7 @@ export default function CryptoAmountInput({
                   amountChanged(ethers.utils.formatUnits(userBalance, token?.decimals));
                 }}
                 className={
-                  'rounded-2xl text-body-smaller px-2 py-1 bg-gray-200 hover:bg-gray-300  transition  ml-1 flex-row-center my-auto cursor-pointer'
+                  'rounded-2xl text-body-smaller px-2 py-1 bg-gray-200 hover:bg-gray-300 transition ml-1 flex-row-center cursor-pointer'
                 }
               >
                 Max

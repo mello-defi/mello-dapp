@@ -57,7 +57,7 @@ export default function AmountInputWithPercentages({
         targetValue = targetValue.substring(0, targetValue.length - 1);
       }
       if (!targetValue) {
-        setInputAmount('0.0')
+        setInputAmount('0.0');
       } else {
         let val: BigNumber = ethers.utils.parseUnits(targetValue, tokenDecimals);
         const baseAmountBigNumber = ethers.utils.parseUnits(baseAmount, tokenDecimals);
