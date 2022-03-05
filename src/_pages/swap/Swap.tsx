@@ -140,7 +140,7 @@ export default function Swap() {
             );
             setApprovalTransactionHAsh(approvalTxHash);
             const approvalTx: TransactionResponse = await provider.getTransaction(approvalTxHash);
-            await approvalTx.wait(1);
+            await approvalTx.wait(2);
             const allowance2: Allowance = await getAllowance(userAddress, sourceToken.address);
             console.log('ALLOWANCE2', allowance2.allowance.toString());
           }
@@ -161,6 +161,8 @@ export default function Swap() {
         setSwapConfirmed(true);
         setSourceAmount('0.0');
         setDestinationAmount('0.0');
+        setSourceFiatAmount(0);
+        setDestinationFiatAmount(0);
         setTransactionError('');
         setIsSwapping(false);
         setIsApproving(false);

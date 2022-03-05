@@ -22,7 +22,6 @@ export const setAddress = (address: string) => {
 
 export const toggleBalanceIsStale = (tokenSymbol: CryptoCurrencySymbol, isStale: boolean) => {
   return (dispatch: Dispatch<WalletActionTypes>) => {
-    console.log('toggleBalanceIsStale', tokenSymbol, isStale);
     dispatch(toggleBalanceIsStaleAction(tokenSymbol, isStale));
   };
 };

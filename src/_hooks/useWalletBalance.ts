@@ -20,22 +20,15 @@ const useWalletBalance = (token?: TokenDefinition) => {
 
   useEffect(() => {
     if (token && provider && userAddress) {
-      console.log(
-        'useWalletBalance useeffect',
-        token.symbol,
-        walletBalances[token.symbol]?.isStale
-      );
       if (
         walletBalances[token.symbol]?.isStale ||
         (!walletBalances[token.symbol] && (!(token.symbol in fetching) || !fetching[token.symbol]))
       ) {
-        console.log('useWalletBalance useeffect TRUE', token.symbol, 'fetching');
         fetching[token.symbol] = true;
         dispatch(
           getBalanceForToken(token, provider, userAddress, walletBalances[token.symbol]?.isStale)
         );
       } else {
-        console.log('useWalletBalance useeffect FALSE', token.symbol, 'returning');
         const tokenBalance = walletBalances[token.symbol];
         if (tokenBalance) {
           setUserBalance(tokenBalance.balance);
@@ -43,9 +36,6 @@ const useWalletBalance = (token?: TokenDefinition) => {
         fetching[token.symbol] = false;
       }
     }
-    // // return () => {
-    //   // cleanup
-    // };
   }, [walletBalances, token, userAddress]);
 
   return userBalance;

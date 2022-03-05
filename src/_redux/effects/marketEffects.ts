@@ -33,7 +33,6 @@ export const getMarketPrices = (currency: FiatCurrencyName = FiatCurrencyName.US
         expiration: now + cacheExpirationInMs
       };
       marketCache.set(currency, record);
-      console.log('DISPATCHIN GT MARKET PRICE ACTION FROM FRESH', data);
       dispatch(getMarketPricesAction(data));
     }
   };
