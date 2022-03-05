@@ -10,6 +10,7 @@ const initialState: UIState = {
   sidebarOpen: false,
   activeTab: NavTab.SWAP,
   navLinks: [
+    { tab: NavTab.DASHBOARD, title: 'Dashboard' },
     { tab: NavTab.DEPOSIT, title: 'Deposit' },
     { tab: NavTab.BORROW, title: 'Borrow' },
     { tab: NavTab.SWAP, title: 'Swap' },

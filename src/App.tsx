@@ -15,6 +15,7 @@ import { EVMChainIdNumerical, EvmNetworkDefinition, evmNetworks } from '_enums/n
 import { setNetwork } from '_redux/effects/web3Effects';
 import Fund from '_pages/Fund';
 import Sidebar from '_components/Sidebar';
+import Dashboard from '_pages/Dashboard';
 
 function EthereumMainnetGuard() {
   const dispatch = useDispatch();
@@ -44,6 +45,12 @@ interface TabContentDefinition {
   requiresLogin: boolean;
 }
 const tabsContent: TabContentDefinition[] = [
+  {
+    tab: NavTab.DASHBOARD,
+    component: <Dashboard />,
+    hideOnEthereumMainnet: true,
+    requiresLogin: true
+  },
   {
     tab: NavTab.DEPOSIT,
     component: <Deposit />,

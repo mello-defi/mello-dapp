@@ -29,7 +29,7 @@ const WalletActionButton = ({
 }) => {
   return (
     <Button
-      className={`w-1/2 flex flex-row justify-center ${
+      className={`w-full md:w-1/2 flex flex-row justify-center ${
         selectedWalletPageTab === walletPageTab ? 'opacity-50' : ''
       }`}
       onClick={() => onClick(walletPageTab)}
@@ -81,9 +81,9 @@ export default function Wallet() {
         </div>
       </DefaultTransition>
       {/*<HorizontalLineBreak/>*/}
-      <div className={'rounded-2xl bg-gray-50 p-2'}>
+      <div className={'rounded-2xl bg-gray-50 py-2'}>
         {Object.values(tokenSet).map((token: TokenDefinition) => (
-          <WalletBalance key={token.symbol} token={token} />
+          <WalletBalance key={token.symbol} token={token} hideZeroBalance={false} />
         ))}
       </div>
     </div>

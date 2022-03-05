@@ -7,7 +7,7 @@ import { getMarketDataForSymbol } from '_services/aaveService';
 import { formatTokenValueInFiat } from '_services/priceService';
 import { BigNumber, ethers } from 'ethers';
 
-export default function WalletBalance({ token }: { token: TokenDefinition }) {
+export default function WalletBalance({ token, hideZeroBalance }: { token: TokenDefinition, hideZeroBalance: boolean }) {
   const userBalance: BigNumber | undefined = useWalletBalance(token);
   const marketPrices = useMarketPrices();
   const [attemptedToGetMarketData, setAttemptedToGetMarketData] = useState(false);
@@ -25,7 +25,7 @@ export default function WalletBalance({ token }: { token: TokenDefinition }) {
   }, [attemptedToGetMarketData]);
   return (
     <>
-      {marketData && userBalance && (
+      {marketData && userBalance && (userBalance?.gt(0) || !hideZeroBalance) && (
         <div className={'flex-row-center justify-between my-2 space-y-4 px-2'} key={token.symbol}>
           <div className={'flex-row-center space-y-1'}>
             <img src={token.image} className={'w-10 h-10 rounded-full'} alt={token.symbol} />
@@ -46,7 +46,6 @@ export default function WalletBalance({ token }: { token: TokenDefinition }) {
                 ethers.utils.formatUnits(userBalance, token.decimals)
               )}
             </span>
-            <span className={'text-color-light'}> </span>
           </div>
         </div>
       )}
