@@ -55,15 +55,13 @@ export default function Dashboard() {
       }
       let totalWalletBalances = 0;
       for (const tokenKey of Object.keys(walletBalances)) {
+        const symbol = tokenKey as CryptoCurrencySymbol;
         const data = getMarketDataForSymbol(marketPrices, tokenKey);
-        console.log(data);
-        console.log(tokenKey);
-        // @ts-ignore
-        const balance = walletBalances[tokenKey].balance.toString();
-        // @ts-ignore
-        const decimals = tokenSet[tokenKey].decimals;
-        // @ts-ignore
-        totalWalletBalances += parseFloat(ethers.utils.formatUnits(balance, decimals)) * data.current_price;
+        const balance = walletBalances[symbol]?.balance.toString() || 0;
+        const decimals = tokenSet[symbol]?.decimals || 0;
+        if (data && balance && decimals) {
+          totalWalletBalances += parseFloat(ethers.utils.formatUnits(balance, decimals)) * data.current_price;
+        }
       }
       setTotalAssets(totalAaveDeposits + totalWalletBalances);
       setTotalDebts(totalAaveDebts);
