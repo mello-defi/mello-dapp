@@ -160,14 +160,10 @@ export async function runAaveApprovalTransaction(
 export const getMarketDataForSymbol = (
   marketDataResults: MarketDataResult[],
   symbol: string
-): MarketDataResult => {
-  const marketData: MarketDataResult | undefined = marketDataResults?.find(
+): MarketDataResult | undefined => {
+  return marketDataResults?.find(
     (m) => m.symbol === (symbol.startsWith('W') ? symbol.substring(1) : symbol).toLocaleLowerCase()
   );
-  if (marketData) {
-    return marketData;
-  }
-  throw new Error('No market data found for ' + symbol);
 };
 export const getFiatValueForUserReserve = (
   marketDataResults: MarketDataResult[],

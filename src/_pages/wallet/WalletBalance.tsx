@@ -22,8 +22,10 @@ export default function WalletBalance({
     if (!attemptedToGetMarketData && marketPrices) {
       try {
         const data = getMarketDataForSymbol(marketPrices, token.symbol);
-        setMarketData(data);
-        setAttemptedToGetMarketData(true);
+        if (data) {
+          setMarketData(data);
+          setAttemptedToGetMarketData(true);
+        }
       } catch (e: any) {
         console.log(e);
       }

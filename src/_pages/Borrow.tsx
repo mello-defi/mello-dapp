@@ -27,7 +27,23 @@ export default function Borrow() {
   const userSummary = useAaveUserSummary();
   const aaveReserves = useAaveReserves();
   const [ethPrice, setEthPrice] = React.useState<number | undefined>(undefined);
+  // const [maxBorrowAmount, setMaxBorrowAmount] = React.useState<string | undefined>(undefined);
   console.log('\nBorrow.tsx: market prices', marketPrices);
+
+  const getMaxBorrowAmount = (reserve:ComputedReserveData): string => {
+    if (userSummary && reserve && marketPrices) {
+      const ethMarketData = getMarketDataForSymbol(marketPrices, CryptoCurrencySymbol.ETH);
+      const tokenMarketData = getMarketDataForSymbol(marketPrices, reserve.symbol);
+      if (ethMarketData && tokenMarketData) {
+        return convertCryptoAmounts(
+          userSummary.availableBorrowsETH,
+          ethMarketData.current_price,
+          tokenMarketData.current_price,
+        ).toFixed(6)
+      }
+    }
+    return '';
+  }
 
   useEffect(() => {
     if (marketPrices && marketPrices.length > 0 && !ethPrice) {
@@ -39,6 +55,7 @@ export default function Borrow() {
       }
     }
   }, [marketPrices]);
+
 
   console.log(
     'userSummary && userSummary.reservesData',
@@ -95,11 +112,7 @@ export default function Borrow() {
                   aaveSection={AaveSection.Borrow}
                   key={reserve.symbol}
                   reserve={reserve}
-                  maxBorrowAmount={convertCryptoAmounts(
-                    userSummary.availableBorrowsETH,
-                    getMarketDataForSymbol(marketPrices, CryptoCurrencySymbol.ETH).current_price,
-                    getMarketDataForSymbol(marketPrices, reserve.symbol).current_price
-                  ).toFixed(6)}
+                  maxBorrowAmount={getMaxBorrowAmount(reserve)}
                   userReserve={userSummary.reservesData.find(
                     (r) => r.reserve.symbol === reserve.symbol
                   )}

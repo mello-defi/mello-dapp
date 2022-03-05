@@ -73,7 +73,9 @@ export default function AaveReserve({
   useEffect(() => {
     if (token && marketPrices) {
       const marketPrice = getMarketDataForSymbol(marketPrices, token.symbol);
-      setMarketPriceForToken(marketPrice.current_price);
+      if (marketPrice) {
+        setMarketPriceForToken(marketPrice.current_price);
+      }
     }
   }, [token, marketPrices]);
 
