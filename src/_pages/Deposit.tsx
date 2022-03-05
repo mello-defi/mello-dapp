@@ -14,6 +14,7 @@ import AaveReservesSkeleton from '_components/aave/AaveReservesSkeleton';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import useAaveReserves from '_hooks/useAaveReserves';
 import { findTokenByAddress } from '_utils/index';
+import { sortUserReservesByKey } from '_services/aaveService';
 
 export default function Deposit() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -52,15 +53,14 @@ export default function Deposit() {
         <UserReservesSkeleton />
       )}
       {userSummary && <CurrentHealthFactor healthFactor={userSummary.healthFactor} />}
-      {userSummary ? (
-        aaveReserves?.map((reserve: ComputedReserveData) => {
+      {userSummary && aaveReserves ? (
+        sortUserReservesByKey(aaveReserves, userSummary.reservesData, 'underlyingBalanceUSD')
+          .map((reserve: ComputedReserveData) => {
           return (
-            // <></>
             <AaveReserve
               token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
               aaveSection={AaveSection.Deposit}
               key={reserve.symbol}
-              userSummaryData={userSummary}
               reserve={reserve}
               userReserve={userSummary.reservesData.find(
                 (r: ComputedUserReserve) => r.reserve.symbol === reserve.symbol

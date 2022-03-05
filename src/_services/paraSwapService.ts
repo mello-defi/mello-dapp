@@ -53,7 +53,7 @@ export async function getAllowance(
 ): Promise<Allowance> {
   const response: Allowance | APIError = await paraSwap.getAllowance(walletAddress, tokenAddress);
 
-  console.log(response);
+  console.log('ALLOWANCE RESPONSE', response);
   if (responseIsError(response)) {
     throw new Error(`Error getting allowance: ${response.message}`);
   }

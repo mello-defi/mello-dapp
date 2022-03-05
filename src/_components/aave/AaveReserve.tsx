@@ -38,14 +38,12 @@ export default function AaveReserve({
   reserve,
   userReserve,
   aaveSection,
-  userSummaryData,
   maxBorrowAmount,
   token
 }: {
   reserve: ComputedReserveData;
   userReserve?: ComputedUserReserve;
   aaveSection: AaveSection;
-  userSummaryData: UserSummaryData;
   maxBorrowAmount?: string;
   token: TokenDefinition;
 }) {
@@ -62,7 +60,6 @@ export default function AaveReserve({
   const [repaySubmitting, setRepaySubmitting] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState<string>('0.0');
   const [depositSubmitting, setDepositSubmitting] = useState<boolean>(false);
-  const [updatedHealthFactor, setUpdatedHealthFactor] = useState<string>('');
   const [withdrawSubmitting, setWithdrawSubmitting] = useState<boolean>(false);
   const [tokenApproved, setTokenApproved] = useState<boolean>(false);
   const [approvalTransactionHash, setApprovalTransactionHash] = useState<string>('');
@@ -103,13 +100,6 @@ export default function AaveReserve({
       dispatch(getBalanceForToken(token, provider, userAddress, true));
     }
   };
-
-  useEffect(() => {
-    if (reserve && depositAmount && parseFloat(depositAmount) > 0) {
-      // sethh calculateNewHealthFactor(reserve)
-      // setUpdatedHealthFactor(calculateNewHealthFactor(reserve, userSummaryData, depositAmount));
-    }
-  }, [depositAmount]);
 
   const handleAaveFunction = async (
     amount: string,
@@ -243,6 +233,7 @@ export default function AaveReserve({
                     {aaveFunction === AaveFunction.Deposit && (
                       <AaveFunctionContent
                         reserveTitle={'Wallet'}
+                        reserve={reserve}
                         summaryTitle={'Amount to deposit'}
                         userBalance={userBalance}
                         tokenPrice={marketPriceForToken}
@@ -266,6 +257,7 @@ export default function AaveReserve({
                       <AaveFunctionContent
                         reserveTitle={'Deposited'}
                         summaryTitle={'Amount to withdraw'}
+                        reserve={reserve}
                         userBalance={
                           userReserve
                             ? ethers.utils.parseUnits(userReserve.underlyingBalance, token.decimals)
@@ -294,6 +286,7 @@ export default function AaveReserve({
                       <AaveFunctionContent
                         reserveTitle={'Borrowing power'}
                         summaryTitle={'Amount to borrow'}
+                        reserve={reserve}
                         userBalance={
                           maxBorrowAmount
                             ? ethers.utils.parseUnits(maxBorrowAmount, token.decimals)
@@ -322,6 +315,7 @@ export default function AaveReserve({
                         }
                         tokenPrice={marketPriceForToken}
                         amount={repayAmount}
+                        reserve={reserve}
                         setAmount={setRepayAmount}
                         token={token}
                         buttonOnClick={handleRepay}

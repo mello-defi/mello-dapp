@@ -19,6 +19,8 @@ import LendingPoolInterface from '@aave/protocol-js/dist/tx-builder/interfaces/v
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { MarketDataResult } from '_services/marketDataService';
 import { formatTokenValueInFiat } from '_services/priceService';
+import { decimalPlacesAreValid } from '_utils/index';
+import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 
 const defaultOptions: DefaultOptions = {
   watchQuery: {
@@ -193,6 +195,24 @@ export async function runAaveActionTransaction(
   return runAaveTransactionType(txs, provider, eEthereumTxType.DLP_ACTION, waitForConfirmation);
 }
 
+export type ComputedUserReserveProperty =
+  | 'underlyingBalanceUSD'
+  | 'totalBorrowsUSD';
+
+export function sortUserReservesByKey(aaveReserves: ComputedReserveData[], userReserves: ComputedUserReserve[], key: ComputedUserReserveProperty): ComputedReserveData[] {
+  return aaveReserves.sort((a, b) => {
+    const userReserveA = userReserves.find(
+      (r: ComputedUserReserve) => r.reserve.symbol === a.symbol
+    );
+    const userReserveB = userReserves.find(
+      (r: ComputedUserReserve) => r.reserve.symbol === b.symbol
+    )
+    const totalA = userReserveA ? userReserveA[key] : '0';
+    const totalB = userReserveB ? userReserveB[key] : '0';
+    return parseFloat(totalB) - parseFloat(totalA);
+  })
+}
+
 async function runAaveTransactionType(
   txs: EthereumTransactionTypeExtended[],
   provider: ethers.providers.Web3Provider,
@@ -219,19 +239,32 @@ export function calculateNewHealthFactor(
   userSummaryData: UserSummaryData,
   amount: string
 ): string {
+
+  // https://sourcegraph.com/github.com/aave/aave-ui/-/blob/src/libs/pool-data-provider/hooks/use-v2-protocol-data-with-rpc.tsx?L108
   const formattedUsdPriceEth = BigNumber.from(10)
     .pow(18 + 8)
     // @ts-ignore
     .div(reserveData.price.oracle.usdPriceEth.toString());
-  const amountToBorrowInUsd = valueToBigNumber(ethers.utils.parseUnits(amount, 10).toString())
-    .multipliedBy(reserveData.price.priceInEth)
-    .multipliedBy(ethers.utils.formatUnits(formattedUsdPriceEth, 18));
+  try {
+    // @ts-ignore
+    // const amountToBorrowInUsd = valueToBigNumber(ethers.utils.parseUnits(amount, 10).toString())
+    //   // @ts-ignore
+    //   .multipliedBy(reserveData.price.oracle.usdPriceEth || '0')
+    //   .multipliedBy(formattedUsdPriceEth.toString());
+    //
+    const amountToBorrowInUsd = valueToBigNumber(ethers.utils.parseUnits(amount, 10).toString())
+      .multipliedBy(reserveData.price.priceInEth)
+      .multipliedBy(ethers.utils.formatUnits(formattedUsdPriceEth, 18));
 
-  return calculateHealthFactorFromBalancesBigUnits(
-    userSummaryData.totalCollateralUSD,
-    valueToBigNumber(userSummaryData.totalBorrowsUSD).plus(amountToBorrowInUsd),
-    userSummaryData.currentLiquidationThreshold
-  ).toFixed(2);
+    return calculateHealthFactorFromBalancesBigUnits(
+      userSummaryData.totalCollateralUSD,
+      valueToBigNumber(userSummaryData.totalBorrowsUSD).plus(amountToBorrowInUsd),
+      userSummaryData.currentLiquidationThreshold
+    ).toFixed(2);
+  } catch (e) {
+    console.log(e);
+  }
+  return '';
 }
 
 function getLendingPool(

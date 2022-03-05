@@ -3,7 +3,7 @@ import aaveLogo from '_assets/images/logos/aave.svg';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import { getMarketDataForSymbol } from '_services/aaveService';
+import { getMarketDataForSymbol, sortUserReservesByKey } from '_services/aaveService';
 import { ComputedReserveData } from '@aave/protocol-js';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveListItem';
@@ -86,14 +86,14 @@ export default function Borrow() {
       </span>
       {userSummary && <CurrentHealthFactor healthFactor={userSummary.healthFactor} />}
       <div>
-        {userSummary && marketPrices && marketPrices.length > 0 ? (
-          aaveReserves?.map((reserve: ComputedReserveData) => {
+        {userSummary && marketPrices && marketPrices.length > 0 && aaveReserves ? (
+          sortUserReservesByKey(aaveReserves, userSummary.reservesData, 'totalBorrowsUSD')
+            .map((reserve: ComputedReserveData) => {
             return (
               <AaveReserve
                 token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
                 aaveSection={AaveSection.Borrow}
                 key={reserve.symbol}
-                userSummaryData={userSummary}
                 reserve={reserve}
                 maxBorrowAmount={convertCryptoAmounts(
                   userSummary.availableBorrowsETH,

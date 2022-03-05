@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { BigNumber, ethers } from 'ethers';
+import { decimalPlacesAreValid } from '_utils/index';
 
 function PercentageButton({
   setAmountAsPercentage,
@@ -13,7 +14,7 @@ function PercentageButton({
 }) {
   return (
     <Button
-      className={'h-full w-1/5'}
+      className={'h-10 w-1/5'}
       disabled={!userBalance || parseFloat(userBalance) === 0}
       variant={ButtonVariant.SECONDARY}
       size={ButtonSize.SMALL}
@@ -51,18 +52,26 @@ export default function AmountInputWithPercentages({
 
   const handleAmountChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (baseAmount) {
-      let val: BigNumber = ethers.utils.parseUnits(event.target.value, tokenDecimals);
-      const baseAmountBigNumber = ethers.utils.parseUnits(baseAmount, tokenDecimals);
-      if (val.gt(baseAmountBigNumber)) {
-        val = baseAmountBigNumber;
-      } else if (val.lt('0')) {
-        val = BigNumber.from('0');
+      let targetValue = event.target.value;
+      if (!decimalPlacesAreValid(targetValue.toString(), tokenDecimals)) {
+        targetValue = targetValue.substring(0, targetValue.length - 1);
       }
-      setInputAmount(ethers.utils.formatUnits(val, tokenDecimals));
+      if (!targetValue) {
+        setInputAmount('0.0')
+      } else {
+        let val: BigNumber = ethers.utils.parseUnits(targetValue, tokenDecimals);
+        const baseAmountBigNumber = ethers.utils.parseUnits(baseAmount, tokenDecimals);
+        if (val.gt(baseAmountBigNumber)) {
+          val = baseAmountBigNumber;
+        } else if (val.lt('0')) {
+          val = BigNumber.from('0');
+        }
+        setInputAmount(ethers.utils.formatUnits(val, tokenDecimals));
+      }
     }
   };
   return (
-    <div className={'my-1'}>
+    <div className={'mt-2 md:mt-1'}>
       <div>
         <input
           min={0}
@@ -71,12 +80,12 @@ export default function AmountInputWithPercentages({
           value={inputAmount}
           onChange={handleAmountChanged}
           type={'number'}
-          className={`bg-white font-mono w-full my-2 border border-gray-100 transition hover:border-gray-300 focus:border-gray-300 focus:outline-none rounded-lg px-4 py-2 ${
+          className={`bg-white font-mono w-full border border-gray-100 transition hover:border-gray-300 focus:border-gray-300 focus:outline-none rounded-lg px-4 py-2 ${
             !baseAmount || parseFloat(baseAmount) === 0 ? 'text-color-light' : ''
           }`}
         />
       </div>
-      <div className={'flex space-x-2 flex-row justify-between my-1'}>
+      <div className={'flex space-x-2 flex-row justify-between mt-2'}>
         <PercentageButton
           percentage={25}
           userBalance={baseAmount}

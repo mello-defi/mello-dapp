@@ -2,14 +2,17 @@ import { TokenDefinition } from '_enums/tokens';
 import UserReserveBalance from '_components/aave/UserReserveBalance';
 import AmountInputWithPercentages from '_components/aave/AmountInputWithPercentages';
 import TransactionAmountSummary from '_components/aave/TransactionAmountSummary';
-import { Button } from '_components/core/Buttons';
+import { Button, ButtonSize } from '_components/core/Buttons';
 import React from 'react';
 import { BigNumber, ethers } from 'ethers';
+import { ComputedReserveData } from '@aave/protocol-js';
+import NextHealthFactor from '_components/aave/NextHealthFactor';
 
 export default function AaveFunctionContent({
   reserveTitle,
   summaryTitle,
   userBalance,
+  reserve,
   tokenPrice,
   amount,
   setAmount,
@@ -19,6 +22,7 @@ export default function AaveFunctionContent({
   children
 }: {
   reserveTitle: string;
+  reserve: ComputedReserveData,
   summaryTitle: string;
   userBalance: BigNumber | undefined;
   tokenPrice: number;
@@ -30,7 +34,7 @@ export default function AaveFunctionContent({
   children: any;
 }) {
   return (
-    <div className={'flex flex-col md:flex-row justify-between space-x-0 md:space-x-2 space-y-2'}>
+    <div className={'flex flex-col md:flex-row justify-between space-x-0 md:space-x-2'}>
       <div className={'w-full md:w-1/2'}>
         {userBalance && (
           <UserReserveBalance
@@ -49,14 +53,14 @@ export default function AaveFunctionContent({
         )}
       </div>
 
-      <div className={'w-full md:w-1/2 flex flex-col justify-end py-0 md:py-2'}>
-        {/*<NextHealthFactor />*/}
+      <div className={'w-full md:w-1/2 flex flex-col my-2 md:my-0'}>
+        <NextHealthFactor reserve={reserve} amount={amount}  />
         <TransactionAmountSummary tokenPrice={tokenPrice} title={summaryTitle} amount={amount} />
         {token && (
           <Button
             onClick={buttonOnClick}
             disabled={buttonDisabled}
-            className={'flex-row-center justify-center w-full'}
+            className={'flex-row-center justify-center w-full my-0.5'}
           >
             {children}
           </Button>
