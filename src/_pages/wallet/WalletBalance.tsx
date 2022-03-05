@@ -7,13 +7,19 @@ import { getMarketDataForSymbol } from '_services/aaveService';
 import { formatTokenValueInFiat } from '_services/priceService';
 import { BigNumber, ethers } from 'ethers';
 
-export default function WalletBalance({ token, hideZeroBalance }: { token: TokenDefinition, hideZeroBalance: boolean }) {
+export default function WalletBalance({
+  token,
+  hideZeroBalance
+}: {
+  token: TokenDefinition;
+  hideZeroBalance: boolean;
+}) {
   const userBalance: BigNumber | undefined = useWalletBalance(token);
   const marketPrices = useMarketPrices();
   const [attemptedToGetMarketData, setAttemptedToGetMarketData] = useState(false);
   const [marketData, setMarketData] = useState<MarketDataResult | null>(null);
   useEffect(() => {
-    if (!attemptedToGetMarketData) {
+    if (!attemptedToGetMarketData && marketPrices) {
       try {
         const data = getMarketDataForSymbol(marketPrices, token.symbol);
         setMarketData(data);
@@ -22,7 +28,7 @@ export default function WalletBalance({ token, hideZeroBalance }: { token: Token
         console.log(e);
       }
     }
-  }, [attemptedToGetMarketData]);
+  }, [attemptedToGetMarketData, marketPrices]);
   return (
     <>
       {marketData && userBalance && (userBalance?.gt(0) || !hideZeroBalance) && (

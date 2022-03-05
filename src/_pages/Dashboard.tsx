@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PoweredByLink from '_components/core/PoweredByLink';
 import aaveLogo from '_assets/images/logos/aave.svg';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
@@ -14,6 +14,12 @@ import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveLis
 import UserReservesSkeleton from '_components/aave/UserReservesSkeleton';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import useAaveReserves from '_hooks/useAaveReserves';
+import { WalletTokenBalance, WalletTokenBalances } from '_redux/types/walletTypes';
+import HealthFactorNumber from '_components/aave/HealthFactorNumber';
+import useMarketPrices from '_hooks/useMarketPrices';
+import { getMarketDataForSymbol } from '_services/aaveService';
+import { ethers } from 'ethers';
+import { CryptoCurrencySymbol } from '_enums/currency';
 
 function DashboardLink({text, navTab}: {text: string, navTab: NavTab }) {
   const dispatch = useDispatch();
@@ -30,12 +36,56 @@ function DashboardLink({text, navTab}: {text: string, navTab: NavTab }) {
 
 export default function Dashboard() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
-  const aaveReserves = useAaveReserves()
+  const walletBalances = useSelector((state: AppState) => state.wallet.balances);
+  // const aaveReserves = useAaveReserves()
   const userSummary = useAaveUserSummary();
+  const marketPrices = useMarketPrices();
+  const [totalAssets, setTotalAssets] = React.useState<number>(0);
+  const [totalDebts, setTotalDebts] = React.useState<number>(0);
+  const [healthFactor, setHealthFactor] = React.useState<string>('');
+
+  useEffect(() => {
+    if (userSummary && walletBalances && totalAssets === 0 && Object.keys(walletBalances).length > 0) {
+      // console.log()
+      let totalAaveDeposits = 0;
+      let totalAaveDebts = 0;
+      for (const reserve of userSummary.reservesData) {
+        totalAaveDeposits += parseFloat(reserve.underlyingBalanceUSD);
+        totalAaveDebts += parseFloat(reserve.totalBorrowsUSD);
+      }
+      let totalWalletBalances = 0;
+      for (const tokenKey of Object.keys(walletBalances)) {
+        const data = getMarketDataForSymbol(marketPrices, tokenKey);
+        console.log(data);
+        console.log(tokenKey);
+        // @ts-ignore
+        const balance = walletBalances[tokenKey].balance.toString();
+        // @ts-ignore
+        const decimals = tokenSet[tokenKey].decimals;
+        // @ts-ignore
+        totalWalletBalances += parseFloat(ethers.utils.formatUnits(balance, decimals)) * data.current_price;
+      }
+      setTotalAssets(totalAaveDeposits + totalWalletBalances);
+      setTotalDebts(totalAaveDebts);
+    }
+    if (!healthFactor && userSummary) {
+      setHealthFactor(parseFloat(userSummary.healthFactor).toFixed(2));
+    }
+  }, [userSummary, walletBalances])
+  // const totalAss
+
+
   return (
     <div>
       <div className={'flex-row-center justify-between'}>
         <span className={'text-header'}>Dashboard</span>
+      </div>
+      <HorizontalLineBreak />
+      <div className={'flex-row-center justify-evenly'}>
+        <div className={'bg-gray-100 rounded-2xl p-2'}>Net worth: <span className={"font-mono"}>${(totalAssets - totalDebts).toFixed(2)}</span></div>
+        <div className={'bg-gray-100 rounded-2xl p-2'}>Total assets: <span className={"font-mono"}>${totalAssets.toFixed(2)}</span> </div>
+        <div className={'bg-gray-100 rounded-2xl p-2'}>Total debts: <span className={"font-mono"}>${totalDebts.toFixed(2)}</span></div>
+        <div className={'bg-gray-100 rounded-2xl p-2'}>Health factor <span className={"font-mono"}><HealthFactorNumber healthFactor={healthFactor}/></span></div>
       </div>
       <HorizontalLineBreak />
       <div>
@@ -44,6 +94,7 @@ export default function Dashboard() {
           <WalletBalance key={token.symbol} token={token} hideZeroBalance={true} />
         ))}
       </div>
+      <HorizontalLineBreak />
       <div>
         <DashboardLink text={'Borrows'} navTab={NavTab.BORROW} />
         <div className={"mt-2"}>
@@ -73,6 +124,7 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+      <HorizontalLineBreak />
       <div>
         <DashboardLink text={'Deposits'} navTab={NavTab.DEPOSIT} />
         <div className={"mt-2"}>
