@@ -81,11 +81,11 @@ export default function Dashboard() {
         <span className={'text-header'}>Dashboard</span>
       </div>
       <HorizontalLineBreak />
-      <div className={'flex-row-center justify-evenly'}>
-        <div className={'bg-gray-100 rounded-2xl p-2'}>Net worth: <span className={"font-mono"}>${(totalAssets - totalDebts).toFixed(2)}</span></div>
-        <div className={'bg-gray-100 rounded-2xl p-2'}>Total assets: <span className={"font-mono"}>${totalAssets.toFixed(2)}</span> </div>
-        <div className={'bg-gray-100 rounded-2xl p-2'}>Total debts: <span className={"font-mono"}>${totalDebts.toFixed(2)}</span></div>
-        <div className={'bg-gray-100 rounded-2xl p-2'}>Health factor <span className={"font-mono"}><HealthFactorNumber healthFactor={healthFactor}/></span></div>
+      <div className={'flex-row-center justify-evenly flex-wrap'}>
+        <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>Net worth: <span className={"font-mono"}>${(totalAssets - totalDebts).toFixed(2)}</span></div>
+        <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>Total assets: <span className={"font-mono"}>${totalAssets.toFixed(2)}</span> </div>
+        <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>Total debts: <span className={"font-mono"}>${totalDebts.toFixed(2)}</span></div>
+        <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>Health factor <span className={"font-mono"}><HealthFactorNumber healthFactor={healthFactor}/></span></div>
       </div>
       <HorizontalLineBreak />
       <div>
