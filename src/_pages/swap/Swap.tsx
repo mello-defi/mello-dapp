@@ -140,9 +140,11 @@ export default function Swap() {
             );
             setApprovalTransactionHAsh(approvalTxHash);
             const approvalTx: TransactionResponse = await provider.getTransaction(approvalTxHash);
-            await approvalTx.wait(2);
-            const allowance2: Allowance = await getAllowance(userAddress, sourceToken.address);
-            console.log('ALLOWANCE2', allowance2.allowance.toString());
+            if (approvalTx) {
+              await approvalTx.wait(2);
+              const allowance2: Allowance = await getAllowance(userAddress, sourceToken.address);
+              console.log('ALLOWANCE2', allowance2.allowance.toString());
+            }
           }
         }
         setTokenIsApproved(true);
