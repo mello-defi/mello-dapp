@@ -57,10 +57,14 @@ export default function Dashboard() {
       for (const tokenKey of Object.keys(walletBalances)) {
         const symbol = tokenKey as CryptoCurrencySymbol;
         const data = getMarketDataForSymbol(marketPrices, tokenKey);
-        const balance = walletBalances[symbol] !== undefined ? walletBalances[symbol]?.balance.toString() : 0;
-        const decimals = tokenSet[symbol]?.decimals || 0;
-        if (data && balance && decimals) {
-          totalWalletBalances += parseFloat(ethers.utils.formatUnits(balance, decimals)) * data.current_price;
+        try {
+          const balance = walletBalances[symbol] !== undefined ? walletBalances[symbol]?.balance.toString() : 0;
+          const decimals = tokenSet[symbol]?.decimals || 0;
+          if (data && balance && decimals) {
+            totalWalletBalances += parseFloat(ethers.utils.formatUnits(balance, decimals)) * data.current_price;
+          }
+        } catch (error: any) {
+          console.log(error);
         }
       }
       setTotalAssets(totalAaveDeposits + totalWalletBalances);
