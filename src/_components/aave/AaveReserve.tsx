@@ -140,6 +140,8 @@ export default function AaveReserve({
       setFunctionSubmitting(false);
     }
   };
+
+  // REVIEW all methods almost identical
   const handleBorrow = async () => {
     if (borrowAmount && provider && userAddress) {
       await handleAaveFunction(

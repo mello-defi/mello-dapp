@@ -21,7 +21,7 @@ export default function CopyableText({
     >
       {text}
       {copied ? (
-        <AssignmentTurnedInOutlinedIcon className={`ml-2 text-green-500 h-7 w-7`} />
+        <AssignmentTurnedInOutlinedIcon className={`ml-2 text-color-light h-7 w-7`} />
       ) : (
         <ContentCopyOutlinedIcon className={'ml-2 text-color-light h-7 w-7'} />
       )}

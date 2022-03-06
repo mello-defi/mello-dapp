@@ -28,6 +28,7 @@ function RenBridge() {
   const [transactionStatus, setTransactionStatus] = React.useState('');
   const [transactionHash, setTransactionHash] = React.useState('');
 
+  // REVIEW needs huge cleanup
   const deposit = async () => {
     // @ts-ignore
     // console.log('userAddress', userAddress);
@@ -134,11 +135,13 @@ function RenBridge() {
         await deposit
           .mint()
           // Print Ethereum transaction hash.
-          .on('transactionHash', (txHash) => {
+          .on('transactionHash', async (txHash) => {
             console.log('IN TRANSACTION HASH');
             console.log('TX HASH', txHash);
             setTransactionSigned(true);
             setTransactionHash(txHash);
+            const tx = await provider.getTransaction(txHash);
+            await tx.wait(1);
             setTokensMinted(true);
           })
           .catch((e) => {
@@ -178,14 +181,16 @@ function RenBridge() {
 
   return (
     <>
-      <div className="rounded-2xl bg-white flex flex-col">
+      <div className="rounded-2xl flex flex-col">
         <div className={'flex flex-row items-center justify-end'}>
           <PoweredByLink url={'https://bridge.renproject.io/'} logo={renLogo} />
         </div>
-        <span className={''}>
-          <span>Send your BTC to this address</span>
-          <CopyableText text={gatewayAddress} />
-        </span>
+        {gatewayAddress && (
+          <span className={''}>
+            <span>Send your BTC to this address</span>
+            <CopyableText text={gatewayAddress} />
+          </span>
+        )}
         <TransactionStep
           show={gatewayAddress !== ''}
           stepComplete={gatewayAddress !== ''}
@@ -234,14 +239,14 @@ function RenBridge() {
           Tokens minted
           <BlockExplorerLink transactionHash={transactionHash} />
         </TransactionStep>
-        <div
-          className={
-            'flex flex-row items-center justify-between bg-gray-200 px-2 py-4 my-2 rounded-2xl'
-          }
-        >
-          <div>Transaction status</div>
-          <div>{transactionStatus}</div>
-        </div>
+        {/*<div*/}
+        {/*  className={*/}
+        {/*    'flex flex-row items-center justify-between bg-gray-200 px-2 py-4 my-2 rounded-2xl'*/}
+        {/*  }*/}
+        {/*>*/}
+        {/*  <div>Transaction status</div>*/}
+        {/*  <div>{transactionStatus}</div>*/}
+        {/*</div>*/}
         <TransactionError transactionError={transactionError} />
         <div className={'text-lg mt-2 font-bold'}>
           {message.split('\n').map((line) => (

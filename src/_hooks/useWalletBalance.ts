@@ -7,6 +7,7 @@ import { BigNumber } from 'ethers';
 import { CryptoCurrencySymbol } from '_enums/currency';
 
 // let isFetching = false;
+// REVIEW correct?
 type FetchingStuff = {
   [key in CryptoCurrencySymbol]?: boolean;
 };
