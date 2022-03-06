@@ -146,7 +146,6 @@ export async function getEthPrice(): Promise<string> {
   const { data } = await client.query({
     query: GET_ETH_PRICE
   });
-  // (1 / 337741366207540) * (10 ** 18)
   return data.priceOracle.usdPriceEth;
 }
 export async function runAaveApprovalTransaction(
@@ -157,6 +156,7 @@ export async function runAaveApprovalTransaction(
   return runAaveTransactionType(txs, provider, eEthereumTxType.ERC20_APPROVAL, waitForConfirmation);
 }
 
+// REVIEW does not belong here
 export const getMarketDataForSymbol = (
   marketDataResults: MarketDataResult[],
   symbol: string
@@ -250,6 +250,8 @@ export function calculateNewHealthFactor(
     //   .multipliedBy(reserveData.price.oracle.usdPriceEth || '0')
     //   .multipliedBy(formattedUsdPriceEth.toString());
     //
+
+    // REVIEW works but not for > 10 decimals
     const amountToBorrowInUsd = valueToBigNumber(ethers.utils.parseUnits(amount, 10).toString())
       .multipliedBy(reserveData.price.priceInEth)
       .multipliedBy(ethers.utils.formatUnits(formattedUsdPriceEth, 18));

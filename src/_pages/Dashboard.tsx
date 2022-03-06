@@ -58,6 +58,7 @@ export default function Dashboard() {
         const symbol = tokenKey as CryptoCurrencySymbol;
         const data = getMarketDataForSymbol(marketPrices, tokenKey);
         try {
+          // REVIEW
           const balance = walletBalances[symbol] !== undefined ? walletBalances[symbol]?.balance.toString() : 0;
           const decimals = tokenSet[symbol]?.decimals || 0;
           if (data && balance && decimals) {
@@ -100,6 +101,7 @@ export default function Dashboard() {
       <div>
         <DashboardLink text={'Borrows'} navTab={NavTab.BORROW} />
         <div className={"mt-2"}>
+          {/* REVIEW  (dupe) */}
           {userSummary && userSummary.reservesData ? (
             userSummary.reservesData
               .filter(

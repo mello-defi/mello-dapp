@@ -29,6 +29,7 @@ export default function Deposit() {
         <span className={'text-header'}>My deposits</span>
         <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
       </div>
+      {/* REVIEW  (dupe) */}
       {userSummary && userSummary.reservesData && userSummary.reservesData.length > 0 ? (
         <div>
           {userSummary.reservesData

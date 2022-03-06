@@ -68,6 +68,7 @@ export default function Borrow() {
         <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
       </div>
       <div>
+        {/* REVIEW  (dupe) */}
         {userSummary && userSummary.reservesData ? (
           userSummary.reservesData
             .filter(
