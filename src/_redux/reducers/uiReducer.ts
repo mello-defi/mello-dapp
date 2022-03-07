@@ -8,13 +8,14 @@ import {
 
 const initialState: UIState = {
   sidebarOpen: false,
-  activeTab: NavTab.BORROW,
+  activeTab: NavTab.ONBOARDING,
   navLinks: [
     { tab: NavTab.DASHBOARD, title: 'Dashboard' },
     { tab: NavTab.DEPOSIT, title: 'Deposit' },
     { tab: NavTab.BORROW, title: 'Borrow' },
     { tab: NavTab.SWAP, title: 'Swap' },
-    { tab: NavTab.FUND, title: 'Fund' }
+    { tab: NavTab.FUND, title: 'Fund' },
+    { tab: NavTab.ONBOARDING, title: 'Onboardimg' }
   ]
 };
 

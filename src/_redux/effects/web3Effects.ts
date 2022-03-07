@@ -19,6 +19,7 @@ const providerOptions: IProviderOptions = {
   },
   torus: {
     display: {
+      // REVIEW get/create a real royalty free image for this
       logo: 'https://www.getopensocial.com/wp-content/uploads/2020/12/social-login-COLOR_2.png',
       name: 'Social',
       description: 'Sign in with your social media account'
@@ -41,6 +42,7 @@ const web3Modal = new Web3Modal({
 });
 export const connect = () => {
   return async (dispatch: Dispatch<Web3ActionTypes>) => {
+    console.log('WEB#modal', web3Modal);
     const web3ModalProvider = await web3Modal.connect();
     // Subscribe to session disconnection
     web3ModalProvider.on('disconnect', (code: number, reason: string) => {

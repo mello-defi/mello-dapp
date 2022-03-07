@@ -1,7 +1,7 @@
 import PoweredByLink from '_components/core/PoweredByLink';
 import aaveLogo from '_assets/images/logos/aave.svg';
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { getMarketDataForSymbol, sortUserReservesByKey } from '_services/aaveService';
 import { ComputedReserveData } from '@aave/protocol-js';
@@ -18,6 +18,8 @@ import AaveReservesSkeleton from '_components/aave/AaveReservesSkeleton';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import useAaveReserves from '_hooks/useAaveReserves';
 import { findTokenByAddress } from '_utils/index';
+import { setStep } from '_redux/effects/onboardingEffects';
+import { stepBorrowAave, stepDepositAave } from '_redux/reducers/onboardingReducer';
 
 export default function Borrow() {
   const provider = useSelector((state: AppState) => state.web3.provider);
@@ -30,7 +32,9 @@ export default function Borrow() {
   // const [maxBorrowAmount, setMaxBorrowAmount] = React.useState<string | undefined>(undefined);
   console.log('\nBorrow.tsx: market prices', marketPrices);
 
-  const getMaxBorrowAmount = (reserve:ComputedReserveData): string => {
+  const dispatch = useDispatch();
+  dispatch(setStep(stepBorrowAave.nextStep))
+  const getMaxBorrowAmount = (reserve: ComputedReserveData): string => {
     if (userSummary && reserve && marketPrices) {
       const ethMarketData = getMarketDataForSymbol(marketPrices, CryptoCurrencySymbol.ETH);
       const tokenMarketData = getMarketDataForSymbol(marketPrices, reserve.symbol);
@@ -38,12 +42,12 @@ export default function Borrow() {
         return convertCryptoAmounts(
           userSummary.availableBorrowsETH,
           ethMarketData.current_price,
-          tokenMarketData.current_price,
-        ).toFixed(6)
+          tokenMarketData.current_price
+        ).toFixed(6);
       }
     }
     return '';
-  }
+  };
 
   useEffect(() => {
     if (marketPrices && marketPrices.length > 0 && !ethPrice) {
@@ -55,7 +59,6 @@ export default function Borrow() {
       }
     }
   }, [marketPrices]);
-
 
   console.log(
     'userSummary && userSummary.reservesData',

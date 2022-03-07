@@ -20,24 +20,30 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import { getMarketDataForSymbol } from '_services/aaveService';
 import { ethers } from 'ethers';
 import { CryptoCurrencySymbol } from '_enums/currency';
+import { getTransactionCount } from '_services/walletService';
+import { setStep } from '_redux/effects/onboardingEffects';
+import { stepAddGasToWallet } from '_redux/reducers/onboardingReducer';
 
-function DashboardLink({text, navTab}: {text: string, navTab: NavTab }) {
+function DashboardLink({ text, navTab }: { text: string; navTab: NavTab }) {
   const dispatch = useDispatch();
   return (
     <div
-    onClick={() => dispatch(setActiveTab(navTab))}
-    className={"flex-row-center cursor-pointer hover:text-gray-400 transition"}>
-      <span
-        className={"text-body"}>{text}</span>
-      <ArrowForward className={"ml-2"}/>
+      onClick={() => dispatch(setActiveTab(navTab))}
+      className={'flex-row-center cursor-pointer hover:text-gray-400 transition'}
+    >
+      <span className={'text-body'}>{text}</span>
+      <ArrowForward className={'ml-2'} />
     </div>
-  )
+  );
 }
 
 export default function Dashboard() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const walletBalances = useSelector((state: AppState) => state.wallet.balances);
+  const userAddress = useSelector((state: AppState) => state.wallet.address);
+  const provider = useSelector((state: AppState) => state.web3.provider);
   // const aaveReserves = useAaveReserves()
+  // ethers.providers.
   const userSummary = useAaveUserSummary();
   const marketPrices = useMarketPrices();
   const [totalAssets, setTotalAssets] = React.useState<number>(0);
@@ -45,7 +51,12 @@ export default function Dashboard() {
   const [healthFactor, setHealthFactor] = React.useState<string>('');
 
   useEffect(() => {
-    if (userSummary && walletBalances && totalAssets === 0 && Object.keys(walletBalances).length > 0) {
+    if (
+      userSummary &&
+      walletBalances &&
+      totalAssets === 0 &&
+      Object.keys(walletBalances).length > 0
+    ) {
       // console.log()
       let totalAaveDeposits = 0;
       let totalAaveDebts = 0;
@@ -59,10 +70,14 @@ export default function Dashboard() {
         const data = getMarketDataForSymbol(marketPrices, tokenKey);
         try {
           // REVIEW
-          const balance = walletBalances[symbol] !== undefined ? walletBalances[symbol]?.balance.toString() : 0;
+          const balance =
+            walletBalances[symbol] !== undefined && walletBalances[symbol]?.balance !== undefined
+              ? walletBalances[symbol]?.balance.toString()
+              : 0;
           const decimals = tokenSet[symbol]?.decimals || 0;
           if (data && balance && decimals) {
-            totalWalletBalances += parseFloat(ethers.utils.formatUnits(balance, decimals)) * data.current_price;
+            totalWalletBalances +=
+              parseFloat(ethers.utils.formatUnits(balance, decimals)) * data.current_price;
           }
         } catch (error: any) {
           console.log(error);
@@ -74,9 +89,8 @@ export default function Dashboard() {
     if (!healthFactor && userSummary) {
       setHealthFactor(parseFloat(userSummary.healthFactor).toFixed(2));
     }
-  }, [userSummary, walletBalances])
+  }, [userSummary, walletBalances]);
   // const totalAss
-
 
   return (
     <div>
@@ -85,10 +99,21 @@ export default function Dashboard() {
       </div>
       <HorizontalLineBreak />
       <div className={'flex-row-center justify-evenly flex-wrap'}>
-        <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>Net worth: <span className={"font-mono"}>${(totalAssets - totalDebts).toFixed(2)}</span></div>
-        <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>Total assets: <span className={"font-mono"}>${totalAssets.toFixed(2)}</span> </div>
-        <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>Total debts: <span className={"font-mono"}>${totalDebts.toFixed(2)}</span></div>
-        <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>Health factor <span className={"font-mono"}><HealthFactorNumber healthFactor={healthFactor}/></span></div>
+        <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>
+          Net worth: <span className={'font-mono'}>${(totalAssets - totalDebts).toFixed(2)}</span>
+        </div>
+        <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>
+          Total assets: <span className={'font-mono'}>${totalAssets.toFixed(2)}</span>{' '}
+        </div>
+        <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>
+          Total debts: <span className={'font-mono'}>${totalDebts.toFixed(2)}</span>
+        </div>
+        <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>
+          Health factor{' '}
+          <span className={'font-mono'}>
+            <HealthFactorNumber healthFactor={healthFactor} />
+          </span>
+        </div>
       </div>
       <HorizontalLineBreak />
       <div>
@@ -100,7 +125,7 @@ export default function Dashboard() {
       <HorizontalLineBreak />
       <div>
         <DashboardLink text={'Borrows'} navTab={NavTab.BORROW} />
-        <div className={"mt-2"}>
+        <div className={'mt-2'}>
           {/* REVIEW  (dupe) */}
           {userSummary && userSummary.reservesData ? (
             userSummary.reservesData
@@ -131,7 +156,7 @@ export default function Dashboard() {
       <HorizontalLineBreak />
       <div>
         <DashboardLink text={'Deposits'} navTab={NavTab.DEPOSIT} />
-        <div className={"mt-2"}>
+        <div className={'mt-2'}>
           {/* REVIEW  (dupe) */}
           {userSummary && userSummary.reservesData ? (
             <div>
@@ -140,7 +165,9 @@ export default function Dashboard() {
                   (reserve: ComputedUserReserve) =>
                     parseFloat(parseFloat(reserve.underlyingBalance).toFixed(6)) > 0
                 )
-                .sort((a, b) => parseFloat(b.underlyingBalanceETH) - parseFloat(a.underlyingBalanceETH))
+                .sort(
+                  (a, b) => parseFloat(b.underlyingBalanceETH) - parseFloat(a.underlyingBalanceETH)
+                )
                 .map((reserve: ComputedUserReserve) => {
                   return (
                     <ComputedUserReserveListItem
@@ -159,5 +186,5 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }

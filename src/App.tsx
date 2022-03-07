@@ -16,6 +16,7 @@ import { setNetwork } from '_redux/effects/web3Effects';
 import Fund from '_pages/Fund';
 import Sidebar from '_components/Sidebar';
 import Dashboard from '_pages/Dashboard';
+import Onboarding from '_pages/Onboarding';
 
 function EthereumMainnetGuard() {
   const dispatch = useDispatch();
@@ -80,6 +81,12 @@ const tabsContent: TabContentDefinition[] = [
     component: <Wallet />,
     hideOnEthereumMainnet: false,
     requiresLogin: true
+  },
+  {
+    tab: NavTab.ONBOARDING,
+    component: <Onboarding />,
+    hideOnEthereumMainnet: true,
+    requiresLogin: false
   }
 ];
 

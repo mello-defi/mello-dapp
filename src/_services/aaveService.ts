@@ -173,8 +173,9 @@ export const getFiatValueForUserReserve = (
   const symbol =
     reserveSymbol.toLowerCase() === CryptoCurrencySymbol.WMATIC.toLowerCase()
       ? CryptoCurrencySymbol.MATIC.toLowerCase()
-      : reserveSymbol.toLowerCase() === CryptoCurrencySymbol.WETH.toLowerCase() ?
-        CryptoCurrencySymbol.ETH.toLowerCase() : reserveSymbol.toLowerCase();
+      : reserveSymbol.toLowerCase() === CryptoCurrencySymbol.WETH.toLowerCase()
+      ? CryptoCurrencySymbol.ETH.toLowerCase()
+      : reserveSymbol.toLowerCase();
   const data = marketDataResults.find(
     (m: MarketDataResult) => m.symbol.toLocaleLowerCase() === symbol
   );

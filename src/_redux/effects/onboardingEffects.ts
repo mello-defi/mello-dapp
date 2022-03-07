@@ -2,8 +2,11 @@ import { OnboardingActionTypes, OnboardingStep } from '_redux/types/onboardingTy
 import { Dispatch } from 'redux';
 import { setCurrentStepAction } from '_redux/actions/onboardingActions';
 
-export const setStep = (step: OnboardingStep) => {
+export const setStep = (step: OnboardingStep | null) => {
   return function (dispatch: Dispatch<OnboardingActionTypes>) {
-    dispatch(setCurrentStepAction(step));
+    console.log('SETTINGS TEP', step);
+    if (step) {
+      dispatch(setCurrentStepAction(step));
+    }
   };
 };

@@ -2,6 +2,14 @@ import { BigNumber, ethers } from 'ethers';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
 import { TokenDefinition } from '_enums/tokens';
 
+export async function getTransactionCount(
+  address: string,
+  provider: ethers.providers.Web3Provider
+): Promise<number> {
+  const txCount: string = await provider.send('eth_getTransactionCount', [address, 'latest']);
+  return BigNumber.from(txCount).toNumber();
+}
+
 export async function getErc20TokenBalance(
   token: TokenDefinition,
   provider: ethers.providers.Web3Provider,
@@ -53,42 +61,6 @@ export async function approveToken(
   return contract.approve(userAddress, amount, options);
 }
 
-// export async function approveToken(
-//   token: TokenDefinition,
-//   provider: ethers.providers.Web3Provider,
-//   amount: number,
-//   userAddress: string,
-//   contractAddress: string,
-//   waitForConfirmation = true
-// ): Promise<string> {
-//   console.log('Approving token...');
-//   console.log(`Token: ${token.name}`);
-//   console.log(`Address: ${token.address}`);
-//   console.log(`Amount: ${amount}`);
-//   const abi = [
-//     'function totalSupply() public view returns (uint)',
-//     'function balanceOf(address tokenOwner) public view returns (uint balance)',
-//     'function decimals() public view returns (uint decimals)',
-//     'function allowance(address tokenOwner, address spender) public view returns (uint remaining)',
-//     'function transfer(address to, uint tokens) public returns (bool success)',
-//     'function approve(address spender, uint tokens) public returns (bool success)',
-//     'function transferFrom(address from, address to, uint tokens) public returns (bool success)',
-//     'function symbol() public view returns (string)',
-//
-//     'event Transfer(address indexed from, address indexed to, uint tokens)',
-//     'event Approval(address indexed tokenOwner, address indexed spender, uint tokens)'
-//   ];
-//   const contract = new ethers.Contract(token.address, abi, provider);
-//   const tx = await contract.approve(userAddress, amount);
-//   console.log('TX IN APPROVe', tx);
-//   const txHash = 'hello';
-//   // if (waitForReceipt) {
-//   //   const receipt = await txResponse.wait(1);
-//   //   return receipt.transactionHash;
-//   // }
-//   return txHash;
-// }
-
 export async function executeEthTransaction(
   txData: TransactionRequest,
   provider: ethers.providers.Web3Provider,
@@ -102,6 +74,8 @@ export async function executeEthTransaction(
     // console.log('GASPRICE', gasPrice);
     // txData.gasPrice = BigNumber.from('0x006fe776018');
     // txData.gasLimit = BigNumber.from('0x05fb5b');
+    // REVIEW - get gas here?
+
     const txResponse: TransactionResponse = await signer.sendTransaction({
       ...txData,
       value: txData.value ? BigNumber.from(txData.value) : undefined

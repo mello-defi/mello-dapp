@@ -8,7 +8,7 @@ const useAaveUserSummary = () => {
   const rawReserves = useSelector((state: AppState) => state.aave.rawReserves);
   const userSummary = useSelector((state: AppState) => state.aave.userSummary);
   const userSummaryStale = useSelector((state: AppState) => state.aave.userSummaryStale);
-  const reserves = useAaveReserves()
+  const reserves = useAaveReserves();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const dispatch = useDispatch();
   useEffect(() => {

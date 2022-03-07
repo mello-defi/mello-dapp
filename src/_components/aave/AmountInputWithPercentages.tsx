@@ -52,7 +52,7 @@ export default function AmountInputWithPercentages({
 
   const handleAmountChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (baseAmount) {
-      let targetValue : string = event.target.value;
+      let targetValue: string = event.target.value;
       console.log('OG target vlaue', targetValue);
       if (!decimalPlacesAreValid(targetValue.toString(), tokenDecimals)) {
         targetValue = targetValue.substring(0, targetValue.length - 1);

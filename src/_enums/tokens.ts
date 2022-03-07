@@ -29,7 +29,7 @@ export const validPolygonTokenSymbols: CryptoCurrencySymbol | string[] = [
 export const EvmGasTokenBurnAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export enum EthereumTestnetKovanContracts {
-  ETH = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+  ETH = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 }
 
 export enum EthereumTestnetRinkebyContracts {

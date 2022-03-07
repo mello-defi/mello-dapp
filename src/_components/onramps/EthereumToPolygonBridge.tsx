@@ -55,8 +55,7 @@ export default function EthereumToPolygonBridge() {
   const [ethereumPrice, setEthereumPrice] = React.useState<MarketDataResult | undefined>();
   const [transactionError, setTransactionError] = React.useState<string>('');
   const [biconomyIninitialized, setBiconomyInitialized] = React.useState<boolean>(false);
-  const [isTransferring, setIsTransferring] =
-    React.useState<boolean>(false);
+  const [isTransferring, setIsTransferring] = React.useState<boolean>(false);
   const [ethereumTransactionComplete, setEthereumTransactionComplete] =
     React.useState<boolean>(false);
   const [ethereumTransactionHash, setEthereumTransactionHash] = React.useState<string>('');
@@ -91,7 +90,6 @@ export default function EthereumToPolygonBridge() {
       await tx.wait(1);
       setPolygonTransferComplete(true);
     }
-
   };
 
   let hyphen: Hyphen;
@@ -154,7 +152,7 @@ export default function EthereumToPolygonBridge() {
         }
       })();
     }
-  }, [provider, userAddress])
+  }, [provider, userAddress]);
 
   const deposit = async () => {
     if (provider) {
@@ -209,9 +207,9 @@ export default function EthereumToPolygonBridge() {
                 onWheel={() => false}
                 type={'number'}
                 min={'0'}
-                className={
-                  `text-2xl sm:text-3xl bg-gray-100 focus:outline-none px-2 sm:px-0 sm:mt-0 py-1 sm:py-0 w-full ${isTransferring ? 'text-gray-400' : 'text-color-dark'}`
-                }
+                className={`text-2xl sm:text-3xl bg-gray-100 focus:outline-none px-2 sm:px-0 sm:mt-0 py-1 sm:py-0 w-full ${
+                  isTransferring ? 'text-gray-400' : 'text-color-dark'
+                }`}
                 value={transferAmount}
                 onChange={handleTransferAmountChange}
               />

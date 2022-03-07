@@ -51,7 +51,7 @@ function RenBridge() {
       });
       console.log('mint', mint);
       // @ts-ignore
-      console.log(JSON.stringify(mint.deposits))
+      console.log(JSON.stringify(mint.deposits));
 
       // Show the gateway address to the user so that they can transfer their BTC to it.
       // log(`Deposit ${amount} BTC to ${mint.gatewayAddress}`);

@@ -12,7 +12,7 @@ const rootReducer = combineReducers({
   wallet: getWalletReducer,
   markets: getMarketReducer,
   aave: getAaveReducer,
-  onboarding: getOnboardingReducer,
+  onboarding: getOnboardingReducer
 });
 
 export default rootReducer;

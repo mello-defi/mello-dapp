@@ -1,12 +1,13 @@
+import { NavTab } from '_redux/types/uiTypes';
+
 export const SET_STEP = 'SET_STEP';
 
 export interface OnboardingStep {
   number: number;
   title: string;
-  previousStep?: OnboardingStep;
-  nextStep?: OnboardingStep;
+  nextStep: OnboardingStep | null;
+  actionTab?: NavTab;
 }
-
 
 export interface OnboardingState {
   currentStep?: OnboardingStep;

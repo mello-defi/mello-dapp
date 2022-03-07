@@ -1,7 +1,13 @@
 import { Spinner, SpinnerSize } from '_components/core/Animations';
 import React from 'react';
 import { TransactionTransition } from '_components/transactions/TransactionTransition';
-import { CheckCircleOutlineOutlined, ErrorOutlineOutlined, Info } from '@mui/icons-material';
+import {
+  CheckCircle,
+  CheckCircleOutlineOutlined,
+  ErrorOutline,
+  ErrorOutlineOutlined,
+  Info
+} from '@mui/icons-material';
 
 export function TransactionStep({
   show,
@@ -28,11 +34,11 @@ export function TransactionStep({
         >
           <div className={'mr-4 text-3xl'}>
             {transactionError ? (
-              <ErrorOutlineOutlined className={'text-red-400 mb-0.5'} fontSize={'inherit'} />
+              <ErrorOutline className={'text-red-400 mb-0.5'} fontSize={'inherit'} />
             ) : (
               <>
                 {stepComplete ? (
-                  <CheckCircleOutlineOutlined className={'text-green-400'} fontSize={'inherit'} />
+                  <CheckCircle className={'text-green-400'} fontSize={'inherit'} />
                 ) : (
                   <>
                     {requiresUserInput ? (

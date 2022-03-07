@@ -8,7 +8,8 @@ export enum NavTab {
   BORROW = 'BORROW',
   FUND = 'FUND',
   LEARN = 'LEARN',
-  WALLET = 'WALLET'
+  WALLET = 'WALLET',
+  ONBOARDING = 'ONBOARDING'
 }
 
 export interface NavLinkDefinition {

@@ -27,9 +27,12 @@ import SwapPriceInformation from '_pages/swap/SwapPriceInformation';
 import useWalletBalance from '_hooks/useWalletBalance';
 import { SwapVert } from '@mui/icons-material';
 import { toggleBalanceIsStale } from '_redux/effects/walletEffects';
+import { setStep } from '_redux/effects/onboardingEffects';
+import { stepPerformSwap } from '_redux/reducers/onboardingReducer';
 
 export default function Swap() {
   const dispatch = useDispatch();
+  const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const network = useSelector((state: AppState) => state.web3.network);
@@ -61,6 +64,7 @@ export default function Swap() {
   const [swapSubmitted, setSwapSubmitted] = useState<boolean>(false);
   const [swapConfirmed, setSwapConfirmed] = useState<boolean>(false);
 
+  dispatch(setStep(stepPerformSwap.nextStep))
   const resetTransactionSteps = () => {
     if (swapConfirmed) {
       setSwapConfirmed(false);
@@ -170,6 +174,7 @@ export default function Swap() {
         setIsApproving(false);
         dispatch(toggleBalanceIsStale(sourceToken.symbol, true));
         dispatch(toggleBalanceIsStale(destinationToken.symbol, true));
+        dispatch(setStep(stepPerformSwap.nextStep))
       } catch (e: any) {
         setTransactionError(e.data?.message || e.message);
         console.log(e);

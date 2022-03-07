@@ -1,6 +1,6 @@
 import { ComputedReserveData } from '@aave/protocol-js';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import aaveLogo from '_assets/images/logos/aave.svg';
@@ -15,14 +15,17 @@ import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import useAaveReserves from '_hooks/useAaveReserves';
 import { findTokenByAddress } from '_utils/index';
 import { sortUserReservesByKey } from '_services/aaveService';
+import { setStep } from '_redux/effects/onboardingEffects';
+import { stepDepositAave } from '_redux/reducers/onboardingReducer';
 
 export default function Deposit() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
 
+  const dispatch = useDispatch();
+  dispatch(setStep(stepDepositAave.nextStep))
   const userSummary = useAaveUserSummary();
   const aaveReserves = useAaveReserves();
-
   return (
     <div className={'space-y-2'}>
       <div className={'flex-row-center justify-between mb-2'}>
