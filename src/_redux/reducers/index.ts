@@ -4,13 +4,15 @@ import { getWeb3Reducer } from '_redux/reducers/web3Reducer';
 import { getWalletReducer } from '_redux/reducers/walletReducer';
 import { getMarketReducer } from '_redux/reducers/marketReducer';
 import { getAaveReducer } from '_redux/reducers/aaveReducer';
+import { getOnboardingReducer } from '_redux/reducers/onboardingReducer';
 
 const rootReducer = combineReducers({
   ui: getUIReducer,
   web3: getWeb3Reducer,
   wallet: getWalletReducer,
   markets: getMarketReducer,
-  aave: getAaveReducer
+  aave: getAaveReducer,
+  onboarding: getOnboardingReducer,
 });
 
 export default rootReducer;

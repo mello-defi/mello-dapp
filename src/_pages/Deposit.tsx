@@ -30,7 +30,7 @@ export default function Deposit() {
         <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
       </div>
       {/* REVIEW  (dupe) */}
-      {userSummary && userSummary.reservesData && userSummary.reservesData.length > 0 ? (
+      {userSummary && userSummary.reservesData ? (
         <div>
           {userSummary.reservesData
             .filter(

@@ -132,7 +132,8 @@ export default function Dashboard() {
       <div>
         <DashboardLink text={'Deposits'} navTab={NavTab.DEPOSIT} />
         <div className={"mt-2"}>
-          {userSummary && userSummary.reservesData && userSummary.reservesData.length > 0 ? (
+          {/* REVIEW  (dupe) */}
+          {userSummary && userSummary.reservesData ? (
             <div>
               {userSummary.reservesData
                 .filter(
