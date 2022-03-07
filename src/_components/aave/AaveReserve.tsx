@@ -53,9 +53,9 @@ export default function AaveReserve({
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const marketPrices = useMarketPrices();
   const [marketPriceForToken, setMarketPriceForToken] = useState<number | undefined>(undefined);
-  const [depositAmount, setDepositAmount] = useState<string>('');
-  const [borrowAmount, setBorrowAmount] = useState<string>('');
-  const [repayAmount, setRepayAmount] = useState<string>('');
+  const [depositAmount, setDepositAmount] = useState<string>('0.0');
+  const [borrowAmount, setBorrowAmount] = useState<string>('0.0');
+  const [repayAmount, setRepayAmount] = useState<string>('0.0');
   const [borrowSubmitting, setBorrowSubmitting] = useState(false);
   const [repaySubmitting, setRepaySubmitting] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState<string>('0.0');

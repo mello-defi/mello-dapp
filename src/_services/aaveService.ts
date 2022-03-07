@@ -244,24 +244,14 @@ export function calculateNewHealthFactor(
     // @ts-ignore
     .div(reserveData.price.oracle.usdPriceEth.toString());
   try {
-    // @ts-ignore
-    // const amountToBorrowInUsd = valueToBigNumber(ethers.utils.parseUnits(amount, 10).toString())
-    //   // @ts-ignore
-    //   .multipliedBy(reserveData.price.oracle.usdPriceEth || '0')
-    //   .multipliedBy(formattedUsdPriceEth.toString());
-    //
-
-    // REVIEW works but not for > 10 decimals
-    // let res = utils.formatEther(balance);
-    // res = (+res).toFixed(4);
-    // console.log(res);
+    amount = (+amount).toFixed(10).toString();
     const amountToBorrowInUsd = valueToBigNumber(ethers.utils.parseUnits(amount, 10).toString())
       .multipliedBy(reserveData.price.priceInEth)
       .multipliedBy(ethers.utils.formatUnits(formattedUsdPriceEth, 18));
 
     return calculateHealthFactorFromBalancesBigUnits(
       userSummaryData.totalCollateralUSD,
-      valueToBigNumber(userSummaryData.totalBorrowsUSD).plus(amountToBorrowInUsd),
+      valueToBigNumber(userSummaryData.totalBorrowsUSD).minus(amountToBorrowInUsd),
       userSummaryData.currentLiquidationThreshold
     ).toFixed(2);
   } catch (e) {

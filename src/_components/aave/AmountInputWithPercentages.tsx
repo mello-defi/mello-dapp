@@ -52,21 +52,26 @@ export default function AmountInputWithPercentages({
 
   const handleAmountChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (baseAmount) {
-      let targetValue = event.target.value;
+      let targetValue : string = event.target.value;
+      console.log('OG target vlaue', targetValue);
       if (!decimalPlacesAreValid(targetValue.toString(), tokenDecimals)) {
         targetValue = targetValue.substring(0, targetValue.length - 1);
       }
-      if (!targetValue) {
-        setInputAmount('0.0');
-      } else {
+      console.log('AFTER DECIMALS', targetValue);
+      if (targetValue) {
         let val: BigNumber = ethers.utils.parseUnits(targetValue, tokenDecimals);
         const baseAmountBigNumber = ethers.utils.parseUnits(baseAmount, tokenDecimals);
         if (val.gt(baseAmountBigNumber)) {
           val = baseAmountBigNumber;
         } else if (val.lt('0')) {
-          val = BigNumber.from('0');
+          // val = BigNumber.from('0');
         }
-        setInputAmount(ethers.utils.formatUnits(val, tokenDecimals));
+        targetValue = val.toString();
+      }
+      if (targetValue) {
+        setInputAmount(ethers.utils.formatUnits(targetValue, tokenDecimals));
+      } else {
+        setInputAmount('');
       }
     }
   };
@@ -74,7 +79,7 @@ export default function AmountInputWithPercentages({
     <div className={'mt-2 md:mt-1'}>
       <div>
         <input
-          min={0}
+          // min={0}
           max={baseAmount ? parseFloat(baseAmount) : undefined}
           disabled={!baseAmount || parseFloat(baseAmount) === 0}
           value={inputAmount}
