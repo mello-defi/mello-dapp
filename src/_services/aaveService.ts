@@ -252,6 +252,9 @@ export function calculateNewHealthFactor(
     //
 
     // REVIEW works but not for > 10 decimals
+    // let res = utils.formatEther(balance);
+    // res = (+res).toFixed(4);
+    // console.log(res);
     const amountToBorrowInUsd = valueToBigNumber(ethers.utils.parseUnits(amount, 10).toString())
       .multipliedBy(reserveData.price.priceInEth)
       .multipliedBy(ethers.utils.formatUnits(formattedUsdPriceEth, 18));

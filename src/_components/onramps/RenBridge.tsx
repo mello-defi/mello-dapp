@@ -18,7 +18,6 @@ function RenBridge() {
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
   const [message, setMessage] = React.useState('');
   const [gatewayAddress, setGatewayAddress] = React.useState('');
-  const [transactionSigned, setTransactionSigned] = React.useState(false);
   const [tokensMinted, setTokensMinted] = React.useState(false);
   const [balance, setBalance] = React.useState(0);
   const [transactionError, setTransactionError] = React.useState('');
@@ -51,6 +50,8 @@ function RenBridge() {
         })
       });
       console.log('mint', mint);
+      // @ts-ignore
+      console.log(JSON.stringify(mint.deposits))
 
       // Show the gateway address to the user so that they can transfer their BTC to it.
       // log(`Deposit ${amount} BTC to ${mint.gatewayAddress}`);
@@ -113,7 +114,6 @@ function RenBridge() {
           .signed()
           .on('txHash', (txHash) => {
             console.log('IN SIGNED TX HASN');
-            setTransactionSigned(true);
             // depositLog(`Transaction hash: ${txHash}`);
           })
           .on('status', (a) => {
@@ -138,7 +138,6 @@ function RenBridge() {
           .on('transactionHash', async (txHash) => {
             console.log('IN TRANSACTION HASH');
             console.log('TX HASH', txHash);
-            setTransactionSigned(true);
             setTransactionHash(txHash);
             const tx = await provider.getTransaction(txHash);
             await tx.wait(1);
@@ -186,7 +185,7 @@ function RenBridge() {
           <PoweredByLink url={'https://bridge.renproject.io/'} logo={renLogo} />
         </div>
         {gatewayAddress && (
-          <span className={''}>
+          <span className={'text-body-smaller'}>
             <span>Send your BTC to this address</span>
             <CopyableText text={gatewayAddress} />
           </span>
@@ -252,7 +251,6 @@ function RenBridge() {
           {message.split('\n').map((line) => (
             <p key={line}>{line}</p>
           ))}
-          {transactionError ? <p style={{ color: 'red' }}>{transactionError}</p> : null}
         </div>
       </div>
     </>
