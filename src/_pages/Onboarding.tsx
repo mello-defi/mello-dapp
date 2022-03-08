@@ -100,7 +100,7 @@ export default function Onboarding() {
   useEffect(() => {
     if (userAddress && provider && currentStep && walletBalance) {
       (async () => {
-        if (walletBalance.gt(0) || currentStep.number <= stepAddGasToWallet.number) {
+        if (walletBalance.gt(0) && currentStep.number <= stepAddGasToWallet.number) {
           dispatch(setStep(stepAddGasToWallet.nextStep));
         } else {
           const transactionCount: number = await getTransactionCount(userAddress, provider);
