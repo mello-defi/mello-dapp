@@ -1,5 +1,5 @@
 import { NavTab } from '_redux/types/uiTypes';
-import { FunctionComponent } from 'react';
+import React, { FunctionComponent } from 'react';
 
 export const SET_STEP = 'SET_STEP';
 
@@ -8,7 +8,8 @@ export interface OnboardingStep {
   title: string;
   nextStep: OnboardingStep | null;
   actionTab?: NavTab;
-  component?: FunctionComponent;
+  component?: React.ReactNode;
+  // component?: JSX.Element;
 }
 
 export interface OnboardingState {

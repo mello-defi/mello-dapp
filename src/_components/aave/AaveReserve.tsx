@@ -44,7 +44,7 @@ import { convertCryptoAmounts } from '_services/priceService';
 export default function AaveReserve({
   reserveSymbol,
   aaveSection,
-  token
+  token // REVIEW use tokenset, determine from reserve symbol
 }: {
   reserveSymbol: string,
   aaveSection: AaveSection;

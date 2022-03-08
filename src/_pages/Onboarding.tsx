@@ -1,23 +1,18 @@
 import React, { useEffect } from 'react';
-import { getTransactionCount } from '_services/walletService';
-import { setStep } from '_redux/effects/onboardingEffects';
-import { stepAddGasToWallet, stepPerformSwap } from '_redux/reducers/onboardingReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { OnboardingStep } from '_redux/types/onboardingTypes';
-import {
-  ArrowForward,
-  CheckCircle,
-  CheckCircleOutline,
-  CheckCircleOutlineOutlined,
-  Done,
-  DoneRounded, ExpandLess, ExpandMore, Forward,
-  Info
-} from '@mui/icons-material';
+import { ArrowForward, CheckCircle, ExpandLess, ExpandMore, Info } from '@mui/icons-material';
 import { setActiveTab } from '_redux/effects/uiEffects';
-import useWalletBalance from '_hooks/useWalletBalance';
 import { DefaultTransition } from '_components/core/Transition';
-import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
+import AaveReserve from '_components/aave/AaveReserve';
+import { AaveSection } from '_enums/aave';
+import { polygonMainnetTokens } from '_enums/tokens';
+import { CryptoCurrencySymbol } from '_enums/currency';
+import useWalletBalance from '_hooks/useWalletBalance';
+import { stepAddGasToWallet } from '_redux/reducers/onboardingReducer';
+import { setStep } from '_redux/effects/onboardingEffects';
+import { getTransactionCount } from '_services/walletService';
 import Swap from '_pages/swap/Swap';
 
 function OnboardingStepRow({ step }: { step: OnboardingStep }) {
@@ -31,6 +26,7 @@ function OnboardingStepRow({ step }: { step: OnboardingStep }) {
       dispatch(setActiveTab(currentStep.actionTab));
     }
   }
+  const Component = step.component;
   return (
     <>
       {currentStep && (
@@ -86,7 +82,11 @@ function OnboardingStepRow({ step }: { step: OnboardingStep }) {
       )}
       {step.number === currentStep?.number && step.component !== undefined && (
         <>
-          {React.createElement(step.component)}
+          {/*{Component}*/}
+          {/*<Component />*/}
+          {/*<Swap />*/}
+          {/*<AaveReserve reserveSymbol={'USDC'} aaveSection={AaveSection.Deposit} token={polygonMainnetTokens[CryptoCurrencySymbol.USDC]}/>*/}
+          <AaveReserve reserveSymbol={'USDC'} aaveSection={AaveSection.Borrow} token={polygonMainnetTokens[CryptoCurrencySymbol.USDC]}/>
         </>
       )}
     </>

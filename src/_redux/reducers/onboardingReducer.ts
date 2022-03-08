@@ -18,17 +18,19 @@ export const stepBorrowAave: OnboardingStep = {
   nextStep: stepMintNft,
   actionTab: NavTab.BORROW
 };
+
+// token: polygonMainnetTokens[CryptoCurrencySymbol.MATIC],
+//   aaveSection: AaveSection.Deposit,
+//   reserveSymbol: CryptoCurrencySymbol.MATIC,
+
 export const stepDepositAave: OnboardingStep = {
   number: 5,
   title: 'Deposit Aave',
   nextStep: stepBorrowAave,
   actionTab: NavTab.DEPOSIT,
-  // component: AaveReserve({
-  //   token: polygonMainnetTokens[CryptoCurrencySymbol.MATIC],
-  //   aaveSection: AaveSection.Deposit,
-  //   reserveSymbol: CryptoCurrencySymbol.MATIC,
-  // });
+  // component: AaveReserve({aaveSection}),
 };
+
 export const stepPerformSwap: OnboardingStep = {
   number: 4,
   title: 'Swap gas token for USDC',
@@ -41,7 +43,7 @@ export const stepAddGasToWallet: OnboardingStep = {
   title: 'Add gas to Wallet',
   nextStep: stepPerformSwap,
   actionTab: NavTab.FUND,
-  component: Fund,
+  // component: Fund,
 };
 export const stepConnectWallet: OnboardingStep = {
   number: 2,
