@@ -1,7 +1,7 @@
 import { BigNumber, ethers } from 'ethers';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
 import { TokenDefinition } from '_enums/tokens';
-
+import axios from 'axios';
 export async function getTransactionCount(
   address: string,
   provider: ethers.providers.Web3Provider
@@ -19,6 +19,31 @@ export async function getErc20TokenBalance(
   const newContract = new ethers.Contract(token.address, token.abi, provider);
   const balance = await newContract.balanceOf(userAddress);
   return BigNumber.from(balance);
+  // const baseURL = `https://polygon-mainnet.g.alchemy.com/v2/yAbnaHp8ByhAIrQrplXdhhzQRnB5Lu73`;
+  //
+  // const data = JSON.stringify({
+  //   "jsonrpc": "2.0",
+  //   "method": "alchemy_getTokenBalances",
+  //   "params": [
+  //     `${userAddress}`,
+  //     [
+  //       `${token.address}`
+  //     ]
+  //   ],
+  //   "id": 1
+  // });
+  //
+  // const config = {
+  //   method: 'post',
+  //   headers: {
+  //     'Content-Type': 'application/json'
+  //   },
+  //   data : data
+  // };
+  //
+  // const response = await axios.post(baseURL, config);
+  // console.log(JSON.stringify(response.data, null, 2))
+  // return BigNumber.from(response.data.result.tokenBalances[0].tokenBalance);
 }
 
 export async function sendErc20Token(

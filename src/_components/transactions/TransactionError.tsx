@@ -7,7 +7,7 @@ export default function TransactionError({ transactionError }: { transactionErro
       {transactionError !== '' && (
         <div
           className={
-            'flex flex-row my-4 md:my-2 items-center rounded-full shadow-sm bg-red-200 px-4 py-2'
+            'flex flex-row my-4 md:my-2 items-center rounded-2xl shadow-sm bg-red-200 px-4 py-2'
           }
         >
           <div className={'mr-4'}>

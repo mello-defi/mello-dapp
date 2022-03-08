@@ -45,20 +45,20 @@ export default function Fund() {
       <h5 className={'text-color-light md:hidden'}>I want to transfer</h5>
       <div className={'flex flex-col mt-2'}>
         <Button
-          className={`mb-2 ${onboardingSource === OnboardingSource.CRYPTO ? 'bg-gray-300' : ''}`}
-          onClick={() => handleOnboardingSourceSelected(OnboardingSource.CRYPTO)}
-          variant={ButtonVariant.SECONDARY}
-          size={ButtonSize.LARGE}
-        >
-          Cryptocurrency
-        </Button>
-        <Button
           className={`mb-2 ${onboardingSource === OnboardingSource.FIAT ? 'bg-gray-300' : ''}`}
           onClick={() => handleOnboardingSourceSelected(OnboardingSource.FIAT)}
           variant={ButtonVariant.SECONDARY}
           size={ButtonSize.LARGE}
         >
           Fiat currency
+        </Button>
+        <Button
+          className={`mb-2 ${onboardingSource === OnboardingSource.CRYPTO ? 'bg-gray-300' : ''}`}
+          onClick={() => handleOnboardingSourceSelected(OnboardingSource.CRYPTO)}
+          variant={ButtonVariant.SECONDARY}
+          size={ButtonSize.LARGE}
+        >
+          Cryptocurrency
         </Button>
       </div>
       <DefaultTransition isOpen={onboardingSourceSelected}>

@@ -1,13 +1,14 @@
 import { AppState } from '_redux/store';
 import { useSelector } from 'react-redux';
 import { TokenDefinition } from '_enums/tokens';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '_components/core/Buttons';
 import { DefaultTransition } from '_components/core/Transition';
 import WalletBalance from '_pages/wallet/WalletBalance';
 import ReceiveCrypto from '_pages/wallet/ReceiveCrypto';
 import SendCrypto from '_pages/wallet/SendCrypto';
 import { MoveToInbox, Send } from '@mui/icons-material';
+import { CryptoCurrencySymbol } from '_enums/currency';
 
 export enum WalletPageTab {
   RECEIVE = 'Receive',
@@ -43,7 +44,27 @@ const WalletActionButton = ({
 export default function Wallet() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const [walletPageTab, setWalletPageTab] = useState<WalletPageTab | undefined>();
+  const walletBalances = useSelector((state: AppState) => state.wallet.balances);
+  const [sortedTokenSet, setSortedTokenSet] = useState<TokenDefinition[]>(Object.values(tokenSet));
 
+  useEffect(() => {
+    // setSortedTokenSet();
+    // console.log('walletBalances', walletBalances);
+    // const
+    // const walletBalancesKeys = Object.keys(walletBalances);
+    // setSortedTokenSet()
+    // const sortable = [];
+    // for (const key in walletBalances) {
+    //   const k = key as CryptoCurrencySymbol;
+    //   sortable.push([wallet, walletBalances[k]?.balance?.toString() || '0']);
+    // }
+    //
+    // sortable.sort(function(a, b) {
+    //   return parseFloat(b[1]) - parseFloat(a[1]);
+    // });
+    // console.log('sortable', sortable);
+    // setSortedTokenSet(sortable.map(item => item[0] as CryptoCurrencySymbol));
+  }, [walletBalances]);
   const handleWalletPageTabClick = (tab: WalletPageTab) => {
     if (tab === walletPageTab) {
       setWalletPageTab(undefined);
@@ -81,6 +102,7 @@ export default function Wallet() {
         </div>
       </DefaultTransition>
       {/*<HorizontalLineBreak/>*/}
+      {/*{useWalletBalance()}*/}
       <div className={'rounded-2xl bg-gray-50 py-2'}>
         {Object.values(tokenSet).map((token: TokenDefinition) => (
           <WalletBalance key={token.symbol} token={token} hideZeroBalance={false} />

@@ -29,7 +29,7 @@ export function TransactionStep({
       {show && (
         <div
           className={
-            'flex flex-row my-1 md:my-2 items-center rounded-full shadow-sm bg-white px-4 py-2'
+            'flex flex-row my-1 md:my-2 items-center rounded-2xl shadow-sm bg-white px-4 py-2'
           }
         >
           <div className={'mr-4 text-3xl'}>

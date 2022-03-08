@@ -25,7 +25,7 @@ export const stepDepositAave: OnboardingStep = {
 };
 export const stepPerformSwap: OnboardingStep = {
   number: 4,
-  title: 'Perform Swap',
+  title: 'Swap gas token for USDC',
   nextStep: stepDepositAave,
   actionTab: NavTab.SWAP
 };

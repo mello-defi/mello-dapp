@@ -7,6 +7,7 @@ import Web3Modal, { IProviderOptions } from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import Torus from '@toruslabs/torus-embed';
 
+// REVIEW move these to env vars
 const providerOptions: IProviderOptions = {
   walletconnect: {
     package: WalletConnectProvider, // required
