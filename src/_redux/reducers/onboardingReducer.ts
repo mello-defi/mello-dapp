@@ -1,10 +1,11 @@
-import {
-  OnboardingActionTypes,
-  OnboardingState,
-  OnboardingStep,
-  SET_STEP
-} from '_redux/types/onboardingTypes';
+import { OnboardingActionTypes, OnboardingState, OnboardingStep, SET_STEP } from '_redux/types/onboardingTypes';
 import { NavTab } from '_redux/types/uiTypes';
+import Swap from '_pages/swap/Swap';
+import Fund from '_pages/Fund';
+import { AaveSection } from '_enums/aave';
+import AaveReserve from '_components/aave/AaveReserve';
+import { polygonMainnetTokens } from '_enums/tokens';
+import { CryptoCurrencySymbol } from '_enums/currency';
 
 export const stepMintNft: OnboardingStep = {
   number: 7,
@@ -21,19 +22,26 @@ export const stepDepositAave: OnboardingStep = {
   number: 5,
   title: 'Deposit Aave',
   nextStep: stepBorrowAave,
-  actionTab: NavTab.DEPOSIT
+  actionTab: NavTab.DEPOSIT,
+  // component: AaveReserve({
+  //   token: polygonMainnetTokens[CryptoCurrencySymbol.MATIC],
+  //   aaveSection: AaveSection.Deposit,
+  //   reserveSymbol: CryptoCurrencySymbol.MATIC,
+  // });
 };
 export const stepPerformSwap: OnboardingStep = {
   number: 4,
   title: 'Swap gas token for USDC',
   nextStep: stepDepositAave,
-  actionTab: NavTab.SWAP
+  actionTab: NavTab.SWAP,
+  component: Swap,
 };
 export const stepAddGasToWallet: OnboardingStep = {
   number: 3,
   title: 'Add gas to Wallet',
   nextStep: stepPerformSwap,
-  actionTab: NavTab.FUND
+  actionTab: NavTab.FUND,
+  component: Fund,
 };
 export const stepConnectWallet: OnboardingStep = {
   number: 2,

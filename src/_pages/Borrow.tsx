@@ -34,21 +34,6 @@ export default function Borrow() {
   console.log('\nBorrow.tsx: market prices', marketPrices);
 
   const dispatch = useDispatch();
-  dispatch(setStep(stepBorrowAave.nextStep))
-  const getMaxBorrowAmount = (reserve: ComputedReserveData): string => {
-    if (userSummary && reserve && marketPrices) {
-      const ethMarketData = getMarketDataForSymbol(marketPrices, CryptoCurrencySymbol.ETH);
-      const tokenMarketData = getMarketDataForSymbol(marketPrices, reserve.symbol);
-      if (ethMarketData && tokenMarketData) {
-        return convertCryptoAmounts(
-          userSummary.availableBorrowsETH,
-          ethMarketData.current_price,
-          tokenMarketData.current_price
-        ).toFixed(6);
-      }
-    }
-    return '';
-  };
 
   useEffect(() => {
     if (marketPrices && marketPrices.length > 0 && !ethPrice) {
@@ -116,11 +101,7 @@ export default function Borrow() {
                   token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
                   aaveSection={AaveSection.Borrow}
                   key={reserve.symbol}
-                  reserve={reserve}
-                  maxBorrowAmount={getMaxBorrowAmount(reserve)}
-                  userReserve={userSummary.reservesData.find(
-                    (r) => r.reserve.symbol === reserve.symbol
-                  )}
+                  reserveSymbol={reserve.symbol}
                 />
               );
             }

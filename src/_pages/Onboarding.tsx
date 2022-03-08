@@ -18,6 +18,7 @@ import { setActiveTab } from '_redux/effects/uiEffects';
 import useWalletBalance from '_hooks/useWalletBalance';
 import { DefaultTransition } from '_components/core/Transition';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
+import Swap from '_pages/swap/Swap';
 
 function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   const [isExpanded, setIsExpanded] = React.useState(false);
@@ -81,6 +82,11 @@ function OnboardingStepRow({ step }: { step: OnboardingStep }) {
               </DefaultTransition>
             </div>
           </div>
+        </>
+      )}
+      {step.number === currentStep?.number && step.component !== undefined && (
+        <>
+          {React.createElement(step.component)}
         </>
       )}
     </>

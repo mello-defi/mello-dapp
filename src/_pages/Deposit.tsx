@@ -65,10 +65,7 @@ export default function Deposit() {
                 token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
                 aaveSection={AaveSection.Deposit}
                 key={reserve.symbol}
-                reserve={reserve}
-                userReserve={userSummary.reservesData.find(
-                  (r: ComputedUserReserve) => r.reserve.symbol === reserve.symbol
-                )}
+                reserveSymbol={reserve.symbol}
               />
             );
           }

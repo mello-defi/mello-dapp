@@ -64,7 +64,6 @@ export default function Swap() {
   const [swapSubmitted, setSwapSubmitted] = useState<boolean>(false);
   const [swapConfirmed, setSwapConfirmed] = useState<boolean>(false);
 
-  dispatch(setStep(stepPerformSwap.nextStep))
   const resetTransactionSteps = () => {
     if (swapConfirmed) {
       setSwapConfirmed(false);

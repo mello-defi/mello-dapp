@@ -33,25 +33,32 @@ import AaveFunctionContent from '_components/aave/AaveFunctionContent';
 import { EthereumTransactionError } from '_interfaces/errors';
 import { toggleUserSummaryStale } from '_redux/effects/aaveEffects';
 import { findTokenByAddress } from '_utils/index';
+import { setStep } from '_redux/effects/onboardingEffects';
+import { stepBorrowAave, stepDepositAave } from '_redux/reducers/onboardingReducer';
+import useAaveReserves from '_hooks/useAaveReserves';
+import useAaveUserSummary from '_hooks/useAaveUserSummary';
+import { CryptoCurrencySymbol } from '_enums/currency';
+import { convertCryptoAmounts } from '_services/priceService';
 
+// REVIEW huge refactor needed, too big
 export default function AaveReserve({
-  reserve,
-  userReserve,
+  reserveSymbol,
   aaveSection,
-  maxBorrowAmount,
   token
 }: {
-  reserve: ComputedReserveData;
-  userReserve?: ComputedUserReserve;
+  reserveSymbol: string,
   aaveSection: AaveSection;
-  maxBorrowAmount?: string;
   token: TokenDefinition;
 }) {
   const dispatch = useDispatch();
+  const aaveReserves = useAaveReserves();
+  const userSummary = useAaveUserSummary();
   const provider = useSelector((state: AppState) => state.web3.provider);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const marketPrices = useMarketPrices();
+  const [reserve, setReserve] = useState<ComputedReserveData | undefined>();
+  const [userReserve, setUserReserve] = useState<ComputedUserReserve | undefined>();
   const [marketPriceForToken, setMarketPriceForToken] = useState<number | undefined>(undefined);
   const [depositAmount, setDepositAmount] = useState<string>('0.0');
   const [borrowAmount, setBorrowAmount] = useState<string>('0.0');
@@ -67,9 +74,37 @@ export default function AaveReserve({
   const [transactionInProgress, setTransactionInProgress] = useState<boolean>(false);
   const [transactionError, setTransactionError] = useState<string>('');
   const [transactionConfirmed, setTransactionConfirmed] = useState<boolean>(false);
+  const [maxBorrowAmount, setMaxBorrowAmount] = useState<string>('');
   const [aaveFunction, setAaveFunction] = useState<AaveFunction | null>(null);
   const userBalance = useWalletBalance(token);
 
+  useEffect(() => {
+    if (!reserve && aaveReserves) {
+      const r = aaveReserves?.find((res) => res.symbol.toLowerCase() === reserveSymbol.toLowerCase())
+      if (r) {
+        setReserve(r);
+      }
+    }
+    if (!userReserve && userSummary) {
+      const ur = userSummary.reservesData.find((ur) => ur.reserve.symbol === reserveSymbol.toLowerCase());
+      if (ur) {
+        setUserReserve(ur);
+      }
+    }
+  }, [aaveReserves, userSummary]);
+  useEffect(() => {
+    if (userSummary && reserve && marketPrices) {
+      const ethMarketData = getMarketDataForSymbol(marketPrices, CryptoCurrencySymbol.ETH);
+      const tokenMarketData = getMarketDataForSymbol(marketPrices, reserve.symbol);
+      if (ethMarketData && tokenMarketData) {
+        setMaxBorrowAmount(convertCryptoAmounts(
+          userSummary.availableBorrowsETH,
+          ethMarketData.current_price,
+          tokenMarketData.current_price
+        ).toFixed(6));
+      }
+    }
+  }, [userSummary, reserve, marketPrices])
   useEffect(() => {
     if (token && marketPrices) {
       const marketPrice = getMarketDataForSymbol(marketPrices, token.symbol);
@@ -114,7 +149,7 @@ export default function AaveReserve({
       amount: string
     ) => Promise<EthereumTransactionTypeExtended[]>
   ) => {
-    if (provider && userAddress) {
+    if (provider && userAddress && reserve) {
       try {
         setTransactionInProgress(true);
         setFunctionSubmitting(true);
@@ -150,6 +185,7 @@ export default function AaveReserve({
         setBorrowSubmitting,
         getBorrowTransactions
       );
+      dispatch(setStep(stepBorrowAave.nextStep))
     }
   };
 
@@ -172,6 +208,7 @@ export default function AaveReserve({
         setDepositSubmitting,
         getDepositTransactions
       );
+      dispatch(setStep(stepDepositAave.nextStep))
     }
   };
 
@@ -195,7 +232,7 @@ export default function AaveReserve({
   };
   return (
     <>
-      {marketPrices && (
+      {marketPrices && reserve && (
         <div
           className={'bg-white rounded-2xl px-4 py-4 mb-2 border-2 -mx-1 border-gray-50 shadow-sm'}
         >
@@ -233,7 +270,7 @@ export default function AaveReserve({
           <DefaultTransition isOpen={aaveFunction !== null}>
             <div>
               <HorizontalLineBreak />
-              {marketPriceForToken && (
+              {marketPriceForToken && reserve && (
                 <div className={'flex flex-col md:flex-row justify-between space-x-0 sm:space-x-2'}>
                   <div className={'flex flex-col w-full'}>
                     {aaveFunction === AaveFunction.Deposit && (
