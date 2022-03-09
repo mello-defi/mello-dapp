@@ -29,8 +29,9 @@ import { SwapVert } from '@mui/icons-material';
 import { toggleBalanceIsStale } from '_redux/effects/walletEffects';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { stepPerformSwap } from '_redux/reducers/onboardingReducer';
+import { CryptoCurrencySymbol } from '_enums/currency';
 
-export default function Swap() {
+export default function Swap({initialSourceTokenSymbol, initialDestinationTokenSymbol}: {initialSourceTokenSymbol?: CryptoCurrencySymbol, initialDestinationTokenSymbol?: CryptoCurrencySymbol}) {
   const dispatch = useDispatch();
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -38,9 +39,10 @@ export default function Swap() {
   const network = useSelector((state: AppState) => state.web3.network);
   const tokens = useSelector((state: AppState) => state.web3.tokenSet);
   const [fetchingPriceError, setFetchingPriceError] = useState('');
-  const [sourceToken, setSourceToken] = useState<TokenDefinition>(Object.values(tokens)[0]);
+  const [sourceToken, setSourceToken] = useState<TokenDefinition>((initialSourceTokenSymbol && tokens[initialSourceTokenSymbol]) || Object.values(tokens)[0]);
   const sourceTokenBalance = useWalletBalance(sourceToken);
   const [destinationToken, setDestinationToken] = useState<TokenDefinition>(
+    (initialDestinationTokenSymbol && tokens[initialDestinationTokenSymbol]) ||
     Object.values(tokens)[1]
   );
   const [sourceTokenDisabled, setSourceTokenDisabled] = useState<boolean>(false);

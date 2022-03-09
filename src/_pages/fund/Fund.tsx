@@ -7,6 +7,7 @@ import MtPellerin from '_components/onramps/MtPellerin';
 import RenBridge from '_components/onramps/RenBridge';
 import EthereumToPolygonBridge from '_components/onramps/EthereumToPolygonBridge';
 import { btcLogo, ethLogo } from '_assets/images';
+import FiatOnboarding from '_pages/fund/FiatOnboarding';
 
 export enum OnboardingSource {
   FIAT = 'FIAT',
@@ -64,13 +65,7 @@ export default function Fund() {
       <DefaultTransition isOpen={onboardingSourceSelected}>
         <div>
           {onboardingSource === OnboardingSource.FIAT && (
-            <div>
-              <span className={'text-lg'}>
-                Use one of our partners to fund your account via bank transfer or credit/debit card
-              </span>
-              <RampNetwork />
-              <MtPellerin />
-            </div>
+            <FiatOnboarding/>
           )}
           {onboardingSource === OnboardingSource.CRYPTO && (
             <div className={''}>

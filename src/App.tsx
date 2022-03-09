@@ -13,7 +13,7 @@ import { AppState } from '_redux/store';
 import Wallet from '_pages/wallet/Wallet';
 import { EVMChainIdNumerical, EvmNetworkDefinition, evmNetworks } from '_enums/networks';
 import { setNetwork } from '_redux/effects/web3Effects';
-import Fund from '_pages/Fund';
+import Fund from '_pages/fund/Fund';
 import Sidebar from '_components/Sidebar';
 import Dashboard from '_pages/Dashboard';
 import Onboarding from '_pages/Onboarding';

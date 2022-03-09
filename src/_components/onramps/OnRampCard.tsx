@@ -19,7 +19,7 @@ export default function OnRampCard({
   return (
     <div
       className={
-        'flex py-8 px-4 flex-col md:flex-row w-full justify-evenly cursor-pointer rounded-lg hover:bg-gray-300 transition mb-4 border-2 border-gray-100'
+        'flex py-8 px-4 flex-col md:flex-row w-full justify-evenly cursor-pointer rounded-lg hover:bg-gray-100 transition mb-4 border-2 border-gray-100'
       }
       onClick={onClick}
     >

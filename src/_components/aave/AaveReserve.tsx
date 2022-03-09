@@ -40,16 +40,15 @@ import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { convertCryptoAmounts } from '_services/priceService';
 
+export interface AaveReserveProps {
+  reserveSymbol: string,
+  aaveSection: AaveSection;
+}
 // REVIEW huge refactor needed, too big
 export default function AaveReserve({
   reserveSymbol,
   aaveSection,
-  token // REVIEW use tokenset, determine from reserve symbol
-}: {
-  reserveSymbol: string,
-  aaveSection: AaveSection;
-  token: TokenDefinition;
-}) {
+}: AaveReserveProps) {
   const dispatch = useDispatch();
   const aaveReserves = useAaveReserves();
   const userSummary = useAaveUserSummary();
@@ -76,8 +75,15 @@ export default function AaveReserve({
   const [transactionConfirmed, setTransactionConfirmed] = useState<boolean>(false);
   const [maxBorrowAmount, setMaxBorrowAmount] = useState<string>('');
   const [aaveFunction, setAaveFunction] = useState<AaveFunction | null>(null);
+  const [token, setToken] = useState<TokenDefinition | undefined>();
+  // console.log('token', token);
   const userBalance = useWalletBalance(token);
 
+  useEffect(() => {
+    if (!token) {
+      setToken(Object.values(tokenSet).find(t => t.symbol.toLowerCase() === reserveSymbol.toLowerCase()));
+    }
+  }, [tokenSet])
   useEffect(() => {
     if (!reserve && aaveReserves) {
       const r = aaveReserves?.find((res) => res.symbol.toLowerCase() === reserveSymbol.toLowerCase())
@@ -86,7 +92,7 @@ export default function AaveReserve({
       }
     }
     if (!userReserve && userSummary) {
-      const ur = userSummary.reservesData.find((ur) => ur.reserve.symbol === reserveSymbol.toLowerCase());
+      const ur = userSummary.reservesData.find((ur) => ur.reserve.symbol.toLowerCase() === reserveSymbol.toLowerCase());
       if (ur) {
         setUserReserve(ur);
       }
@@ -230,6 +236,7 @@ export default function AaveReserve({
       setAaveFunction(null);
     }
   };
+
   return (
     <>
       {marketPrices && reserve && (
@@ -244,11 +251,16 @@ export default function AaveReserve({
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Borrow}
+                  disabled={userSummary && parseFloat(userSummary.healthFactor) < 0}
                 />
                 <AaveFunctionButton
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Repay}
+                  disabled={
+                    !userReserve ||
+                    parseFloat(userReserve.variableBorrows) === 0
+                  }
                 />
               </div>
             )}
@@ -258,11 +270,18 @@ export default function AaveReserve({
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Deposit}
+                  disabled={
+                    !userBalance || userBalance.isZero()
+                  }
                 />
                 <AaveFunctionButton
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Withdraw}
+                  disabled={
+                    !userReserve ||
+                    parseFloat(userReserve.underlyingBalance) === 0
+                  }
                 />
               </div>
             )}
@@ -270,7 +289,7 @@ export default function AaveReserve({
           <DefaultTransition isOpen={aaveFunction !== null}>
             <div>
               <HorizontalLineBreak />
-              {marketPriceForToken && reserve && (
+              {marketPriceForToken && reserve && token && (
                 <div className={'flex flex-col md:flex-row justify-between space-x-0 sm:space-x-2'}>
                   <div className={'flex flex-col w-full'}>
                     {aaveFunction === AaveFunction.Deposit && (

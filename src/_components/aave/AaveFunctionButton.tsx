@@ -6,16 +6,19 @@ import { ExpandLess, ExpandMore } from '@mui/icons-material';
 export default function AaveFunctionButton({
   activeFunctionName,
   handleClicked,
-  functionName
+  functionName,
+  disabled = false,
 }: {
   activeFunctionName?: AaveFunction | null;
   handleClicked: (functionName: AaveFunction) => void;
   functionName: AaveFunction;
+  disabled?: boolean;
 }) {
   return (
     <Button
       variant={ButtonVariant.SECONDARY}
       size={ButtonSize.SMALL}
+      disabled={disabled}
       onClick={() => handleClicked(functionName)}
       className={`ml-2 py-2 my-1 md:my-0 w-full md:w-auto ${
         activeFunctionName && activeFunctionName === functionName ? 'bg-gray-200' : ''

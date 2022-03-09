@@ -62,7 +62,7 @@ export default function Deposit() {
           (reserve: ComputedReserveData) => {
             return (
               <AaveReserve
-                token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
+                // token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
                 aaveSection={AaveSection.Deposit}
                 key={reserve.symbol}
                 reserveSymbol={reserve.symbol}

@@ -8,8 +8,9 @@ export interface OnboardingStep {
   title: string;
   nextStep: OnboardingStep | null;
   actionTab?: NavTab;
-  component?: React.ReactNode;
-  // component?: JSX.Element;
+  // component?: React.ReactNode;
+  component?: FunctionComponent<any>;
+  componentProps?: any;
 }
 
 export interface OnboardingState {

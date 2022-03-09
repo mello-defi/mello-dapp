@@ -98,7 +98,6 @@ export default function Borrow() {
             (reserve: ComputedReserveData) => {
               return (
                 <AaveReserve
-                  token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
                   aaveSection={AaveSection.Borrow}
                   key={reserve.symbol}
                   reserveSymbol={reserve.symbol}
