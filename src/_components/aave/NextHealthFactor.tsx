@@ -3,13 +3,16 @@ import HealthFactorNumber from '_components/aave/HealthFactorNumber';
 import { calculateNewHealthFactor } from '_services/aaveService';
 import { ComputedReserveData } from '@aave/protocol-js';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
+import { HealthFactorImpact } from '_enums/aave';
 
 export default function NextHealthFactor({
   reserve,
-  amount
+  amount,
+  healthFactorImpact
 }: {
   reserve: ComputedReserveData;
   amount?: string;
+  healthFactorImpact: HealthFactorImpact;
 }) {
   const userSummary = useAaveUserSummary();
   const [healthFactorNumber, setHealthFactorNumber] = useState<string | undefined>(
@@ -17,7 +20,7 @@ export default function NextHealthFactor({
   );
   useEffect(() => {
     if (userSummary && amount) {
-      setHealthFactorNumber(calculateNewHealthFactor(reserve, userSummary, amount));
+      setHealthFactorNumber(calculateNewHealthFactor(reserve, userSummary, amount, healthFactorImpact));
     }
   }, [amount]);
   return (

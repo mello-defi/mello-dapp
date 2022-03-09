@@ -7,6 +7,7 @@ import React from 'react';
 import { BigNumber, ethers } from 'ethers';
 import { ComputedReserveData } from '@aave/protocol-js';
 import NextHealthFactor from '_components/aave/NextHealthFactor';
+import { HealthFactorImpact } from '_enums/aave';
 
 export default function AaveFunctionContent({
   reserveTitle,
@@ -19,7 +20,8 @@ export default function AaveFunctionContent({
   token,
   buttonOnClick,
   buttonDisabled,
-  children
+  children,
+  healthFactorImpact
 }: {
   reserveTitle: string;
   reserve: ComputedReserveData;
@@ -32,6 +34,7 @@ export default function AaveFunctionContent({
   buttonOnClick: () => void;
   buttonDisabled: boolean;
   children: any;
+  healthFactorImpact: HealthFactorImpact;
 }) {
   return (
     <div className={'flex flex-col md:flex-row justify-between space-x-0 md:space-x-2'}>
@@ -54,7 +57,7 @@ export default function AaveFunctionContent({
       </div>
 
       <div className={'w-full md:w-1/2 flex flex-col my-2 md:my-0'}>
-        <NextHealthFactor reserve={reserve} amount={amount} />
+        <NextHealthFactor reserve={reserve} amount={amount} healthFactorImpact={healthFactorImpact} />
         <TransactionAmountSummary tokenPrice={tokenPrice} title={summaryTitle} amount={amount} />
         {token && (
           <Button

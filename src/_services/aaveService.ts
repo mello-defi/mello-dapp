@@ -21,6 +21,7 @@ import { MarketDataResult } from '_services/marketDataService';
 import { formatTokenValueInFiat } from '_services/priceService';
 import { decimalPlacesAreValid } from '_utils/index';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
+import { HealthFactorImpact } from '_enums/aave';
 
 const defaultOptions: DefaultOptions = {
   watchQuery: {
@@ -223,9 +224,7 @@ async function runAaveTransactionType(
   let transactionHash = '';
   if (tx) {
     try {
-      console.log('AAVESERVUCE: txData');
       const txData = await tx.tx();
-      console.log('AAVESERVUCE: txData', txData);
       const transactionResponse = await executeEthTransaction(txData, provider, gasPrice);
       transactionHash = transactionResponse.hash;
     } catch (e: any) {
@@ -239,7 +238,8 @@ async function runAaveTransactionType(
 export function calculateNewHealthFactor(
   reserveData: ComputedReserveData,
   userSummaryData: UserSummaryData,
-  amount: string
+  amount: string,
+  healthFactorImpact: HealthFactorImpact,
 ): string {
   // https://sourcegraph.com/github.com/aave/aave-ui/-/blob/src/libs/pool-data-provider/hooks/use-v2-protocol-data-with-rpc.tsx?L108
   const formattedUsdPriceEth = BigNumber.from(10)
@@ -252,9 +252,14 @@ export function calculateNewHealthFactor(
       .multipliedBy(reserveData.price.priceInEth)
       .multipliedBy(ethers.utils.formatUnits(formattedUsdPriceEth, 18));
 
+    const newBorrowBalance = healthFactorImpact === HealthFactorImpact.Increase
+      ? valueToBigNumber(userSummaryData.totalBorrowsUSD).minus(amountToBorrowInUsd)
+      : valueToBigNumber(userSummaryData.totalBorrowsUSD).plus(amountToBorrowInUsd);
     return calculateHealthFactorFromBalancesBigUnits(
       userSummaryData.totalCollateralUSD,
-      valueToBigNumber(userSummaryData.totalBorrowsUSD).minus(amountToBorrowInUsd),
+      // newBorrowBalance,
+      newBorrowBalance,
+      // userSummaryData.totalCollateralETH,
       userSummaryData.currentLiquidationThreshold
     ).toFixed(2);
   } catch (e) {

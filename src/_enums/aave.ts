@@ -9,3 +9,8 @@ export enum AaveFunction {
   Borrow = 'Borrow',
   Repay = 'Repay'
 }
+
+export enum HealthFactorImpact {
+  Increase = 'Increase',
+  Decrease = 'Decrease'
+}
