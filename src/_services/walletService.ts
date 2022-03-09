@@ -65,10 +65,11 @@ export async function sendErc20Token(
 export async function getTokenAllowance(
   token: TokenDefinition,
   provider: ethers.providers.Web3Provider,
-  userAddress: string
+  userAddress: string,
+  spender?: string
 ): Promise<BigNumber> {
   const contract = new ethers.Contract(token.address, token.abi, provider);
-  return contract.allowance(contract.address, userAddress);
+  return contract.allowance(userAddress, spender || contract.address);
 }
 
 export async function approveToken(
@@ -76,14 +77,15 @@ export async function approveToken(
   signer: ethers.Signer,
   userAddress: string,
   amount: BigNumber,
-  gasPrice: BigNumber | undefined
+  gasPrice: BigNumber | undefined,
+  spender?: string,
 ): Promise<TransactionResponse> {
   const contract = new ethers.Contract(token.address, token.abi, signer);
   const options: TransactionRequest = {};
   if (gasPrice) {
     options.gasPrice = gasPrice.toString();
   }
-  return contract.approve(userAddress, amount, options);
+  return contract.approve(spender || userAddress, amount, options);
 }
 
 export async function executeEthTransaction(

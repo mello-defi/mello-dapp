@@ -47,32 +47,40 @@ export async function getExchangeRate(
   return response;
 }
 
-export async function getAllowance(
-  walletAddress: string,
-  tokenAddress: string
-): Promise<Allowance> {
-  const response: Allowance | APIError = await paraSwap.getAllowance(walletAddress, tokenAddress);
-
-  console.log('ALLOWANCE RESPONSE', response);
-  if (responseIsError(response)) {
-    throw new Error(`Error getting allowance: ${response.message}`);
+export async function getTokenTransferProxy(): Promise<string> {
+  const response: string | APIError = await paraSwap.getTokenTransferProxy();
+  if (typeof response !== 'string') {
+    throw new Error(`Error getting transfer proxy: ${response.message}`);
   }
   return response;
 }
 
-export async function approveToken(
-  amount: BigNumber,
-  userAddress: string,
-  tokenAddress: string,
-  gasPrice: BigNumber | undefined
-): Promise<string> {
-  const options: Omit<SendOptions, 'from'> = {};
-  if (gasPrice) {
-    options.gasPrice = gasPrice.toString();
-  }
-  console.log('APPROVE TOKEN', options);
-  return paraSwap.approveToken(amount.toString(), userAddress, tokenAddress, undefined, options);
-}
+// export async function getAllowance(
+//   walletAddress: string,
+//   tokenAddress: string
+// ): Promise<Allowance> {
+//   const response: Allowance | APIError = await paraSwap.getAllowance(walletAddress, tokenAddress);
+//   // paraSwap.getTokenTransferProxy(tokenAddress).then(console.log);
+//   console.log('ALLOWANCE RESPONSE', response);
+//   if (responseIsError(response)) {
+//     throw new Error(`Error getting allowance: ${response.message}`);
+//   }
+//   return response;
+// }
+
+// export async function approveToken(
+//   amount: BigNumber,
+//   userAddress: string,
+//   tokenAddress: string,
+//   gasPrice: BigNumber | undefined
+// ): Promise<string> {
+//   const options: Omit<SendOptions, 'from'> = {};
+//   if (gasPrice) {
+//     options.gasPrice = gasPrice.toString();
+//   }
+//   console.log('APPROVE TOKEN', options);
+//   return paraSwap.approveToken(amount.toString(), userAddress, tokenAddress, undefined, options);
+// }
 
 export async function buildSwapTransaction(
   sourceToken: TokenDefinition,

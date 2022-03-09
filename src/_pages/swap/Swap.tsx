@@ -7,13 +7,13 @@ import { OptimalRate } from 'paraswap-core';
 import { Allowance } from 'paraswap/build/types';
 import debounce from 'lodash/debounce';
 import {
-  approveToken,
+  // approveToken,
   buildSwapTransaction,
-  getAllowance,
-  getExchangeRate,
+  // getAllowance,
+  getExchangeRate, getTokenTransferProxy,
   initialiseParaSwap
 } from '_services/paraSwapService';
-import { executeEthTransaction } from '_services/walletService';
+import { executeEthTransaction, getErc20TokenBalance, getTokenAllowance, approveToken } from '_services/walletService';
 import { TransactionStep } from '_components/transactions/TransactionStep';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
@@ -42,6 +42,7 @@ export default function Swap({
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const provider = useSelector((state: AppState) => state.web3.provider);
+  const signer = useSelector((state: AppState) => state.web3.signer);
   const network = useSelector((state: AppState) => state.web3.network);
   const tokens = useSelector((state: AppState) => state.web3.tokenSet);
   const [fetchingPriceError, setFetchingPriceError] = useState('');
@@ -130,28 +131,21 @@ export default function Swap({
   };
 
   const handleSwap = async () => {
-    if (provider && destinationToken && priceRoute && userAddress) {
+    if (provider && destinationToken && priceRoute && userAddress && signer) {
       try {
         setIsSwapping(true);
         if (!sourceToken.isGasToken) {
-          const allowance: Allowance = await getAllowance(userAddress, sourceToken.address);
+          const transferProxy = await getTokenTransferProxy();
+          const allowance = await getTokenAllowance(sourceToken, provider, userAddress, transferProxy);
           const amount: BigNumber = ethers.utils.parseUnits(
             sourceAmount.toString(),
             sourceToken.decimals
           );
-          if (amount.gt(allowance.allowance)) {
+          if (amount.gt(allowance)) {
             const approvalGasResult = await getGasPrice(network.gasStationUrl);
-            const approvalTxHash = await approveToken(
-              amount,
-              userAddress,
-              sourceToken.address,
-              approvalGasResult?.fastest
-            );
-            setApprovalTransactionHAsh(approvalTxHash);
-            const approvalTx: TransactionResponse = await provider.getTransaction(approvalTxHash);
-            if (approvalTx) {
-              await approvalTx.wait(approvalGasResult?.blockTime || 3);
-            }
+            const approvalTxHash = await approveToken(sourceToken, signer, userAddress, amount, approvalGasResult?.fastest, transferProxy);
+            setApprovalTransactionHAsh(approvalTxHash.hash);
+            await approvalTxHash.wait(approvalGasResult?.blockTime || 3);
           }
         }
         setTokenIsApproved(true);

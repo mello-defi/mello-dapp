@@ -65,6 +65,7 @@ export default function SendCrypto() {
   const sendCrypto = async () => {
     if (signer && token && userAddress && provider) {
       try {
+        // REVIEW - is approval needed here?
         const amountInUnits = ethers.utils.parseUnits(amountToSend, token.decimals);
         setTransactionSubmitting(true);
 
