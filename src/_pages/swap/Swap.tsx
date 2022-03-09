@@ -159,10 +159,9 @@ export default function Swap({
           actionGasResult?.fastest,
         );
         const swapTxHash = await executeEthTransaction(tx, provider);
-        setSwapTransactionHash(swapTxHash);
+        setSwapTransactionHash(swapTxHash.hash);
         setSwapSubmitted(true);
-        const actionTx: TransactionResponse = await provider.getTransaction(swapTxHash);
-        await actionTx.wait(actionGasResult?.blockTime || 3);
+        await swapTxHash.wait(actionGasResult?.blockTime || 3);
         setSwapConfirmed(true);
         setSourceAmount('0.0');
         setDestinationAmount('0.0');

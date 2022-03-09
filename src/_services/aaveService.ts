@@ -226,7 +226,8 @@ async function runAaveTransactionType(
       console.log('AAVESERVUCE: txData');
       const txData = await tx.tx();
       console.log('AAVESERVUCE: txData', txData);
-      transactionHash = await executeEthTransaction(txData, provider, gasPrice);
+      const transactionResponse = await executeEthTransaction(txData, provider, gasPrice);
+      transactionHash = transactionResponse.hash;
     } catch (e: any) {
       console.log('runAaveTransactionType error', e);
       throw e;

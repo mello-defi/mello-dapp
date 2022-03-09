@@ -92,17 +92,16 @@ export async function executeEthTransaction(
   txData: TransactionRequest,
   provider: ethers.providers.Web3Provider,
   gasPrice?: BigNumber | undefined
-): Promise<string> {
+): Promise<TransactionResponse> {
   const signer = provider.getSigner(txData.from);
   try {
     if (gasPrice) {
       txData.gasPrice = gasPrice.toHexString();
     }
-    const txResponse: TransactionResponse = await signer.sendTransaction({
+    return await signer.sendTransaction({
       ...txData,
       value: txData.value ? BigNumber.from(txData.value) : undefined
     });
-    return txResponse?.hash;
   } catch (e: any) {
     console.error('executeEthTransaction error', e);
     throw e;
