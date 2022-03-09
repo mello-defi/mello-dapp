@@ -17,6 +17,40 @@ import Fund from '_pages/fund/Fund';
 import Sidebar from '_components/Sidebar';
 import Dashboard from '_pages/Dashboard';
 import Onboarding from '_pages/Onboarding';
+import { setOnboardingComplete, setOnboardingOngoing } from '_redux/effects/onboardingEffects';
+import { setActiveTab } from '_redux/effects/uiEffects';
+import { ArrowForward, Info } from '@mui/icons-material';
+
+function OnboardingGuardButton({text, onClick, complete}: {text: string, onClick: (complete: boolean) => void, complete: boolean}) {
+  const handleClick = () => {
+    onClick(complete);
+  };
+  return (
+    <Button
+      onClick={handleClick}
+      className={'w-1/4'} size={ButtonSize.LARGE}>{text}</Button>
+  )
+}
+
+function OnboardingGuard() {
+  const dispatch = useDispatch();
+  const onClickOnboardingButton = (complete: boolean) => {
+    dispatch(setOnboardingComplete(complete));
+    if (!complete) {
+      dispatch(setOnboardingOngoing(true));
+      dispatch(setActiveTab(NavTab.ONBOARDING));
+    }
+  };
+  return (
+    <div className={'flex flex-col'}>
+      <span className={'text-2xl text-center'}>Is this your first time using mello?</span>
+      <div className={"flex-row-center w-full justify-center space-x-2 my-2"}>
+        <OnboardingGuardButton text={'No'} onClick={onClickOnboardingButton} complete={true}/>
+        <OnboardingGuardButton text={'Yes'} onClick={onClickOnboardingButton} complete={false}/>
+      </div>
+    </div>
+  )
+}
 
 // REVIEW general
 // retry failed requests with expontential backoff
@@ -106,8 +140,11 @@ function LoginGuard() {
 function App() {
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
   const sidebarOpen = useSelector((state: AppState) => state.ui.sidebarOpen);
+  const onboardingComplete = useSelector((state: AppState) => state.onboarding.complete);
+  const onboardingOngoing = useSelector((state: AppState) => state.onboarding.ongoing);
   const network = useSelector((state: AppState) => state.web3.network);
   const activeTab = useSelector((state: AppState) => state.ui.activeTab);
+  const dispatch = useDispatch();
   return (
     <div id={'app'}>
       <Sidebar />
@@ -115,8 +152,8 @@ function App() {
         // flex flex-col min-h-screen bg-gray-50
         className={`font-sans bg-white-700 ${
           sidebarOpen ? 'transition opacity-50' : ''
-        } flex flex-col min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50`}
-        // } flex flex-col min-h-screen bg-gray-50`}
+        // } flex flex-col min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50`}
+        } flex flex-col min-h-screen bg-gray-50`}
       >
         <Header />
         <div className={'flex-grow'}>
@@ -126,30 +163,51 @@ function App() {
             }
           >
             <div className={'rounded-2xl py-4 px-2 sm:px-4'}>
-              {tabsContent.map((tab) => {
-                return (
-                  <DefaultTransition key={tab.tab} isOpen={activeTab === tab.tab}>
-                    <div>
-                      {tab.tab === activeTab && (
-                        <div>
-                          {tab.hideOnEthereumMainnet &&
-                          network.chainId !== EVMChainIdNumerical.POLYGON_MAINNET ? (
-                            <EthereumMainnetGuard />
-                          ) : (
-                            <>
-                              {tab.requiresLogin && !isConnected ? (
-                                <LoginGuard />
+              {onboardingComplete || onboardingOngoing ? (
+                <>
+                  {onboardingOngoing && activeTab !== NavTab.ONBOARDING && (
+                   <div
+                      onClick={() => dispatch(setActiveTab(NavTab.ONBOARDING))}
+                     className={'text-header rounded-2xl mb-2 w-full bg-gray-100 p-2 flex-row-center cursor-pointer'}>
+                     <span className={'text-3xl ml-2 mr-2'}>
+                       <Info className={'text-gray-400 mb-0.5'} fontSize={'inherit'} />
+                     </span>
+                     <span className={'hover:text-gray-400 transition'}>
+                        You must complete onboarding before you can use the app
+                     </span>
+                     <span className={'text-3xl text-color-light transition hover:text-gray-400'}>
+                       <ArrowForward className={'ml-2'} />
+                     </span>
+                   </div>
+                  )}
+                  {tabsContent.map((tab) => {
+                    return (
+                      <DefaultTransition key={tab.tab} isOpen={activeTab === tab.tab}>
+                        <div className={`${onboardingOngoing && activeTab !== NavTab.ONBOARDING ? 'opacity-40 pointer-events-none': ''}`}>
+                          {tab.tab === activeTab && (
+                            <div>
+                              {tab.hideOnEthereumMainnet &&
+                              network.chainId !== EVMChainIdNumerical.POLYGON_MAINNET ? (
+                                <EthereumMainnetGuard />
                               ) : (
-                                <>{tab.component}</>
+                                <>
+                                  {tab.requiresLogin && !isConnected ? (
+                                    <LoginGuard />
+                                  ) : (
+                                    <>{tab.component}</>
+                                  )}
+                                </>
                               )}
-                            </>
+                            </div>
                           )}
                         </div>
-                      )}
-                    </div>
-                  </DefaultTransition>
-                );
-              })}
+                      </DefaultTransition>
+                    );
+                  })}
+                </>
+              ): (
+                <OnboardingGuard />
+              )}
             </div>
           </div>
         </div>

@@ -2,16 +2,15 @@ import {
   OnboardingActionTypes,
   OnboardingState,
   OnboardingStep,
+  SET_IS_COMPLETE,
+  SET_IS_ONGOING,
   SET_STEP
 } from '_redux/types/onboardingTypes';
-import { NavTab } from '_redux/types/uiTypes';
 import { AaveSection } from '_enums/aave';
 import Swap from '_pages/swap/Swap';
 import AaveReserve from '_components/aave/AaveReserve';
-import { polygonMainnetTokens } from '_enums/tokens';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import FiatOnboarding from '_pages/fund/FiatOnboarding';
-import Web3Login from '_components/Web3Login';
 
 export const stepMintNft: OnboardingStep = {
   number: 7,
@@ -42,7 +41,7 @@ export const stepDepositAave: OnboardingStep = {
 
 export const stepPerformSwap: OnboardingStep = {
   number: 4,
-  title: 'Swap gas token for USDC',
+  title: 'Swap gas token for WBTC',
   nextStep: stepDepositAave,
   component: Swap,
   componentProps: {
@@ -99,6 +98,7 @@ const steps: OnboardingStep[] = [
 const initialState: OnboardingState = {
   steps,
   complete: false,
+  ongoing: false,
   currentStep: stepConnectWallet
 };
 
@@ -111,6 +111,16 @@ export const getOnboardingReducer = (
       return {
         ...state,
         currentStep: action.payload.step
+      };
+    case SET_IS_COMPLETE:
+      return {
+        ...state,
+        complete: action.payload.complete
+      };
+    case SET_IS_ONGOING:
+      return {
+        ...state,
+        ongoing: action.payload.ongoing
       };
     default:
       return state;

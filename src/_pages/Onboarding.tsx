@@ -96,8 +96,6 @@ export default function Onboarding() {
   }, [userAddress, walletBalance]);
   return (
     <div>
-      <span className={'text-header'}>{currentStep?.title}</span>
-      <br />
       {currentStep && (
         <>
           {steps

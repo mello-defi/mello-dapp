@@ -8,6 +8,7 @@ export default function NavLink({ tab, title }: { tab: NavTab; title: string }) 
   const dispatch = useDispatch();
   const activeTab = useSelector((state: AppState) => state.ui.activeTab);
   const onboardingComplete = useSelector((state: AppState) => state.onboarding.complete);
+  const ongoing = useSelector((state: AppState) => state.onboarding.ongoing);
   const handleClick = () => {
     dispatch(setActiveTab(tab));
     dispatch(toggleSidebar(false));
@@ -15,6 +16,9 @@ export default function NavLink({ tab, title }: { tab: NavTab; title: string }) 
   const textColor = `hover:text-gray-700 transition ${
     tab !== activeTab ? 'text-color-light' : 'text-color-dark'
   }`;
+  if (tab === NavTab.ONBOARDING && (!ongoing || onboardingComplete)) {
+    return null;
+  }
   return (
     // <div onClick={handleClick} className={`cursor-pointer ${!onboardingComplete && tab !== NavTab.ONBOARDING ? 'opacity-40' : ''}`}>
     <div onClick={handleClick} className={`cursor-pointer`}>
