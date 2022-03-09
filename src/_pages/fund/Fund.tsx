@@ -64,9 +64,7 @@ export default function Fund() {
       </div>
       <DefaultTransition isOpen={onboardingSourceSelected}>
         <div>
-          {onboardingSource === OnboardingSource.FIAT && (
-            <FiatOnboarding/>
-          )}
+          {onboardingSource === OnboardingSource.FIAT && <FiatOnboarding />}
           {onboardingSource === OnboardingSource.CRYPTO && (
             <div className={''}>
               <h4>My cryptocurrency is</h4>

@@ -7,7 +7,7 @@ export default function AaveFunctionButton({
   activeFunctionName,
   handleClicked,
   functionName,
-  disabled = false,
+  disabled = false
 }: {
   activeFunctionName?: AaveFunction | null;
   handleClicked: (functionName: AaveFunction) => void;

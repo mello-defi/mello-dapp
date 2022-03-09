@@ -32,6 +32,7 @@ export default function Borrow() {
   const [ethPrice, setEthPrice] = React.useState<number | undefined>(undefined);
   // const [maxBorrowAmount, setMaxBorrowAmount] = React.useState<string | undefined>(undefined);
   console.log('\nBorrow.tsx: market prices', marketPrices);
+  console.log('\nBorrow.tsx: userSummary', userSummary);
 
   const dispatch = useDispatch();
 

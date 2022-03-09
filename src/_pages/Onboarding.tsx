@@ -5,7 +5,7 @@ import { OnboardingStep } from '_redux/types/onboardingTypes';
 import { CheckCircle, ExpandLess, ExpandMore, Info } from '@mui/icons-material';
 import { DefaultTransition } from '_components/core/Transition';
 import useWalletBalance from '_hooks/useWalletBalance';
-import { stepAddGasToWallet } from '_redux/reducers/onboardingReducer';
+import { stepAddGasToWallet, stepDepositAave, stepPerformSwap } from '_redux/reducers/onboardingReducer';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { getTransactionCount } from '_services/walletService';
 
@@ -25,7 +25,7 @@ function OnboardingStepRow({ step }: { step: OnboardingStep }) {
             }`}
           >
             <div className={'flex flex-row justify-between w-full'}>
-              <div className={"flex-row-center"}>
+              <div className={'flex-row-center'}>
                 <span className={'text-3xl mr-2'}>
                   {stepIsCurrentStep ? (
                     <Info className={'text-gray-400 mb-0.5'} fontSize={'inherit'} />
@@ -34,31 +34,39 @@ function OnboardingStepRow({ step }: { step: OnboardingStep }) {
                   )}
                 </span>
                 <span className={'text-title'}>{step.title}</span>
-                </div>
-                <div
-                  onClick={() => {
-                    setIsExpanded(!isExpanded);
-                  }}
-                  className={"text-2xl cursor-pointer text-gray-400 hover:text-gray-600 transition"}>
-                  {isExpanded ? (
-                    <ExpandLess className={'mb-0.5'} fontSize={'inherit'} />
-                  ) : (
-                    <ExpandMore className={'mb-0.5'} fontSize={'inherit'} />
-                  )}
-                </div>
+              </div>
+              <div
+                onClick={() => {
+                  setIsExpanded(!isExpanded);
+                }}
+                className={'text-2xl cursor-pointer text-gray-400 hover:text-gray-600 transition'}
+              >
+                {isExpanded ? (
+                  <ExpandLess className={'mb-0.5'} fontSize={'inherit'} />
+                ) : (
+                  <ExpandMore className={'mb-0.5'} fontSize={'inherit'} />
+                )}
+              </div>
             </div>
             <div className={'flex-row-center w-full text-body-smaller'}>
               <DefaultTransition isOpen={isExpanded}>
-                <div className={"my-2"}>Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum</div>
+                <div className={'my-2'}>
+                  Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
+                  has been the industrys standard dummy text ever since the 1500s, when an unknown
+                  printer took a galley of type and scrambled it to make a type specimen book. It
+                  has survived not only five centuries, but also the leap into electronic
+                  typesetting, remaining essentially unchanged. It was popularised in the 1960s with
+                  the release of Letraset sheets containing Lorem Ipsum passages, and more recently
+                  with desktop publishing software like Aldus PageMaker including versions of Lorem
+                  Ipsum
+                </div>
               </DefaultTransition>
             </div>
           </div>
         </>
       )}
       {step.number === currentStep?.number && step.component !== undefined && (
-        <>
-          {React.createElement(step.component, step.componentProps)}
-        </>
+        <>{React.createElement(step.component, step.componentProps)}</>
       )}
     </>
   );
@@ -69,7 +77,7 @@ export default function Onboarding() {
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
   const steps = useSelector((state: AppState) => state.onboarding.steps);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
-  const gasToken = Object.values(tokenSet).find(token => token.isGasToken);
+  const gasToken = Object.values(tokenSet).find((token) => token.isGasToken);
   const walletBalance = useWalletBalance(gasToken);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const provider = useSelector((state: AppState) => state.web3.provider);
@@ -81,7 +89,7 @@ export default function Onboarding() {
         if (walletBalance.eq(0) && transactionCount === 0) {
           dispatch(setStep(stepAddGasToWallet));
         } else if (walletBalance.gt(0) && currentStep.number <= stepAddGasToWallet.number) {
-          dispatch(setStep(stepAddGasToWallet.nextStep));
+          dispatch(setStep(stepPerformSwap));
         }
       })();
     }

@@ -11,5 +11,5 @@ export default function FiatOnboarding() {
       <RampNetwork />
       <MtPellerin />
     </div>
-  )
+  );
 }

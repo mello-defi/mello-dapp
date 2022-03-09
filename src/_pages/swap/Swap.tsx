@@ -31,7 +31,13 @@ import { setStep } from '_redux/effects/onboardingEffects';
 import { stepPerformSwap } from '_redux/reducers/onboardingReducer';
 import { CryptoCurrencySymbol } from '_enums/currency';
 
-export default function Swap({initialSourceTokenSymbol, initialDestinationTokenSymbol}: {initialSourceTokenSymbol?: CryptoCurrencySymbol, initialDestinationTokenSymbol?: CryptoCurrencySymbol}) {
+export default function Swap({
+  initialSourceTokenSymbol,
+  initialDestinationTokenSymbol
+}: {
+  initialSourceTokenSymbol?: CryptoCurrencySymbol;
+  initialDestinationTokenSymbol?: CryptoCurrencySymbol;
+}) {
   const dispatch = useDispatch();
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -39,11 +45,13 @@ export default function Swap({initialSourceTokenSymbol, initialDestinationTokenS
   const network = useSelector((state: AppState) => state.web3.network);
   const tokens = useSelector((state: AppState) => state.web3.tokenSet);
   const [fetchingPriceError, setFetchingPriceError] = useState('');
-  const [sourceToken, setSourceToken] = useState<TokenDefinition>((initialSourceTokenSymbol && tokens[initialSourceTokenSymbol]) || Object.values(tokens)[0]);
+  const [sourceToken, setSourceToken] = useState<TokenDefinition>(
+    (initialSourceTokenSymbol && tokens[initialSourceTokenSymbol]) || Object.values(tokens)[0]
+  );
   const sourceTokenBalance = useWalletBalance(sourceToken);
   const [destinationToken, setDestinationToken] = useState<TokenDefinition>(
     (initialDestinationTokenSymbol && tokens[initialDestinationTokenSymbol]) ||
-    Object.values(tokens)[1]
+      Object.values(tokens)[1]
   );
   const [sourceTokenDisabled, setSourceTokenDisabled] = useState<boolean>(false);
   const [destinationTokenDisabled, setDestinationTokenDisabled] = useState<boolean>(false);
@@ -146,7 +154,7 @@ export default function Swap({initialSourceTokenSymbol, initialDestinationTokenS
             setApprovalTransactionHAsh(approvalTxHash);
             const approvalTx: TransactionResponse = await provider.getTransaction(approvalTxHash);
             if (approvalTx) {
-              await approvalTx.wait(2);
+              await approvalTx.wait(3);
               const allowance2: Allowance = await getAllowance(userAddress, sourceToken.address);
               console.log('ALLOWANCE2', allowance2.allowance.toString());
             }
@@ -164,7 +172,7 @@ export default function Swap({initialSourceTokenSymbol, initialDestinationTokenS
         setSwapTransactionHash(swapTxHash);
         setSwapSubmitted(true);
         const actionTx: TransactionResponse = await provider.getTransaction(swapTxHash);
-        await actionTx.wait(1);
+        await actionTx.wait(3);
         setSwapConfirmed(true);
         setSourceAmount('0.0');
         setDestinationAmount('0.0');
@@ -175,7 +183,7 @@ export default function Swap({initialSourceTokenSymbol, initialDestinationTokenS
         setIsApproving(false);
         dispatch(toggleBalanceIsStale(sourceToken.symbol, true));
         dispatch(toggleBalanceIsStale(destinationToken.symbol, true));
-        dispatch(setStep(stepPerformSwap.nextStep))
+        dispatch(setStep(stepPerformSwap.nextStep));
       } catch (e: any) {
         setTransactionError(e.data?.message || e.message);
         console.log(e);

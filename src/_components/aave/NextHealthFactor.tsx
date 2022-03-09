@@ -23,13 +23,7 @@ export default function NextHealthFactor({
   return (
     <div className={'flex-row-center text-body px-1'}>
       <span className={'mr-2'}>Next health factor</span>
-      {amount && parseFloat(amount) > 0 ? (
-        <>{healthFactorNumber && <HealthFactorNumber healthFactor={healthFactorNumber} />}</>
-      ) : (
-        <div className={'text-color-light'}>
-          {healthFactorNumber && parseFloat(healthFactorNumber).toFixed(2)}
-        </div>
-      )}
+      <>{healthFactorNumber && <HealthFactorNumber healthFactor={healthFactorNumber} />}</>
     </div>
   );
 }

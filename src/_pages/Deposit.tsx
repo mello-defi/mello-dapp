@@ -23,7 +23,7 @@ export default function Deposit() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
 
   const dispatch = useDispatch();
-  dispatch(setStep(stepDepositAave.nextStep))
+  dispatch(setStep(stepDepositAave.nextStep));
   const userSummary = useAaveUserSummary();
   const aaveReserves = useAaveReserves();
   return (

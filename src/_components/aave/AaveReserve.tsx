@@ -43,11 +43,12 @@ import { convertCryptoAmounts } from '_services/priceService';
 // REVIEW huge refactor needed, too big
 export default function AaveReserve({
   reserveSymbol,
-  aaveSection,
+  aaveSection
 }: {
-  reserveSymbol: string,
+  reserveSymbol: string;
   aaveSection: AaveSection;
 }) {
+
   const dispatch = useDispatch();
   const aaveReserves = useAaveReserves();
   const userSummary = useAaveUserSummary();
@@ -80,18 +81,24 @@ export default function AaveReserve({
 
   useEffect(() => {
     if (!token) {
-      setToken(Object.values(tokenSet).find(t => t.symbol.toLowerCase() === reserveSymbol.toLowerCase()));
+      setToken(
+        Object.values(tokenSet).find((t) => t.symbol.toLowerCase() === reserveSymbol.toLowerCase())
+      );
     }
-  }, [tokenSet])
+  }, [tokenSet]);
   useEffect(() => {
     if (!reserve && aaveReserves) {
-      const r = aaveReserves?.find((res) => res.symbol.toLowerCase() === reserveSymbol.toLowerCase())
+      const r = aaveReserves.find(
+        (res) => res.symbol.toLowerCase() === reserveSymbol.toLowerCase()
+      );
       if (r) {
         setReserve(r);
       }
     }
     if (!userReserve && userSummary) {
-      const ur = userSummary.reservesData.find((ur) => ur.reserve.symbol.toLowerCase() === reserveSymbol.toLowerCase());
+      const ur = userSummary.reservesData.find(
+        (ur) => ur.reserve.symbol.toLowerCase() === reserveSymbol.toLowerCase()
+      );
       if (ur) {
         setUserReserve(ur);
       }
@@ -102,14 +109,16 @@ export default function AaveReserve({
       const ethMarketData = getMarketDataForSymbol(marketPrices, CryptoCurrencySymbol.ETH);
       const tokenMarketData = getMarketDataForSymbol(marketPrices, reserve.symbol);
       if (ethMarketData && tokenMarketData) {
-        setMaxBorrowAmount(convertCryptoAmounts(
-          userSummary.availableBorrowsETH,
-          ethMarketData.current_price,
-          tokenMarketData.current_price
-        ).toFixed(6));
+        setMaxBorrowAmount(
+          convertCryptoAmounts(
+            userSummary.availableBorrowsETH,
+            ethMarketData.current_price,
+            tokenMarketData.current_price
+          ).toFixed(6)
+        );
       }
     }
-  }, [userSummary, reserve, marketPrices])
+  }, [userSummary, reserve, marketPrices]);
   useEffect(() => {
     if (token && marketPrices) {
       const marketPrice = getMarketDataForSymbol(marketPrices, token.symbol);
@@ -126,7 +135,7 @@ export default function AaveReserve({
     const approvalHash = await runAaveApprovalTransaction(transactions, provider);
     if (approvalHash) {
       const tx = await provider.getTransaction(approvalHash);
-      await tx.wait(1);
+      await tx.wait(3);
       setApprovalTransactionHash(approvalHash);
     }
     setTokenApproved(true);
@@ -134,7 +143,7 @@ export default function AaveReserve({
     setActionTransactionHash(actionHash);
     if (actionHash) {
       const tx = await provider.getTransaction(actionHash);
-      await tx.wait(1);
+      await tx.wait(3);
     }
     setTransactionConfirmed(true);
 
@@ -190,7 +199,7 @@ export default function AaveReserve({
         setBorrowSubmitting,
         getBorrowTransactions
       );
-      dispatch(setStep(stepBorrowAave.nextStep))
+      dispatch(setStep(stepBorrowAave.nextStep));
     }
   };
 
@@ -213,7 +222,7 @@ export default function AaveReserve({
         setDepositSubmitting,
         getDepositTransactions
       );
-      dispatch(setStep(stepDepositAave.nextStep))
+      dispatch(setStep(stepDepositAave.nextStep));
     }
   };
 
@@ -250,16 +259,13 @@ export default function AaveReserve({
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Borrow}
-                  disabled={userSummary && parseFloat(userSummary.healthFactor) < 0}
+                  disabled={userSummary && parseFloat(userSummary.availableBorrowsETH) <= 0}
                 />
                 <AaveFunctionButton
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Repay}
-                  disabled={
-                    !userReserve ||
-                    parseFloat(userReserve.variableBorrows) === 0
-                  }
+                  disabled={!userReserve || parseFloat(userReserve.variableBorrows) === 0}
                 />
               </div>
             )}
@@ -269,18 +275,13 @@ export default function AaveReserve({
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Deposit}
-                  disabled={
-                    !userBalance || userBalance.isZero()
-                  }
+                  disabled={!userBalance || userBalance.isZero()}
                 />
                 <AaveFunctionButton
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Withdraw}
-                  disabled={
-                    !userReserve ||
-                    parseFloat(userReserve.underlyingBalance) === 0
-                  }
+                  disabled={!userReserve || parseFloat(userReserve.underlyingBalance) < 0.000000}
                 />
               </div>
             )}

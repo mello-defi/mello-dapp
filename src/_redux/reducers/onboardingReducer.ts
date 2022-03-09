@@ -1,8 +1,13 @@
-import { OnboardingActionTypes, OnboardingState, OnboardingStep, SET_STEP } from '_redux/types/onboardingTypes';
+import {
+  OnboardingActionTypes,
+  OnboardingState,
+  OnboardingStep,
+  SET_STEP
+} from '_redux/types/onboardingTypes';
 import { NavTab } from '_redux/types/uiTypes';
 import { AaveSection } from '_enums/aave';
 import Swap from '_pages/swap/Swap';
-import AaveReserve, { AaveReserveProps } from '_components/aave/AaveReserve';
+import AaveReserve from '_components/aave/AaveReserve';
 import { polygonMainnetTokens } from '_enums/tokens';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import FiatOnboarding from '_pages/fund/FiatOnboarding';
@@ -17,19 +22,21 @@ export const stepBorrowAave: OnboardingStep = {
   number: 6,
   title: 'Borrow Aave',
   nextStep: stepMintNft,
-  actionTab: NavTab.BORROW,
+  component: AaveReserve,
+  componentProps: {
+    aaveSection: AaveSection.Borrow,
+    reserveSymbol: CryptoCurrencySymbol.USDC,
+  }
 };
-
 
 export const stepDepositAave: OnboardingStep = {
   number: 5,
   title: 'Deposit Aave',
   nextStep: stepBorrowAave,
-  actionTab: NavTab.DEPOSIT,
   component: AaveReserve,
   componentProps: {
     aaveSection: AaveSection.Deposit,
-    reserveSymbol: CryptoCurrencySymbol.MATIC,
+    reserveSymbol: CryptoCurrencySymbol.WMATIC,
   }
 };
 
@@ -37,24 +44,22 @@ export const stepPerformSwap: OnboardingStep = {
   number: 4,
   title: 'Swap gas token for USDC',
   nextStep: stepDepositAave,
-  actionTab: NavTab.SWAP,
   component: Swap,
   componentProps: {
     initialSourceTokenSymbol: CryptoCurrencySymbol.MATIC,
-    initialDestinationTokenSymbol: CryptoCurrencySymbol.WMATIC,
+    initialDestinationTokenSymbol: CryptoCurrencySymbol.WMATIC
   }
 };
 export const stepAddGasToWallet: OnboardingStep = {
   number: 3,
   title: 'Add gas to Wallet',
   nextStep: stepPerformSwap,
-  actionTab: NavTab.FUND,
-  component: FiatOnboarding,
+  component: FiatOnboarding
 };
 export const stepConnectWallet: OnboardingStep = {
   number: 2,
   title: 'Connect Wallet',
-  nextStep: stepAddGasToWallet,
+  nextStep: stepAddGasToWallet
 };
 export const stepTermsAndConditions: OnboardingStep = {
   number: 1,

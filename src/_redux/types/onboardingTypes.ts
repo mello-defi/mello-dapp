@@ -7,7 +7,6 @@ export interface OnboardingStep {
   number: number;
   title: string;
   nextStep: OnboardingStep | null;
-  actionTab?: NavTab;
   // component?: React.ReactNode;
   component?: FunctionComponent<any>;
   componentProps?: any;
