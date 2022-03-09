@@ -23,7 +23,7 @@ import useWalletBalance from '_hooks/useWalletBalance';
 import { TokenDefinition } from '_enums/tokens';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
-import { AaveFunction, AaveSection, HealthFactorImpact } from '_enums/aave';
+import { AaveFunction, AaveSection, HealthFactorImpact, HealthFactorResource } from '_enums/aave';
 import AaveFunctionButton from '_components/aave/AaveFunctionButton';
 import AaveFunctionContent from '_components/aave/AaveFunctionContent';
 import { EthereumTransactionError } from '_interfaces/errors';
@@ -301,6 +301,7 @@ export default function AaveReserve({
                     {aaveFunction === AaveFunction.Deposit && (
                       <AaveFunctionContent
                         healthFactorImpact={HealthFactorImpact.Increase}
+                        healthFactorResource={HealthFactorResource.Collateral}
                         reserveTitle={'Wallet'}
                         reserve={reserve}
                         summaryTitle={'Amount to deposit'}
@@ -325,6 +326,7 @@ export default function AaveReserve({
                     {aaveFunction === AaveFunction.Withdraw && (
                       <AaveFunctionContent
                         healthFactorImpact={HealthFactorImpact.Decrease}
+                        healthFactorResource={HealthFactorResource.Collateral}
                         reserveTitle={'Deposited'}
                         summaryTitle={'Amount to withdraw'}
                         reserve={reserve}
@@ -355,6 +357,7 @@ export default function AaveReserve({
                     {aaveFunction === AaveFunction.Borrow && (
                       <AaveFunctionContent
                         reserveTitle={'Borrowing power'}
+                        healthFactorResource={HealthFactorResource.Borrows}
                         healthFactorImpact={HealthFactorImpact.Decrease}
                         summaryTitle={'Amount to borrow'}
                         reserve={reserve}
@@ -379,6 +382,7 @@ export default function AaveReserve({
                       <AaveFunctionContent
                         reserveTitle={'Borrowed'}
                         healthFactorImpact={HealthFactorImpact.Increase}
+                        healthFactorResource={HealthFactorResource.Borrows}
                         summaryTitle={'Amount to repay'}
                         userBalance={
                           userReserve

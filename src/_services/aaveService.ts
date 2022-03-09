@@ -19,9 +19,8 @@ import LendingPoolInterface from '@aave/protocol-js/dist/tx-builder/interfaces/v
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { MarketDataResult } from '_services/marketDataService';
 import { formatTokenValueInFiat } from '_services/priceService';
-import { decimalPlacesAreValid } from '_utils/index';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
-import { HealthFactorImpact } from '_enums/aave';
+import { HealthFactorImpact, HealthFactorResource } from '_enums/aave';
 
 const defaultOptions: DefaultOptions = {
   watchQuery: {
@@ -240,6 +239,7 @@ export function calculateNewHealthFactor(
   userSummaryData: UserSummaryData,
   amount: string,
   healthFactorImpact: HealthFactorImpact,
+  healthFactorResource: HealthFactorResource
 ): string {
   // https://sourcegraph.com/github.com/aave/aave-ui/-/blob/src/libs/pool-data-provider/hooks/use-v2-protocol-data-with-rpc.tsx?L108
   const formattedUsdPriceEth = BigNumber.from(10)
@@ -248,20 +248,29 @@ export function calculateNewHealthFactor(
     .div(reserveData.price.oracle.usdPriceEth.toString());
   try {
     amount = (+amount).toFixed(10).toString();
-    const amountToBorrowInUsd = valueToBigNumber(ethers.utils.parseUnits(amount, 10).toString())
+    const amountInUsd = valueToBigNumber(ethers.utils.parseUnits(amount, 10).toString())
       .multipliedBy(reserveData.price.priceInEth)
       .multipliedBy(ethers.utils.formatUnits(formattedUsdPriceEth, 18));
 
-    const newBorrowBalance = healthFactorImpact === HealthFactorImpact.Increase
-      ? valueToBigNumber(userSummaryData.totalBorrowsUSD).minus(amountToBorrowInUsd)
-      : valueToBigNumber(userSummaryData.totalBorrowsUSD).plus(amountToBorrowInUsd);
-    return calculateHealthFactorFromBalancesBigUnits(
-      userSummaryData.totalCollateralUSD,
-      // newBorrowBalance,
-      newBorrowBalance,
-      // userSummaryData.totalCollateralETH,
-      userSummaryData.currentLiquidationThreshold
-    ).toFixed(2);
+    if (healthFactorResource === HealthFactorResource.Borrows) {
+      const newBorrowBalance = healthFactorImpact === HealthFactorImpact.Increase
+        ? valueToBigNumber(userSummaryData.totalBorrowsUSD).minus(amountInUsd)
+        : valueToBigNumber(userSummaryData.totalBorrowsUSD).plus(amountInUsd);
+      return calculateHealthFactorFromBalancesBigUnits(
+        userSummaryData.totalCollateralUSD,
+        newBorrowBalance,
+        userSummaryData.currentLiquidationThreshold
+      ).toFixed(2);
+    } else {
+      const newCollateralBalance = healthFactorImpact === HealthFactorImpact.Increase
+        ? valueToBigNumber(userSummaryData.totalCollateralUSD).plus(amountInUsd)
+        : valueToBigNumber(userSummaryData.totalCollateralUSD).minus(amountInUsd);
+      return calculateHealthFactorFromBalancesBigUnits(
+        newCollateralBalance,
+        userSummaryData.totalBorrowsUSD,
+        userSummaryData.currentLiquidationThreshold
+      ).toFixed(2);
+    }
   } catch (e) {
     console.log(e);
   }
