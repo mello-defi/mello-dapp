@@ -72,6 +72,7 @@ export default function CryptoAmountInput({
       >
         <div className={'mr-2 w-full md:w-2/3'}>
           <input
+            step={'0.01'}
             onWheel={() => false}
             type={'number'}
             disabled={disabled}

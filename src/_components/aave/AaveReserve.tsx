@@ -398,11 +398,11 @@ export default function AaveReserve({
                           (repayAmount && userReserve?.variableBorrows
                             ? parseFloat(repayAmount) > parseFloat(userReserve?.variableBorrows)
                             : false) ||
-                          (userBalance && userBalance.lt(ethers.utils.parseUnits(repayAmount, reserve.decimals)) || false)
+                          (repayAmount && userBalance && userBalance.lt(ethers.utils.parseUnits(repayAmount, reserve.decimals)) || false)
                         }
                       >
                         <span className={'ml-2'}>
-                          {repaySubmitting ? 'Submitting...' : (userBalance && userBalance.lt(ethers.utils.parseUnits(repayAmount, reserve.decimals)) || false ) ? 'Insufficient balance' : 'Repay'}
+                          {repaySubmitting ? 'Submitting...' : (repayAmount && userBalance && userBalance.lt(ethers.utils.parseUnits(repayAmount, reserve.decimals)) || false ) ? 'Insufficient balance' : 'Repay'}
                         </span>
                       </AaveFunctionContent>
                     )}
