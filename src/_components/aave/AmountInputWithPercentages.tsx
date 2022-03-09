@@ -52,38 +52,39 @@ export default function AmountInputWithPercentages({
 
   const handleAmountChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (baseAmount) {
-      let targetValue: string = event.target.value;
-      console.log('OG target vlaue', targetValue);
-      if (!decimalPlacesAreValid(targetValue.toString(), tokenDecimals)) {
-        targetValue = targetValue.substring(0, targetValue.length - 1);
+      let value = event.target.value;
+      if (value && !decimalPlacesAreValid(value, tokenDecimals)) {
+        value = value.substring(0, value.length - 1);
       }
-      console.log('AFTER DECIMALS', targetValue);
-      if (targetValue) {
-        let val: BigNumber = ethers.utils.parseUnits(targetValue, tokenDecimals);
-        const baseAmountBigNumber = ethers.utils.parseUnits(baseAmount, tokenDecimals);
-        if (val.gt(baseAmountBigNumber)) {
-          val = baseAmountBigNumber;
-        } else if (val.lt('0')) {
-          // val = BigNumber.from('0');
-        }
-        targetValue = val.toString();
+      const baseAmountBigNumber = ethers.utils.parseUnits(baseAmount, tokenDecimals);
+      if (
+        value &&
+        /^[0-9.]*$/.test(value) &&
+         baseAmountBigNumber.lt(ethers.utils.parseUnits(value, tokenDecimals))
+      ) {
+        value = ethers.utils.formatUnits(baseAmountBigNumber, tokenDecimals)
       }
-      if (targetValue) {
-        setInputAmount(ethers.utils.formatUnits(targetValue, tokenDecimals));
-      } else {
-        setInputAmount('');
+      if (parseFloat(value) < 0) {
+        value = '0.0';
       }
+      setInputAmount(value);
     }
   };
   return (
     <div className={'mt-2 md:mt-1'}>
       <div>
         <input
-          // min={0}
+          min={0}
+          step={'0.01'}
           max={baseAmount ? parseFloat(baseAmount) : undefined}
           disabled={!baseAmount || parseFloat(baseAmount) === 0}
+          onWheel={() => false}
           value={inputAmount}
           onChange={handleAmountChanged}
+          // onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+          //   console.log('event', event.target.value);
+          //   setInputAmount(event.target.value);
+          // }}
           type={'number'}
           className={`bg-white font-mono w-full border border-gray-100 transition hover:border-gray-300 focus:border-gray-300 focus:outline-none rounded-lg px-4 py-2 ${
             !baseAmount || parseFloat(baseAmount) === 0 ? 'text-color-light' : ''
