@@ -40,6 +40,7 @@ import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { convertCryptoAmounts } from '_services/priceService';
 import { getGasPrice } from '_services/gasService';
+import { OnboardingStep } from '_redux/types/onboardingTypes';
 
 // REVIEW huge refactor needed, too big
 export default function AaveReserve({
@@ -139,7 +140,7 @@ export default function AaveReserve({
     const approvalHash = await runAaveApprovalTransaction(transactions, provider, approvalGas?.fastest);
     if (approvalHash) {
       const tx = await provider.getTransaction(approvalHash);
-      await tx.wait(3);
+      await tx.wait(approvalGas?.blockTime || 3);
       setApprovalTransactionHash(approvalHash);
     }
     setTokenApproved(true);
@@ -148,7 +149,7 @@ export default function AaveReserve({
     setActionTransactionHash(actionHash);
     if (actionHash) {
       const tx = await provider.getTransaction(actionHash);
-      await tx.wait(3);
+      await tx.wait(actionGas?.blockTime || 3);
     }
     setTransactionConfirmed(true);
 
@@ -165,8 +166,9 @@ export default function AaveReserve({
       provider: ethers.providers.Web3Provider,
       userAddress: string,
       underlyingAsset: string,
-      amount: string
-    ) => Promise<EthereumTransactionTypeExtended[]>
+      amount: string,
+    ) => Promise<EthereumTransactionTypeExtended[]>,
+    nextStep?: OnboardingStep | null
   ) => {
     if (provider && userAddress && reserve) {
       try {
@@ -185,6 +187,9 @@ export default function AaveReserve({
         dispatch(
           toggleBalanceIsStale(findTokenByAddress(tokenSet, reserve.underlyingAsset).symbol, true)
         );
+        if (nextStep) {
+          dispatch(setStep(nextStep));
+        }
       } catch (e: any) {
         const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
         setTransactionError(
@@ -202,9 +207,9 @@ export default function AaveReserve({
         borrowAmount,
         setBorrowAmount,
         setBorrowSubmitting,
-        getBorrowTransactions
+        getBorrowTransactions,
+        stepBorrowAave.nextStep,
       );
-      dispatch(setStep(stepBorrowAave.nextStep));
     }
   };
 
@@ -225,9 +230,9 @@ export default function AaveReserve({
         depositAmount,
         setDepositAmount,
         setDepositSubmitting,
-        getDepositTransactions
+        getDepositTransactions,
+        stepDepositAave.nextStep,
       );
-      dispatch(setStep(stepDepositAave.nextStep));
     }
   };
 

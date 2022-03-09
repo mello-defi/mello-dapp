@@ -81,7 +81,7 @@ export default function SendCrypto() {
             gasPriceResult?.fastest
           );
           setApproveTransactionHash(tx.hash);
-          await tx.wait(1);
+          await tx.wait(gasPriceResult?.blockTime || 3);
         }
         setTokenApproved(true);
         const gasPriceResult = await getGasPrice(network.gasStationUrl);
@@ -94,7 +94,7 @@ export default function SendCrypto() {
           gasPriceResult?.fastest
         );
         setSendTransactionHash(txResponse.hash);
-        await txResponse.wait(1);
+        await txResponse.wait(gasPriceResult?.blockTime || 3);
         setTransactionCompleted(true);
         dispatch(toggleBalanceIsStale(token.symbol, true));
       } catch (e: any) {

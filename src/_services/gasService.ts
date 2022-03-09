@@ -14,6 +14,7 @@ export function getGasPrice(gasPriceApiUrl: string | undefined): Promise<GasPric
         safeLow: ethers.utils.parseUnits(response.data.safeLow.toString(), 'gwei'),
         standard: ethers.utils.parseUnits(response.data.standard.toString(), 'gwei'),
         fastest: ethers.utils.parseUnits(response.data.fastest.toString(), 'gwei'),
+        blockTime: response.data.blockTime,
       }
       return result;
     })

@@ -150,7 +150,7 @@ export default function Swap({
             setApprovalTransactionHAsh(approvalTxHash);
             const approvalTx: TransactionResponse = await provider.getTransaction(approvalTxHash);
             if (approvalTx) {
-              await approvalTx.wait(3);
+              await approvalTx.wait(approvalGasResult?.blockTime || 3);
             }
           }
         }
@@ -168,7 +168,7 @@ export default function Swap({
         setSwapTransactionHash(swapTxHash);
         setSwapSubmitted(true);
         const actionTx: TransactionResponse = await provider.getTransaction(swapTxHash);
-        await actionTx.wait(3);
+        await actionTx.wait(actionGasResult?.blockTime || 3);
         setSwapConfirmed(true);
         setSourceAmount('0.0');
         setDestinationAmount('0.0');

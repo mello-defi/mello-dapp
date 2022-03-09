@@ -5,4 +5,5 @@ export interface GasPriceResult {
   standard: BigNumber;
   fast: BigNumber;
   fastest: BigNumber;
+  blockTime: number;
 }
