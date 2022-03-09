@@ -140,8 +140,8 @@ export default function AaveReserve({
     const approvalHash = await runAaveApprovalTransaction(transactions, provider, approvalGas?.fastest);
     if (approvalHash) {
       const tx = await provider.getTransaction(approvalHash);
-      await tx.wait(approvalGas?.blockTime || 3);
       setApprovalTransactionHash(approvalHash);
+      await tx.wait(approvalGas?.blockTime || 3);
     }
     setTokenApproved(true);
     const actionGas = await getGasPrice(gasStationUrl);

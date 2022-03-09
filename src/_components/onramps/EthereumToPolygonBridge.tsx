@@ -17,6 +17,7 @@ import { Hyphen, RESPONSE_CODES, SIGNATURE_TYPES } from '@biconomy/hyphen';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { formatTokenValueInFiat } from '_services/priceService';
 import { decimalPlacesAreValid } from '_utils/index';
+import { getGasPrice } from '_services/gasService';
 
 interface BiconomyPreTransferStatus {
   code: number;
@@ -45,6 +46,7 @@ interface BiconomyFundsTransferedResponse {
 export default function EthereumToPolygonBridge() {
   const provider = useSelector((state: AppState) => state.web3.provider);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
+  const network = useSelector((state: AppState) => state.web3.network);
   // const token = PolygonTestnetMumbaiTokenContracts.
   const token = ethereumTokens.eth;
 
@@ -86,8 +88,9 @@ export default function EthereumToPolygonBridge() {
     console.log('FUNDS TRANSFERRED', data);
     setPolygonTransactionHash(data.exitHash);
     if (provider) {
+      const gasPrice = await getGasPrice(network.gasStationUrl);
       const tx = await provider.getTransaction(data.exitHash);
-      await tx.wait(1);
+      await tx.wait(gasPrice?.blockTime || 3);
       setPolygonTransferComplete(true);
     }
   };
@@ -133,8 +136,9 @@ export default function EthereumToPolygonBridge() {
             transferAmount
           );
 
+          const gasPrice = await getGasPrice(network.gasStationUrl);
           // ⏱Wait for transaction to confirm, pass number of blocks to wait as param
-          await approveTx.wait(2);
+          await approveTx.wait(gasPrice?.blockTime || 3);
 
           // NOTE: Whenever there is a transaction done via SDK, all responses
           // will be ethers.js compatible with an async wait() function that
@@ -171,8 +175,9 @@ export default function EthereumToPolygonBridge() {
         toChainId: EVMChainIdNumerical.POLYGON_TESTNET_MUMBAI // chainId of toChain
       });
       setEthereumTransactionHash(depositTx.hash);
+      const gasPrice = await getGasPrice(network.gasStationUrl);
       console.log('DEPOSIT Tx', depositTx);
-      await depositTx.wait(2);
+      await depositTx.wait(gasPrice?.blockTime || 3);
       setEthereumTransactionComplete(true);
     }
   };

@@ -107,7 +107,7 @@ export const evmNetworks: EvmNetworks = {
     name: EVMChainName.ETHEREUM_MAINNET,
     explorerUrl: 'https://etherscan.io',
     imageUrl: ethLogo,
-    gasStationUrl: 'https://gasstation-mainnet.matic.network/'
+    gasStationUrl: 'https://ethgasstation.info/json/ethgasAPI.json'
   },
   avalancheMainnet: {
     chainId: EVMChainIdNumerical.AVALANCHE_MAINNET,

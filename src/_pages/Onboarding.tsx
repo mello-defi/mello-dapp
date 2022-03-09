@@ -89,7 +89,7 @@ export default function Onboarding() {
         if (walletBalance.eq(0) && transactionCount === 0) {
           dispatch(setStep(stepAddGasToWallet));
         } else if (walletBalance.gt(0) && currentStep.number <= stepAddGasToWallet.number) {
-          dispatch(setStep(stepDepositAave));
+          dispatch(setStep(stepPerformSwap));
         }
       })();
     }

@@ -36,7 +36,7 @@ export const stepDepositAave: OnboardingStep = {
   component: AaveReserve,
   componentProps: {
     aaveSection: AaveSection.Deposit,
-    reserveSymbol: CryptoCurrencySymbol.WMATIC,
+    reserveSymbol: CryptoCurrencySymbol.WBTC,
   }
 };
 
@@ -47,7 +47,7 @@ export const stepPerformSwap: OnboardingStep = {
   component: Swap,
   componentProps: {
     initialSourceTokenSymbol: CryptoCurrencySymbol.MATIC,
-    initialDestinationTokenSymbol: CryptoCurrencySymbol.WMATIC
+    initialDestinationTokenSymbol: CryptoCurrencySymbol.WBTC
   }
 };
 export const stepAddGasToWallet: OnboardingStep = {

@@ -7,7 +7,7 @@ import Web3Modal, { IProviderOptions } from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import Torus from '@toruslabs/torus-embed';
 
-// REVIEW move these to env vars
+// REVIEW move these to env vars, remove hardcoded network values
 const providerOptions: IProviderOptions = {
   walletconnect: {
     package: WalletConnectProvider, // required
@@ -15,7 +15,9 @@ const providerOptions: IProviderOptions = {
       rpc: {
         137: 'https://polygon-mainnet.g.alchemy.com/v2/yAbnaHp8ByhAIrQrplXdhhzQRnB5Lu73'
       },
-      networkId: 'matic'
+      chainId: EVMChainIdNumerical.POLYGON_MAINNET,
+      networkId: 'matic',
+      rpcUrl: 'https://polygon-mainnet.g.alchemy.com/v2/yAbnaHp8ByhAIrQrplXdhhzQRnB5Lu73'
     }
   },
   torus: {

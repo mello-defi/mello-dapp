@@ -7,6 +7,7 @@ import React from 'react';
 export default function NavLink({ tab, title }: { tab: NavTab; title: string }) {
   const dispatch = useDispatch();
   const activeTab = useSelector((state: AppState) => state.ui.activeTab);
+  const onboardingComplete = useSelector((state: AppState) => state.onboarding.complete);
   const handleClick = () => {
     dispatch(setActiveTab(tab));
     dispatch(toggleSidebar(false));
@@ -15,7 +16,8 @@ export default function NavLink({ tab, title }: { tab: NavTab; title: string }) 
     tab !== activeTab ? 'text-color-light' : 'text-color-dark'
   }`;
   return (
-    <div onClick={handleClick} className={'cursor-pointer'}>
+    // <div onClick={handleClick} className={`cursor-pointer ${!onboardingComplete && tab !== NavTab.ONBOARDING ? 'opacity-40' : ''}`}>
+    <div onClick={handleClick} className={`cursor-pointer`}>
       {/*<span>{title}</span>*/}
       <span className={`flex sm:hidden text-3xl my-4 ${textColor}`}>{title}</span>
       <span className={`hidden md:flex mx-2 text-lg ${textColor} sm:text-2xl`}>{title}</span>

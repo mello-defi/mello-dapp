@@ -10,11 +10,13 @@ import TransactionError from '_components/transactions/TransactionError';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { renLogo } from '_assets/images';
 import CopyableText from '_components/core/CopyableText';
+import { getGasPrice } from '_services/gasService';
 
 function RenBridge() {
   const provider = useSelector((state: AppState) => state.web3.provider);
   const signer = useSelector((state: AppState) => state.web3.signer);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
+  const network = useSelector((state: AppState) => state.web3.network);
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
   const [message, setMessage] = React.useState('');
   const [gatewayAddress, setGatewayAddress] = React.useState('');
@@ -139,8 +141,9 @@ function RenBridge() {
             console.log('IN TRANSACTION HASH');
             console.log('TX HASH', txHash);
             setTransactionHash(txHash);
+            const gasPrice = await getGasPrice(network.gasStationUrl);
             const tx = await provider.getTransaction(txHash);
-            await tx.wait(1);
+            await tx.wait(gasPrice?.blockTime || 3);
             setTokensMinted(true);
           })
           .catch((e) => {
