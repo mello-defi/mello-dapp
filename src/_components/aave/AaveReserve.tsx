@@ -40,15 +40,14 @@ import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { convertCryptoAmounts } from '_services/priceService';
 
-export interface AaveReserveProps {
-  reserveSymbol: string,
-  aaveSection: AaveSection;
-}
 // REVIEW huge refactor needed, too big
 export default function AaveReserve({
   reserveSymbol,
   aaveSection,
-}: AaveReserveProps) {
+}: {
+  reserveSymbol: string,
+  aaveSection: AaveSection;
+}) {
   const dispatch = useDispatch();
   const aaveReserves = useAaveReserves();
   const userSummary = useAaveUserSummary();
