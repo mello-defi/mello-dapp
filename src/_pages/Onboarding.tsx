@@ -10,9 +10,9 @@ import { setStep } from '_redux/effects/onboardingEffects';
 import { getTransactionCount } from '_services/walletService';
 
 function OnboardingStepRow({ step }: { step: OnboardingStep }) {
-  const [isExpanded, setIsExpanded] = React.useState(false);
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
-  const stepIsCurrentStep = currentStep && currentStep.number === step.number;
+  const stepIsCurrentStep = currentStep && currentStep.number === step.number || false;
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
   return (
     <>
@@ -37,7 +37,7 @@ function OnboardingStepRow({ step }: { step: OnboardingStep }) {
               </div>
               <div
                 onClick={() => {
-                  setIsExpanded(!isExpanded);
+                  !stepIsCurrentStep && setIsExpanded(!isExpanded);
                 }}
                 className={'text-2xl cursor-pointer text-gray-400 hover:text-gray-600 transition'}
               >
@@ -49,7 +49,7 @@ function OnboardingStepRow({ step }: { step: OnboardingStep }) {
               </div>
             </div>
             <div className={'flex-row-center w-full text-body-smaller'}>
-              <DefaultTransition isOpen={isExpanded}>
+              <DefaultTransition isOpen={isExpanded || stepIsCurrentStep}>
                 <div className={'my-2'}>
                   Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
                   has been the industrys standard dummy text ever since the 1500s, when an unknown
