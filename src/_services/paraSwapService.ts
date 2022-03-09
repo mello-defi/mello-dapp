@@ -1,4 +1,4 @@
-import { APIError, NetworkID, ParaSwap } from 'paraswap';
+import { APIError, BuildOptions, NetworkID, ParaSwap } from 'paraswap';
 import { EvmGasTokenBurnAddress, TokenDefinition } from '_enums/tokens';
 import { BigNumber, ethers } from 'ethers';
 import { OptimalRate } from 'paraswap-core';
@@ -64,12 +64,13 @@ export async function approveToken(
   amount: BigNumber,
   userAddress: string,
   tokenAddress: string,
-  gasPrice?: BigNumber
+  gasPrice: BigNumber | undefined
 ): Promise<string> {
   const options: Omit<SendOptions, 'from'> = {};
   if (gasPrice) {
     options.gasPrice = gasPrice.toString();
   }
+  console.log('APPROVE TOKEN', options);
   return paraSwap.approveToken(amount.toString(), userAddress, tokenAddress, undefined, options);
 }
 
@@ -78,7 +79,8 @@ export async function buildSwapTransaction(
   destinationToken: TokenDefinition,
   userAddress: string,
   route: OptimalRate,
-  slippagePercentage: number
+  slippagePercentage: number,
+  gasPrice: BigNumber | undefined
 ): Promise<Transaction> {
   const destinationAmountWithSlippage = new BigNumberZD(route.destAmount)
     .multipliedBy(100 - slippagePercentage)
@@ -88,6 +90,10 @@ export async function buildSwapTransaction(
   const destAddress = destinationToken.isGasToken
     ? EvmGasTokenBurnAddress
     : destinationToken.address;
+  const options: BuildOptions = { ignoreChecks: true };
+  if (gasPrice) {
+    options.gasPrice = gasPrice.toString();
+  }
   const response: Transaction | APIError = await paraSwap.buildTx(
     srcAddress,
     destAddress,
@@ -99,7 +105,7 @@ export async function buildSwapTransaction(
     undefined,
     undefined,
     undefined,
-    { ignoreChecks: true },
+    options,
     route.srcDecimals,
     route.destDecimals
   );

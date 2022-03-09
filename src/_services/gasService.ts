@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { GasPriceResult } from '_interfaces/gas';
+import { ethers } from 'ethers';
 
 export function getGasPrice(gasPriceApiUrl: string | undefined): Promise<GasPriceResult | null> {
   if (!gasPriceApiUrl) {
@@ -8,7 +9,13 @@ export function getGasPrice(gasPriceApiUrl: string | undefined): Promise<GasPric
   return axios
     .get(gasPriceApiUrl)
     .then((response) => {
-      return response.data as GasPriceResult;
+      const result: GasPriceResult = {
+        fast: ethers.utils.parseUnits(response.data.fast.toString(), 'gwei'),
+        safeLow: ethers.utils.parseUnits(response.data.safeLow.toString(), 'gwei'),
+        standard: ethers.utils.parseUnits(response.data.standard.toString(), 'gwei'),
+        fastest: ethers.utils.parseUnits(response.data.fastest.toString(), 'gwei'),
+      }
+      return result;
     })
     .catch((error) => {
       console.error(error);

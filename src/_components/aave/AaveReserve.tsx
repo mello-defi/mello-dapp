@@ -39,6 +39,7 @@ import useAaveReserves from '_hooks/useAaveReserves';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { convertCryptoAmounts } from '_services/priceService';
+import { getGasPrice } from '_services/gasService';
 
 // REVIEW huge refactor needed, too big
 export default function AaveReserve({
@@ -55,6 +56,8 @@ export default function AaveReserve({
   const provider = useSelector((state: AppState) => state.web3.provider);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
+  // REVIEW - centralise this
+  const gasStationUrl = useSelector((state: AppState) => state.web3.network.gasStationUrl);
   const marketPrices = useMarketPrices();
   const [reserve, setReserve] = useState<ComputedReserveData | undefined>();
   const [userReserve, setUserReserve] = useState<ComputedUserReserve | undefined>();
@@ -132,14 +135,16 @@ export default function AaveReserve({
     provider: ethers.providers.Web3Provider,
     transactions: EthereumTransactionTypeExtended[]
   ) => {
-    const approvalHash = await runAaveApprovalTransaction(transactions, provider);
+    const approvalGas = await getGasPrice(gasStationUrl);
+    const approvalHash = await runAaveApprovalTransaction(transactions, provider, approvalGas?.fastest);
     if (approvalHash) {
       const tx = await provider.getTransaction(approvalHash);
       await tx.wait(3);
       setApprovalTransactionHash(approvalHash);
     }
     setTokenApproved(true);
-    const actionHash = await runAaveActionTransaction(transactions, provider);
+    const actionGas = await getGasPrice(gasStationUrl);
+    const actionHash = await runAaveActionTransaction(transactions, provider, actionGas?.fastest);
     setActionTransactionHash(actionHash);
     if (actionHash) {
       const tx = await provider.getTransaction(actionHash);
@@ -387,11 +392,12 @@ export default function AaveReserve({
                           parseFloat(userReserve?.variableBorrows) === 0 ||
                           (repayAmount && userReserve?.variableBorrows
                             ? parseFloat(repayAmount) > parseFloat(userReserve?.variableBorrows)
-                            : false)
+                            : false) ||
+                          (userBalance && userBalance.lt(ethers.utils.parseUnits(repayAmount, reserve.decimals)) || false)
                         }
                       >
                         <span className={'ml-2'}>
-                          {repaySubmitting ? 'Submitting...' : 'Repay'}
+                          {repaySubmitting ? 'Submitting...' : (userBalance && userBalance.lt(ethers.utils.parseUnits(repayAmount, reserve.decimals)) || false ) ? 'Insufficient balance' : 'Repay'}
                         </span>
                       </AaveFunctionContent>
                     )}

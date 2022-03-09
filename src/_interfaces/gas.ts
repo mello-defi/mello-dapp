@@ -1,6 +1,8 @@
+import { BigNumber } from 'ethers';
+
 export interface GasPriceResult {
-  safeLow: number;
-  standard: number;
-  fast: number;
-  fastest: number;
+  safeLow: BigNumber
+  standard: BigNumber;
+  fast: BigNumber;
+  fastest: BigNumber;
 }

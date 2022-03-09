@@ -52,7 +52,7 @@ export async function sendErc20Token(
   userAddress: string,
   destinationAddress: string,
   amount: BigNumber,
-  gasPrice?: BigNumber
+  gasPrice: BigNumber | undefined
 ): Promise<TransactionResponse> {
   const newContract = new ethers.Contract(token.address, token.abi, signer);
   const options: TransactionRequest = {};
@@ -76,7 +76,7 @@ export async function approveToken(
   signer: ethers.Signer,
   userAddress: string,
   amount: BigNumber,
-  gasPrice?: BigNumber
+  gasPrice: BigNumber | undefined
 ): Promise<TransactionResponse> {
   const contract = new ethers.Contract(token.address, token.abi, signer);
   const options: TransactionRequest = {};
@@ -89,28 +89,18 @@ export async function approveToken(
 export async function executeEthTransaction(
   txData: TransactionRequest,
   provider: ethers.providers.Web3Provider,
-  waitForReceipt = false,
-  customGasLimit?: BigNumber
+  gasPrice?: BigNumber | undefined
 ): Promise<string> {
   const signer = provider.getSigner(txData.from);
   try {
-    // const gasPrice = await provider.getGasPrice();
-    // if (customGasPrice) txData.gasPrice = BigNumber.from(gasPrice);
-    // console.log('GASPRICE', gasPrice);
-    // txData.gasPrice = BigNumber.from('0x006fe776018');
-    // txData.gasLimit = BigNumber.from('0x05fb5b');
-    // REVIEW - get gas here?
-
+    if (gasPrice) {
+      txData.gasPrice = gasPrice.toHexString();
+    }
     const txResponse: TransactionResponse = await signer.sendTransaction({
       ...txData,
       value: txData.value ? BigNumber.from(txData.value) : undefined
     });
-    const txHash = txResponse?.hash;
-    if (waitForReceipt) {
-      const receipt = await txResponse.wait(1);
-      return receipt.transactionHash;
-    }
-    return txHash;
+    return txResponse?.hash;
   } catch (e: any) {
     console.error('executeEthTransaction error', e);
     throw e;

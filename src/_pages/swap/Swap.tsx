@@ -66,6 +66,7 @@ export default function Swap({
   const [transactionError, setTransactionError] = useState<string>('');
   const [priceRoute, setPriceRoute] = useState<OptimalRate>();
   const [isApproving, setIsApproving] = useState<boolean>(false);
+  // REVIEW -- redux?
   if (provider) {
     initialiseParaSwap(provider, network.chainId);
   }
@@ -134,41 +135,36 @@ export default function Swap({
         setIsSwapping(true);
         if (!sourceToken.isGasToken) {
           const allowance: Allowance = await getAllowance(userAddress, sourceToken.address);
-          console.log('ALLOWANCE', allowance.allowance.toString());
           const amount: BigNumber = ethers.utils.parseUnits(
             sourceAmount.toString(),
             sourceToken.decimals
           );
           if (amount.gt(allowance.allowance)) {
-            const gasPriceResult = await getGasPrice(network.gasStationUrl);
-            let gasPrice: BigNumber | undefined;
-            if (gasPriceResult) {
-              gasPrice = ethers.utils.parseUnits(gasPriceResult?.fastest.toString(), 'gwei');
-            }
+            const approvalGasResult = await getGasPrice(network.gasStationUrl);
             const approvalTxHash = await approveToken(
               amount,
               userAddress,
               sourceToken.address,
-              gasPrice
+              approvalGasResult?.fastest
             );
             setApprovalTransactionHAsh(approvalTxHash);
             const approvalTx: TransactionResponse = await provider.getTransaction(approvalTxHash);
             if (approvalTx) {
               await approvalTx.wait(3);
-              const allowance2: Allowance = await getAllowance(userAddress, sourceToken.address);
-              console.log('ALLOWANCE2', allowance2.allowance.toString());
             }
           }
         }
         setTokenIsApproved(true);
+        const actionGasResult = await getGasPrice(network.gasStationUrl);
         const tx = await buildSwapTransaction(
           sourceToken,
           destinationToken,
           userAddress,
           priceRoute,
-          slippagePercentage
+          slippagePercentage,
+          actionGasResult?.fastest,
         );
-        const swapTxHash = await executeEthTransaction(tx, provider, false);
+        const swapTxHash = await executeEthTransaction(tx, provider);
         setSwapTransactionHash(swapTxHash);
         setSwapSubmitted(true);
         const actionTx: TransactionResponse = await provider.getTransaction(swapTxHash);

@@ -151,9 +151,9 @@ export async function getEthPrice(): Promise<string> {
 export async function runAaveApprovalTransaction(
   txs: EthereumTransactionTypeExtended[],
   provider: ethers.providers.Web3Provider,
-  waitForConfirmation = false
+  gasPrice: BigNumber | undefined,
 ): Promise<string> {
-  return runAaveTransactionType(txs, provider, eEthereumTxType.ERC20_APPROVAL, waitForConfirmation);
+  return runAaveTransactionType(txs, provider, eEthereumTxType.ERC20_APPROVAL, gasPrice);
 }
 
 // REVIEW does not belong here
@@ -188,9 +188,9 @@ export const getFiatValueForUserReserve = (
 export async function runAaveActionTransaction(
   txs: EthereumTransactionTypeExtended[],
   provider: ethers.providers.Web3Provider,
-  waitForConfirmation = false
+  gasPrice: BigNumber | undefined
 ): Promise<string> {
-  return runAaveTransactionType(txs, provider, eEthereumTxType.DLP_ACTION, waitForConfirmation);
+  return runAaveTransactionType(txs, provider, eEthereumTxType.DLP_ACTION, gasPrice);
 }
 
 export type ComputedUserReserveProperty = 'underlyingBalanceUSD' | 'totalBorrowsUSD';
@@ -217,15 +217,16 @@ async function runAaveTransactionType(
   txs: EthereumTransactionTypeExtended[],
   provider: ethers.providers.Web3Provider,
   transactionType: eEthereumTxType,
-  waitForConfirmation = false
+  gasPrice: BigNumber | undefined,
 ): Promise<string> {
   const tx = txs.find((tx: EthereumTransactionTypeExtended) => tx.txType === transactionType);
-  console.log('tx', tx);
   let transactionHash = '';
   if (tx) {
     try {
+      console.log('AAVESERVUCE: txData');
       const txData = await tx.tx();
-      transactionHash = await executeEthTransaction(txData, provider, waitForConfirmation);
+      console.log('AAVESERVUCE: txData', txData);
+      transactionHash = await executeEthTransaction(txData, provider, gasPrice);
     } catch (e: any) {
       console.log('runAaveTransactionType error', e);
       throw e;
@@ -277,7 +278,6 @@ export async function getDepositTransactions(
 ): Promise<EthereumTransactionTypeExtended[]> {
   const lendingPool = getLendingPool(provider);
   console.log(`Depositing ${amount} ${reserveTokenAddress} to ${userAddress}`);
-  // lendingPool.
   return lendingPool.deposit({
     user: userAddress.toLocaleLowerCase(),
     reserve: reserveTokenAddress,

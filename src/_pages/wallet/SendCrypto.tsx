@@ -73,27 +73,25 @@ export default function SendCrypto() {
         console.log(allowance.toString());
         if (allowance.lt(amountInUnits)) {
           const gasPriceResult = await getGasPrice(network.gasStationUrl);
-          let gasPrice: BigNumber | undefined;
-          if (gasPriceResult) {
-            gasPrice = ethers.utils.parseUnits(gasPriceResult?.fastest.toString(), 'gwei');
-          }
           const tx: TransactionResponse = await approveToken(
             token,
             signer,
             userAddress,
             amountInUnits,
-            gasPrice
+            gasPriceResult?.fastest
           );
           setApproveTransactionHash(tx.hash);
           await tx.wait(1);
         }
         setTokenApproved(true);
+        const gasPriceResult = await getGasPrice(network.gasStationUrl);
         const txResponse: TransactionResponse = await sendErc20Token(
           token,
           signer,
           userAddress,
           destinationAddress,
-          ethers.utils.parseUnits(amountToSend, token.decimals)
+          ethers.utils.parseUnits(amountToSend, token.decimals),
+          gasPriceResult?.fastest
         );
         setSendTransactionHash(txResponse.hash);
         await txResponse.wait(1);
