@@ -45,8 +45,8 @@ function OnboardingGuard() {
     <div className={'flex flex-col'}>
       <span className={'text-2xl text-center'}>Is this your first time using mello?</span>
       <div className={"flex-row-center w-full justify-center space-x-2 my-2"}>
-        <OnboardingGuardButton text={'No'} onClick={onClickOnboardingButton} complete={true}/>
         <OnboardingGuardButton text={'Yes'} onClick={onClickOnboardingButton} complete={false}/>
+        <OnboardingGuardButton text={'No'} onClick={onClickOnboardingButton} complete={true}/>
       </div>
     </div>
   )

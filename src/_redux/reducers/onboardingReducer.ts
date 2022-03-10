@@ -15,7 +15,7 @@ import FiatOnboarding from '_pages/fund/FiatOnboarding';
 export const stepMintNft: OnboardingStep = {
   number: 7,
   title: 'Mint NFT',
-  nextStep: null
+  nextStep: null,
 };
 export const stepBorrowAave: OnboardingStep = {
   number: 6,

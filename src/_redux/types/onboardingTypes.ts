@@ -11,6 +11,7 @@ export interface OnboardingStep {
   nextStep: OnboardingStep | null;
   component?: FunctionComponent<any>;
   componentProps?: any;
+  description?: string;
 }
 
 export interface OnboardingState {

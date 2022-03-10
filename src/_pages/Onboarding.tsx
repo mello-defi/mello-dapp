@@ -8,6 +8,7 @@ import useWalletBalance from '_hooks/useWalletBalance';
 import { stepAddGasToWallet, stepDepositAave, stepPerformSwap } from '_redux/reducers/onboardingReducer';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { getTransactionCount } from '_services/walletService';
+import { Button } from '_components/core/Buttons';
 
 function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
@@ -81,6 +82,9 @@ export default function Onboarding() {
   const walletBalance = useWalletBalance(gasToken);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const provider = useSelector((state: AppState) => state.web3.provider);
+  const [nextStep, setNextStep] = React.useState<OnboardingStep | undefined>(undefined);
+  const [onboardingInitiated, setOnboardingInitiated] = React.useState(false);
+  const [waitingToAdvance, setWaitingToAdvance] = React.useState(false);
   useEffect(() => {
     if (userAddress && provider && currentStep && walletBalance) {
       // REVIEW - possibly not correct
@@ -94,14 +98,43 @@ export default function Onboarding() {
       })();
     }
   }, [userAddress, walletBalance]);
+
+  // useEffect(() => {
+  //   if (waitingToAdvance) {
+  //     setNextStep(currentStep);
+  //   }
+  // }, [waitingToAdvance, currentStep]);
+  //
+  // useEffect(() => {
+  //   setWaitingToAdvance(true)
+  // }, [currentStep]);
   return (
     <div>
-      {currentStep && (
+      <div className={'px-4 mb-2 flex flex-col text-body'}>
+        <span>
+          Welcome to the mello onboarding tutorial! This tutorial will bring you step by step through the mello platform and its features. You will learn how to create or connect your wallet, fund that wallet, and swap, deposit and borrow cryptocurrency. Upon completion, you will unlock every feature on the mello platform.
+          Please join <a className={'text-orange'} href={"https://discord.gg/fP39CfXN"}>our Discord</a> for any further help.
+        </span>
+        <Button className={'w-full my-2'} onClick={() => setOnboardingInitiated(true)}>Begin</Button>
+      </div>
+      {currentStep && onboardingInitiated && (
         <>
           {steps
-            .filter((step) => step.number <= currentStep.number)
+            .filter((step) => step.number <= currentStep?.number)
             .map((step) => (
-              <OnboardingStepRow key={step.number} step={step} />
+              // <div key={step.number}>
+              //   {waitingToAdvance && currentStep?.number === step.number ? (
+              //     <div className={'flex-row-center w-full text-body-smaller'}>
+              //       <DefaultTransition isOpen={waitingToAdvance}>
+              //         <div className={'my-2'}>
+              //           Please wait while we complete the previous step.
+              //         </div>
+              //       </DefaultTransition>
+              //     </div>
+              //   ): (
+                  <OnboardingStepRow key={step.number} step={step} />
+                // )}
+              // </div>
             ))}
         </>
       )}
