@@ -33,9 +33,9 @@
     overflow-x: hidden;
   }
 
-  /*a {*/
-  /*  @apply cursor-pointer;*/
-  /*}*/
+  a {
+    @apply cursor-pointer text-orange;
+  }
 
   /*h1 {*/
   /*  @apply text-7xl font-bold tracking-tighter !important;*/

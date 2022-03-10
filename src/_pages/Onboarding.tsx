@@ -52,14 +52,32 @@ function OnboardingStepRow({ step }: { step: OnboardingStep }) {
             <div className={'flex-row-center w-full text-body-smaller'}>
               <DefaultTransition isOpen={isExpanded || stepIsCurrentStep}>
                 <div className={'my-2'}>
-                  Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
-                  has been the industrys standard dummy text ever since the 1500s, when an unknown
-                  printer took a galley of type and scrambled it to make a type specimen book. It
-                  has survived not only five centuries, but also the leap into electronic
-                  typesetting, remaining essentially unchanged. It was popularised in the 1960s with
-                  the release of Letraset sheets containing Lorem Ipsum passages, and more recently
-                  with desktop publishing software like Aldus PageMaker including versions of Lorem
-                  Ipsum
+                  {step.description.text ? (
+                    <span dangerouslySetInnerHTML={{__html: step.description.text}}/>
+                  ): (
+                    <>
+                      {step.description.whatIsRequired && step.description.whyIsRequired && (
+                        <>
+                          <span className={'font-bold text-body'}>What is required?</span>
+                          <br/>
+                          <span className={'text-body-smaller'} dangerouslySetInnerHTML={{__html: step.description.whatIsRequired}}/>
+                          <br/>
+                          <br/>
+                          <span className={'font-bold text-body'}>Why is this required?</span>
+                          <br/>
+                          <span className={'text-body-smaller'} dangerouslySetInnerHTML={{__html: step.description.whyIsRequired}}/>
+                          {step.description.notes && (
+                            <>
+                              <br/>
+                              <span className={'italic'}>Notes:{' '}
+                            <span dangerouslySetInnerHTML={{__html: step.description.notes}}/>
+                          </span>
+                            </>
+                          )}
+                        </>
+                      )}
+                    </>
+                  )}
                 </div>
               </DefaultTransition>
             </div>
