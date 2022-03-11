@@ -36,7 +36,6 @@ export default function Swap({
   initialDestinationTokenSymbol?: CryptoCurrencySymbol;
 }) {
   const dispatch = useDispatch();
-  const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const signer = useSelector((state: AppState) => state.web3.signer);
@@ -127,35 +126,39 @@ export default function Swap({
     }
   };
 
+  const checkAndApproveAllowance = async (provider: ethers.providers.Web3Provider, signer: ethers.Signer, userAddress: string) => {
+    const transferProxy = await getTokenTransferProxy();
+    const allowance = await getTokenAllowance(
+      sourceToken,
+      provider,
+      userAddress,
+      transferProxy
+    );
+    const amount: BigNumber = ethers.utils.parseUnits(
+      sourceAmount.toString(),
+      sourceToken.decimals
+    );
+    if (amount.gt(allowance)) {
+      const approvalGasResult = await getGasPrice(network.gasStationUrl);
+      const approvalTxHash = await approveToken(
+        sourceToken,
+        signer,
+        userAddress,
+        amount,
+        approvalGasResult?.fastest,
+        transferProxy
+      );
+      setApprovalTransactionHAsh(approvalTxHash.hash);
+      await approvalTxHash.wait(approvalGasResult?.blockTime || 3);
+    }
+  }
+
   const handleSwap = async () => {
     if (provider && destinationToken && priceRoute && userAddress && signer) {
       try {
         setIsSwapping(true);
         if (!sourceToken.isGasToken) {
-          const transferProxy = await getTokenTransferProxy();
-          const allowance = await getTokenAllowance(
-            sourceToken,
-            provider,
-            userAddress,
-            transferProxy
-          );
-          const amount: BigNumber = ethers.utils.parseUnits(
-            sourceAmount.toString(),
-            sourceToken.decimals
-          );
-          if (amount.gt(allowance)) {
-            const approvalGasResult = await getGasPrice(network.gasStationUrl);
-            const approvalTxHash = await approveToken(
-              sourceToken,
-              signer,
-              userAddress,
-              amount,
-              approvalGasResult?.fastest,
-              transferProxy
-            );
-            setApprovalTransactionHAsh(approvalTxHash.hash);
-            await approvalTxHash.wait(approvalGasResult?.blockTime || 3);
-          }
+          await checkAndApproveAllowance(provider, signer, userAddress);
         }
         setTokenIsApproved(true);
         const actionGasResult = await getGasPrice(network.gasStationUrl);
@@ -172,13 +175,7 @@ export default function Swap({
         setSwapSubmitted(true);
         await swapTxHash.wait(actionGasResult?.blockTime || 3);
         setSwapConfirmed(true);
-        setSourceAmount('0.0');
-        setDestinationAmount('0.0');
-        setSourceFiatAmount(0);
-        setDestinationFiatAmount(0);
-        setTransactionError('');
-        setIsSwapping(false);
-        setIsApproving(false);
+        resetState();
         dispatch(toggleBalanceIsStale(sourceToken.symbol, true));
         dispatch(toggleBalanceIsStale(destinationToken.symbol, true));
         dispatch(setStep(stepPerformSwap.nextStep));
@@ -188,6 +185,16 @@ export default function Swap({
       }
     }
   };
+
+  const resetState = () => {
+    setSourceAmount('0.0');
+    setDestinationAmount('0.0');
+    setSourceFiatAmount(0);
+    setDestinationFiatAmount(0);
+    setTransactionError('');
+    setIsSwapping(false);
+    setIsApproving(false);
+  }
 
   const debouncedSave = useCallback(
     debounce(
@@ -251,7 +258,6 @@ export default function Swap({
         // source={SwapSide.BUY}
       />
       <TransactionError transactionError={fetchingPriceError} />
-      {/*<SlippageControl slippage={slippage}/>*/}
       <SwapPriceInformation
         setSlippagePercentage={setSlippagePercentage}
         fetchingPrices={fetchingPrices}

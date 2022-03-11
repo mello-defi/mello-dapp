@@ -6,6 +6,7 @@ import { EvStation, ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Spinner } from '_components/core/Animations';
 import { DefaultTransition } from '_components/core/Transition';
 import SlippageControl from '_pages/swap/SlippageControl';
+import TokenConversion from '_pages/swap/TokenConversion';
 
 function GasCost({ gasCostUSD }: { gasCostUSD: string }) {
   return (
@@ -32,14 +33,6 @@ export default function SwapPriceInformation({
   setSlippagePercentage: (percentage: number) => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const getDestinationTokenPriceComparison = (): string => {
-    if (priceRoute) {
-      const srcGwei = ethers.utils.formatUnits(priceRoute.srcAmount, priceRoute.srcDecimals);
-      const destGwei = ethers.utils.formatUnits(priceRoute.destAmount, priceRoute.destDecimals);
-      return (parseFloat(srcGwei) / parseFloat(destGwei)).toPrecision(6);
-    }
-    return '';
-  };
   return (
     <div className={'rounded-2xl text-body-smaller space-y-2 sm:space-y-0 px-2 my-4'}>
       <div className={'flex flex-row items-start justify-between'}>
@@ -52,17 +45,7 @@ export default function SwapPriceInformation({
           <>
             {priceRoute && (
               <>
-                <div>
-                  {destinationToken && priceRoute && (
-                    <>
-                      <span className={''}>
-                        1 {sourceToken.symbol} ={' '}
-                        <span className={'font-mono'}>{getDestinationTokenPriceComparison()}</span>{' '}
-                        {destinationToken.symbol}
-                      </span>
-                    </>
-                  )}
-                </div>
+                <TokenConversion sourceToken={sourceToken} destinationToken={destinationToken} sourceAmount={priceRoute.srcAmount} destinationAmount={priceRoute.destAmount}/>
                 <div className={'flex-row-center'}>
                   {priceRoute && !isExpanded && (
                     <div>
@@ -101,7 +84,7 @@ export default function SwapPriceInformation({
                 <span>Minimum received after slippage ({slippagePercentage}%)</span>
                 <span className={'font-mono'}>
                   {priceRoute?.destAmount
-                    ? // ? ethers.utils.parseUnits(priceRoute.destAmount, priceRoute.destDecimals).div(100).mul(100 - slippagePercentage).toString()
+                    ?
                       `$${(
                         (parseFloat(priceRoute.destUSD) / 100) *
                         (100 - slippagePercentage)

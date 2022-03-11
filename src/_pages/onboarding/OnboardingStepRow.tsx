@@ -4,6 +4,7 @@ import { AppState } from '_redux/store';
 import React, { useState } from 'react';
 import { CheckCircle, ExpandLess, ExpandMore, Info } from '@mui/icons-material';
 import { DefaultTransition } from '_components/core/Transition';
+import OnboardingStepDescription from '_pages/onboarding/OnboardingStepDescription';
 
 export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
@@ -47,41 +48,7 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
             <div className={'flex-row-center w-full text-body-smaller'}>
               <DefaultTransition isOpen={isExpanded || stepIsCurrentStep}>
                 <div className={'my-2'}>
-                  {step.description.text ? (
-                    <span dangerouslySetInnerHTML={{ __html: step.description.text }} />
-                  ) : (
-                    <>
-                      {step.description.whatIsRequired && step.description.whyIsRequired && (
-                        <>
-                          <span className={'font-bold text-body'}>What is required?</span>
-                          <br />
-                          <span
-                            className={'text-body-smaller'}
-                            dangerouslySetInnerHTML={{ __html: step.description.whatIsRequired }}
-                          />
-                          <br />
-                          <br />
-                          <span className={'font-bold text-body'}>Why is this required?</span>
-                          <br />
-                          <span
-                            className={'text-body-smaller'}
-                            dangerouslySetInnerHTML={{ __html: step.description.whyIsRequired }}
-                          />
-                          {step.description.notes && (
-                            <>
-                              <br />
-                              <span className={'italic'}>
-                                Notes:{' '}
-                                <span
-                                  dangerouslySetInnerHTML={{ __html: step.description.notes }}
-                                />
-                              </span>
-                            </>
-                          )}
-                        </>
-                      )}
-                    </>
-                  )}
+                  <OnboardingStepDescription step={step}/>
                 </div>
               </DefaultTransition>
             </div>
