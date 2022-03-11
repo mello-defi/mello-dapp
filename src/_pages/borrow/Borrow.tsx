@@ -17,21 +17,13 @@ import UserReservesSkeleton from '_components/aave/UserReservesSkeleton';
 import AaveReservesSkeleton from '_components/aave/AaveReservesSkeleton';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import useAaveReserves from '_hooks/useAaveReserves';
+import UserBorrowSummary from '_pages/borrow/UserBorrowSummary';
 
 export default function Borrow() {
-  const provider = useSelector((state: AppState) => state.web3.provider);
-  const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const marketPrices = useMarketPrices();
-  // const useWalletBalance =
-  const userAddress = useSelector((state: AppState) => state.wallet.address);
   const userSummary = useAaveUserSummary();
   const aaveReserves = useAaveReserves();
   const [ethPrice, setEthPrice] = useState<number | undefined>(undefined);
-  // const [maxBorrowAmount, setMaxBorrowAmount] = useState<string | undefined>(undefined);
-  console.log('\nBorrow.tsx: market prices', marketPrices);
-  console.log('\nBorrow.tsx: userSummary', userSummary);
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (marketPrices && marketPrices.length > 0 && !ethPrice) {
@@ -43,11 +35,6 @@ export default function Borrow() {
       }
     }
   }, [marketPrices]);
-
-  console.log(
-    'userSummary && userSummary.reservesData',
-    userSummary && userSummary.reservesData ? 'true' : 'false'
-  );
   return (
     <div className={'space-y-2'}>
       <div className={'flex-row-center justify-between'}>
@@ -55,31 +42,7 @@ export default function Borrow() {
         <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
       </div>
       <div>
-        {/* REVIEW  (dupe) */}
-        {userSummary && userSummary.reservesData ? (
-          userSummary.reservesData
-            .filter(
-              (reserve: ComputedUserReserve) =>
-                parseFloat(parseFloat(reserve.totalBorrows).toFixed(6)) > 0
-            )
-            .sort(
-              (a: ComputedUserReserve, b: ComputedUserReserve) =>
-                parseFloat(b.totalBorrowsETH) - parseFloat(a.totalBorrowsETH)
-            )
-            .map((reserve: ComputedUserReserve) => {
-              return (
-                <ComputedUserReserveListItem
-                  key={reserve.reserve.symbol}
-                  reserveName={reserve.reserve.name}
-                  reserveSymbol={reserve.reserve.symbol}
-                  reserveAddress={reserve.reserve.underlyingAsset}
-                  reserveAmount={reserve.totalBorrows}
-                />
-              );
-            })
-        ) : (
-          <UserReservesSkeleton />
-        )}
+        <UserBorrowSummary />
       </div>
       <span className={'text-body flex-row-center justify-between'}>
         <span>Available to borrow</span>

@@ -100,8 +100,6 @@ export default function Wallet() {
           {walletPageTab === WalletPageTab.SEND && <SendCrypto />}
         </div>
       </DefaultTransition>
-      {/*<HorizontalLineBreak/>*/}
-      {/*{useWalletBalance()}*/}
       <div className={'rounded-2xl bg-gray-50 py-2'}>
         {Object.values(tokenSet).map((token: TokenDefinition) => (
           <WalletBalance key={token.symbol} token={token} hideZeroBalance={false} />

@@ -126,14 +126,13 @@ export default function Swap({
     }
   };
 
-  const checkAndApproveAllowance = async (provider: ethers.providers.Web3Provider, signer: ethers.Signer, userAddress: string) => {
+  const checkAndApproveAllowance = async (
+    provider: ethers.providers.Web3Provider,
+    signer: ethers.Signer,
+    userAddress: string
+  ) => {
     const transferProxy = await getTokenTransferProxy();
-    const allowance = await getTokenAllowance(
-      sourceToken,
-      provider,
-      userAddress,
-      transferProxy
-    );
+    const allowance = await getTokenAllowance(sourceToken, provider, userAddress, transferProxy);
     const amount: BigNumber = ethers.utils.parseUnits(
       sourceAmount.toString(),
       sourceToken.decimals
@@ -151,7 +150,7 @@ export default function Swap({
       setApprovalTransactionHAsh(approvalTxHash.hash);
       await approvalTxHash.wait(approvalGasResult?.blockTime || 3);
     }
-  }
+  };
 
   const handleSwap = async () => {
     if (provider && destinationToken && priceRoute && userAddress && signer) {
@@ -194,7 +193,7 @@ export default function Swap({
     setTransactionError('');
     setIsSwapping(false);
     setIsApproving(false);
-  }
+  };
 
   const debouncedSave = useCallback(
     debounce(

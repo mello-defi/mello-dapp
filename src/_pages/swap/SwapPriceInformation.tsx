@@ -45,7 +45,12 @@ export default function SwapPriceInformation({
           <>
             {priceRoute && (
               <>
-                <TokenConversion sourceToken={sourceToken} destinationToken={destinationToken} sourceAmount={priceRoute.srcAmount} destinationAmount={priceRoute.destAmount}/>
+                <TokenConversion
+                  sourceToken={sourceToken}
+                  destinationToken={destinationToken}
+                  sourceAmount={priceRoute.srcAmount}
+                  destinationAmount={priceRoute.destAmount}
+                />
                 <div className={'flex-row-center'}>
                   {priceRoute && !isExpanded && (
                     <div>
@@ -84,8 +89,7 @@ export default function SwapPriceInformation({
                 <span>Minimum received after slippage ({slippagePercentage}%)</span>
                 <span className={'font-mono'}>
                   {priceRoute?.destAmount
-                    ?
-                      `$${(
+                    ? `$${(
                         (parseFloat(priceRoute.destUSD) / 100) *
                         (100 - slippagePercentage)
                       ).toFixed(6)}`

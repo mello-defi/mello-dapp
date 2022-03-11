@@ -2,8 +2,17 @@ import React from 'react';
 import { TokenDefinition } from '_enums/tokens';
 import { ethers } from 'ethers';
 
-export default function TokenConversion ({sourceToken, destinationToken, sourceAmount, destinationAmount}: {sourceToken: TokenDefinition, destinationToken: TokenDefinition, sourceAmount: string, destinationAmount: string}) {
-
+export default function TokenConversion({
+  sourceToken,
+  destinationToken,
+  sourceAmount,
+  destinationAmount
+}: {
+  sourceToken: TokenDefinition;
+  destinationToken: TokenDefinition;
+  sourceAmount: string;
+  destinationAmount: string;
+}) {
   const getDestinationTokenPriceComparison = (): string => {
     const srcGwei = ethers.utils.formatUnits(sourceAmount, sourceToken.decimals);
     const destGwei = ethers.utils.formatUnits(destinationAmount, destinationToken.decimals);
@@ -17,5 +26,5 @@ export default function TokenConversion ({sourceToken, destinationToken, sourceA
         {destinationToken.symbol}
       </span>
     </div>
-  )
+  );
 }

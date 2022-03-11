@@ -3,11 +3,11 @@ import './App.css';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { DefaultTransition } from '_components/core/Transition';
 import { useDispatch, useSelector } from 'react-redux';
-import Deposit from '_pages/Deposit';
+import Deposit from '_pages/deposit/Deposit';
 import Footer from '_components/Footer';
 import Header from '_components/header/Header';
 import Swap from '_pages/swap/Swap';
-import Borrow from '_pages/Borrow';
+import Borrow from '_pages/borrow/Borrow';
 import { NavTab } from '_redux/types/uiTypes';
 import { AppState } from '_redux/store';
 import Wallet from '_pages/wallet/Wallet';
@@ -63,6 +63,8 @@ function OnboardingGuard() {
 // REVIEW general
 // retry failed requests with expontential backoff
 // standardise viewing/granting token allowances
+// constants for URLs (aave etc)
+// Env vars for environment based config (alchemy)
 function EthereumMainnetGuard() {
   const dispatch = useDispatch();
   const changeNetwork = (networkTemp: EvmNetworkDefinition) => {

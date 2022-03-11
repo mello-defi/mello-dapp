@@ -16,6 +16,8 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import { getMarketDataForSymbol } from '_services/aaveService';
 import { ethers } from 'ethers';
 import { CryptoCurrencySymbol } from '_enums/currency';
+import UserBorrowSummary from '_pages/borrow/UserBorrowSummary';
+import UserDepositSummary from '_pages/deposit/UserDepositSummary';
 
 function DashboardLink({ text, navTab }: { text: string; navTab: NavTab }) {
   const dispatch = useDispatch();
@@ -119,63 +121,14 @@ export default function Dashboard() {
       <div>
         <DashboardLink text={'Borrows'} navTab={NavTab.BORROW} />
         <div className={'mt-2'}>
-          {/* REVIEW  (dupe) */}
-          {userSummary && userSummary.reservesData ? (
-            userSummary.reservesData
-              .filter(
-                (reserve: ComputedUserReserve) =>
-                  parseFloat(parseFloat(reserve.totalBorrows).toFixed(6)) > 0
-              )
-              .sort(
-                (a: ComputedUserReserve, b: ComputedUserReserve) =>
-                  parseFloat(b.totalBorrowsETH) - parseFloat(a.totalBorrowsETH)
-              )
-              .map((reserve: ComputedUserReserve) => {
-                return (
-                  <ComputedUserReserveListItem
-                    key={reserve.reserve.symbol}
-                    reserveName={reserve.reserve.name}
-                    reserveSymbol={reserve.reserve.symbol}
-                    reserveAddress={reserve.reserve.underlyingAsset}
-                    reserveAmount={reserve.totalBorrows}
-                  />
-                );
-              })
-          ) : (
-            <UserReservesSkeleton />
-          )}
+          <UserBorrowSummary />
         </div>
       </div>
       <HorizontalLineBreak />
       <div>
         <DashboardLink text={'Deposits'} navTab={NavTab.DEPOSIT} />
         <div className={'mt-2'}>
-          {/* REVIEW  (dupe) */}
-          {userSummary && userSummary.reservesData ? (
-            <div>
-              {userSummary.reservesData
-                .filter(
-                  (reserve: ComputedUserReserve) =>
-                    parseFloat(parseFloat(reserve.underlyingBalance).toFixed(6)) > 0
-                )
-                .sort(
-                  (a, b) => parseFloat(b.underlyingBalanceETH) - parseFloat(a.underlyingBalanceETH)
-                )
-                .map((reserve: ComputedUserReserve) => {
-                  return (
-                    <ComputedUserReserveListItem
-                      key={reserve.reserve.symbol}
-                      reserveName={reserve.reserve.name}
-                      reserveSymbol={reserve.reserve.symbol}
-                      reserveAddress={reserve.reserve.underlyingAsset}
-                      reserveAmount={reserve.underlyingBalance}
-                    />
-                  );
-                })}
-            </div>
-          ) : (
-            <UserReservesSkeleton />
-          )}
+          <UserDepositSummary />
         </div>
       </div>
     </div>

@@ -18,7 +18,6 @@ export default function CryptoOnboarding() {
     setCryptoCurrencySelected(true);
   };
   return (
-
     <div className={''}>
       <h4>My cryptocurrency is</h4>
       <div className={'flex flex-col mt-2 justify-between'}>
@@ -64,5 +63,5 @@ export default function CryptoOnboarding() {
         </div>
       </DefaultTransition>
     </div>
-  )
+  );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { OnboardingStep } from '_redux/types/onboardingTypes';
 
-export default function OnboardingStepDescription({step}: {step: OnboardingStep}) {
+export default function OnboardingStepDescription({ step }: { step: OnboardingStep }) {
   return (
     <>
       {step.description.text ? (
@@ -28,10 +28,7 @@ export default function OnboardingStepDescription({step}: {step: OnboardingStep}
                 <>
                   <br />
                   <span className={'italic'}>
-                                Notes:{' '}
-                    <span
-                      dangerouslySetInnerHTML={{ __html: step.description.notes }}
-                    />
+                    Notes: <span dangerouslySetInnerHTML={{ __html: step.description.notes }} />
                   </span>
                 </>
               )}
@@ -40,5 +37,5 @@ export default function OnboardingStepDescription({step}: {step: OnboardingStep}
         </>
       )}
     </>
-  )
+  );
 }

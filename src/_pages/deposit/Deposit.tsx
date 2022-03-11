@@ -16,6 +16,7 @@ import useAaveReserves from '_hooks/useAaveReserves';
 import { sortUserReservesByKey } from '_services/aaveService';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { stepDepositAave } from '_redux/reducers/onboardingReducer';
+import UserDepositSummary from '_pages/deposit/UserDepositSummary';
 
 export default function Deposit() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -31,37 +32,13 @@ export default function Deposit() {
         <span className={'text-header'}>My deposits</span>
         <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
       </div>
-      {/* REVIEW  (dupe) */}
-      {userSummary && userSummary.reservesData ? (
-        <div>
-          {userSummary.reservesData
-            .filter(
-              (reserve: ComputedUserReserve) =>
-                parseFloat(parseFloat(reserve.underlyingBalance).toFixed(6)) > 0
-            )
-            .sort((a, b) => parseFloat(b.underlyingBalanceETH) - parseFloat(a.underlyingBalanceETH))
-            .map((reserve: ComputedUserReserve) => {
-              return (
-                <ComputedUserReserveListItem
-                  key={reserve.reserve.symbol}
-                  reserveName={reserve.reserve.name}
-                  reserveSymbol={reserve.reserve.symbol}
-                  reserveAddress={reserve.reserve.underlyingAsset}
-                  reserveAmount={reserve.underlyingBalance}
-                />
-              );
-            })}
-        </div>
-      ) : (
-        <UserReservesSkeleton />
-      )}
+      <UserDepositSummary />
       {userSummary && <CurrentHealthFactor healthFactor={userSummary.healthFactor} />}
       {userSummary && aaveReserves ? (
         sortUserReservesByKey(aaveReserves, userSummary.reservesData, 'underlyingBalanceUSD').map(
           (reserve: ComputedReserveData) => {
             return (
               <AaveReserve
-                // token={findTokenByAddress(tokenSet, reserve.underlyingAsset)}
                 aaveSection={AaveSection.Deposit}
                 key={reserve.symbol}
                 reserveSymbol={reserve.symbol}

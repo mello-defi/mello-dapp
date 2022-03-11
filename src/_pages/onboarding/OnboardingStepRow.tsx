@@ -48,7 +48,7 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
             <div className={'flex-row-center w-full text-body-smaller'}>
               <DefaultTransition isOpen={isExpanded || stepIsCurrentStep}>
                 <div className={'my-2'}>
-                  <OnboardingStepDescription step={step}/>
+                  <OnboardingStepDescription step={step} />
                 </div>
               </DefaultTransition>
             </div>
