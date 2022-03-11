@@ -21,6 +21,14 @@ interface CoinGeckoParams {
   ids: string;
 }
 
+export const getMarketDataForSymbol = (
+  marketDataResults: MarketDataResult[],
+  symbol: string
+): MarketDataResult | undefined => {
+  return marketDataResults?.find(
+    (m) => m.symbol === (symbol.startsWith('W') ? symbol.substring(1) : symbol).toLocaleLowerCase()
+  );
+};
 export function getMarketData(
   currency: FiatCurrencyName = FiatCurrencyName.USD
 ): Promise<MarketDataResult[]> {

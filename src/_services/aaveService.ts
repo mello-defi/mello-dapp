@@ -156,15 +156,6 @@ export async function runAaveApprovalTransaction(
   return runAaveTransactionType(txs, provider, eEthereumTxType.ERC20_APPROVAL, gasPrice);
 }
 
-// REVIEW does not belong here
-export const getMarketDataForSymbol = (
-  marketDataResults: MarketDataResult[],
-  symbol: string
-): MarketDataResult | undefined => {
-  return marketDataResults?.find(
-    (m) => m.symbol === (symbol.startsWith('W') ? symbol.substring(1) : symbol).toLocaleLowerCase()
-  );
-};
 export const getFiatValueForUserReserve = (
   marketDataResults: MarketDataResult[],
   reserveAmount: string,

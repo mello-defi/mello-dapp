@@ -10,11 +10,11 @@ import { ArrowForward } from '@mui/icons-material';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import HealthFactorNumber from '_components/aave/HealthFactorNumber';
 import useMarketPrices from '_hooks/useMarketPrices';
-import { getMarketDataForSymbol } from '_services/aaveService';
 import { ethers } from 'ethers';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import UserBorrowSummary from '_pages/borrow/UserBorrowSummary';
 import UserDepositSummary from '_pages/deposit/UserDepositSummary';
+import { getMarketDataForSymbol } from '_services/marketDataService';
 
 function DashboardLink({ text, navTab }: { text: string; navTab: NavTab }) {
   const dispatch = useDispatch();

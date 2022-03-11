@@ -12,7 +12,6 @@ import { BigNumber, ethers } from 'ethers';
 import {
   getBorrowTransactions,
   getDepositTransactions,
-  getMarketDataForSymbol,
   getRepayTransactions,
   getWithdrawTransactions,
   runAaveActionTransaction,
@@ -37,6 +36,7 @@ import { CryptoCurrencySymbol } from '_enums/currency';
 import { convertCryptoAmounts } from '_services/priceService';
 import { getGasPrice } from '_services/gasService';
 import { OnboardingStep } from '_redux/types/onboardingTypes';
+import { getMarketDataForSymbol } from '_services/marketDataService';
 
 // REVIEW huge refactor needed, too big
 export default function AaveReserve({
@@ -302,6 +302,7 @@ export default function AaveReserve({
                 <div className={'flex flex-col md:flex-row justify-between space-x-0 sm:space-x-2'}>
                   <div className={'flex flex-col w-full'}>
                     {aaveFunction === AaveFunction.Deposit && (
+
                       <AaveFunctionContent
                         healthFactorImpact={HealthFactorImpact.Increase}
                         healthFactorResource={HealthFactorResource.Collateral}

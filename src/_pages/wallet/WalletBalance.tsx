@@ -2,8 +2,7 @@ import { TokenDefinition } from '_enums/tokens';
 import useWalletBalance from '_hooks/useWalletBalance';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { useEffect, useState } from 'react';
-import { MarketDataResult } from '_services/marketDataService';
-import { getMarketDataForSymbol } from '_services/aaveService';
+import { getMarketDataForSymbol, MarketDataResult } from '_services/marketDataService';
 import { formatTokenValueInFiat } from '_services/priceService';
 import { BigNumber, ethers } from 'ethers';
 
