@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MarketDataResult } from '_services/marketDataService';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { EthereumTestnetGoerliContracts, ethereumTokens } from '_enums/tokens';
@@ -18,6 +18,7 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import { formatTokenValueInFiat } from '_services/priceService';
 import { decimalPlacesAreValid } from '_utils/index';
 import { getGasPrice } from '_services/gasService';
+import { init } from '@sentry/react';
 
 interface BiconomyPreTransferStatus {
   code: number;
@@ -51,18 +52,17 @@ export default function EthereumToPolygonBridge() {
   const token = ethereumTokens.eth;
 
   // const tokenSet = use
-  // REVIEW remove React.x
-  const [transferAmount, setTransferAmount] = React.useState<string>('0.0');
-  const [depositAddress, setDepositAddress] = React.useState<string | undefined>(undefined);
-  const [ethereumPrice, setEthereumPrice] = React.useState<MarketDataResult | undefined>();
-  const [transactionError, setTransactionError] = React.useState<string>('');
-  const [biconomyIninitialized, setBiconomyInitialized] = React.useState<boolean>(false);
-  const [isTransferring, setIsTransferring] = React.useState<boolean>(false);
+  const [transferAmount, setTransferAmount] = useState<string>('0.0');
+  const [depositAddress, setDepositAddress] = useState<string | undefined>(undefined);
+  const [ethereumPrice, setEthereumPrice] = useState<MarketDataResult | undefined>();
+  const [transactionError, setTransactionError] = useState<string>('');
+  const [biconomyIninitialized, setBiconomyInitialized] = useState<boolean>(false);
+  const [isTransferring, setIsTransferring] = useState<boolean>(false);
   const [ethereumTransactionComplete, setEthereumTransactionComplete] =
-    React.useState<boolean>(false);
-  const [ethereumTransactionHash, setEthereumTransactionHash] = React.useState<string>('');
-  const [polygonTransactionHash, setPolygonTransactionHash] = React.useState<string>('');
-  const [polygonTransferComplete, setPolygonTransferComplete] = React.useState<boolean>(false);
+    useState<boolean>(false);
+  const [ethereumTransactionHash, setEthereumTransactionHash] = useState<string>('');
+  const [polygonTransactionHash, setPolygonTransactionHash] = useState<string>('');
+  const [polygonTransferComplete, setPolygonTransferComplete] = useState<boolean>(false);
   const marketPrices = useMarketPrices();
   useEffect(() => {
     if (marketPrices) {
@@ -75,14 +75,6 @@ export default function EthereumToPolygonBridge() {
       }
     }
   }, [marketPrices]);
-
-  useEffect(() => {
-    if (!depositAddress) {
-      // initTransfer().then(() => {
-      //   console.log('transfer initialised')
-      // });
-    }
-  }, [provider]);
 
   const onFundsTransfered = async (data: BiconomyFundsTransferedResponse) => {
     console.log('FUNDS TRANSFERRED', data);
@@ -104,13 +96,13 @@ export default function EthereumToPolygonBridge() {
     });
   }
 
-  // const [hyphen, setHyphen] = React.useState<Hyphen | null>(null);
+  // const [hyphen, setHyphen] = useState<Hyphen | null>(null);
   // REVIEW - whole file needs big cleaunp
   useEffect(() => {
     console.log('initTransfer');
     console.log(provider);
-    if (provider && userAddress && !biconomyIninitialized) {
-      (async () => {
+    async function initTransfer () {
+      if (provider && userAddress && !biconomyIninitialized) {
         await hyphen.init();
         setBiconomyInitialized(true);
         // const amount = '0.001';
@@ -154,8 +146,9 @@ export default function EthereumToPolygonBridge() {
         } else {
           // ❌ Any other unexpected error
         }
-      })();
+      }
     }
+    initTransfer();
   }, [provider, userAddress]);
 
   const deposit = async () => {

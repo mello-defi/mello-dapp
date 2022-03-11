@@ -16,7 +16,7 @@ import { setNetwork } from '_redux/effects/web3Effects';
 import Fund from '_pages/fund/Fund';
 import Sidebar from '_components/Sidebar';
 import Dashboard from '_pages/Dashboard';
-import Onboarding from '_pages/Onboarding';
+import Onboarding from '_pages/onboarding/Onboarding';
 import { setOnboardingComplete, setOnboardingOngoing } from '_redux/effects/onboardingEffects';
 import { setActiveTab } from '_redux/effects/uiEffects';
 import { ArrowForward, Info } from '@mui/icons-material';

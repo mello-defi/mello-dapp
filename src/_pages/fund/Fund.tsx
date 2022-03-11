@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { CryptoCurrencyName } from '_enums/currency';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { DefaultTransition } from '_components/core/Transition';
@@ -19,12 +19,12 @@ export enum CryptoSource {
   WALLET = 'WALLET'
 }
 export default function Fund() {
-  const [onboardingSource, setOnboardingSource] = React.useState<OnboardingSource>();
-  const [onboardingSourceSelected, setOnboardingSourceSelected] = React.useState<boolean>(false);
-  const [cryptoSource, setCryptoSource] = React.useState<CryptoSource>();
-  const [cryptoSourceSelected, setCryptoSourceSelected] = React.useState<boolean>(false);
-  const [cryptoCurrency, setCryptoCurrency] = React.useState<CryptoCurrencyName>();
-  const [cryptoCurrencySelected, setCryptoCurrencySelected] = React.useState<boolean>(false);
+  const [onboardingSource, setOnboardingSource] = useState<OnboardingSource>();
+  const [onboardingSourceSelected, setOnboardingSourceSelected] = useState<boolean>(false);
+  const [cryptoSource, setCryptoSource] = useState<CryptoSource>();
+  const [cryptoSourceSelected, setCryptoSourceSelected] = useState<boolean>(false);
+  const [cryptoCurrency, setCryptoCurrency] = useState<CryptoCurrencyName>();
+  const [cryptoCurrencySelected, setCryptoCurrencySelected] = useState<boolean>(false);
   const handleOnboardingSourceSelected = (source: OnboardingSource) => {
     setOnboardingSource(source);
     setOnboardingSourceSelected(true);

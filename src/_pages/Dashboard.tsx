@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PoweredByLink from '_components/core/PoweredByLink';
 import aaveLogo from '_assets/images/logos/aave.svg';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
@@ -46,9 +46,9 @@ export default function Dashboard() {
   // ethers.providers.
   const userSummary = useAaveUserSummary();
   const marketPrices = useMarketPrices();
-  const [totalAssets, setTotalAssets] = React.useState<number>(0);
-  const [totalDebts, setTotalDebts] = React.useState<number>(0);
-  const [healthFactor, setHealthFactor] = React.useState<string>('');
+  const [totalAssets, setTotalAssets] = useState<number>(0);
+  const [totalDebts, setTotalDebts] = useState<number>(0);
+  const [healthFactor, setHealthFactor] = useState<string>('');
 
   useEffect(() => {
     if (

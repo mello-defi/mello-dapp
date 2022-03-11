@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Bitcoin, Polygon } from '@renproject/chains';
 import { AppState } from '_redux/store';
@@ -18,16 +18,16 @@ function RenBridge() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const network = useSelector((state: AppState) => state.web3.network);
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
-  const [message, setMessage] = React.useState('');
-  const [gatewayAddress, setGatewayAddress] = React.useState('');
-  const [tokensMinted, setTokensMinted] = React.useState(false);
-  const [balance, setBalance] = React.useState(0);
-  const [transactionError, setTransactionError] = React.useState('');
-  const [transactionExplorerLink, setTransactionExplorerLink] = React.useState('');
-  const [numberOfConfirmedTransactions, setNumberOfConfirmedTransactions] = React.useState(0);
-  const [transactionConfirmationTarget, setTransactionConfirmationTarget] = React.useState(0);
-  const [transactionStatus, setTransactionStatus] = React.useState('');
-  const [transactionHash, setTransactionHash] = React.useState('');
+  const [message, setMessage] = useState('');
+  const [gatewayAddress, setGatewayAddress] = useState('');
+  const [tokensMinted, setTokensMinted] = useState(false);
+  const [balance, setBalance] = useState(0);
+  const [transactionError, setTransactionError] = useState('');
+  const [transactionExplorerLink, setTransactionExplorerLink] = useState('');
+  const [numberOfConfirmedTransactions, setNumberOfConfirmedTransactions] = useState(0);
+  const [transactionConfirmationTarget, setTransactionConfirmationTarget] = useState(0);
+  const [transactionStatus, setTransactionStatus] = useState('');
+  const [transactionHash, setTransactionHash] = useState('');
 
   // REVIEW needs huge cleanup
   const deposit = async () => {

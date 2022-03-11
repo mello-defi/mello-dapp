@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import { TokenDefinition } from '_enums/tokens';
 import { OptimalRate } from 'paraswap-core';
@@ -31,7 +31,7 @@ export default function SwapPriceInformation({
   slippagePercentage: number;
   setSlippagePercentage: (percentage: number) => void;
 }) {
-  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const getDestinationTokenPriceComparison = (): string => {
     if (priceRoute) {
       const srcGwei = ethers.utils.formatUnits(priceRoute.srcAmount, priceRoute.srcDecimals);

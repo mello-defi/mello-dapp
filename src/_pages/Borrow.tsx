@@ -1,6 +1,6 @@
 import PoweredByLink from '_components/core/PoweredByLink';
 import aaveLogo from '_assets/images/logos/aave.svg';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { getMarketDataForSymbol, sortUserReservesByKey } from '_services/aaveService';
@@ -29,8 +29,8 @@ export default function Borrow() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const userSummary = useAaveUserSummary();
   const aaveReserves = useAaveReserves();
-  const [ethPrice, setEthPrice] = React.useState<number | undefined>(undefined);
-  // const [maxBorrowAmount, setMaxBorrowAmount] = React.useState<string | undefined>(undefined);
+  const [ethPrice, setEthPrice] = useState<number | undefined>(undefined);
+  // const [maxBorrowAmount, setMaxBorrowAmount] = useState<string | undefined>(undefined);
   console.log('\nBorrow.tsx: market prices', marketPrices);
   console.log('\nBorrow.tsx: userSummary', userSummary);
 
