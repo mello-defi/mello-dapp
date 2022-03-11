@@ -78,7 +78,7 @@ export async function approveToken(
   userAddress: string,
   amount: BigNumber,
   gasPrice: BigNumber | undefined,
-  spender?: string,
+  spender?: string
 ): Promise<TransactionResponse> {
   const contract = new ethers.Contract(token.address, token.abi, signer);
   const options: TransactionRequest = {};

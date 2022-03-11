@@ -17,5 +17,5 @@ export enum HealthFactorImpact {
 
 export enum HealthFactorResource {
   Collateral = 'Collateral',
-  Borrows = 'Borrows',
+  Borrows = 'Borrows'
 }

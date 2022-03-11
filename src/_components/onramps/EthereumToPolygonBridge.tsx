@@ -58,8 +58,7 @@ export default function EthereumToPolygonBridge() {
   const [transactionError, setTransactionError] = useState<string>('');
   const [biconomyIninitialized, setBiconomyInitialized] = useState<boolean>(false);
   const [isTransferring, setIsTransferring] = useState<boolean>(false);
-  const [ethereumTransactionComplete, setEthereumTransactionComplete] =
-    useState<boolean>(false);
+  const [ethereumTransactionComplete, setEthereumTransactionComplete] = useState<boolean>(false);
   const [ethereumTransactionHash, setEthereumTransactionHash] = useState<string>('');
   const [polygonTransactionHash, setPolygonTransactionHash] = useState<string>('');
   const [polygonTransferComplete, setPolygonTransferComplete] = useState<boolean>(false);
@@ -101,7 +100,7 @@ export default function EthereumToPolygonBridge() {
   useEffect(() => {
     console.log('initTransfer');
     console.log(provider);
-    async function initTransfer () {
+    async function initTransfer() {
       if (provider && userAddress && !biconomyIninitialized) {
         await hyphen.init();
         setBiconomyInitialized(true);

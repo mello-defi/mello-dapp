@@ -27,11 +27,7 @@ export function TransactionStep({
   return (
     <div>
       {show && (
-        <div
-          className={
-            'flex flex-row my-1 items-center rounded-2xl shadow-sm bg-white px-4 py-2'
-          }
-        >
+        <div className={'flex flex-row my-1 items-center rounded-2xl shadow-sm bg-white px-4 py-2'}>
           <div className={'mr-4 text-3xl'}>
             {transactionError ? (
               <ErrorOutline className={'text-red-400 mb-0.5'} fontSize={'inherit'} />

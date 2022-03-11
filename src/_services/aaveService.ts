@@ -151,7 +151,7 @@ export async function getEthPrice(): Promise<string> {
 export async function runAaveApprovalTransaction(
   txs: EthereumTransactionTypeExtended[],
   provider: ethers.providers.Web3Provider,
-  gasPrice: BigNumber | undefined,
+  gasPrice: BigNumber | undefined
 ): Promise<string> {
   return runAaveTransactionType(txs, provider, eEthereumTxType.ERC20_APPROVAL, gasPrice);
 }
@@ -217,7 +217,7 @@ async function runAaveTransactionType(
   txs: EthereumTransactionTypeExtended[],
   provider: ethers.providers.Web3Provider,
   transactionType: eEthereumTxType,
-  gasPrice: BigNumber | undefined,
+  gasPrice: BigNumber | undefined
 ): Promise<string> {
   const tx = txs.find((tx: EthereumTransactionTypeExtended) => tx.txType === transactionType);
   let transactionHash = '';
@@ -253,18 +253,20 @@ export function calculateNewHealthFactor(
       .multipliedBy(ethers.utils.formatUnits(formattedUsdPriceEth, 18));
 
     if (healthFactorResource === HealthFactorResource.Borrows) {
-      const newBorrowBalance = healthFactorImpact === HealthFactorImpact.Increase
-        ? valueToBigNumber(userSummaryData.totalBorrowsUSD).minus(amountInUsd)
-        : valueToBigNumber(userSummaryData.totalBorrowsUSD).plus(amountInUsd);
+      const newBorrowBalance =
+        healthFactorImpact === HealthFactorImpact.Increase
+          ? valueToBigNumber(userSummaryData.totalBorrowsUSD).minus(amountInUsd)
+          : valueToBigNumber(userSummaryData.totalBorrowsUSD).plus(amountInUsd);
       return calculateHealthFactorFromBalancesBigUnits(
         userSummaryData.totalCollateralUSD,
         newBorrowBalance,
         userSummaryData.currentLiquidationThreshold
       ).toFixed(2);
     } else {
-      const newCollateralBalance = healthFactorImpact === HealthFactorImpact.Increase
-        ? valueToBigNumber(userSummaryData.totalCollateralUSD).plus(amountInUsd)
-        : valueToBigNumber(userSummaryData.totalCollateralUSD).minus(amountInUsd);
+      const newCollateralBalance =
+        healthFactorImpact === HealthFactorImpact.Increase
+          ? valueToBigNumber(userSummaryData.totalCollateralUSD).plus(amountInUsd)
+          : valueToBigNumber(userSummaryData.totalCollateralUSD).minus(amountInUsd);
       return calculateHealthFactorFromBalancesBigUnits(
         newCollateralBalance,
         userSummaryData.totalBorrowsUSD,

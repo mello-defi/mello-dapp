@@ -9,12 +9,12 @@ export default function NextHealthFactor({
   reserve,
   amount,
   healthFactorImpact,
-  healthFactorResource,
+  healthFactorResource
 }: {
   reserve: ComputedReserveData;
   amount?: string;
   healthFactorImpact: HealthFactorImpact;
-  healthFactorResource: HealthFactorResource
+  healthFactorResource: HealthFactorResource;
 }) {
   const userSummary = useAaveUserSummary();
   const [healthFactorNumber, setHealthFactorNumber] = useState<string | undefined>(
@@ -22,7 +22,15 @@ export default function NextHealthFactor({
   );
   useEffect(() => {
     if (userSummary && amount) {
-      setHealthFactorNumber(calculateNewHealthFactor(reserve, userSummary, amount, healthFactorImpact, healthFactorResource));
+      setHealthFactorNumber(
+        calculateNewHealthFactor(
+          reserve,
+          userSummary,
+          amount,
+          healthFactorImpact,
+          healthFactorResource
+        )
+      );
     }
   }, [amount]);
   return (

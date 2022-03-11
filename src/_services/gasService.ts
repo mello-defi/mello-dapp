@@ -15,7 +15,7 @@ export function getGasPrice(gasPriceApiUrl: string | undefined): Promise<GasPric
         standard: ethers.utils.parseUnits(response.data.standard.toString(), 'gwei'),
         fastest: ethers.utils.parseUnits(response.data.fastest.toString(), 'gwei'),
         blockTime: response.data.blockTime || response.data.avgWait
-      }
+      };
       return result;
     })
     .catch((error) => {

@@ -7,7 +7,7 @@ import { DefaultTransition } from '_components/core/Transition';
 
 export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
-  const stepIsCurrentStep = currentStep && currentStep.number === step.number || false;
+  const stepIsCurrentStep = (currentStep && currentStep.number === step.number) || false;
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -48,25 +48,34 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
               <DefaultTransition isOpen={isExpanded || stepIsCurrentStep}>
                 <div className={'my-2'}>
                   {step.description.text ? (
-                    <span dangerouslySetInnerHTML={{__html: step.description.text}}/>
-                  ): (
+                    <span dangerouslySetInnerHTML={{ __html: step.description.text }} />
+                  ) : (
                     <>
                       {step.description.whatIsRequired && step.description.whyIsRequired && (
                         <>
                           <span className={'font-bold text-body'}>What is required?</span>
-                          <br/>
-                          <span className={'text-body-smaller'} dangerouslySetInnerHTML={{__html: step.description.whatIsRequired}}/>
-                          <br/>
-                          <br/>
+                          <br />
+                          <span
+                            className={'text-body-smaller'}
+                            dangerouslySetInnerHTML={{ __html: step.description.whatIsRequired }}
+                          />
+                          <br />
+                          <br />
                           <span className={'font-bold text-body'}>Why is this required?</span>
-                          <br/>
-                          <span className={'text-body-smaller'} dangerouslySetInnerHTML={{__html: step.description.whyIsRequired}}/>
+                          <br />
+                          <span
+                            className={'text-body-smaller'}
+                            dangerouslySetInnerHTML={{ __html: step.description.whyIsRequired }}
+                          />
                           {step.description.notes && (
                             <>
-                              <br/>
-                              <span className={'italic'}>Notes:{' '}
-                                <span dangerouslySetInnerHTML={{__html: step.description.notes}}/>
-                          </span>
+                              <br />
+                              <span className={'italic'}>
+                                Notes:{' '}
+                                <span
+                                  dangerouslySetInnerHTML={{ __html: step.description.notes }}
+                                />
+                              </span>
                             </>
                           )}
                         </>

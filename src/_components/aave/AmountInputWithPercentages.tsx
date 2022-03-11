@@ -60,9 +60,9 @@ export default function AmountInputWithPercentages({
       if (
         value &&
         /^[0-9.]*$/.test(value) &&
-         baseAmountBigNumber.lt(ethers.utils.parseUnits(value, tokenDecimals))
+        baseAmountBigNumber.lt(ethers.utils.parseUnits(value, tokenDecimals))
       ) {
-        value = ethers.utils.formatUnits(baseAmountBigNumber, tokenDecimals)
+        value = ethers.utils.formatUnits(baseAmountBigNumber, tokenDecimals);
       }
       if (parseFloat(value) < 0) {
         value = '0.0';

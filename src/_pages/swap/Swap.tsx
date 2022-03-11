@@ -10,10 +10,16 @@ import {
   // approveToken,
   buildSwapTransaction,
   // getAllowance,
-  getExchangeRate, getTokenTransferProxy,
+  getExchangeRate,
+  getTokenTransferProxy,
   initialiseParaSwap
 } from '_services/paraSwapService';
-import { executeEthTransaction, getErc20TokenBalance, getTokenAllowance, approveToken } from '_services/walletService';
+import {
+  executeEthTransaction,
+  getErc20TokenBalance,
+  getTokenAllowance,
+  approveToken
+} from '_services/walletService';
 import { TransactionStep } from '_components/transactions/TransactionStep';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
@@ -136,14 +142,26 @@ export default function Swap({
         setIsSwapping(true);
         if (!sourceToken.isGasToken) {
           const transferProxy = await getTokenTransferProxy();
-          const allowance = await getTokenAllowance(sourceToken, provider, userAddress, transferProxy);
+          const allowance = await getTokenAllowance(
+            sourceToken,
+            provider,
+            userAddress,
+            transferProxy
+          );
           const amount: BigNumber = ethers.utils.parseUnits(
             sourceAmount.toString(),
             sourceToken.decimals
           );
           if (amount.gt(allowance)) {
             const approvalGasResult = await getGasPrice(network.gasStationUrl);
-            const approvalTxHash = await approveToken(sourceToken, signer, userAddress, amount, approvalGasResult?.fastest, transferProxy);
+            const approvalTxHash = await approveToken(
+              sourceToken,
+              signer,
+              userAddress,
+              amount,
+              approvalGasResult?.fastest,
+              transferProxy
+            );
             setApprovalTransactionHAsh(approvalTxHash.hash);
             await approvalTxHash.wait(approvalGasResult?.blockTime || 3);
           }
@@ -156,7 +174,7 @@ export default function Swap({
           userAddress,
           priceRoute,
           slippagePercentage,
-          actionGasResult?.fastest,
+          actionGasResult?.fastest
         );
         const swapTxHash = await executeEthTransaction(tx, provider);
         setSwapTransactionHash(swapTxHash.hash);

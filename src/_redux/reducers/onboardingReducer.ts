@@ -18,7 +18,8 @@ export const stepMintNft: OnboardingStep = {
   nextStep: null,
   description: {
     whatIsRequired: 'Mint your course completion NFT',
-    whyIsRequired: 'Congrats, you have made it this far. To complete the course, please mint your reward badge. This NFT will allow us to exclude you from this tutorial when logging onto our platform in future'
+    whyIsRequired:
+      'Congrats, you have made it this far. To complete the course, please mint your reward badge. This NFT will allow us to exclude you from this tutorial when logging onto our platform in future'
   }
 };
 export const stepBorrowAave: OnboardingStep = {
@@ -28,11 +29,12 @@ export const stepBorrowAave: OnboardingStep = {
   component: AaveReserve,
   componentProps: {
     aaveSection: AaveSection.Borrow,
-    reserveSymbol: CryptoCurrencySymbol.USDC,
+    reserveSymbol: CryptoCurrencySymbol.USDC
   },
   description: {
     whatIsRequired: 'Borrow USDC from Aave',
-    whyIsRequired: 'By using your deposited $wBTC as collateral, you can now borrow against it from Aave<br/><br/><a href="https://docs.mellodefi.com/">Learn more about Aave here</a>'
+    whyIsRequired:
+      'By using your deposited $wBTC as collateral, you can now borrow against it from Aave<br/><br/><a href="https://docs.mellodefi.com/">Learn more about Aave here</a>'
   }
 };
 
@@ -43,11 +45,12 @@ export const stepDepositAave: OnboardingStep = {
   component: AaveReserve,
   componentProps: {
     aaveSection: AaveSection.Deposit,
-    reserveSymbol: CryptoCurrencySymbol.WBTC,
+    reserveSymbol: CryptoCurrencySymbol.WBTC
   },
   description: {
     whatIsRequired: 'Deposit your newly swapped $wBTC into the Aave lending protocol',
-    whyIsRequired: 'By depositing your tokens into Aave you can passively earn interest, and borrow from Aave while using the deposited tokens as collateral.<br/><br/><a href="https://docs.mellodefi.com/">Learn more about Aave here</a>'
+    whyIsRequired:
+      'By depositing your tokens into Aave you can passively earn interest, and borrow from Aave while using the deposited tokens as collateral.<br/><br/><a href="https://docs.mellodefi.com/">Learn more about Aave here</a>'
   }
 };
 
@@ -62,7 +65,8 @@ export const stepPerformSwap: OnboardingStep = {
   },
   description: {
     whatIsRequired: 'Swap your $MATIC for $wBTC',
-    whyIsRequired: 'A token swap is the exchanging of one token for another. This allows you to easily exchange tokens when you require a token that you don\'t currently have.<br/><br/><a href="https://docs.mellodefi.com/">Learn more about token swaps here</a>'
+    whyIsRequired:
+      'A token swap is the exchanging of one token for another. This allows you to easily exchange tokens when you require a token that you don\'t currently have.<br/><br/><a href="https://docs.mellodefi.com/">Learn more about token swaps here</a>'
   }
 };
 export const stepAddGasToWallet: OnboardingStep = {
@@ -72,7 +76,8 @@ export const stepAddGasToWallet: OnboardingStep = {
   component: FiatOnboarding,
   description: {
     whatIsRequired: 'Deposit some $MATIC into your wallet',
-    whyIsRequired: 'In order to transact on mello you need to have some $MATIC to pay for transaction fees on the Polygon network. These fees are minuscule (<$0.01) but without them you can\'t authorise transactions.<br/><strong>We recommend at least $5 worth</strong>',
+    whyIsRequired:
+      "In order to transact on mello you need to have some $MATIC to pay for transaction fees on the Polygon network. These fees are minuscule (<$0.01) but without them you can't authorise transactions.<br/><strong>We recommend at least $5 worth</strong>",
     notes: 'We recommend Mt Pellerin for EU customers and Ramp for all non-EU customers'
   }
 };
@@ -98,7 +103,7 @@ export const stepConnectWallet: OnboardingStep = {
     </li>
 </ul>
     `,
-    notes: 'Store seedphrases and passwords securely, mello can\'t access or control your wallet!'
+    notes: "Store seedphrases and passwords securely, mello can't access or control your wallet!"
   }
 };
 export const stepTermsAndConditions: OnboardingStep = {

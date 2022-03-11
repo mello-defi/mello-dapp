@@ -21,15 +21,23 @@ import { setOnboardingComplete, setOnboardingOngoing } from '_redux/effects/onbo
 import { setActiveTab } from '_redux/effects/uiEffects';
 import { ArrowForward, Info } from '@mui/icons-material';
 
-function OnboardingGuardButton({text, onClick, complete}: {text: string, onClick: (complete: boolean) => void, complete: boolean}) {
+function OnboardingGuardButton({
+  text,
+  onClick,
+  complete
+}: {
+  text: string;
+  onClick: (complete: boolean) => void;
+  complete: boolean;
+}) {
   const handleClick = () => {
     onClick(complete);
   };
   return (
-    <Button
-      onClick={handleClick}
-      className={'w-1/4'} size={ButtonSize.LARGE}>{text}</Button>
-  )
+    <Button onClick={handleClick} className={'w-1/4'} size={ButtonSize.LARGE}>
+      {text}
+    </Button>
+  );
 }
 
 function OnboardingGuard() {
@@ -44,12 +52,12 @@ function OnboardingGuard() {
   return (
     <div className={'flex flex-col'}>
       <span className={'text-2xl text-center'}>Is this your first time using mello?</span>
-      <div className={"flex-row-center w-full justify-center space-x-2 my-2"}>
-        <OnboardingGuardButton text={'Yes'} onClick={onClickOnboardingButton} complete={false}/>
-        <OnboardingGuardButton text={'No'} onClick={onClickOnboardingButton} complete={true}/>
+      <div className={'flex-row-center w-full justify-center space-x-2 my-2'}>
+        <OnboardingGuardButton text={'Yes'} onClick={onClickOnboardingButton} complete={false} />
+        <OnboardingGuardButton text={'No'} onClick={onClickOnboardingButton} complete={true} />
       </div>
     </div>
-  )
+  );
 }
 
 // REVIEW general
@@ -152,7 +160,7 @@ function App() {
         // flex flex-col min-h-screen bg-gray-50
         className={`font-sans bg-white-700 ${
           sidebarOpen ? 'transition opacity-50' : ''
-        // } flex flex-col min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50`}
+          // } flex flex-col min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-red-50`}
         } flex flex-col min-h-screen bg-gray-50`}
       >
         <Header />
@@ -166,24 +174,33 @@ function App() {
               {onboardingComplete || onboardingOngoing ? (
                 <>
                   {onboardingOngoing && activeTab !== NavTab.ONBOARDING && (
-                   <div
+                    <div
                       onClick={() => dispatch(setActiveTab(NavTab.ONBOARDING))}
-                     className={'text-header rounded-2xl mb-2 w-full bg-gray-100 p-2 flex-row-center cursor-pointer'}>
-                     <span className={'text-3xl ml-2 mr-2'}>
-                       <Info className={'text-gray-400 mb-0.5'} fontSize={'inherit'} />
-                     </span>
-                     <span className={'hover:text-gray-400 transition'}>
+                      className={
+                        'text-header rounded-2xl mb-2 w-full bg-gray-100 p-2 flex-row-center cursor-pointer'
+                      }
+                    >
+                      <span className={'text-3xl ml-2 mr-2'}>
+                        <Info className={'text-gray-400 mb-0.5'} fontSize={'inherit'} />
+                      </span>
+                      <span className={'hover:text-gray-400 transition'}>
                         You must complete onboarding before you can use the app
-                     </span>
-                     <span className={'text-3xl text-color-light transition hover:text-gray-400'}>
-                       <ArrowForward className={'ml-2'} />
-                     </span>
-                   </div>
+                      </span>
+                      <span className={'text-3xl text-color-light transition hover:text-gray-400'}>
+                        <ArrowForward className={'ml-2'} />
+                      </span>
+                    </div>
                   )}
                   {tabsContent.map((tab) => {
                     return (
                       <DefaultTransition key={tab.tab} isOpen={activeTab === tab.tab}>
-                        <div className={`${onboardingOngoing && activeTab !== NavTab.ONBOARDING ? 'opacity-40 pointer-events-none': ''}`}>
+                        <div
+                          className={`${
+                            onboardingOngoing && activeTab !== NavTab.ONBOARDING
+                              ? 'opacity-40 pointer-events-none'
+                              : ''
+                          }`}
+                        >
                           {tab.tab === activeTab && (
                             <div>
                               {tab.hideOnEthereumMainnet &&
@@ -205,7 +222,7 @@ function App() {
                     );
                   })}
                 </>
-              ): (
+              ) : (
                 <OnboardingGuard />
               )}
             </div>

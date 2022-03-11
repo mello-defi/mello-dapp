@@ -59,7 +59,12 @@ export default function AaveFunctionContent({
       </div>
 
       <div className={'w-full md:w-1/2 flex flex-col my-2 md:my-0'}>
-        <NextHealthFactor reserve={reserve} amount={amount} healthFactorImpact={healthFactorImpact} healthFactorResource={healthFactorResource} />
+        <NextHealthFactor
+          reserve={reserve}
+          amount={amount}
+          healthFactorImpact={healthFactorImpact}
+          healthFactorResource={healthFactorResource}
+        />
         <TransactionAmountSummary tokenPrice={tokenPrice} title={summaryTitle} amount={amount} />
         {token && (
           <Button
