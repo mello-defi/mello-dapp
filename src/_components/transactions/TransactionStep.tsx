@@ -1,13 +1,7 @@
 import { Spinner, SpinnerSize } from '_components/core/Animations';
 import React from 'react';
 import { TransactionTransition } from '_components/transactions/TransactionTransition';
-import {
-  CheckCircle,
-  CheckCircleOutlineOutlined,
-  ErrorOutline,
-  ErrorOutlineOutlined,
-  Info
-} from '@mui/icons-material';
+import { CheckCircle, ErrorOutline, Info } from '@mui/icons-material';
 
 export function TransactionStep({
   show,

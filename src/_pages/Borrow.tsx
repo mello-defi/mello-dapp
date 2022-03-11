@@ -3,12 +3,12 @@ import aaveLogo from '_assets/images/logos/aave.svg';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import { getMarketDataForSymbol, sortUserReservesByKey } from '_services/aaveService';
+import { sortUserReservesByKey } from '_services/aaveService';
 import { ComputedReserveData } from '@aave/protocol-js';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveListItem';
 import AaveReserve from '_components/aave/AaveReserve';
-import { convertCryptoAmounts, formatTokenValueInFiat } from '_services/priceService';
+import { formatTokenValueInFiat } from '_services/priceService';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { AaveSection } from '_enums/aave';
@@ -17,9 +17,6 @@ import UserReservesSkeleton from '_components/aave/UserReservesSkeleton';
 import AaveReservesSkeleton from '_components/aave/AaveReservesSkeleton';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import useAaveReserves from '_hooks/useAaveReserves';
-import { findTokenByAddress } from '_utils/index';
-import { setStep } from '_redux/effects/onboardingEffects';
-import { stepBorrowAave, stepDepositAave } from '_redux/reducers/onboardingReducer';
 
 export default function Borrow() {
   const provider = useSelector((state: AppState) => state.web3.provider);

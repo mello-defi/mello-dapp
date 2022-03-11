@@ -2,10 +2,9 @@ import { APIError, BuildOptions, NetworkID, ParaSwap } from 'paraswap';
 import { EvmGasTokenBurnAddress, TokenDefinition } from '_enums/tokens';
 import { BigNumber, ethers } from 'ethers';
 import { OptimalRate } from 'paraswap-core';
-import { Allowance, Transaction } from 'paraswap/build/types';
+import { Transaction } from 'paraswap/build/types';
 import { BigNumberZD } from '@aave/protocol-js';
 import { EVMChainIdNumerical } from '_enums/networks';
-import { SendOptions } from 'web3-eth-contract';
 
 let paraSwap: ParaSwap;
 

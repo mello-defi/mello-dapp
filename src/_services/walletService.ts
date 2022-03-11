@@ -1,7 +1,7 @@
 import { BigNumber, ethers } from 'ethers';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
 import { TokenDefinition } from '_enums/tokens';
-import axios from 'axios';
+
 export async function getTransactionCount(
   address: string,
   provider: ethers.providers.Web3Provider

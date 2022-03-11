@@ -13,7 +13,6 @@ import UserReservesSkeleton from '_components/aave/UserReservesSkeleton';
 import AaveReservesSkeleton from '_components/aave/AaveReservesSkeleton';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import useAaveReserves from '_hooks/useAaveReserves';
-import { findTokenByAddress } from '_utils/index';
 import { sortUserReservesByKey } from '_services/aaveService';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { stepDepositAave } from '_redux/reducers/onboardingReducer';

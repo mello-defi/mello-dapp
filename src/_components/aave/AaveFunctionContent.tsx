@@ -2,7 +2,7 @@ import { TokenDefinition } from '_enums/tokens';
 import UserReserveBalance from '_components/aave/UserReserveBalance';
 import AmountInputWithPercentages from '_components/aave/AmountInputWithPercentages';
 import TransactionAmountSummary from '_components/aave/TransactionAmountSummary';
-import { Button, ButtonSize } from '_components/core/Buttons';
+import { Button } from '_components/core/Buttons';
 import React from 'react';
 import { BigNumber, ethers } from 'ethers';
 import { ComputedReserveData } from '@aave/protocol-js';

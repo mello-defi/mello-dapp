@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { decimalPlacesAreValid } from '_utils/index';
 
 function PercentageButton({

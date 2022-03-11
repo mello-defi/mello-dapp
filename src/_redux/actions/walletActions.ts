@@ -1,7 +1,7 @@
 import {
-  TOGGLE_BALANCE_IS_STALE,
   GET_BALANCE_FOR_TOKEN,
   SET_ADDRESS,
+  TOGGLE_BALANCE_IS_STALE,
   WalletActionTypes,
   WalletTokenBalances
 } from '_redux/types/walletTypes';

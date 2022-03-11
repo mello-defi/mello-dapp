@@ -1,31 +1,22 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { TokenDefinition } from '_enums/tokens';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { OptimalRate } from 'paraswap-core';
-import { Allowance } from 'paraswap/build/types';
 import debounce from 'lodash/debounce';
 import {
-  // approveToken,
   buildSwapTransaction,
-  // getAllowance,
   getExchangeRate,
   getTokenTransferProxy,
   initialiseParaSwap
 } from '_services/paraSwapService';
-import {
-  executeEthTransaction,
-  getErc20TokenBalance,
-  getTokenAllowance,
-  approveToken
-} from '_services/walletService';
+import { approveToken, executeEthTransaction, getTokenAllowance } from '_services/walletService';
 import { TransactionStep } from '_components/transactions/TransactionStep';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
 import CryptoAmountInput from '_components/CryptoAmountInput';
 import PoweredByLink from '_components/core/PoweredByLink';
-import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { paraswapLogo } from '_assets/images';
 import { BigNumber, ethers } from 'ethers';
 import { getGasPrice } from '_services/gasService';

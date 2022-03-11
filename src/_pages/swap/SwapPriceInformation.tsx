@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import { TokenDefinition } from '_enums/tokens';
 import { OptimalRate } from 'paraswap-core';
-import { EvStation, ExpandLess, ExpandMore, SettingsRounded } from '@mui/icons-material';
+import { EvStation, ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Spinner } from '_components/core/Animations';
 import { DefaultTransition } from '_components/core/Transition';
 import SlippageControl from '_pages/swap/SlippageControl';

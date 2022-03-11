@@ -8,7 +8,6 @@ import WalletBalance from '_pages/wallet/WalletBalance';
 import ReceiveCrypto from '_pages/wallet/ReceiveCrypto';
 import SendCrypto from '_pages/wallet/SendCrypto';
 import { MoveToInbox, Send } from '@mui/icons-material';
-import { CryptoCurrencySymbol } from '_enums/currency';
 
 export enum WalletPageTab {
   RECEIVE = 'Receive',

@@ -5,7 +5,7 @@ import { MarketDataResult } from '_services/marketDataService';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { EthereumTestnetGoerliContracts, ethereumTokens } from '_enums/tokens';
 import { EVMChainIdNumerical } from '_enums/networks';
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { Button } from '_components/core/Buttons';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { hyphenLogo } from '_assets/images';
@@ -18,7 +18,6 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import { formatTokenValueInFiat } from '_services/priceService';
 import { decimalPlacesAreValid } from '_utils/index';
 import { getGasPrice } from '_services/gasService';
-import { init } from '@sentry/react';
 
 interface BiconomyPreTransferStatus {
   code: number;

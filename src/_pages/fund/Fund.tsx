@@ -1,43 +1,19 @@
 import React, { useState } from 'react';
-import { CryptoCurrencyName } from '_enums/currency';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { DefaultTransition } from '_components/core/Transition';
-import RampNetwork from '_components/onramps/RampNetwork';
-import MtPellerin from '_components/onramps/MtPellerin';
-import RenBridge from '_components/onramps/RenBridge';
-import EthereumToPolygonBridge from '_components/onramps/EthereumToPolygonBridge';
-import { btcLogo, ethLogo } from '_assets/images';
 import FiatOnboarding from '_pages/fund/FiatOnboarding';
+import CryptoOnboarding from '_pages/fund/CryptoOnboarding';
 
 export enum OnboardingSource {
   FIAT = 'FIAT',
   CRYPTO = 'CRYPTO'
 }
-
-export enum CryptoSource {
-  EXCHANGE = 'EXCHANGE',
-  WALLET = 'WALLET'
-}
 export default function Fund() {
   const [onboardingSource, setOnboardingSource] = useState<OnboardingSource>();
   const [onboardingSourceSelected, setOnboardingSourceSelected] = useState<boolean>(false);
-  const [cryptoSource, setCryptoSource] = useState<CryptoSource>();
-  const [cryptoSourceSelected, setCryptoSourceSelected] = useState<boolean>(false);
-  const [cryptoCurrency, setCryptoCurrency] = useState<CryptoCurrencyName>();
-  const [cryptoCurrencySelected, setCryptoCurrencySelected] = useState<boolean>(false);
   const handleOnboardingSourceSelected = (source: OnboardingSource) => {
     setOnboardingSource(source);
     setOnboardingSourceSelected(true);
-  };
-
-  const handleCryptoSourceSelected = (source: CryptoSource) => {
-    setCryptoSource(source);
-    setCryptoSourceSelected(true);
-  };
-
-  const handleCryptoCurrencySelected = (currency: CryptoCurrencyName) => {
-    setCryptoCurrency(currency);
-    setCryptoCurrencySelected(true);
   };
 
   return (
@@ -65,53 +41,7 @@ export default function Fund() {
       <DefaultTransition isOpen={onboardingSourceSelected}>
         <div>
           {onboardingSource === OnboardingSource.FIAT && <FiatOnboarding />}
-          {onboardingSource === OnboardingSource.CRYPTO && (
-            <div className={''}>
-              <h4>My cryptocurrency is</h4>
-              <div className={'flex flex-col mt-2 justify-between'}>
-                <Button
-                  className={`mb-2 items-center w-full ${
-                    cryptoCurrency === CryptoCurrencyName.BITCOIN ? 'bg-gray-300' : ''
-                  }`}
-                  onClick={() => handleCryptoCurrencySelected(CryptoCurrencyName.BITCOIN)}
-                  variant={ButtonVariant.SECONDARY}
-                  size={ButtonSize.LARGE}
-                >
-                  <div className={'flex-row-center justify-center'}>
-                    <img height={30} width={30} src={btcLogo} alt={'bitcoin'} className={'mr-2'} />
-                    Bitcoin
-                  </div>
-                </Button>
-                <Button
-                  className={`mb-2 items-center w-full ${
-                    cryptoCurrency === CryptoCurrencyName.ETHEREUM ? 'bg-gray-300' : ''
-                  }`}
-                  onClick={() => handleCryptoCurrencySelected(CryptoCurrencyName.ETHEREUM)}
-                  variant={ButtonVariant.SECONDARY}
-                  size={ButtonSize.LARGE}
-                >
-                  <div className={'flex-row-center justify-center'}>
-                    <img height={30} width={30} src={ethLogo} alt={'ethereum'} className={'mr-2'} />
-                    Ethereum
-                  </div>
-                </Button>
-              </div>
-              <DefaultTransition isOpen={cryptoCurrencySelected}>
-                <div>
-                  {cryptoCurrency === CryptoCurrencyName.BITCOIN && (
-                    <div>
-                      <RenBridge />
-                    </div>
-                  )}
-                  {cryptoCurrency === CryptoCurrencyName.ETHEREUM && (
-                    <div>
-                      <EthereumToPolygonBridge />
-                    </div>
-                  )}
-                </div>
-              </DefaultTransition>
-            </div>
-          )}
+          {onboardingSource === OnboardingSource.CRYPTO && <CryptoOnboarding />}
         </div>
       </DefaultTransition>
     </div>

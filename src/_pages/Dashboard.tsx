@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PoweredByLink from '_components/core/PoweredByLink';
-import aaveLogo from '_assets/images/logos/aave.svg';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { TokenDefinition } from '_enums/tokens';
 import WalletBalance from '_pages/wallet/WalletBalance';
@@ -8,21 +6,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { NavTab } from '_redux/types/uiTypes';
 import { setActiveTab } from '_redux/effects/uiEffects';
-import { ArrowForward, ArrowRight } from '@mui/icons-material';
+import { ArrowForward } from '@mui/icons-material';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveListItem';
 import UserReservesSkeleton from '_components/aave/UserReservesSkeleton';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
-import useAaveReserves from '_hooks/useAaveReserves';
-import { WalletTokenBalance, WalletTokenBalances } from '_redux/types/walletTypes';
 import HealthFactorNumber from '_components/aave/HealthFactorNumber';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { getMarketDataForSymbol } from '_services/aaveService';
 import { ethers } from 'ethers';
 import { CryptoCurrencySymbol } from '_enums/currency';
-import { getTransactionCount } from '_services/walletService';
-import { setStep } from '_redux/effects/onboardingEffects';
-import { stepAddGasToWallet } from '_redux/reducers/onboardingReducer';
 
 function DashboardLink({ text, navTab }: { text: string; navTab: NavTab }) {
   const dispatch = useDispatch();

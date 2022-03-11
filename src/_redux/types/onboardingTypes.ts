@@ -1,5 +1,4 @@
-import { NavTab } from '_redux/types/uiTypes';
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 
 export const SET_STEP = 'SET_STEP';
 export const SET_IS_COMPLETE = 'SET_IS_COMPLETE';
