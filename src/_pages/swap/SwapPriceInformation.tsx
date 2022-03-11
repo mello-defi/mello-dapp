@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { ethers } from 'ethers';
 import { TokenDefinition } from '_enums/tokens';
 import { OptimalRate } from 'paraswap-core';
 import { EvStation, ExpandLess, ExpandMore } from '@mui/icons-material';
