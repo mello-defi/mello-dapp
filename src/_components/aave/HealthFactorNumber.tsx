@@ -1,8 +1,8 @@
 import React from 'react';
 
-export default function HealthFactorNumber({ healthFactor }: { healthFactor: string }) {
+export default function HealthFactorNumber({ healthFactor }: { healthFactor?: string }) {
   const getColor = () => {
-    const healthFactorNumber = parseFloat(healthFactor);
+    const healthFactorNumber = healthFactor ? parseFloat(healthFactor) : -1;
     if (healthFactorNumber < 1) {
       return 'text-color-light';
     } else if (healthFactorNumber > 1.5) {
@@ -16,7 +16,7 @@ export default function HealthFactorNumber({ healthFactor }: { healthFactor: str
   return (
     <>
       <span className={`${getColor()}`}>
-        {parseFloat(healthFactor) < 0 ? 'N/A' : parseFloat(healthFactor).toFixed(2)}
+        {!healthFactor || parseFloat(healthFactor) < 0 ? 'N/A' : parseFloat(healthFactor).toFixed(2)}
       </span>
     </>
   );
