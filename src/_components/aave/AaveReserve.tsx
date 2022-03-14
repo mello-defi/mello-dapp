@@ -158,6 +158,7 @@ export default function AaveReserve({
       dispatch(getBalanceForToken(token, provider, userAddress, true));
     }
   };
+  console.log('USER BALANCE', userReserve);
 
   const handleAaveFunction = async (
     amount: string,
@@ -215,9 +216,9 @@ export default function AaveReserve({
   };
 
   const handleRepay = async () => {
-    if (repayAmount && provider && userAddress) {
+    if (repayAmount && provider && userAddress && userReserve && token) {
       await handleAaveFunction(
-        repayAmount,
+        userReserve.variableBorrows === repayAmount ? '-1' : repayAmount,
         setRepayAmount,
         setRepaySubmitting,
         getRepayTransactions
@@ -525,7 +526,7 @@ export default function AaveReserve({
                     transactionError={transactionError}
                     stepComplete={transactionConfirmed}
                   >
-                    {transactionConfirmed ? `${aaveFunction} confirmed` : `Confirming ${aaveFunction}`}
+                    {transactionConfirmed ? `${aaveFunction} confirmed` : `Confirming ${aaveFunction?.toLowerCase()}`}
                     <BlockExplorerLink transactionHash={actionTransactionHash} />
                   </TransactionStep>
                   <TransactionError transactionError={transactionError} />
