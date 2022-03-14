@@ -113,7 +113,7 @@ export const stepTermsAndConditions: OnboardingStep = {
   description: {
     text: `Do you agree to the terms of service, its policies, and the privacy policy? <a href='https://docs.mellodefi.com/'>See more</a>
 <br/>
-Disclaimer: Nothing given is financial advice, use mello at your own risk. Further disclaimer <a href='https://docs.mellodefi.com/disclaimer'>https://docs.mellodefi.com/disclaimer></a>
+Disclaimer: Nothing given is financial advice, use mello at your own risk. Further disclaimer <a href='https://docs.mellodefi.com/disclaimer'>https://docs.mellodefi.com/disclaimer</a>
 <br/>
 `
   }
