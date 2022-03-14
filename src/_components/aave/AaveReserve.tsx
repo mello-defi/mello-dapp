@@ -10,6 +10,7 @@ import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
 import { BigNumber, ethers } from 'ethers';
 import {
+  calculateMaxWithdrawAmount,
   getBorrowTransactions,
   getDepositTransactions,
   getRepayTransactions,
@@ -290,7 +291,7 @@ export default function AaveReserve({
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Withdraw}
-                  disabled={!userReserve || parseFloat(userReserve.underlyingBalance) < 0.0}
+                  disabled={!userReserve || parseFloat(userReserve.underlyingBalance) === 0}
                 />
               </div>
             )}
@@ -302,7 +303,6 @@ export default function AaveReserve({
                 <div className={'flex flex-col md:flex-row justify-between space-x-0 sm:space-x-2'}>
                   <div className={'flex flex-col w-full'}>
                     {aaveFunction === AaveFunction.Deposit && (
-
                       <AaveFunctionContent
                         healthFactorImpact={HealthFactorImpact.Increase}
                         healthFactorResource={HealthFactorResource.Collateral}
@@ -324,19 +324,30 @@ export default function AaveReserve({
                             : true)
                         }
                       >
-                        <span>{depositSubmitting ? 'Submitting...' : 'Deposit'}</span>
+                        <span>
+                          {depositSubmitting
+                            ? 'Submitting...'
+                            : (depositAmount &&
+                                userBalance &&
+                                userBalance.lt(
+                                  ethers.utils.parseUnits(depositAmount, token.decimals)
+                                )) ||
+                              false
+                            ? 'Insufficient balance'
+                            : 'Deposit'}
+                        </span>
                       </AaveFunctionContent>
                     )}
                     {aaveFunction === AaveFunction.Withdraw && (
                       <AaveFunctionContent
                         healthFactorImpact={HealthFactorImpact.Decrease}
                         healthFactorResource={HealthFactorResource.Collateral}
-                        reserveTitle={'Deposited'}
+                        reserveTitle={'Max withdraw'}
                         summaryTitle={'Amount to withdraw'}
                         reserve={reserve}
                         userBalance={
-                          userReserve
-                            ? ethers.utils.parseUnits(userReserve.underlyingBalance, token.decimals)
+                          userReserve && userSummary
+                            ? calculateMaxWithdrawAmount(userSummary, userReserve, reserve)
                             : BigNumber.from('0')
                         }
                         tokenPrice={marketPriceForToken}
@@ -347,14 +358,35 @@ export default function AaveReserve({
                         buttonDisabled={
                           transactionInProgress ||
                           !userReserve ||
+                          !userSummary ||
                           parseFloat(userReserve.underlyingBalance) === 0 ||
                           (withdrawAmount && userReserve?.underlyingBalance
-                            ? parseFloat(withdrawAmount) > parseFloat(userReserve.underlyingBalance)
+                            ? parseFloat(withdrawAmount) >
+                                parseFloat(userReserve.underlyingBalance) ||
+                              (withdrawAmount !== '' &&
+                                calculateMaxWithdrawAmount(userSummary, userReserve, reserve).lt(
+                                  ethers.utils.parseUnits(withdrawAmount, reserve.decimals)
+                                ))
                             : false)
                         }
                       >
                         <span className={'ml-2'}>
-                          {withdrawSubmitting ? 'Submitting...' : 'Withdraw'}
+                          {withdrawSubmitting
+                            ? 'Submitting...'
+                            : (withdrawAmount &&
+                                userReserve?.underlyingBalance &&
+                                parseFloat(withdrawAmount) >
+                                  parseFloat(userReserve.underlyingBalance)) ||
+                              false
+                            ? 'Insufficient funds'
+                            : userSummary &&
+                              userReserve &&
+                              withdrawAmount !== '' &&
+                              calculateMaxWithdrawAmount(userSummary, userReserve, reserve).lt(
+                                ethers.utils.parseUnits(withdrawAmount, reserve.decimals)
+                              )
+                            ? 'Liquidation risk too high'
+                            : 'Withdraw'}
                         </span>
                       </AaveFunctionContent>
                     )}
@@ -375,10 +407,22 @@ export default function AaveReserve({
                         setAmount={setBorrowAmount}
                         token={token}
                         buttonOnClick={handleBorrow}
-                        buttonDisabled={transactionInProgress}
+                        buttonDisabled={
+                          transactionInProgress ||
+                          !userReserve ||
+                          !borrowAmount ||
+                          (maxBorrowAmount !== '' && ethers.utils.parseUnits(maxBorrowAmount, token.decimals).lt(ethers.utils.parseUnits(borrowAmount, token.decimals)))
+                        }
                       >
                         <span className={'ml-2'}>
-                          {borrowSubmitting ? 'Submitting...' : 'Borrow'}
+                          {borrowSubmitting
+                            ? 'Submitting...'
+                            : (maxBorrowAmount !== '' && ethers.utils.parseUnits(maxBorrowAmount, token.decimals).lt(ethers.utils.parseUnits(borrowAmount, token.decimals)))
+                            ||
+                            false
+                              ? 'Insufficient collateral'
+                              : 'Borrow'}
+
                         </span>
                       </AaveFunctionContent>
                     )}

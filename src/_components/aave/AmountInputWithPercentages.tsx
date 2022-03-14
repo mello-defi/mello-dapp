@@ -26,23 +26,23 @@ function PercentageButton({
 }
 
 export default function AmountInputWithPercentages({
-  baseAmount,
+  maxAmount,
   inputAmount,
   setInputAmount,
   tokenDecimals
 }: {
-  baseAmount?: string;
+  maxAmount?: string;
   inputAmount: string;
   setInputAmount: (amount: string) => void;
   tokenDecimals: number;
 }) {
   const setAmountAsPercentage = (percentage: number) => {
-    if (baseAmount) {
+    if (maxAmount) {
       if (percentage === 100) {
-        setInputAmount(baseAmount);
+        setInputAmount(maxAmount);
       } else {
         const percentageAsBigNumber = ethers.utils
-          .parseUnits(baseAmount, tokenDecimals)
+          .parseUnits(maxAmount, tokenDecimals)
           .div(100)
           .mul(percentage);
         setInputAmount(ethers.utils.formatUnits(percentageAsBigNumber, tokenDecimals));
@@ -51,18 +51,10 @@ export default function AmountInputWithPercentages({
   };
 
   const handleAmountChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (baseAmount) {
+    if (maxAmount) {
       let value = event.target.value;
       if (value && !decimalPlacesAreValid(value, tokenDecimals)) {
         value = value.substring(0, value.length - 1);
-      }
-      const baseAmountBigNumber = ethers.utils.parseUnits(baseAmount, tokenDecimals);
-      if (
-        value &&
-        /^[0-9.]*$/.test(value) &&
-        baseAmountBigNumber.lt(ethers.utils.parseUnits(value, tokenDecimals))
-      ) {
-        value = ethers.utils.formatUnits(baseAmountBigNumber, tokenDecimals);
       }
       if (parseFloat(value) < 0) {
         value = '0.0';
@@ -76,36 +68,36 @@ export default function AmountInputWithPercentages({
         <input
           min={0}
           step={'0.01'}
-          max={baseAmount ? parseFloat(baseAmount) : undefined}
-          disabled={!baseAmount || parseFloat(baseAmount) === 0}
+          max={maxAmount ? parseFloat(maxAmount) : undefined}
+          disabled={!maxAmount || parseFloat(maxAmount) === 0}
           onWheel={() => false}
           value={inputAmount}
           onChange={handleAmountChanged}
           type={'number'}
           className={`bg-white font-mono w-full border border-gray-100 transition hover:border-gray-300 focus:border-gray-300 focus:outline-none rounded-lg px-4 py-2 ${
-            !baseAmount || parseFloat(baseAmount) === 0 ? 'text-color-light' : ''
+            !maxAmount || parseFloat(maxAmount) === 0 ? 'text-color-light' : ''
           }`}
         />
       </div>
       <div className={'flex space-x-2 flex-row justify-between mt-2'}>
         <PercentageButton
           percentage={25}
-          userBalance={baseAmount}
+          userBalance={maxAmount}
           setAmountAsPercentage={setAmountAsPercentage}
         />
         <PercentageButton
           percentage={50}
-          userBalance={baseAmount}
+          userBalance={maxAmount}
           setAmountAsPercentage={setAmountAsPercentage}
         />
         <PercentageButton
           percentage={75}
-          userBalance={baseAmount}
+          userBalance={maxAmount}
           setAmountAsPercentage={setAmountAsPercentage}
         />
         <PercentageButton
           percentage={100}
-          userBalance={baseAmount}
+          userBalance={maxAmount}
           setAmountAsPercentage={setAmountAsPercentage}
         />
       </div>

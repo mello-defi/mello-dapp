@@ -53,7 +53,7 @@ export default function AaveFunctionContent({
             inputAmount={amount}
             tokenDecimals={token.decimals}
             setInputAmount={setAmount}
-            baseAmount={ethers.utils.formatUnits(userBalance?.toString(), token.decimals)}
+            maxAmount={ethers.utils.formatUnits(userBalance?.toString(), token.decimals)}
           />
         )}
       </div>

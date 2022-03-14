@@ -7,7 +7,7 @@ export default function HealthFactorNumber({ healthFactor }: { healthFactor?: st
       return 'text-color-light';
     } else if (healthFactorNumber > 1.5) {
       return 'text-green-500';
-    } else if (healthFactorNumber < 1.1 && healthFactorNumber > 0) {
+    } else if (healthFactorNumber > 1.1) {
       return 'text-yellow-500';
     } else {
       return 'text-red-500';
@@ -16,7 +16,9 @@ export default function HealthFactorNumber({ healthFactor }: { healthFactor?: st
   return (
     <>
       <span className={`${getColor()}`}>
-        {!healthFactor || parseFloat(healthFactor) < 0 ? 'N/A' : parseFloat(healthFactor).toFixed(2)}
+        {!healthFactor || parseFloat(healthFactor) < 0
+          ? 'N/A'
+          : parseFloat(healthFactor).toFixed(2)}
       </span>
     </>
   );

@@ -21,7 +21,7 @@ export default function Deposit() {
         <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
       </div>
       <UserDepositSummary />
-      <CurrentHealthFactor healthFactor={userSummary?.healthFactor}/>
+      <CurrentHealthFactor healthFactor={userSummary?.healthFactor} />
       {userSummary && aaveReserves ? (
         sortUserReservesByKey(aaveReserves, userSummary.reservesData, 'underlyingBalanceUSD').map(
           (reserve: ComputedReserveData) => {

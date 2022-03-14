@@ -1,5 +1,11 @@
 import { ethers } from 'ethers';
-import { CONNECT, DISCONNECT, GET_WEB3_BALANCE, SET_NETWORK, Web3ActionTypes } from '_redux/types/web3Types';
+import {
+  CONNECT,
+  DISCONNECT,
+  GET_WEB3_BALANCE,
+  SET_NETWORK,
+  Web3ActionTypes
+} from '_redux/types/web3Types';
 import { EvmNetworkDefinition } from '_enums/networks';
 
 export const setNetworkAction = (network: EvmNetworkDefinition): Web3ActionTypes => {

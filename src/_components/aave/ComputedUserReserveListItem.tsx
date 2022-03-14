@@ -18,6 +18,13 @@ export default function ComputedUserReserveListItem({
 }) {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const marketPrices = useMarketPrices();
+  const getAmount = (): string => {
+    const amount = parseFloat(reserveAmount);
+    if (amount < 0.00001) {
+      return '<0.000001';
+    }
+    return amount.toFixed(6);
+  };
   return (
     <div key={reserveSymbol} className={'flex flex-row justify-between items-center mb-4 px-1'}>
       <div className={'flex-row-center'}>
@@ -33,7 +40,7 @@ export default function ComputedUserReserveListItem({
       <div className={'flex flex-col font-mono'}>
         {marketPrices && (
           <span className={'text-body-smaller'}>
-            {parseFloat(reserveAmount).toFixed(5)}
+            {getAmount()}
             <span className={'ml-1 text-color-light'}>
               ({getFiatValueForUserReserve(marketPrices, reserveAmount, reserveSymbol)})
             </span>

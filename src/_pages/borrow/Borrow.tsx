@@ -47,7 +47,7 @@ export default function Borrow() {
             formatTokenValueInFiat(ethPrice, userSummary?.availableBorrowsETH)}
         </span>
       </span>
-      <CurrentHealthFactor healthFactor={userSummary?.healthFactor}/>
+      <CurrentHealthFactor healthFactor={userSummary?.healthFactor} />
       <div>
         {userSummary && marketPrices && marketPrices.length > 0 && aaveReserves ? (
           sortUserReservesByKey(aaveReserves, userSummary.reservesData, 'totalBorrowsUSD').map(

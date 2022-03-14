@@ -10,7 +10,8 @@ import {
   TxBuilderV2,
   UserSummaryData,
   v2,
-  valueToBigNumber
+  valueToBigNumber,
+  BigNumber as AaveBigNumber
 } from '@aave/protocol-js';
 import { executeEthTransaction } from '_services/walletService';
 import { BigNumber, ethers } from 'ethers';
@@ -223,6 +224,45 @@ async function runAaveTransactionType(
     }
   }
   return transactionHash;
+}
+
+export function calculateMaxWithdrawAmount(
+  userSummmary: UserSummaryData,
+  userReserve: ComputedUserReserve,
+  reserve: ComputedReserveData
+): BigNumber {
+  // lifted directly from
+  // https://sourcegraph.com/github.com/aave/aave-ui/-/blob/src/modules/withdraw/screens/WithdrawAmount/index.tsx?L40
+  let maxUserAmountToWithdraw = AaveBigNumber.min(
+    userReserve.underlyingBalance,
+    reserve.availableLiquidity
+  ).toString(10);
+
+  if (
+    userReserve.usageAsCollateralEnabledOnUser &&
+    reserve.usageAsCollateralEnabled &&
+    userSummmary.totalBorrowsETH !== '0'
+  ) {
+    // if we have any borrowings we should check how much we can withdraw without liquidation
+    // with 0.5% gap to avoid reverting of tx
+    let totalCollateralToWithdrawInETH = valueToBigNumber('0');
+    const excessHF = valueToBigNumber(userSummmary.healthFactor).minus('1');
+    if (excessHF.gt('0')) {
+      totalCollateralToWithdrawInETH = excessHF
+        .multipliedBy(userSummmary.totalBorrowsETH)
+        // because of the rounding issue on the contracts side this value still can be incorrect
+        .div(Number(reserve.reserveLiquidationThreshold) + 0.01)
+        .multipliedBy('0.99');
+    }
+    maxUserAmountToWithdraw = AaveBigNumber.min(
+      maxUserAmountToWithdraw,
+      totalCollateralToWithdrawInETH.dividedBy(reserve.price.priceInEth)
+    ).toString();
+  }
+  // console.log(AaveBigNumber.max(maxUserAmountToWithdraw, 0).toString());
+  maxUserAmountToWithdraw = AaveBigNumber.max(maxUserAmountToWithdraw, 0).toString();
+  maxUserAmountToWithdraw = (+maxUserAmountToWithdraw).toFixed(reserve.decimals).toString();
+  return ethers.utils.parseUnits(maxUserAmountToWithdraw, reserve.decimals);
 }
 
 export function calculateNewHealthFactor(
