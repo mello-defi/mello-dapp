@@ -51,6 +51,7 @@ export default function AaveReserve({
   const aaveReserves = useAaveReserves();
   const userSummary = useAaveUserSummary();
   const provider = useSelector((state: AppState) => state.web3.provider);
+  const userSummaryStale = useSelector((state: AppState) => state.aave.userSummaryStale);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   // REVIEW - centralise this
@@ -95,7 +96,7 @@ export default function AaveReserve({
         setReserve(r);
       }
     }
-    if (!userReserve && userSummary) {
+    if (userSummary) {
       const ur = userSummary.reservesData.find(
         (ur) => ur.reserve.symbol.toLowerCase() === reserveSymbol.toLowerCase()
       );

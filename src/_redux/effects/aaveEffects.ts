@@ -11,7 +11,6 @@ import { GenericTokenSet } from '_enums/tokens';
 
 export const toggleUserSummaryStale = (userSummaryStale: boolean) => {
   return function (dispatch: Dispatch<AaveActionTypes>) {
-    console.log('toggleUserSummaryStale', userSummaryStale);
     dispatch(toggleUserSummaryStaleAction(userSummaryStale));
   };
 };
