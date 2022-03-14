@@ -12,7 +12,7 @@ export default function UserBorrowSummary() {
         userSummary.reservesData
           .filter(
             (reserve: ComputedUserReserve) =>
-              parseFloat(parseFloat(reserve.totalBorrows).toFixed(10)) > 0
+              parseFloat(parseFloat(reserve.totalBorrows).toFixed(18)) > 0
           )
           .sort(
             (a: ComputedUserReserve, b: ComputedUserReserve) =>

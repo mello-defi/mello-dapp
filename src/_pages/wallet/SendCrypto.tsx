@@ -176,7 +176,7 @@ export default function SendCrypto() {
             show={true}
             stepComplete={tokenApproved}
           >
-            Token approved
+            {tokenApproved ? 'Token approved' : 'Approving token'}
             <BlockExplorerLink transactionHash={approveTransactionHash} />
           </TransactionStep>
           <TransactionStep
@@ -185,7 +185,7 @@ export default function SendCrypto() {
             show={tokenApproved}
             stepComplete={transactionCompleted}
           >
-            Transaction complete
+            {transactionCompleted ? 'Transaction completed' : 'Sending transaction'}
             <BlockExplorerLink transactionHash={sendTransactionHash} />
           </TransactionStep>
           <TransactionError transactionError={transactionError} />

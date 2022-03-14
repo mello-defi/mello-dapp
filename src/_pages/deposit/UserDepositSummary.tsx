@@ -13,7 +13,7 @@ export default function UserDepositSummary() {
           {userSummary.reservesData
             .filter(
               (reserve: ComputedUserReserve) =>
-                parseFloat(parseFloat(reserve.underlyingBalance).toFixed(10)) > 0
+                parseFloat(parseFloat(reserve.underlyingBalance).toFixed(18)) > 0
             )
             .sort((a, b) => parseFloat(b.underlyingBalanceETH) - parseFloat(a.underlyingBalanceETH))
             .map((reserve: ComputedUserReserve) => {

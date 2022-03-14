@@ -304,7 +304,7 @@ export default function Swap({
               transactionError={transactionError}
               stepComplete={tokenIsApproved}
             >
-              Token is approved
+              {tokenIsApproved ? 'Token approved' : 'Approving token'}
               <BlockExplorerLink transactionHash={approvalTransactionHash} />
             </TransactionStep>
             <TransactionStep
@@ -313,7 +313,7 @@ export default function Swap({
               stepComplete={swapConfirmed}
               showTransition={false}
             >
-              Swap confirmed
+              {swapConfirmed ? 'Swap confirmed' : 'Swap confirming'}
               <BlockExplorerLink transactionHash={swapTransactionHash} />
             </TransactionStep>
             <TransactionError transactionError={transactionError} />

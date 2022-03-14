@@ -516,7 +516,7 @@ export default function AaveReserve({
                     transactionError={transactionError}
                     stepComplete={tokenApproved}
                   >
-                    Token is approved
+                    {tokenApproved ? 'Token approved' : 'Approving token'}
                     <BlockExplorerLink transactionHash={approvalTransactionHash} />
                   </TransactionStep>
                   <TransactionStep
@@ -525,7 +525,7 @@ export default function AaveReserve({
                     transactionError={transactionError}
                     stepComplete={transactionConfirmed}
                   >
-                    {aaveFunction} confirmed
+                    {transactionConfirmed ? `${aaveFunction} confirmed` : `Confirming ${aaveFunction}`}
                     <BlockExplorerLink transactionHash={actionTransactionHash} />
                   </TransactionStep>
                   <TransactionError transactionError={transactionError} />
