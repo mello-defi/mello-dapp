@@ -249,13 +249,30 @@ export default function AaveReserve({
   };
 
   const resetTransactionState = () => {
-    setTransactionConfirmed(false);
-    setTransactionInProgress(false);
-    setTransactionError('');
-    setApprovalTransactionHash('');
-    setActionTransactionHash('');
-    setTokenApproved(false);
+    if (transactionConfirmed) {
+      setTransactionConfirmed(false);
+    }
+    if (transactionInProgress) {
+      setTransactionInProgress(false);
+    }
+    if (transactionError) {
+      setTransactionError('');
+    }
+    if (approvalTransactionHash) {
+      setApprovalTransactionHash('');
+    }
+    if (actionTransactionHash) {
+      setActionTransactionHash('');
+    }
+    if (tokenApproved) {
+      setTokenApproved(false);
+    }
   }
+
+  const setAmount = (amount: string, setStateFunction: (amount: string) => void) => {
+    setStateFunction(amount);
+    resetTransactionState();
+  };
 
   const handleFunctionButtonClicked = async (functionName: AaveFunction) => {
     if (!transactionInProgress || transactionError) {
@@ -325,7 +342,7 @@ export default function AaveReserve({
                         userBalance={userBalance}
                         tokenPrice={marketPriceForToken}
                         amount={depositAmount}
-                        setAmount={setDepositAmount}
+                        setAmount={(amount: string) => setAmount(amount, setDepositAmount)}
                         token={token}
                         buttonOnClick={handleDeposit}
                         buttonDisabled={
@@ -366,7 +383,7 @@ export default function AaveReserve({
                         }
                         tokenPrice={marketPriceForToken}
                         amount={withdrawAmount}
-                        setAmount={setWithdrawAmount}
+                        setAmount={(amount: string) => setAmount(amount, setWithdrawAmount)}
                         token={token}
                         buttonOnClick={handleWithdraw}
                         buttonDisabled={
@@ -419,7 +436,7 @@ export default function AaveReserve({
                         }
                         tokenPrice={marketPriceForToken}
                         amount={borrowAmount}
-                        setAmount={setBorrowAmount}
+                        setAmount={(amount: string) => setAmount(amount, setBorrowAmount)}
                         token={token}
                         buttonOnClick={handleBorrow}
                         buttonDisabled={
@@ -456,7 +473,7 @@ export default function AaveReserve({
                         tokenPrice={marketPriceForToken}
                         amount={repayAmount}
                         reserve={reserve}
-                        setAmount={setRepayAmount}
+                        setAmount={(amount: string) => setAmount(amount, setRepayAmount)}
                         token={token}
                         buttonOnClick={handleRepay}
                         buttonDisabled={
