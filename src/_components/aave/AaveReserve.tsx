@@ -158,7 +158,6 @@ export default function AaveReserve({
       dispatch(getBalanceForToken(token, provider, userAddress, true));
     }
   };
-  console.log('USER BALANCE', userReserve);
 
   const handleAaveFunction = async (
     amount: string,
@@ -442,7 +441,6 @@ export default function AaveReserve({
                         buttonOnClick={handleBorrow}
                         buttonDisabled={
                           transactionInProgress ||
-                          !userReserve ||
                           (!borrowAmount || parseFloat(borrowAmount) === 0) ||
                           !borrowAmount ||
                           (maxBorrowAmount !== '' && ethers.utils.parseUnits(maxBorrowAmount, token.decimals).lt(ethers.utils.parseUnits(borrowAmount, token.decimals)))
