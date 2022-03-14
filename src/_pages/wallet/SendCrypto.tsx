@@ -59,6 +59,7 @@ export default function SendCrypto() {
 
   useEffect(() => {
     updateMarketPrice();
+    resetTransaction()
   }, [amountToSend, token]);
 
   const dispatch = useDispatch();
@@ -108,7 +109,8 @@ export default function SendCrypto() {
     }
   };
 
-  useEffect(() => {
+
+  const resetTransaction = () => {
     if (transactionSubmitting) {
       setTransactionSubmitting(false);
     }
@@ -121,7 +123,7 @@ export default function SendCrypto() {
     if (sendTransactionHash) {
       setSendTransactionHash('');
     }
-  }, [token, amountToSend]);
+  }
   return (
     <div className={'flex flex-col'}>
       <CryptoAmountInput
@@ -188,7 +190,7 @@ export default function SendCrypto() {
             {transactionCompleted ? 'Transaction completed' : 'Sending transaction'}
             <BlockExplorerLink transactionHash={sendTransactionHash} />
           </TransactionStep>
-          <TransactionError transactionError={transactionError} />
+          <TransactionError onClickClear={resetTransaction} transactionError={transactionError} />
         </>
       )}
     </div>

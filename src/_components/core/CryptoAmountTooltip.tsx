@@ -3,7 +3,7 @@ import { TokenDefinition } from '_enums/tokens';
 import { useState } from 'react';
 import { DefaultTransition } from '_components/core/Transition';
 
-export default function CryptoAmountWithTooltip ({token, amount}: {token: TokenDefinition, amount: string}) {
+export default function CryptoAmountWithTooltip ({token, amount, showSymbol}: {token: TokenDefinition, amount: string, showSymbol: boolean}) {
     const [isHovered, setIsHovered] = useState(false);
     const displayAmount = () => {
       const amountNum = parseFloat(ethers.utils.formatUnits(amount, token.decimals));
@@ -14,7 +14,6 @@ export default function CryptoAmountWithTooltip ({token, amount}: {token: TokenD
     }
     return (
       <div
-
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}>
         <DefaultTransition isOpen={isHovered}>
@@ -23,7 +22,7 @@ export default function CryptoAmountWithTooltip ({token, amount}: {token: TokenD
         <span className={'font-mono mr-1'}>
         {displayAmount()}
       </span>
-        {token.symbol}
+      {showSymbol && token.symbol}
       </div>
     )
   }

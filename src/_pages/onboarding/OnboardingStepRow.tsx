@@ -17,7 +17,7 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
         <>
           <div
             key={step.number}
-            className={`py-2 px-4 rounded-2xl border border-gray-100 mb-2 ${
+            className={`py-2 px-4 rounded-2xl border bg-white shadow-sm border-gray-100 mb-2 ${
               stepIsCurrentStep ? 'cursor-pointer hover:bg-gray-100 transition' : ''
             }`}
           >

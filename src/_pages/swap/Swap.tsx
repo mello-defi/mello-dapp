@@ -316,7 +316,7 @@ export default function Swap({
               {swapConfirmed ? 'Swap confirmed' : 'Swap confirming'}
               <BlockExplorerLink transactionHash={swapTransactionHash} />
             </TransactionStep>
-            <TransactionError transactionError={transactionError} />
+            <TransactionError onClickClear={resetState} transactionError={transactionError} />
           </div>
         )}
       </div>

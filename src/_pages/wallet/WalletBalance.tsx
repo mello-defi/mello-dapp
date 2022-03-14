@@ -41,7 +41,7 @@ export default function WalletBalance({
             <div className={'flex flex-col ml-3'}>
               <span>{token.name}</span>
               <span className={'text-color-light'}>
-                <CryptoAmountWithTooltip token={token} amount={userBalance.toString()}/>
+                <CryptoAmountWithTooltip token={token} amount={userBalance.toString()} showSymbol={true}/>
               </span>
             </div>
           </div>

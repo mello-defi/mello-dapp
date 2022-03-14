@@ -527,7 +527,7 @@ export default function AaveReserve({
                     {transactionConfirmed ? `${aaveFunction} confirmed` : `Confirming ${aaveFunction?.toLowerCase()}`}
                     <BlockExplorerLink transactionHash={actionTransactionHash} />
                   </TransactionStep>
-                  <TransactionError transactionError={transactionError} />
+                  <TransactionError onClickClear={resetTransactionState} transactionError={transactionError} />
                 </div>
               )}
             </div>

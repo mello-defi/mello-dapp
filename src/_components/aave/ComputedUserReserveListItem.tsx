@@ -43,7 +43,7 @@ export default function ComputedUserReserveListItem({
       <div className={'flex flex-col font-mono'}>
         {marketPrices && (
           <span className={'text-body-smaller flex-row-center'}>
-            <CryptoAmountWithTooltip token={token} amount={ethers.utils.parseUnits(reserveAmount, token.decimals).toString()} />
+            <CryptoAmountWithTooltip showSymbol={false} token={token} amount={ethers.utils.parseUnits(reserveAmount, token.decimals).toString()} />
             <span className={'ml-1 text-color-light'}>
               ({getFiatValueForUserReserve(marketPrices, reserveAmount, reserveSymbol)})
             </span>
