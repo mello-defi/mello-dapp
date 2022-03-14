@@ -330,6 +330,7 @@ export default function AaveReserve({
                         buttonDisabled={
                           !userBalance ||
                           userBalance.isZero() ||
+                          (!depositAmount || parseFloat(depositAmount) === 0) ||
                           transactionInProgress ||
                           (depositAmount
                             ? userBalance.lt(ethers.utils.parseUnits(depositAmount, token.decimals))
@@ -371,6 +372,7 @@ export default function AaveReserve({
                           transactionInProgress ||
                           !userReserve ||
                           !userSummary ||
+                          (!withdrawAmount || parseFloat(withdrawAmount) === 0) ||
                           parseFloat(userReserve.underlyingBalance) === 0 ||
                           (withdrawAmount && userReserve?.underlyingBalance
                             ? parseFloat(withdrawAmount) >
@@ -422,6 +424,7 @@ export default function AaveReserve({
                         buttonDisabled={
                           transactionInProgress ||
                           !userReserve ||
+                          (!borrowAmount || parseFloat(borrowAmount) === 0) ||
                           !borrowAmount ||
                           (maxBorrowAmount !== '' && ethers.utils.parseUnits(maxBorrowAmount, token.decimals).lt(ethers.utils.parseUnits(borrowAmount, token.decimals)))
                         }
@@ -458,6 +461,7 @@ export default function AaveReserve({
                         buttonDisabled={
                           transactionInProgress ||
                           !userReserve ||
+                          (!repayAmount || parseFloat(repayAmount) === 0) ||
                           parseFloat(userReserve?.variableBorrows) === 0 ||
                           (repayAmount && userReserve?.variableBorrows
                             ? parseFloat(repayAmount) > parseFloat(userReserve?.variableBorrows)
