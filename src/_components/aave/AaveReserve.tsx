@@ -247,11 +247,23 @@ export default function AaveReserve({
     }
   };
 
+  const resetTransactionState = () => {
+    setTransactionConfirmed(false);
+    setTransactionInProgress(false);
+    setTransactionError('');
+    setApprovalTransactionHash('');
+    setActionTransactionHash('');
+    setTokenApproved(false);
+  }
+
   const handleFunctionButtonClicked = async (functionName: AaveFunction) => {
-    if (!aaveFunction || (aaveFunction && aaveFunction !== functionName)) {
-      setAaveFunction(functionName);
-    } else {
-      setAaveFunction(null);
+    if (!transactionInProgress || transactionError) {
+      if (!aaveFunction || (aaveFunction && aaveFunction !== functionName)) {
+        setAaveFunction(functionName);
+      } else {
+        setAaveFunction(null);
+      }
+      resetTransactionState();
     }
   };
 
@@ -269,13 +281,13 @@ export default function AaveReserve({
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Borrow}
-                  disabled={userSummary && parseFloat(userSummary.availableBorrowsETH) <= 0}
+                  disabled={userSummary && parseFloat(userSummary.availableBorrowsETH) <= 0 || (transactionInProgress && !transactionError)}
                 />
                 <AaveFunctionButton
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Repay}
-                  disabled={!userReserve || parseFloat(userReserve.variableBorrows) === 0}
+                  disabled={!userReserve || parseFloat(userReserve.variableBorrows) === 0|| (transactionInProgress && !transactionError)}
                 />
               </div>
             )}
@@ -285,13 +297,13 @@ export default function AaveReserve({
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Deposit}
-                  disabled={!userBalance || userBalance.isZero()}
+                  disabled={!userBalance || userBalance.isZero()|| (transactionInProgress && !transactionError)}
                 />
                 <AaveFunctionButton
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Withdraw}
-                  disabled={!userReserve || parseFloat(userReserve.underlyingBalance) === 0}
+                  disabled={!userReserve || parseFloat(userReserve.underlyingBalance) === 0|| (transactionInProgress && !transactionError)}
                 />
               </div>
             )}
