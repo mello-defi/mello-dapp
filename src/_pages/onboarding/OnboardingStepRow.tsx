@@ -5,10 +5,12 @@ import React, { useState } from 'react';
 import { CheckCircle, ExpandLess, ExpandMore, Info } from '@mui/icons-material';
 import { DefaultTransition } from '_components/core/Transition';
 import OnboardingStepDescription from '_pages/onboarding/OnboardingStepDescription';
+import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 
 export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
   const stepIsCurrentStep = (currentStep && currentStep.number === step.number) || false;
+  const stepIsAhead = (currentStep && currentStep.number < step.number) || false;
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
@@ -17,14 +19,12 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
         <>
           <div
             key={step.number}
-            className={`py-2 px-4 rounded-2xl border bg-white shadow-sm border-gray-100 mb-2 ${
-              stepIsCurrentStep ? 'cursor-pointer hover:bg-gray-100 transition' : ''
-            }`}
+            className={`py-2 px-4 rounded-2xl border bg-white shadow-sm border-gray-100 mb-2`}
           >
             <div className={'flex flex-row justify-between w-full'}>
               <div className={'flex-row-center'}>
                 <span className={'text-3xl mr-2'}>
-                  {stepIsCurrentStep ? (
+                  {stepIsCurrentStep || stepIsAhead ? (
                     <Info className={'text-gray-400 mb-0.5'} fontSize={'inherit'} />
                   ) : (
                     <CheckCircle className={'text-green-400 mb-0.5'} fontSize={'inherit'} />
@@ -52,11 +52,14 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
                 </div>
               </DefaultTransition>
             </div>
+            {step.number === currentStep?.number && step.component !== undefined && (
+              <>
+                <HorizontalLineBreak />
+                <>{React.createElement(step.component, step.componentProps)}</>
+              </>
+            )}
           </div>
         </>
-      )}
-      {step.number === currentStep?.number && step.component !== undefined && (
-        <>{React.createElement(step.component, step.componentProps)}</>
       )}
     </>
   );

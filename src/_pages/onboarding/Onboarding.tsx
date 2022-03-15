@@ -3,11 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { OnboardingStep } from '_redux/types/onboardingTypes';
 import useWalletBalance from '_hooks/useWalletBalance';
-import { stepAddGasToWallet, stepPerformSwap } from '_redux/reducers/onboardingReducer';
+import { stepAddGasToWallet, stepPerformSwap, stepSignMessage } from '_redux/reducers/onboardingReducer';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { getTransactionCount } from '_services/walletService';
 import { Button, ButtonSize } from '_components/core/Buttons';
 import OnboardingStepRow from '_pages/onboarding/OnboardingStepRow';
+import { DefaultTransition } from '_components/core/Transition';
 
 export default function Onboarding() {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ export default function Onboarding() {
   const [waitingToAdvance, setWaitingToAdvance] = useState(false);
   useEffect(() => {
     async function getTransactionCountAndAdvance() {
-      if (userAddress && provider && currentStep && walletBalance) {
+      if (userAddress && provider && currentStep && walletBalance && currentStep.number !== stepSignMessage.number) {
         const transactionCount: number = await getTransactionCount(userAddress, provider);
         if (walletBalance.eq(0) && transactionCount === 0) {
           dispatch(setStep(stepAddGasToWallet));
@@ -34,9 +35,8 @@ export default function Onboarding() {
       }
     }
     getTransactionCountAndAdvance();
-  }, [userAddress, walletBalance]);
+  }, [userAddress, walletBalance, currentStep]);
 
-  // signer?.signMessage('helo world');
   const advanceToNextStep = () => {
     setWaitingToAdvance(false);
     setNextStep(currentStep);
@@ -52,7 +52,8 @@ export default function Onboarding() {
   }, [currentStep]);
   return (
     <div>
-      <div className={'px-4 mb-2 flex flex-col text-body'}>
+      <DefaultTransition isOpen={!onboardingInitiated}>
+        <div className={'px-4 mb-2 flex flex-col text-body'}>
         <span>
           Welcome to the mello onboarding tutorial! This tutorial will bring you step by step
           through the mello platform and its features. You will learn how to create or connect your
@@ -63,26 +64,28 @@ export default function Onboarding() {
           </a>{' '}
           for any further help.
         </span>
-        <Button className={'w-full my-2'} onClick={() => setOnboardingInitiated(true)}>
-          Begin
-        </Button>
-      </div>
+          <Button className={'w-full my-2'} onClick={() => setOnboardingInitiated(true)}>
+            Get started
+          </Button>
+        </div>
+      </DefaultTransition>
       {nextStep && onboardingInitiated && (
         <>
           {steps
-            .filter((step) => step.number <= nextStep?.number)
             .map((step) => (
               <div key={step.number}>
-                {waitingToAdvance && nextStep?.number === step.number ? (
-                  <div className={'flex-row-center w-full justify-between text-body px-2'}>
+                {waitingToAdvance && step.number !== 1 && nextStep?.number === step.number && (
+                  <div className={'flex-row-center w-full justify-between text-body px-2 mb-2'}>
                     <span>Step completed!</span>
                     <Button size={ButtonSize.SMALL} onClick={advanceToNextStep}>
                       Next step
                     </Button>
                   </div>
-                ) : (
-                  <OnboardingStepRow key={step.number} step={step} />
                 )}
+                <div
+                  className={`${waitingToAdvance && step.number === nextStep?.number ? 'opacity-40 pointer-events-none' : ''}`}>
+                  <OnboardingStepRow key={step.number} step={step} />
+                </div>
               </div>
             ))}
         </>

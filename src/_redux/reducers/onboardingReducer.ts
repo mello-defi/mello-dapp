@@ -11,9 +11,11 @@ import Swap from '_pages/swap/Swap';
 import AaveReserve from '_components/aave/AaveReserve';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import FiatOnboarding from '_pages/fund/FiatOnboarding';
+import SignTestMessage from '_pages/onboarding/SignTestMessage';
+import TermsAndConditions from '_pages/onboarding/TermsAndConditions';
 
 export const stepMintNft: OnboardingStep = {
-  number: 7,
+  number: 8,
   title: 'Mint NFT',
   nextStep: null,
   description: {
@@ -23,7 +25,7 @@ export const stepMintNft: OnboardingStep = {
   }
 };
 export const stepBorrowAave: OnboardingStep = {
-  number: 6,
+  number: 7,
   title: 'Borrow Aave',
   nextStep: stepMintNft,
   component: AaveReserve,
@@ -39,7 +41,7 @@ export const stepBorrowAave: OnboardingStep = {
 };
 
 export const stepDepositAave: OnboardingStep = {
-  number: 5,
+  number: 6,
   title: 'Deposit Aave',
   nextStep: stepBorrowAave,
   component: AaveReserve,
@@ -55,7 +57,7 @@ export const stepDepositAave: OnboardingStep = {
 };
 
 export const stepPerformSwap: OnboardingStep = {
-  number: 4,
+  number: 5,
   title: 'Swap gas token for $wBTC',
   nextStep: stepDepositAave,
   component: Swap,
@@ -70,7 +72,7 @@ export const stepPerformSwap: OnboardingStep = {
   }
 };
 export const stepAddGasToWallet: OnboardingStep = {
-  number: 3,
+  number: 4,
   title: 'Add gas to Wallet',
   nextStep: stepPerformSwap,
   component: FiatOnboarding,
@@ -81,11 +83,22 @@ export const stepAddGasToWallet: OnboardingStep = {
     notes: 'We recommend Mt Pellerin for EU customers and Ramp for all non-EU customers'
   }
 };
+export const stepSignMessage: OnboardingStep = {
+  number: 3,
+  title: 'Sign test transaction',
+  nextStep: stepAddGasToWallet,
+  component: SignTestMessage,
+  description: {
+    whatIsRequired: 'Sign a test transaction',
+    whyIsRequired: 'In order to authorize transactions from your crypto wallet, you have to sign transactions. This is a test transaction that you can sign to show how the process works.',
+    notes: 'This will not cost any money'
+  }
+};
 // REVIEW - hack, too tightly coupled
 export const stepConnectWallet: OnboardingStep = {
   number: 2,
   title: 'Connect Wallet',
-  nextStep: stepAddGasToWallet,
+  nextStep: stepSignMessage,
   description: {
     whatIsRequired: 'Connect your non-custodial wallet to mello',
     whyIsRequired: `By creating your wallet, and then connecting it to mello you can utilise our platform<br/>
@@ -110,6 +123,7 @@ export const stepTermsAndConditions: OnboardingStep = {
   number: 1,
   title: 'Accept Terms and Conditions',
   nextStep: stepConnectWallet,
+  component: TermsAndConditions,
   description: {
     text: `Do you agree to the terms of service, its policies, and the privacy policy? <a href='https://docs.mellodefi.com/'>See more</a>
 <br/>
@@ -120,39 +134,20 @@ Disclaimer: Nothing given is financial advice, use mello at your own risk. Furth
 };
 
 const steps: OnboardingStep[] = [
-  {
-    ...stepTermsAndConditions,
-    nextStep: stepConnectWallet
-  },
-  {
-    ...stepConnectWallet,
-    nextStep: stepAddGasToWallet
-  },
-  {
-    ...stepAddGasToWallet,
-    nextStep: stepPerformSwap
-  },
-  {
-    ...stepPerformSwap,
-    nextStep: stepDepositAave
-  },
-  {
-    ...stepDepositAave,
-    nextStep: stepBorrowAave
-  },
-  {
-    ...stepBorrowAave,
-    nextStep: stepMintNft
-  },
-  {
-    ...stepMintNft
-  }
+  stepTermsAndConditions,
+  stepConnectWallet,
+  stepSignMessage,
+  stepAddGasToWallet,
+  stepPerformSwap,
+  stepDepositAave,
+  stepBorrowAave,
+  stepMintNft,
 ];
 const initialState: OnboardingState = {
   steps,
   complete: false,
   ongoing: false,
-  currentStep: stepConnectWallet
+  currentStep: stepTermsAndConditions
 };
 
 export const getOnboardingReducer = (
