@@ -27,6 +27,7 @@ export default function OnboardingStepDescription({ step }: { step: OnboardingSt
               {step.description.notes && (
                 <>
                   <br />
+                  <br />
                   <span className={'italic'}>
                     Notes: <span dangerouslySetInnerHTML={{ __html: step.description.notes }} />
                   </span>

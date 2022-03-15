@@ -1,18 +1,33 @@
 import { OnboardingStep } from '_redux/types/onboardingTypes';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CheckCircle, ExpandLess, ExpandMore, Info } from '@mui/icons-material';
 import { DefaultTransition } from '_components/core/Transition';
 import OnboardingStepDescription from '_pages/onboarding/OnboardingStepDescription';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
+import { Button, ButtonSize } from '_components/core/Buttons';
 
 export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
   const stepIsCurrentStep = (currentStep && currentStep.number === step.number) || false;
   const stepIsAhead = (currentStep && currentStep.number < step.number) || false;
   const [isExpanded, setIsExpanded] = useState(false);
+  const [nextStep, setNextStep] = useState<OnboardingStep | undefined>(undefined);
+  const [waitingToAdvance, setWaitingToAdvance] = useState(false);
+  useEffect(() => {
+    if (waitingToAdvance) {
+      setNextStep(currentStep);
+    }
+  }, [waitingToAdvance, currentStep]);
 
+  useEffect(() => {
+    setWaitingToAdvance(true);
+  }, [currentStep]);
+  const advanceToNextStep = () => {
+    setWaitingToAdvance(false);
+    setNextStep(currentStep);
+  };
   return (
     <>
       {currentStep && (
@@ -58,6 +73,17 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
                 <>{React.createElement(step.component, step.componentProps)}</>
               </>
             )}
+            {/*<DefaultTransition isOpen={waitingToAdvance && step.number !== 1 && nextStep?.number === step.number}>*/}
+            {/*  <div>*/}
+            {/*    <HorizontalLineBreak />*/}
+            {/*    <div className={'flex-row-center w-full justify-between text-body px-2 mb-2'}>*/}
+            {/*      <span>Step completed!</span>*/}
+            {/*      <Button size={ButtonSize.SMALL} onClick={advanceToNextStep}>*/}
+            {/*        Continue*/}
+            {/*      </Button>*/}
+            {/*    </div>*/}
+            {/*  </div>*/}
+            {/*</DefaultTransition>*/}
           </div>
         </>
       )}
