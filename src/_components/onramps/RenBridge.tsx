@@ -11,6 +11,7 @@ import PoweredByLink from '_components/core/PoweredByLink';
 import { renLogo } from '_assets/images';
 import CopyableText from '_components/core/CopyableText';
 import { getGasPrice } from '_services/gasService';
+import { logTransactionHash } from '_services/dbService';
 
 function RenBridge() {
   const provider = useSelector((state: AppState) => state.web3.provider);
@@ -140,6 +141,7 @@ function RenBridge() {
           .on('transactionHash', async (txHash) => {
             console.log('IN TRANSACTION HASH');
             console.log('TX HASH', txHash);
+            logTransactionHash(txHash, network.chainId);
             setTransactionHash(txHash);
             const gasPrice = await getGasPrice(network.gasStationUrl);
             const tx = await provider.getTransaction(txHash);

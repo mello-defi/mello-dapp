@@ -18,6 +18,7 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import { formatTokenValueInFiat } from '_services/priceService';
 import { decimalPlacesAreValid } from '_utils/index';
 import { getGasPrice } from '_services/gasService';
+import { logTransactionHash } from '_services/dbService';
 
 interface BiconomyPreTransferStatus {
   code: number;
@@ -80,6 +81,7 @@ export default function EthereumToPolygonBridge() {
     if (provider) {
       const gasPrice = await getGasPrice(network.gasStationUrl);
       const tx = await provider.getTransaction(data.exitHash);
+      logTransactionHash(tx.hash, network.chainId);
       await tx.wait(gasPrice?.blockTime || 3);
       setPolygonTransferComplete(true);
     }

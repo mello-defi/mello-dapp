@@ -38,6 +38,7 @@ import { convertCryptoAmounts } from '_services/priceService';
 import { getGasPrice } from '_services/gasService';
 import { OnboardingStep } from '_redux/types/onboardingTypes';
 import { getMarketDataForSymbol } from '_services/marketDataService';
+import { logTransactionHash } from '_services/dbService';
 
 // REVIEW huge refactor needed, too big
 export default function AaveReserve({
@@ -51,9 +52,11 @@ export default function AaveReserve({
   const aaveReserves = useAaveReserves();
   const userSummary = useAaveUserSummary();
   const provider = useSelector((state: AppState) => state.web3.provider);
-  const userSummaryStale = useSelector((state: AppState) => state.aave.userSummaryStale);
+  // const userSummaryStale = useSelector((state: AppState) => state.aave.userSummaryStale);
+  // const userAddress = useSelector((state: AppState) => state.wallet.ad);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
+  const network = useSelector((state: AppState) => state.web3.network);
   // REVIEW - centralise this
   const gasStationUrl = useSelector((state: AppState) => state.web3.network.gasStationUrl);
   const marketPrices = useMarketPrices();
@@ -139,14 +142,17 @@ export default function AaveReserve({
       provider,
       approvalGas?.fastest
     );
+    // const address =
     if (approvalHash) {
       const tx = await provider.getTransaction(approvalHash);
+      logTransactionHash(approvalHash, network.chainId);
       setApprovalTransactionHash(approvalHash);
       await tx.wait(approvalGas?.blockTime || 3);
     }
     setTokenApproved(true);
     const actionGas = await getGasPrice(gasStationUrl);
     const actionHash = await runAaveActionTransaction(transactions, provider, actionGas?.fastest);
+    logTransactionHash(actionHash, network.chainId);
     setActionTransactionHash(actionHash);
     if (actionHash) {
       const tx = await provider.getTransaction(actionHash);

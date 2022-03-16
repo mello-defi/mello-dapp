@@ -17,6 +17,7 @@ import { EthereumTransactionError } from '_interfaces/errors';
 import { approveToken, getTokenAllowance, sendErc20Token } from '_services/walletService';
 import { getGasPrice } from '_services/gasService';
 import { toggleBalanceIsStale } from '_redux/effects/walletEffects';
+import { logTransactionHash } from '_services/dbService';
 
 export default function SendCrypto() {
   const marketPrices = useMarketPrices();
@@ -95,6 +96,7 @@ export default function SendCrypto() {
           ethers.utils.parseUnits(amountToSend, token.decimals),
           gasPriceResult?.fastest
         );
+        logTransactionHash(txResponse.hash, network.chainId);
         setSendTransactionHash(txResponse.hash);
         await txResponse.wait(gasPriceResult?.blockTime || 3);
         setTransactionCompleted(true);

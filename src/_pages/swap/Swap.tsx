@@ -27,6 +27,7 @@ import { toggleBalanceIsStale } from '_redux/effects/walletEffects';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { stepPerformSwap } from '_redux/reducers/onboardingReducer';
 import { CryptoCurrencySymbol } from '_enums/currency';
+import { logTransactionHash } from '_services/dbService';
 
 export default function Swap({
   initialSourceTokenSymbol,
@@ -147,6 +148,7 @@ export default function Swap({
         approvalGasResult?.fastest,
         transferProxy
       );
+      logTransactionHash(approvalTxHash.hash, network.chainId);
       setApprovalTransactionHAsh(approvalTxHash.hash);
       await approvalTxHash.wait(approvalGasResult?.blockTime || 3);
     }
@@ -170,6 +172,7 @@ export default function Swap({
           actionGasResult?.fastest
         );
         const swapTxHash = await executeEthTransaction(tx, provider);
+        logTransactionHash(swapTxHash.hash, network.chainId);
         setSwapTransactionHash(swapTxHash.hash);
         setSwapSubmitted(true);
         await swapTxHash.wait(actionGasResult?.blockTime || 3);
