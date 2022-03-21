@@ -1,4 +1,4 @@
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import { MarketDataResult } from '_services/marketDataService';
 import TokenSelectDropdown from '_components/TokenSelectDropdown';
@@ -8,7 +8,7 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import { BigNumber, ethers } from 'ethers';
 import { decimalPlacesAreValid } from '_utils/index';
 
-export default function CryptoAmountInput({
+export default function MultiCryptoAmountInput({
   token,
   tokenChanged,
   amount,
@@ -16,8 +16,8 @@ export default function CryptoAmountInput({
   disabled,
   amountInFiat
 }: {
-  token?: TokenDefinition;
-  tokenChanged: (token: TokenDefinition) => void;
+  token?: EvmTokenDefinition;
+  tokenChanged: (token: EvmTokenDefinition) => void;
   amount: string;
   amountChanged: (amount: string) => void;
   disabled: boolean;

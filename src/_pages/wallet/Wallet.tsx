@@ -1,6 +1,6 @@
 import { AppState } from '_redux/store';
 import { useSelector } from 'react-redux';
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 import React, { useEffect, useState } from 'react';
 import { Button } from '_components/core/Buttons';
 import { DefaultTransition } from '_components/core/Transition';
@@ -44,7 +44,7 @@ export default function Wallet() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const [walletPageTab, setWalletPageTab] = useState<WalletPageTab | undefined>();
   const walletBalances = useSelector((state: AppState) => state.wallet.balances);
-  const [sortedTokenSet, setSortedTokenSet] = useState<TokenDefinition[]>(Object.values(tokenSet));
+  const [sortedTokenSet, setSortedTokenSet] = useState<EvmTokenDefinition[]>(Object.values(tokenSet));
 
   useEffect(() => {
     // setSortedTokenSet();
@@ -101,7 +101,7 @@ export default function Wallet() {
         </div>
       </DefaultTransition>
       <div className={'rounded-2xl bg-gray-50 py-2'}>
-        {Object.values(tokenSet).map((token: TokenDefinition) => (
+        {Object.values(tokenSet).map((token: EvmTokenDefinition) => (
           <WalletBalance key={token.symbol} token={token} hideZeroBalance={false} />
         ))}
       </div>

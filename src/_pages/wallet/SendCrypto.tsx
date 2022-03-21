@@ -1,6 +1,6 @@
-import CryptoAmountInput from '_components/CryptoAmountInput';
+import MultiCryptoAmountInput from '_components/core/MultiCryptoAmountInput';
 import { useEffect, useState } from 'react';
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { MarketDataResult } from '_services/marketDataService';
@@ -21,7 +21,7 @@ import { logTransactionHash } from '_services/dbService';
 
 export default function SendCrypto() {
   const marketPrices = useMarketPrices();
-  const [token, setToken] = useState<TokenDefinition | undefined>();
+  const [token, setToken] = useState<EvmTokenDefinition | undefined>();
   const signer = useSelector((state: AppState) => state.web3.signer);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -128,7 +128,7 @@ export default function SendCrypto() {
   }
   return (
     <div className={'flex flex-col'}>
-      <CryptoAmountInput
+      <MultiCryptoAmountInput
         token={token}
         tokenChanged={setToken}
         amount={amountToSend}

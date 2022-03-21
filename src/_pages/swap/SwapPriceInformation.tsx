@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 import { OptimalRate } from 'paraswap-core';
 import { EvStation, ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Spinner } from '_components/core/Animations';
@@ -25,9 +25,9 @@ export default function SwapPriceInformation({
   slippagePercentage
 }: {
   fetchingPrices: boolean;
-  destinationToken: TokenDefinition;
+  destinationToken: EvmTokenDefinition;
   priceRoute?: OptimalRate;
-  sourceToken: TokenDefinition;
+  sourceToken: EvmTokenDefinition;
   slippagePercentage: number;
   setSlippagePercentage: (percentage: number) => void;
 }) {

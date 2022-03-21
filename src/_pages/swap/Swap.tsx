@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import React, { useCallback, useState } from 'react';
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { OptimalRate } from 'paraswap-core';
 import debounce from 'lodash/debounce';
@@ -15,7 +15,7 @@ import { approveToken, executeEthTransaction, getTokenAllowance } from '_service
 import { TransactionStep } from '_components/transactions/TransactionStep';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
-import CryptoAmountInput from '_components/CryptoAmountInput';
+import MultiCryptoAmountInput from '_components/core/MultiCryptoAmountInput';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { paraswapLogo } from '_assets/images';
 import { BigNumber, ethers } from 'ethers';
@@ -43,11 +43,11 @@ export default function Swap({
   const network = useSelector((state: AppState) => state.web3.network);
   const tokens = useSelector((state: AppState) => state.web3.tokenSet);
   const [fetchingPriceError, setFetchingPriceError] = useState('');
-  const [sourceToken, setSourceToken] = useState<TokenDefinition>(
+  const [sourceToken, setSourceToken] = useState<EvmTokenDefinition>(
     (initialSourceTokenSymbol && tokens[initialSourceTokenSymbol]) || Object.values(tokens)[0]
   );
   const sourceTokenBalance = useWalletBalance(sourceToken);
-  const [destinationToken, setDestinationToken] = useState<TokenDefinition>(
+  const [destinationToken, setDestinationToken] = useState<EvmTokenDefinition>(
     (initialDestinationTokenSymbol && tokens[initialDestinationTokenSymbol]) ||
       Object.values(tokens)[1]
   );
@@ -99,8 +99,8 @@ export default function Swap({
 
   const updateExchangeRate = async (
     amount: string,
-    srcToken: TokenDefinition,
-    destToken: TokenDefinition
+    srcToken: EvmTokenDefinition,
+    destToken: EvmTokenDefinition
   ) => {
     if (destToken && amount && parseFloat(amount) > 0 && srcToken.symbol !== destToken.symbol) {
       resetTransactionSteps();
@@ -226,7 +226,7 @@ export default function Swap({
         <span className={'text-header'}>Swap</span>
         <PoweredByLink url={'https://paraswap.io'} logo={paraswapLogo} />
       </div>
-      <CryptoAmountInput
+      <MultiCryptoAmountInput
         amountInFiat={sourceFiatAmount}
         token={sourceToken}
         tokenChanged={setSourceToken}
@@ -250,7 +250,7 @@ export default function Swap({
           </Button>
         </div>
       </div>
-      <CryptoAmountInput
+      <MultiCryptoAmountInput
         amountInFiat={destinationFiatAmount}
         token={destinationToken}
         tokenChanged={setDestinationToken}

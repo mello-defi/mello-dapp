@@ -3,7 +3,7 @@ import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { FiatCurrencyName } from '_enums/currency';
-import { rampNetworkLogo } from '_assets/images';
+import { melloLogoFace, rampNetworkLogo } from '_assets/images';
 import OnRampCard from '_components/onramps/OnRampCard';
 
 function RampNetwork() {
@@ -11,11 +11,11 @@ function RampNetwork() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const openWidget = async () => {
     new RampInstantSDK({
-      hostAppName: 'Mello',
-      hostLogoUrl: 'https://mellodefi.com/images/logo-light.svg',
+      hostAppName: 'mello',
+      hostLogoUrl: melloLogoFace,
       fiatCurrency: 'EUR',
       defaultAsset: 'MATIC',
-      fiatValue: '100',
+      fiatValue: '10',
       userAddress: userAddress
       // url: 'https://ri-widget-staging.firebaseapp.com',
       // webhookStatusUrl: 'https://ea14-80-233-33-216.ngrok.io/'

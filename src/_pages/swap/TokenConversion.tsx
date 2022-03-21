@@ -1,5 +1,5 @@
 import React from 'react';
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 import { ethers } from 'ethers';
 
 export default function TokenConversion({
@@ -8,8 +8,8 @@ export default function TokenConversion({
   sourceAmount,
   destinationAmount
 }: {
-  sourceToken: TokenDefinition;
-  destinationToken: TokenDefinition;
+  sourceToken: EvmTokenDefinition;
+  destinationToken: EvmTokenDefinition;
   sourceAmount: string;
   destinationAmount: string;
 }) {

@@ -1,4 +1,4 @@
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 import useWalletBalance from '_hooks/useWalletBalance';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { useEffect, useState } from 'react';
@@ -12,7 +12,7 @@ export default function WalletBalance({
   token,
   hideZeroBalance
 }: {
-  token: TokenDefinition;
+  token: EvmTokenDefinition;
   hideZeroBalance: boolean;
 }) {
   const userBalance: BigNumber | undefined = useWalletBalance(token);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 import WalletBalance from '_pages/wallet/WalletBalance';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
@@ -110,7 +110,7 @@ export default function Dashboard() {
       <HorizontalLineBreak />
       <div>
         <DashboardLink text={'Wallet'} navTab={NavTab.WALLET} />
-        {Object.values(tokenSet).map((token: TokenDefinition) => (
+        {Object.values(tokenSet).map((token: EvmTokenDefinition) => (
           <WalletBalance key={token.symbol} token={token} hideZeroBalance={true} />
         ))}
       </div>

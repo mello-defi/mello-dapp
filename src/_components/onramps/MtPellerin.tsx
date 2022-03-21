@@ -2,25 +2,35 @@ import React from 'react';
 import OnRampCard from '_components/onramps/OnRampCard';
 import { FiatCurrencyName } from '_enums/currency';
 import { mtPellerinLogo } from '_assets/images';
+import { useSelector } from 'react-redux';
+import { AppState } from '_redux/store';
 
 declare global {
   interface Window {
     showMtpModal: any;
   }
 }
-
 function MtPellerin() {
-  const openWidget = () => {
-    window.showMtpModal({
-      lang: 'en',
-      tab: 'buy',
-      nets: 'matic_mainnet',
-      crys: 'jEUR,MATIC,USDC,WBTC,DAI,WETH',
-      net: 'matic_mainnet',
-      // primary: '#ff9101',
-      bsc: 'EUR',
-      bdc: 'jEUR'
-    });
+  const address = useSelector((state: AppState) => state.wallet.address);
+  const signer = useSelector((state: AppState) => state.web3.signer);
+
+  const openWidget = async () => {
+    if (signer) {
+      const code = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
+      const hash = await signer.signMessage(`MtPelerin-${code}`);
+      window.showMtpModal({
+        lang: 'en',
+        tab: 'buy',
+        nets: 'matic_mainnet',
+        crys: 'jEUR,MATIC,USDC,WBTC,DAI,WETH',
+        net: 'matic_mainnet',
+        bsc: 'EUR',
+        bdc: 'jEUR',
+        address,
+        code,
+        hash,
+      });
+    }
   };
 
   return (

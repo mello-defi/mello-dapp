@@ -2,6 +2,7 @@ import ERC20Abi from '_enums/erc20.js';
 import WETHAbi from '_enums/weth.json';
 import { CryptoCurrencyName, CryptoCurrencySymbol } from '_enums/currency';
 import {
+  btcLogo,
   daiLogo,
   ethLogo,
   jeurLogo,
@@ -85,17 +86,25 @@ export enum AvalancheTestnetTokenContracts {
 
 export interface TokenDefinition {
   symbol: CryptoCurrencySymbol;
-  decimals: number;
-  address: string;
-  image: string;
   name: CryptoCurrencyName;
+  image: string;
+  decimals: number;
+}
+export interface EvmTokenDefinition extends TokenDefinition {
+  address: string;
   abi: any;
   isGasToken?: boolean;
 }
+export const nativeBitcoin: TokenDefinition = {
+  symbol: CryptoCurrencySymbol.BTC,
+  name: CryptoCurrencyName.BITCOIN,
+  image: btcLogo,
+  decimals: 8
+};
 
 export interface EthereumTokens {
-  eth: TokenDefinition;
-  weth: TokenDefinition;
+  eth: EvmTokenDefinition;
+  weth: EvmTokenDefinition;
 }
 
 export const ethereumTokens: EthereumTokens = {
@@ -119,15 +128,15 @@ export const ethereumTokens: EthereumTokens = {
 };
 
 export type GenericTokenSet = {
-  [key in CryptoCurrencySymbol]?: TokenDefinition;
+  [key in CryptoCurrencySymbol]?: EvmTokenDefinition;
 };
 
 export interface AvalancheTokenSet extends GenericTokenSet {
   // [CryptoCurrencySymbol.WAVAX]: TokenDefinition;
   // [CryptoCurrencySymbol.AVAX]: TokenDefinition;
-  [CryptoCurrencySymbol.USDCE]: TokenDefinition;
+  [CryptoCurrencySymbol.USDCE]: EvmTokenDefinition;
   // [CryptoCurrencySymbol.USDC]: TokenDefinition;
-  [CryptoCurrencySymbol.DAIE]: TokenDefinition;
+  [CryptoCurrencySymbol.DAIE]: EvmTokenDefinition;
   // [CryptoCurrencySymbol.WBTCE]: TokenDefinition;
 }
 
@@ -170,14 +179,14 @@ export const avalancheMainnetTokens: AvalancheTokenSet = {
 };
 
 export interface PolygonTokenSet extends GenericTokenSet {
-  [CryptoCurrencySymbol.DAI]: TokenDefinition;
-  [CryptoCurrencySymbol.USDC]: TokenDefinition;
-  [CryptoCurrencySymbol.MATIC]: TokenDefinition;
-  [CryptoCurrencySymbol.WMATIC]: TokenDefinition;
-  [CryptoCurrencySymbol.WETH]: TokenDefinition;
-  [CryptoCurrencySymbol.WBTC]: TokenDefinition;
-  [CryptoCurrencySymbol.RENBTC]: TokenDefinition;
-  [CryptoCurrencySymbol.JEUR]?: TokenDefinition;
+  [CryptoCurrencySymbol.DAI]: EvmTokenDefinition;
+  [CryptoCurrencySymbol.USDC]: EvmTokenDefinition;
+  [CryptoCurrencySymbol.MATIC]: EvmTokenDefinition;
+  [CryptoCurrencySymbol.WMATIC]: EvmTokenDefinition;
+  [CryptoCurrencySymbol.WETH]: EvmTokenDefinition;
+  [CryptoCurrencySymbol.WBTC]: EvmTokenDefinition;
+  [CryptoCurrencySymbol.RENBTC]: EvmTokenDefinition;
+  [CryptoCurrencySymbol.JEUR]?: EvmTokenDefinition;
 }
 
 export const polygonTestnetMumbaiTokens: PolygonTokenSet = {

@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from 'ethers';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 
 export async function getTransactionCount(
   address: string,
@@ -11,7 +11,7 @@ export async function getTransactionCount(
 }
 
 export async function getErc20TokenBalance(
-  token: TokenDefinition,
+  token: EvmTokenDefinition,
   provider: ethers.providers.Web3Provider,
   userAddress: string,
   precision = 2
@@ -47,7 +47,7 @@ export async function getErc20TokenBalance(
 }
 
 export async function sendErc20Token(
-  token: TokenDefinition,
+  token: EvmTokenDefinition,
   signer: ethers.Signer,
   userAddress: string,
   destinationAddress: string,
@@ -63,7 +63,7 @@ export async function sendErc20Token(
 }
 
 export async function getTokenAllowance(
-  token: TokenDefinition,
+  token: EvmTokenDefinition,
   provider: ethers.providers.Web3Provider,
   userAddress: string,
   spender?: string
@@ -73,7 +73,7 @@ export async function getTokenAllowance(
 }
 
 export async function approveToken(
-  token: TokenDefinition,
+  token: EvmTokenDefinition,
   signer: ethers.Signer,
   userAddress: string,
   amount: BigNumber,

@@ -12,12 +12,19 @@ import { renLogo } from '_assets/images';
 import CopyableText from '_components/core/CopyableText';
 import { getGasPrice } from '_services/gasService';
 import { logTransactionHash } from '_services/dbService';
+import MultiCryptoAmountInput from '_components/core/MultiCryptoAmountInput';
+import { EvmTokenDefinition, nativeBitcoin } from '_enums/tokens';
+import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
+import { MarketDataResult } from '_services/marketDataService';
+import { CryptoCurrencySymbol } from '_enums/currency';
+import useMarketPrices from '_hooks/useMarketPrices';
 
 function RenBridge() {
   const provider = useSelector((state: AppState) => state.web3.provider);
   const signer = useSelector((state: AppState) => state.web3.signer);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const network = useSelector((state: AppState) => state.web3.network);
+  const bitcoinTokenDefinition = nativeBitcoin;
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
   const [message, setMessage] = useState('');
   const [gatewayAddress, setGatewayAddress] = useState('');
@@ -29,7 +36,19 @@ function RenBridge() {
   const [transactionConfirmationTarget, setTransactionConfirmationTarget] = useState(0);
   const [transactionStatus, setTransactionStatus] = useState('');
   const [transactionHash, setTransactionHash] = useState('');
-
+  const marketPrices = useMarketPrices();
+  const [bitcoinPrice, setBitcoinPrice] = useState(0);
+  useEffect(() => {
+    if (marketPrices) {
+      const btc = marketPrices.find(
+        (item: MarketDataResult) =>
+          item.symbol.toLowerCase() === CryptoCurrencySymbol.BTC.toLowerCase()
+      );
+      if (btc) {
+        setBitcoinPrice(btc.current_price);
+      }
+    }
+  }, [marketPrices]);
   // REVIEW needs huge cleanup
   const deposit = async () => {
     // @ts-ignore
@@ -179,9 +198,7 @@ function RenBridge() {
     // this.setState({ error: String((error || {}).message || error) });
   };
 
-  const log = (message: string) => {
-    setMessage(message);
-  };
+  const [amount, setAmount] = useState<string>('0.0');
 
   return (
     <>
@@ -189,9 +206,10 @@ function RenBridge() {
         <div className={'flex flex-row items-center justify-end'}>
           <PoweredByLink url={'https://bridge.renproject.io/'} logo={renLogo} />
         </div>
+        <SingleCryptoAmountInput disabled={transactionExplorerLink !== ''} tokenPrice={bitcoinPrice} amount={amount} setAmount={setAmount} token={bitcoinTokenDefinition}/>
         {gatewayAddress && (
           <span className={'text-body-smaller'}>
-            <span>Send your BTC to this address</span>
+            <span>Send {amount} BTC to this address</span>
             <CopyableText text={gatewayAddress} />
           </span>
         )}
@@ -206,6 +224,7 @@ function RenBridge() {
           show={gatewayAddress !== ''}
           stepComplete={transactionExplorerLink !== ''}
           transactionError={transactionError}
+          requiresUserInput={true}
         >
           Bitcoin deposited
           {transactionExplorerLink && (
@@ -243,14 +262,6 @@ function RenBridge() {
           Tokens minted
           <BlockExplorerLink transactionHash={transactionHash} />
         </TransactionStep>
-        {/*<div*/}
-        {/*  className={*/}
-        {/*    'flex flex-row items-center justify-between bg-gray-200 px-2 py-4 my-2 rounded-2xl'*/}
-        {/*  }*/}
-        {/*>*/}
-        {/*  <div>Transaction status</div>*/}
-        {/*  <div>{transactionStatus}</div>*/}
-        {/*</div>*/}
         <TransactionError transactionError={transactionError} />
         <div className={'text-lg mt-2 font-bold'}>
           {message.split('\n').map((line) => (

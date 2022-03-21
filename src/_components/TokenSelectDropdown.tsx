@@ -1,4 +1,4 @@
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 import React, { useState } from 'react';
 import { DefaultTransition } from '_components/core/Transition';
 import { useSelector } from 'react-redux';
@@ -10,8 +10,8 @@ export default function TokenSelectDropdown({
   onSelectToken,
   disabled
 }: {
-  selectedToken?: TokenDefinition;
-  onSelectToken: (token: TokenDefinition) => void;
+  selectedToken?: EvmTokenDefinition;
+  onSelectToken: (token: EvmTokenDefinition) => void;
   disabled: boolean;
 }) {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
@@ -55,7 +55,7 @@ export default function TokenSelectDropdown({
               aria-activedescendant="listbox-item-3"
               className="max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
             >
-              {Object.values(tokenSet).map((token: TokenDefinition) => {
+              {Object.values(tokenSet).map((token: EvmTokenDefinition) => {
                 return (
                   <li
                     key={token.symbol}

@@ -1,4 +1,4 @@
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 import UserReserveBalance from '_components/aave/UserReserveBalance';
 import AmountInputWithPercentages from '_components/aave/AmountInputWithPercentages';
 import TransactionAmountSummary from '_components/aave/TransactionAmountSummary';
@@ -31,7 +31,7 @@ export default function AaveFunctionContent({
   tokenPrice: number;
   amount: string;
   setAmount: (amount: string) => void;
-  token: TokenDefinition;
+  token: EvmTokenDefinition;
   buttonOnClick: () => void;
   buttonDisabled: boolean;
   children: any;

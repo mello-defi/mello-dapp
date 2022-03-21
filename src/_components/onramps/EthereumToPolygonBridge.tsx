@@ -19,6 +19,7 @@ import { formatTokenValueInFiat } from '_services/priceService';
 import { decimalPlacesAreValid } from '_utils/index';
 import { getGasPrice } from '_services/gasService';
 import { logTransactionHash } from '_services/dbService';
+import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 
 interface BiconomyPreTransferStatus {
   code: number;
@@ -175,17 +176,6 @@ export default function EthereumToPolygonBridge() {
     }
   };
 
-  const handleTransferAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let value = event.target.value;
-    if (token && value && !decimalPlacesAreValid(value, token.decimals)) {
-      value = value.substring(0, value.length - 1);
-    }
-    if (parseFloat(value) < 0) {
-      value = '0.0';
-    }
-    setTransferAmount(value);
-  };
-
   return (
     <div>
       {depositAddress && (
@@ -194,34 +184,9 @@ export default function EthereumToPolygonBridge() {
             <span className={'text-body'}>Bridge ETH</span>
             <PoweredByLink url={'https://hyphen.biconomy.io/'} logo={hyphenLogo} isRound={false} />
           </div>
-          <div
-            className={
-              'rounded-2xl bg-gray-100 transition border-2 py-2 border-gray-50 bg-gray-50 px-2 sm:px-4 flex flex-row items-center justify-between hover:border-gray-100 transition mt-2'
-            }
-          >
-            <div className={'w-4/5'}>
-              <input
-                disabled={isTransferring}
-                onWheel={() => false}
-                type={'number'}
-                min={'0'}
-                className={`text-2xl sm:text-3xl bg-gray-100 focus:outline-none px-2 sm:px-0 sm:mt-0 py-1 sm:py-0 w-full ${
-                  isTransferring ? 'text-gray-400' : 'text-color-dark'
-                }`}
-                value={transferAmount}
-                onChange={handleTransferAmountChange}
-              />
-            </div>
-            <div className={'text-color-light w-1/5 text-md'}>
-              {ethereumPrice ? (
-                <div className={'text-right'}>
-                  {formatTokenValueInFiat(ethereumPrice.current_price, transferAmount)}
-                </div>
-              ) : (
-                <span>&nbsp;</span>
-              )}
-            </div>
-          </div>
+          {ethereumPrice && (
+            <SingleCryptoAmountInput disabled={isTransferring} tokenPrice={ethereumPrice?.current_price} amount={transferAmount} setAmount={setTransferAmount} token={token}/>
+          )}
           <Button className={'mt-4'} onClick={deposit} disabled={isTransferring}>
             Deposit
           </Button>

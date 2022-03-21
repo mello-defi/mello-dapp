@@ -7,7 +7,7 @@ import {
   toggleBalanceIsStaleAction
 } from '_redux/actions/walletActions';
 import { WalletActionTypes, WalletTokenBalances } from '_redux/types/walletTypes';
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { CacheRecord } from '_interfaces/cache';
 
@@ -27,7 +27,7 @@ export const toggleBalanceIsStale = (tokenSymbol: CryptoCurrencySymbol, isStale:
 };
 
 export const getBalanceForToken = (
-  token: TokenDefinition,
+  token: EvmTokenDefinition,
   provider: ethers.providers.Web3Provider,
   userAddress: string,
   forceRefresh = false

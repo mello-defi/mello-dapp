@@ -20,7 +20,7 @@ import {
 } from '_services/aaveService';
 import { getBalanceForToken, toggleBalanceIsStale } from '_redux/effects/walletEffects';
 import useWalletBalance from '_hooks/useWalletBalance';
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { AaveFunction, AaveSection, HealthFactorImpact, HealthFactorResource } from '_enums/aave';
@@ -79,7 +79,7 @@ export default function AaveReserve({
   const [transactionConfirmed, setTransactionConfirmed] = useState<boolean>(false);
   const [maxBorrowAmount, setMaxBorrowAmount] = useState<string>('');
   const [aaveFunction, setAaveFunction] = useState<AaveFunction | null>(null);
-  const [token, setToken] = useState<TokenDefinition | undefined>();
+  const [token, setToken] = useState<EvmTokenDefinition | undefined>();
   // console.log('token', token);
   const userBalance = useWalletBalance(token);
 

@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { useEffect, useState } from 'react';
 import { getBalanceForToken } from '_redux/effects/walletEffects';
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition } from '_enums/tokens';
 import { BigNumber } from 'ethers';
 import { CryptoCurrencySymbol } from '_enums/currency';
 
@@ -12,7 +12,7 @@ type FetchingStuff = {
   [key in CryptoCurrencySymbol]?: boolean;
 };
 const fetching: FetchingStuff = {};
-const useWalletBalance = (token?: TokenDefinition) => {
+const useWalletBalance = (token?: EvmTokenDefinition) => {
   const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const provider = useSelector((state: AppState) => state.web3.provider);

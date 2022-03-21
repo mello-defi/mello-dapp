@@ -1,5 +1,5 @@
 import { APIError, BuildOptions, NetworkID, ParaSwap } from 'paraswap';
-import { EvmGasTokenBurnAddress, TokenDefinition } from '_enums/tokens';
+import { EvmGasTokenBurnAddress, EvmTokenDefinition } from '_enums/tokens';
 import { BigNumber, ethers } from 'ethers';
 import { OptimalRate } from 'paraswap-core';
 import { Transaction } from 'paraswap/build/types';
@@ -22,8 +22,8 @@ function responseIsError(response: APIError | any): response is APIError {
 }
 
 export async function getExchangeRate(
-  sourceToken: TokenDefinition,
-  destinationToken: TokenDefinition,
+  sourceToken: EvmTokenDefinition,
+  destinationToken: EvmTokenDefinition,
   srcAmount: string
 ): Promise<OptimalRate> {
   const srcAddress = sourceToken.isGasToken ? EvmGasTokenBurnAddress : sourceToken.address;
@@ -55,8 +55,8 @@ export async function getTokenTransferProxy(): Promise<string> {
 }
 
 export async function buildSwapTransaction(
-  sourceToken: TokenDefinition,
-  destinationToken: TokenDefinition,
+  sourceToken: EvmTokenDefinition,
+  destinationToken: EvmTokenDefinition,
   userAddress: string,
   route: OptimalRate,
   slippagePercentage: number,
