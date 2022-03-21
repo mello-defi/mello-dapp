@@ -36,9 +36,10 @@ function RenBridge() {
   const [numberOfConfirmedTransactions, setNumberOfConfirmedTransactions] = useState(0);
   const [transactionConfirmationTarget, setTransactionConfirmationTarget] = useState(0);
   const [transactionHash, setTransactionHash] = useState('');
+  const [eventHandlersInitialized, setEventHandlersInitialized] = useState(false);
   const marketPrices = useMarketPrices();
   const [bitcoinPrice, setBitcoinPrice] = useState(0);
-  const [deposit, setDeposit] = useState<LockAndMintDeposit<BtcTransaction, BtcDeposit, string, any, any>>();
+  const [depositObject, setDepositObject] = useState<LockAndMintDeposit<BtcTransaction, BtcDeposit, string, any, any>>();
   useEffect(() => {
     if (marketPrices) {
       const btc = marketPrices.find(
@@ -53,16 +54,18 @@ function RenBridge() {
 
 
   const onConfirmation = (confirmations: number, target: number) => {
+    console.log('confirmations', confirmations);
     setNumberOfConfirmedTransactions(confirmations > target ? target : confirmations);
   };
 
   const onConfirmationTarget = async (target: number) => {
-    if (deposit) {
+    console.log('onConfirmationTarget', target);
+    if (depositObject) {
       const link = Bitcoin.utils.transactionExplorerLink(
-        deposit.depositDetails.transaction,
+        depositObject.depositDetails.transaction,
         'testnet'
       );
-      const confirmations = await deposit.confirmations();
+      const confirmations = await depositObject.confirmations();
       setNumberOfConfirmedTransactions(
         confirmations.current > target ? target : confirmations.current
       );
@@ -75,6 +78,7 @@ function RenBridge() {
 
 
   const onMint = async (txHash: string) => {
+    console.log('onMint');
     if (provider) {
       logTransactionHash(txHash, network.chainId);
       setTransactionHash(txHash);
@@ -86,6 +90,7 @@ function RenBridge() {
   }
 
   const onError = (e: any) => {
+    console.error(e);
     setTransactionError(e.message);
   }
 
@@ -105,27 +110,32 @@ function RenBridge() {
       if (mint.gatewayAddress) {
         setGatewayAddress(mint.gatewayAddress);
       }
-      mint.on('deposit', async (deposit:LockAndMintDeposit<BtcTransaction, BtcDeposit, string, any, any>) => {
-        setDeposit(deposit);
-        setDepositedAmount(deposit.depositDetails.amount);
-        await deposit
-          .confirmed()
-          .on('target', onConfirmationTarget)
-          .on('confirmation', onConfirmation)
-          .catch(onError);
-
-        await deposit
-          .signed()
-          .catch(onError);
-
-        await deposit
-          .mint()
-          .on('transactionHash', onMint)
-          .catch(onError);
+      mint.on('deposit', (depositResponse: LockAndMintDeposit<BtcTransaction, BtcDeposit, string, any, any>) => {
+        setDepositObject(depositResponse);
+        setDepositedAmount(depositResponse.depositDetails.amount);
       });
     }
   };
 
+  useEffect(() => {
+    if (depositObject && !eventHandlersInitialized) {
+      setEventHandlersInitialized(true);
+      depositObject
+        .confirmed()
+        .on('target', onConfirmationTarget)
+        .on('confirmation', onConfirmation)
+        .catch(onError);
+
+      depositObject
+        .signed()
+        .catch(onError);
+
+      depositObject
+        .mint()
+        .on('transactionHash', onMint)
+        .catch(onError);
+    }
+  }, [depositObject])
   useEffect(() => {
     if (userAddress && provider && !gatewayAddress) {
       initialiseDeposit();
@@ -136,7 +146,6 @@ function RenBridge() {
   return (
     <>
       <div className="rounded-2xl flex flex-col">
-        {network.name}
         <div className={'flex flex-row items-center justify-end'}>
           <PoweredByLink url={'https://bridge.renproject.io/'} logo={renLogo} />
         </div>
@@ -156,7 +165,7 @@ function RenBridge() {
         </TransactionStep>
         <TransactionStep
           show={gatewayAddress !== ''}
-          stepComplete={transactionExplorerLink !== ''}
+          stepComplete={depositedAmount !== '' && parseFloat(depositedAmount) > 0}
           transactionError={transactionError}
           requiresUserInput={true}
         >
@@ -175,7 +184,7 @@ function RenBridge() {
           )}
         </TransactionStep>
         <TransactionStep
-          show={transactionExplorerLink !== ''}
+          show={depositedAmount !== '' && parseFloat(depositedAmount) > 0}
           transactionError={transactionError}
           stepComplete={
             transactionConfirmationTarget > 0 &&
