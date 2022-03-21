@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Bitcoin, Polygon } from '@renproject/chains';
+import { Bitcoin, BtcDeposit, BtcTransaction, Polygon } from '@renproject/chains';
 import { AppState } from '_redux/store';
 import { renJS } from '_services/renService';
 import { EthProvider } from '@renproject/chains-ethereum/build/main/types';
@@ -12,12 +12,13 @@ import { renLogo } from '_assets/images';
 import CopyableText from '_components/core/CopyableText';
 import { getGasPrice } from '_services/gasService';
 import { logTransactionHash } from '_services/dbService';
-import MultiCryptoAmountInput from '_components/core/MultiCryptoAmountInput';
 import { EvmTokenDefinition, nativeBitcoin } from '_enums/tokens';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { MarketDataResult } from '_services/marketDataService';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import useMarketPrices from '_hooks/useMarketPrices';
+import { ethers } from 'ethers';
+import { LockAndMintDeposit } from '@renproject/ren';
 
 function RenBridge() {
   const provider = useSelector((state: AppState) => state.web3.provider);
@@ -26,18 +27,18 @@ function RenBridge() {
   const network = useSelector((state: AppState) => state.web3.network);
   const bitcoinTokenDefinition = nativeBitcoin;
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
-  const [message, setMessage] = useState('');
+  const [amount, setAmount] = useState<string>('0.0');
   const [gatewayAddress, setGatewayAddress] = useState('');
   const [tokensMinted, setTokensMinted] = useState(false);
-  const [balance, setBalance] = useState(0);
+  const [depositedAmount, setDepositedAmount] = useState('string');
   const [transactionError, setTransactionError] = useState('');
   const [transactionExplorerLink, setTransactionExplorerLink] = useState('');
   const [numberOfConfirmedTransactions, setNumberOfConfirmedTransactions] = useState(0);
   const [transactionConfirmationTarget, setTransactionConfirmationTarget] = useState(0);
-  const [transactionStatus, setTransactionStatus] = useState('');
   const [transactionHash, setTransactionHash] = useState('');
   const marketPrices = useMarketPrices();
   const [bitcoinPrice, setBitcoinPrice] = useState(0);
+  const [deposit, setDeposit] = useState<LockAndMintDeposit<BtcTransaction, BtcDeposit, string, any, any>>();
   useEffect(() => {
     if (marketPrices) {
       const btc = marketPrices.find(
@@ -49,164 +50,97 @@ function RenBridge() {
       }
     }
   }, [marketPrices]);
-  // REVIEW needs huge cleanup
-  const deposit = async () => {
-    // @ts-ignore
-    // console.log('userAddress', userAddress);
-    // logError(""); // Reset error
-    // log(`Generating deposit address...`);
+
+
+  const onConfirmation = (confirmations: number, target: number) => {
+    setNumberOfConfirmedTransactions(confirmations > target ? target : confirmations);
+  };
+
+  const onConfirmationTarget = async (target: number) => {
+    if (deposit) {
+      const link = Bitcoin.utils.transactionExplorerLink(
+        deposit.depositDetails.transaction,
+        'testnet'
+      );
+      const confirmations = await deposit.confirmations();
+      setNumberOfConfirmedTransactions(
+        confirmations.current > target ? target : confirmations.current
+      );
+      setTransactionConfirmationTarget(target);
+      if (link) {
+        setTransactionExplorerLink(link);
+      }
+    }
+  };
+
+
+  const onMint = async (txHash: string) => {
+    if (provider) {
+      logTransactionHash(txHash, network.chainId);
+      setTransactionHash(txHash);
+      const gasPrice = await getGasPrice(network.gasStationUrl);
+      const tx = await provider.getTransaction(txHash);
+      await tx.wait(gasPrice?.blockTime || 3);
+      setTokensMinted(true);
+    }
+  }
+
+  const onError = (e: any) => {
+    setTransactionError(e.message);
+  }
+
+  const initialiseDeposit = async () => {
     if (provider && signer) {
       const web3Provider: EthProvider = {
         signer,
         provider
       };
-      // const amount = 0.003; // BTC
-      // 0x880Ad65DC5B3F33123382416351Eef98B4aAd7F1
-      // await addTokenToWallet(mumbaiBtc, provider);
       const mint = await renJS.lockAndMint({
-        // SendCrypto BTC from the Bitcoin blockchain to the Ethereum blockchain.
         asset: 'BTC',
         from: Bitcoin(),
-        to: Polygon(web3Provider, 'mainnet').Account({
+        to: Polygon(web3Provider, 'testnet').Account({
           address: userAddress
         })
       });
-      console.log('mint', mint);
-      // @ts-ignore
-      console.log(JSON.stringify(mint.deposits));
-
-      // Show the gateway address to the user so that they can transfer their BTC to it.
-      // log(`Deposit ${amount} BTC to ${mint.gatewayAddress}`);
-
-      //  @ts-ignore
-      setGatewayAddress(mint.gatewayAddress);
-      mint.on('deposit', async (deposit) => {
-        // Details of the deposit are available from `deposit.depositDetails`.
-
-        const hash = deposit.txHash();
-        console.log('hash', hash);
-        console.log('DEPOSOT STATUS', deposit.status);
-        setTransactionStatus(deposit.status);
-
-        console.log('number of confs', await deposit.confirmations());
-        // const depositLog = (msg: string) =>
-        //   log(
-        //     `BTC deposit: ${Bitcoin.utils.transactionExplorerLink(
-        //       deposit.depositDetails.transaction,
-        //       'testnet'
-        //     )}\n
-        //   RenVM Hash: ${hash}\n
-        //   Status: ${deposit.status}\n
-        //   ${msg}`
-        //   );
-
+      if (mint.gatewayAddress) {
+        setGatewayAddress(mint.gatewayAddress);
+      }
+      mint.on('deposit', async (deposit:LockAndMintDeposit<BtcTransaction, BtcDeposit, string, any, any>) => {
+        setDeposit(deposit);
+        setDepositedAmount(deposit.depositDetails.amount);
         await deposit
           .confirmed()
-          .on('target', (target) => {
-            console.log('IN TARGET');
-            const link = Bitcoin.utils.transactionExplorerLink(
-              deposit.depositDetails.transaction,
-              'testnet'
-            );
-            console.log('TARGET', target);
-            deposit.confirmations().then((confirmations) => {
-              setNumberOfConfirmedTransactions(
-                confirmations.current > target ? target : confirmations.current
-              );
-            });
-            setTransactionConfirmationTarget(target);
-            if (link) {
-              setTransactionExplorerLink(link);
-            }
-            // depositLog(`0/${target} confirmations`)
-          })
-          .on('confirmation', (confs, target) => {
-            console.log('IN  CONFIRMATION');
-            // const link = Bitcoin.utils.transactionExplorerLink(deposit.depositDetails.transaction, 'testnet');
-            console.log('CONFS', confs);
-            console.log('TARGET', target);
-            setNumberOfConfirmedTransactions(confs > target ? target : confs);
-            // if (link) {
-            //   setTransactionExplorerLink(link);
-            // }
-            // depositLog(`${confs}/${target} confirmations`)
-          });
+          .on('target', onConfirmationTarget)
+          .on('confirmation', onConfirmation)
+          .catch(onError);
 
         await deposit
           .signed()
-          .on('txHash', (txHash) => {
-            console.log('IN SIGNED TX HASN');
-            // depositLog(`Transaction hash: ${txHash}`);
-          })
-          .on('status', (a) => {
-            console.log('IN SIGNED STATUS');
-            console.log('A', a);
-            setTransactionStatus(a);
-            // depositLog(`Signed: ${a}`);
-          })
-          // Print RenVM status - "pending", "confirming" or "done".
-          // .on('status', (status) => {
-          //   // console.log('SIGNED STATUS', status);
-          //   // depositLog(`Status: ${status}`)
-          // })
-          .catch((e) => {
-            console.log('SIGNED ERRRO');
-            console.log(e);
-            setTransactionError(e.message);
-          });
+          .catch(onError);
+
         await deposit
           .mint()
-          // Print Ethereum transaction hash.
-          .on('transactionHash', async (txHash) => {
-            console.log('IN TRANSACTION HASH');
-            console.log('TX HASH', txHash);
-            logTransactionHash(txHash, network.chainId);
-            setTransactionHash(txHash);
-            const gasPrice = await getGasPrice(network.gasStationUrl);
-            const tx = await provider.getTransaction(txHash);
-            await tx.wait(gasPrice?.blockTime || 3);
-            setTokensMinted(true);
-          })
-          .catch((e) => {
-            logError('ERROR ON MINT ' + e.message);
-            setTransactionError(e.message);
-          });
-        //
-        // log(`Deposited ${amount} BTC.`);
+          .on('transactionHash', onMint)
+          .catch(onError);
       });
     }
   };
 
   useEffect(() => {
     if (userAddress && provider && !gatewayAddress) {
-      deposit();
+      initialiseDeposit();
     }
   });
 
-  const updateBalance = async () => {
-    // const { web3 } = this.state;
-    // const contract = new web3.eth.Contract(ABI, contractAddress);
-    // const balance = await contract.methods.balance().call();
-    // setBalance(parseInt(balance.toString()) / 10 ** 8);
-  };
-
-  const logError = (error: string) => {
-    console.log('error', error);
-    if (error && error != '') {
-      // setError(error);
-    }
-    // this.setState({ error: String((error || {}).message || error) });
-  };
-
-  const [amount, setAmount] = useState<string>('0.0');
 
   return (
     <>
       <div className="rounded-2xl flex flex-col">
+        {network.name}
         <div className={'flex flex-row items-center justify-end'}>
           <PoweredByLink url={'https://bridge.renproject.io/'} logo={renLogo} />
         </div>
-        <SingleCryptoAmountInput disabled={transactionExplorerLink !== ''} tokenPrice={bitcoinPrice} amount={amount} setAmount={setAmount} token={bitcoinTokenDefinition}/>
+        <SingleCryptoAmountInput disabled={transactionExplorerLink !== ''} tokenPrice={bitcoinPrice} amount={amount} amountChanged={setAmount} token={bitcoinTokenDefinition}/>
         {gatewayAddress && (
           <span className={'text-body-smaller'}>
             <span>Send {amount} BTC to this address</span>
@@ -226,7 +160,7 @@ function RenBridge() {
           transactionError={transactionError}
           requiresUserInput={true}
         >
-          Bitcoin deposited
+          Bitcoin deposited {depositedAmount && parseFloat(depositedAmount) > 0 ? `(${ethers.utils.formatUnits(depositedAmount, bitcoinTokenDefinition.decimals)} BTC)` : ''}
           {transactionExplorerLink && (
             <a
               target="_blank"
@@ -259,15 +193,10 @@ function RenBridge() {
           transactionError={transactionError}
           stepComplete={tokensMinted}
         >
-          Tokens minted
+          {tokensMinted ? 'Tokens minted' : 'Minting tokens'}
           <BlockExplorerLink transactionHash={transactionHash} />
         </TransactionStep>
         <TransactionError transactionError={transactionError} />
-        <div className={'text-lg mt-2 font-bold'}>
-          {message.split('\n').map((line) => (
-            <p key={line}>{line}</p>
-          ))}
-        </div>
       </div>
     </>
   );

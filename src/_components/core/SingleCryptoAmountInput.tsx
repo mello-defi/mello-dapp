@@ -3,9 +3,9 @@ import React from 'react';
 import { decimalPlacesAreValid } from '_utils/index';
 import { EvmTokenDefinition, TokenDefinition } from '_enums/tokens';
 
-export default function SingleCryptoAmountInput ({disabled, tokenPrice, amount, setAmount, token}: {disabled: boolean, tokenPrice: number, amount: string, setAmount: (amount: string) => void, token: TokenDefinition}) {
+export default function SingleCryptoAmountInput ({disabled, tokenPrice, amount, amountChanged, token}: {disabled: boolean, tokenPrice: number, amount: string, amountChanged: (amount: string) => void, token: TokenDefinition}) {
 
-  const amountChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAmountChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value;
     if (token && value && !decimalPlacesAreValid(value, token.decimals)) {
       value = value.substring(0, value.length - 1);
@@ -13,7 +13,7 @@ export default function SingleCryptoAmountInput ({disabled, tokenPrice, amount, 
     if (parseFloat(value) < 0) {
       value = '0.0';
     }
-    setAmount(value);
+    amountChanged(value);
   };
   return (
     <div
@@ -32,7 +32,7 @@ export default function SingleCryptoAmountInput ({disabled, tokenPrice, amount, 
               disabled ? 'text-gray-400' : 'text-color-dark'
             }`}
             value={amount}
-            onChange={amountChanged}
+            onChange={handleAmountChanged}
           />
         </div>
         <span className="flex-row-center rounded-2xl bg-white px-4 py-2">

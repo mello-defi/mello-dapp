@@ -185,7 +185,7 @@ export default function EthereumToPolygonBridge() {
             <PoweredByLink url={'https://hyphen.biconomy.io/'} logo={hyphenLogo} isRound={false} />
           </div>
           {ethereumPrice && (
-            <SingleCryptoAmountInput disabled={isTransferring} tokenPrice={ethereumPrice?.current_price} amount={transferAmount} setAmount={setTransferAmount} token={token}/>
+            <SingleCryptoAmountInput disabled={isTransferring} tokenPrice={ethereumPrice?.current_price} amount={transferAmount} amountChanged={setTransferAmount} token={token}/>
           )}
           <Button className={'mt-4'} onClick={deposit} disabled={isTransferring}>
             Deposit

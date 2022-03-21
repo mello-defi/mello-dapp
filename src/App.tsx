@@ -73,7 +73,7 @@ function EthereumMainnetGuard() {
   return (
     <div className={'flex flex-col items-center justify-center'}>
       <div className={'flex flex-col items-center justify-center'}>
-        <span className={'text-body'}>Please switch to Polygon network</span>
+        <span className={'text-body'}>Please switch to Polygon mainnet</span>
         <Button
           onClick={() => changeNetwork(evmNetworks.polygonMainnet)}
           variant={ButtonVariant.SECONDARY}

@@ -2,7 +2,7 @@ import { Dispatch } from 'redux';
 import { ethers } from 'ethers';
 import { Web3ActionTypes } from '_redux/types/web3Types';
 import { connectAction, disconnectAction, setNetworkAction } from '_redux/actions/web3Actions';
-import { EVMChainIdNumerical, EvmNetworkDefinition } from '_enums/networks';
+import { EVMChainIdNumerical, EvmNetworkDefinition, findEvmNetworkById } from '_enums/networks';
 import Web3Modal, { IProviderOptions } from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import Torus from '@toruslabs/torus-embed';
@@ -52,6 +52,9 @@ export const connect = () => {
     // });
 
     const provider = new ethers.providers.Web3Provider(web3ModalProvider, 'any');
+    const network = await provider.getNetwork();
+    const networkDefinition = findEvmNetworkById(network.chainId);
+    dispatch(setNetworkAction(networkDefinition));
     const signer = provider.getSigner();
     dispatch(connectAction(provider, signer));
   };

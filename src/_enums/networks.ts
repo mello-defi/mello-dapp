@@ -43,7 +43,7 @@ export interface EvmNetworkDefinition {
   gasStationUrl?: string;
 }
 
-export function findEvmNetworkById(id: EVMChainIdNumerical | number | string) {
+export function findEvmNetworkById(id: EVMChainIdNumerical | number | string): EvmNetworkDefinition {
   if (typeof id === 'string') {
     id = parseInt(id);
   }
@@ -52,6 +52,8 @@ export function findEvmNetworkById(id: EVMChainIdNumerical | number | string) {
       return evmNetworks.polygonMainnet;
     case EVMChainIdNumerical.ETHEREUM_MAINNET:
       return evmNetworks.ethereumMainnet;
+    case EVMChainIdNumerical.POLYGON_TESTNET_MUMBAI:
+      return evmNetworks.polygonTestnetMumbai;
     default:
       throw new Error(`Unknown EVM network id: ${id}`);
   }
