@@ -35,7 +35,8 @@ function RenBridge() {
   const [transactionExplorerLink, setTransactionExplorerLink] = useState('');
   const [numberOfConfirmedTransactions, setNumberOfConfirmedTransactions] = useState(0);
   const [transactionConfirmationTarget, setTransactionConfirmationTarget] = useState(0);
-  const [transactionHash, setTransactionHash] = useState('');
+  const [btcTransactionHash, setBtcTransactionHash] = useState('');
+  const [evmTransactionHash, setEvmTransactionHash] = useState('');
   const [eventHandlersInitialized, setEventHandlersInitialized] = useState(false);
   const marketPrices = useMarketPrices();
   const [bitcoinPrice, setBitcoinPrice] = useState(0);
@@ -58,22 +59,21 @@ function RenBridge() {
     setNumberOfConfirmedTransactions(confirmations > target ? target : confirmations);
   };
 
-  const onConfirmationTarget = async (target: number) => {
+  const onConfirmationTarget = (target: number) => {
     console.log('onConfirmationTarget', target);
-    if (depositObject) {
-      const link = Bitcoin.utils.transactionExplorerLink(
-        depositObject.depositDetails.transaction,
-        'testnet'
-      );
-      const confirmations = await depositObject.confirmations();
-      setNumberOfConfirmedTransactions(
-        confirmations.current > target ? target : confirmations.current
-      );
-      setTransactionConfirmationTarget(target);
-      if (link) {
-        setTransactionExplorerLink(link);
-      }
+    // if (depositObject) {
+    const link = Bitcoin.utils.transactionExplorerLink(
+      btcTransactionHash,
+      'testnet'
+    );
+    setNumberOfConfirmedTransactions(
+      numberOfConfirmedTransactions > target ? target : numberOfConfirmedTransactions
+    );
+    setTransactionConfirmationTarget(target);
+    if (link) {
+      setTransactionExplorerLink(link);
     }
+    // }
   };
 
 
@@ -81,7 +81,7 @@ function RenBridge() {
     console.log('onMint');
     if (provider) {
       logTransactionHash(txHash, network.chainId);
-      setTransactionHash(txHash);
+      setEvmTransactionHash(txHash);
       const gasPrice = await getGasPrice(network.gasStationUrl);
       const tx = await provider.getTransaction(txHash);
       await tx.wait(gasPrice?.blockTime || 3);
@@ -111,31 +111,38 @@ function RenBridge() {
         setGatewayAddress(mint.gatewayAddress);
       }
       mint.on('deposit', (depositResponse: LockAndMintDeposit<BtcTransaction, BtcDeposit, string, any, any>) => {
-        setDepositObject(depositResponse);
+        // setDepositObject(depositResponse);
+        setBtcTransactionHash(depositResponse.depositDetails.transaction.txHash);
         setDepositedAmount(depositResponse.depositDetails.amount);
+
+        depositResponse
+          .confirmed()
+          .on('target', onConfirmationTarget)
+          .on('confirmation', onConfirmation)
+          .catch(onError);
+
+        depositResponse
+          .signed()
+          .on('txHash', (txHash) => {
+            console.log('IN SIGNED TX HASN');
+            // depositLog(`Transaction hash: ${txHash}`);
+          })
+          .on('status', (a) => {
+            console.log('IN SIGNED STATUS');
+            console.log('A', a);
+            // setTransactionStatus(a);
+            // depositLog(`Signed: ${a}`);
+          })
+          .catch(onError);
+
+        depositResponse
+          .mint()
+          .on('transactionHash', onMint)
+          .catch(onError);
       });
     }
   };
 
-  useEffect(() => {
-    if (depositObject && !eventHandlersInitialized) {
-      setEventHandlersInitialized(true);
-      depositObject
-        .confirmed()
-        .on('target', onConfirmationTarget)
-        .on('confirmation', onConfirmation)
-        .catch(onError);
-
-      depositObject
-        .signed()
-        .catch(onError);
-
-      depositObject
-        .mint()
-        .on('transactionHash', onMint)
-        .catch(onError);
-    }
-  }, [depositObject])
   useEffect(() => {
     if (userAddress && provider && !gatewayAddress) {
       initialiseDeposit();
@@ -203,7 +210,7 @@ function RenBridge() {
           stepComplete={tokensMinted}
         >
           {tokensMinted ? 'Tokens minted' : 'Minting tokens'}
-          <BlockExplorerLink transactionHash={transactionHash} />
+          <BlockExplorerLink transactionHash={evmTransactionHash} />
         </TransactionStep>
         <TransactionError transactionError={transactionError} />
       </div>
