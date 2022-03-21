@@ -48,7 +48,7 @@ function RenBridge() {
         // SendCrypto BTC from the Bitcoin blockchain to the Ethereum blockchain.
         asset: 'BTC',
         from: Bitcoin(),
-        to: Polygon(web3Provider, 'testnet').Account({
+        to: Polygon(web3Provider, 'mainnet').Account({
           address: userAddress
         })
       });

@@ -10,7 +10,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function logTransactionHash (hash: string, chainId: number) {
   const transaction: Transaction = {
-    hash,
+    hash: hash.toLowerCase(),
     chain_id: chainId
   };
   try {

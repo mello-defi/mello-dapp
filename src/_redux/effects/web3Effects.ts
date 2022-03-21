@@ -6,51 +6,50 @@ import { EVMChainIdNumerical, EvmNetworkDefinition } from '_enums/networks';
 import Web3Modal, { IProviderOptions } from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import Torus from '@toruslabs/torus-embed';
+import { socialsLogo } from '_assets/images';
 
+const rpcUrl = process.env.REACT_APP_POLYGON_RPC_URL;
 // REVIEW move these to env vars, remove hardcoded network values
 const providerOptions: IProviderOptions = {
   walletconnect: {
     package: WalletConnectProvider, // required
     options: {
       rpc: {
-        137: 'https://polygon-mainnet.g.alchemy.com/v2/yAbnaHp8ByhAIrQrplXdhhzQRnB5Lu73'
+        137: rpcUrl
       },
       chainId: EVMChainIdNumerical.POLYGON_MAINNET,
       networkId: 'matic',
-      rpcUrl: 'https://polygon-mainnet.g.alchemy.com/v2/yAbnaHp8ByhAIrQrplXdhhzQRnB5Lu73'
+      rpcUrl: rpcUrl,
     }
   },
   torus: {
     display: {
-      // REVIEW get/create a real royalty free image for this
-      logo: 'https://www.getopensocial.com/wp-content/uploads/2020/12/social-login-COLOR_2.png',
+      logo: socialsLogo,
       name: 'Social',
       description: 'Sign in with your social media account'
     },
-    package: Torus, // required
+    package: Torus,
     options: {
       networkParams: {
-        host: 'https://polygon-mainnet.g.alchemy.com/v2/yAbnaHp8ByhAIrQrplXdhhzQRnB5Lu73', // optional
-        chainId: EVMChainIdNumerical.POLYGON_MAINNET // optional
+        host: rpcUrl,
+        chainId: EVMChainIdNumerical.POLYGON_MAINNET
       }
     }
   }
 };
 const web3Modal = new Web3Modal({
   network: 'mainnet', // optional
-  // cacheProvider: true, // optional
-  cacheProvider: false, // optional
+  cacheProvider: true, // optional
+  // cacheProvider: false, // optional
   disableInjectedProvider: false, // optional
   providerOptions // required
 });
 export const connect = () => {
   return async (dispatch: Dispatch<Web3ActionTypes>) => {
-    console.log('WEB#modal', web3Modal);
     const web3ModalProvider = await web3Modal.connect();
-    // Subscribe to session disconnection
-    web3ModalProvider.on('disconnect', (code: number, reason: string) => {
-      console.log(code, reason);
-    });
+    // web3ModalProvider.on('disconnect', (code: number, reason: string) => {
+    //   console.log(code, reason);
+    // });
 
     const provider = new ethers.providers.Web3Provider(web3ModalProvider, 'any');
     const signer = provider.getSigner();

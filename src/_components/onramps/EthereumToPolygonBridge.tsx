@@ -3,7 +3,7 @@ import { AppState } from '_redux/store';
 import React, { useEffect, useState } from 'react';
 import { MarketDataResult } from '_services/marketDataService';
 import { CryptoCurrencySymbol } from '_enums/currency';
-import { EthereumTestnetGoerliContracts, ethereumTokens } from '_enums/tokens';
+import { ethereumTokens } from '_enums/tokens';
 import { EVMChainIdNumerical } from '_enums/networks';
 import { ethers } from 'ethers';
 import { Button } from '_components/core/Buttons';
@@ -91,7 +91,7 @@ export default function EthereumToPolygonBridge() {
   if (provider) {
     hyphen = new Hyphen(provider, {
       debug: true, // If 'true', it prints debug logs on console window
-      environment: 'test', // It can be "test" or "prod"
+      environment: 'prod', // It can be "test" or "prod"
       onFundsTransfered
     });
   }
@@ -109,8 +109,8 @@ export default function EthereumToPolygonBridge() {
         const preTransferStatus: BiconomyPreTransferStatus = await hyphen.preDepositStatus({
           tokenAddress: token.address, // Token address on fromChain which needs to be transferred
           amount: ethers.utils.parseUnits(transferAmount, token.decimals).toString(), // Amount of tokens to be transferred in smallest unit eg wei
-          fromChainId: EVMChainIdNumerical.ETHEREUM_TESTNET_GOERLI, // Chain id from where tokens needs to be transferred
-          toChainId: EVMChainIdNumerical.POLYGON_TESTNET_MUMBAI, // Chain id where tokens are supposed to be sent
+          fromChainId: EVMChainIdNumerical.ETHEREUM_MAINNET, // Chain id from where tokens needs to be transferred
+          toChainId: EVMChainIdNumerical.POLYGON_MAINNET, // Chain id where tokens are supposed to be sent
           userAddress: userAddress // User wallet address who want's to do the transfer
         });
 
@@ -161,11 +161,11 @@ export default function EthereumToPolygonBridge() {
       const depositTx: BiconomyDepositResponse = await hyphen.deposit({
         sender: userAddress,
         receiver: userAddress,
-        tokenAddress: EthereumTestnetGoerliContracts.ETH,
+        tokenAddress: token.address,
         depositContractAddress: depositAddress,
         amount: weiAmount,
-        fromChainId: EVMChainIdNumerical.ETHEREUM_TESTNET_GOERLI, // chainId of fromChain
-        toChainId: EVMChainIdNumerical.POLYGON_TESTNET_MUMBAI // chainId of toChain
+        fromChainId: EVMChainIdNumerical.ETHEREUM_MAINNET, // chainId of fromChain
+        toChainId: EVMChainIdNumerical.POLYGON_MAINNET // chainId of toChain
       });
       setEthereumTransactionHash(depositTx.hash);
       const gasPrice = await getGasPrice(network.gasStationUrl);

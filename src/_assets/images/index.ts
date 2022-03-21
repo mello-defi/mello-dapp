@@ -15,6 +15,7 @@ import biconomyLogo from '_assets/images/logos/biconomy.png';
 import hyphenLogo from '_assets/images/logos/hyphen.svg';
 import melloLogoFace from '_assets/images/logos/mello_logo_face.svg';
 import jeurLogo from '_assets/images/logos/jeur.png';
+import socialsLogo from '_assets/images/logos/socials.png';
 import melloLogoFaceWithText from '_assets/images/logos/mello_logo_face_with_text.svg';
 
 export {
@@ -27,6 +28,7 @@ export {
   polygonLogo,
   usdcLogo,
   renbtcLogo,
+  socialsLogo,
   wbtcLogo,
   wethLogo,
   ethLogo,
