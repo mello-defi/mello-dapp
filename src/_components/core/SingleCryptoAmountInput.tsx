@@ -42,7 +42,7 @@ export default function SingleCryptoAmountInput ({disabled, tokenPrice, amount, 
           <span className="ml-2 block truncate">{token.symbol}</span>
         </span>
       </div>
-      <div className={'text-body-smaller text-gray-500'}>
+      <div className={'text-body-smaller text-gray-500 px-2 sm:px-0'}>
         {tokenPrice ? (
           <div className={'text-left font-mono'}>
             {formatTokenValueInFiat(tokenPrice, amount)}
