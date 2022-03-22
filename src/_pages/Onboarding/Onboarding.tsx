@@ -30,7 +30,7 @@ export default function Onboarding() {
         provider &&
         currentStep &&
         walletBalance &&
-        currentStep !== stepSignMessage.number
+        currentStep === stepAddGasToWallet.number
       ) {
         const transactionCount: number = await getTransactionCount(userAddress, provider);
         if (walletBalance.eq(0) && transactionCount === 0) {
@@ -65,9 +65,7 @@ export default function Onboarding() {
       {onboardingInitiated && (
         <>
           {steps.map((step) => (
-            // <div key={step.number}>
             <OnboardingStepRow key={step.number} step={step} />
-            // </div>
           ))}
         </>
       )}

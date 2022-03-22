@@ -6,27 +6,24 @@ import { DefaultTransition } from '_components/core/Transition';
 import OnboardingStepDescription from '_pages/Onboarding/OnboardingStepDescription';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { OnboardingStep } from '_pages/Onboarding/OnboardingSteps';
+import { Button, ButtonSize } from '_components/core/Buttons';
 
 export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
   const stepIsCurrentStep = (currentStep && currentStep === step.number) || false;
   const stepIsAhead = (currentStep && currentStep < step.number) || false;
   const [isExpanded, setIsExpanded] = useState(false);
-  const [nextStep, setNextStep] = useState<number | undefined>(undefined);
   const [waitingToAdvance, setWaitingToAdvance] = useState(false);
-  useEffect(() => {
-    if (waitingToAdvance) {
-      setNextStep(currentStep);
-    }
-  }, [waitingToAdvance, currentStep]);
 
-  useEffect(() => {
-    setWaitingToAdvance(true);
-  }, [currentStep]);
   const advanceToNextStep = () => {
     setWaitingToAdvance(false);
-    setNextStep(currentStep);
-  };
+  }
+
+  useEffect(() => {
+    if (currentStep === step.number + 1) {
+      setWaitingToAdvance(true);
+    }
+  }, [currentStep])
   return (
     <>
       {currentStep && (
@@ -60,7 +57,7 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
               </div>
             </div>
             <div className={'flex-row-center w-full text-body-smaller'}>
-              <DefaultTransition isOpen={isExpanded || stepIsCurrentStep}>
+              <DefaultTransition isOpen={isExpanded || stepIsCurrentStep || waitingToAdvance}>
                 <div className={'my-2'}>
                   <>{React.createElement(step.descriptionComponent)}</>
                 </div>
@@ -72,17 +69,17 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
                 <>{React.createElement(step.actionComponent, step.actionComponentProps)}</>
               </>
             )}
-            {/*<DefaultTransition isOpen={waitingToAdvance && step.number !== 1 && nextStep?.number === step.number}>*/}
-            {/*  <div>*/}
-            {/*    <HorizontalLineBreak />*/}
-            {/*    <div className={'flex-row-center w-full justify-between text-body px-2 mb-2'}>*/}
-            {/*      <span>Step completed!</span>*/}
-            {/*      <Button size={ButtonSize.SMALL} onClick={advanceToNextStep}>*/}
-            {/*        Continue*/}
-            {/*      </Button>*/}
-            {/*    </div>*/}
-            {/*  </div>*/}
-            {/*</DefaultTransition>*/}
+            <DefaultTransition isOpen={waitingToAdvance}>
+              <div>
+                <HorizontalLineBreak />
+                <div className={'flex-row-center w-full justify-between text-body px-2 mb-2'}>
+                  <span>Step completed!</span>
+                  <Button size={ButtonSize.SMALL} onClick={advanceToNextStep}>
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            </DefaultTransition>
           </div>
         </>
       )}

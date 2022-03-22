@@ -9,7 +9,7 @@ export default function SignTestMessage() {
   const dispatch = useDispatch();
   const signMessage = async () => {
     if (signer && currentStep) {
-      await signer?.signMessage('Welcome to mello!');
+      await signer.signMessage('Welcome to mello!');
       dispatch(setStep(currentStep + 1));
     }
   };
