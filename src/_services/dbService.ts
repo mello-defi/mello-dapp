@@ -8,7 +8,7 @@ const supabaseAnonKey: string = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export async function logTransactionHash (hash: string, chainId: number) {
+export async function logTransactionHash(hash: string, chainId: number) {
   const transaction: Transaction = {
     hash: hash.toLowerCase(),
     chain_id: chainId

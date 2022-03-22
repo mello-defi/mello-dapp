@@ -60,7 +60,7 @@ export default function SendCrypto() {
 
   useEffect(() => {
     updateMarketPrice();
-    resetTransaction()
+    resetTransaction();
   }, [amountToSend, token]);
 
   const dispatch = useDispatch();
@@ -111,7 +111,6 @@ export default function SendCrypto() {
     }
   };
 
-
   const resetTransaction = () => {
     if (transactionSubmitting) {
       setTransactionSubmitting(false);
@@ -125,7 +124,7 @@ export default function SendCrypto() {
     if (sendTransactionHash) {
       setSendTransactionHash('');
     }
-  }
+  };
   return (
     <div className={'flex flex-col'}>
       <MultiCryptoAmountInput

@@ -12,7 +12,7 @@ export function TransactionStep({
   showTransition = true
 }: {
   show: boolean;
-  children: any;
+  children: React.ReactNode;
   transactionError?: string;
   requiresUserInput?: boolean;
   stepComplete: boolean;

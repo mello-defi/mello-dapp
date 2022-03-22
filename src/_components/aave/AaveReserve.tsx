@@ -273,7 +273,7 @@ export default function AaveReserve({
     if (tokenApproved) {
       setTokenApproved(false);
     }
-  }
+  };
 
   const setAmount = (amount: string, setStateFunction: (amount: string) => void) => {
     setStateFunction(amount);
@@ -305,13 +305,20 @@ export default function AaveReserve({
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Borrow}
-                  disabled={userSummary && parseFloat(userSummary.availableBorrowsETH) <= 0 || (transactionInProgress && !transactionError)}
+                  disabled={
+                    (userSummary && parseFloat(userSummary.availableBorrowsETH) <= 0) ||
+                    (transactionInProgress && !transactionError)
+                  }
                 />
                 <AaveFunctionButton
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Repay}
-                  disabled={!userReserve || parseFloat(userReserve.variableBorrows) === 0|| (transactionInProgress && !transactionError)}
+                  disabled={
+                    !userReserve ||
+                    parseFloat(userReserve.variableBorrows) === 0 ||
+                    (transactionInProgress && !transactionError)
+                  }
                 />
               </div>
             )}
@@ -321,13 +328,21 @@ export default function AaveReserve({
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Deposit}
-                  disabled={!userBalance || userBalance.isZero()|| (transactionInProgress && !transactionError)}
+                  disabled={
+                    !userBalance ||
+                    userBalance.isZero() ||
+                    (transactionInProgress && !transactionError)
+                  }
                 />
                 <AaveFunctionButton
                   activeFunctionName={aaveFunction}
                   handleClicked={handleFunctionButtonClicked}
                   functionName={AaveFunction.Withdraw}
-                  disabled={!userReserve || parseFloat(userReserve.underlyingBalance) === 0|| (transactionInProgress && !transactionError)}
+                  disabled={
+                    !userReserve ||
+                    parseFloat(userReserve.underlyingBalance) === 0 ||
+                    (transactionInProgress && !transactionError)
+                  }
                 />
               </div>
             )}
@@ -354,7 +369,8 @@ export default function AaveReserve({
                         buttonDisabled={
                           !userBalance ||
                           userBalance.isZero() ||
-                          (!depositAmount || parseFloat(depositAmount) === 0) ||
+                          !depositAmount ||
+                          parseFloat(depositAmount) === 0 ||
                           transactionInProgress ||
                           (depositAmount
                             ? userBalance.lt(ethers.utils.parseUnits(depositAmount, token.decimals))
@@ -396,7 +412,8 @@ export default function AaveReserve({
                           transactionInProgress ||
                           !userReserve ||
                           !userSummary ||
-                          (!withdrawAmount || parseFloat(withdrawAmount) === 0) ||
+                          !withdrawAmount ||
+                          parseFloat(withdrawAmount) === 0 ||
                           parseFloat(userReserve.underlyingBalance) === 0 ||
                           (withdrawAmount && userReserve?.underlyingBalance
                             ? parseFloat(withdrawAmount) >
@@ -447,20 +464,25 @@ export default function AaveReserve({
                         buttonOnClick={handleBorrow}
                         buttonDisabled={
                           transactionInProgress ||
-                          (!borrowAmount || parseFloat(borrowAmount) === 0) ||
                           !borrowAmount ||
-                          (maxBorrowAmount !== '' && ethers.utils.parseUnits(maxBorrowAmount, token.decimals).lt(ethers.utils.parseUnits(borrowAmount, token.decimals)))
+                          parseFloat(borrowAmount) === 0 ||
+                          !borrowAmount ||
+                          (maxBorrowAmount !== '' &&
+                            ethers.utils
+                              .parseUnits(maxBorrowAmount, token.decimals)
+                              .lt(ethers.utils.parseUnits(borrowAmount, token.decimals)))
                         }
                       >
                         <span className={'ml-2'}>
                           {borrowSubmitting
                             ? 'Submitting...'
-                            : (maxBorrowAmount !== '' && ethers.utils.parseUnits(maxBorrowAmount, token.decimals).lt(ethers.utils.parseUnits(borrowAmount, token.decimals)))
-                            ||
-                            false
-                              ? 'Insufficient collateral'
-                              : 'Borrow'}
-
+                            : (maxBorrowAmount !== '' &&
+                                ethers.utils
+                                  .parseUnits(maxBorrowAmount, token.decimals)
+                                  .lt(ethers.utils.parseUnits(borrowAmount, token.decimals))) ||
+                              false
+                            ? 'Insufficient collateral'
+                            : 'Borrow'}
                         </span>
                       </AaveFunctionContent>
                     )}
@@ -484,7 +506,8 @@ export default function AaveReserve({
                         buttonDisabled={
                           transactionInProgress ||
                           !userReserve ||
-                          (!repayAmount || parseFloat(repayAmount) === 0) ||
+                          !repayAmount ||
+                          parseFloat(repayAmount) === 0 ||
                           parseFloat(userReserve?.variableBorrows) === 0 ||
                           (repayAmount && userReserve?.variableBorrows
                             ? parseFloat(repayAmount) > parseFloat(userReserve?.variableBorrows)
@@ -530,10 +553,15 @@ export default function AaveReserve({
                     transactionError={transactionError}
                     stepComplete={transactionConfirmed}
                   >
-                    {transactionConfirmed ? `${aaveFunction} confirmed` : `Confirming ${aaveFunction?.toLowerCase()}`}
+                    {transactionConfirmed
+                      ? `${aaveFunction} confirmed`
+                      : `Confirming ${aaveFunction?.toLowerCase()}`}
                     <BlockExplorerLink transactionHash={actionTransactionHash} />
                   </TransactionStep>
-                  <TransactionError onClickClear={resetTransactionState} transactionError={transactionError} />
+                  <TransactionError
+                    onClickClear={resetTransactionState}
+                    transactionError={transactionError}
+                  />
                 </div>
               )}
             </div>

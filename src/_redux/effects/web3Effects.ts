@@ -19,7 +19,7 @@ const providerOptions: IProviderOptions = {
       },
       chainId: EVMChainIdNumerical.POLYGON_MAINNET,
       networkId: 'matic',
-      rpcUrl: rpcUrl,
+      rpcUrl: rpcUrl
     }
   },
   torus: {

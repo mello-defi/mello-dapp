@@ -20,7 +20,8 @@ export const stepMintNft: OnboardingStep = {
   nextStep: null,
   description: {
     whatIsRequired: 'Mint your course completion NFT',
-    whyIsRequired: 'This NFT will prove you have completed the onboarding so won\'t have to do it again in future.<br/><br/>View the NFT here'
+    whyIsRequired:
+      "This NFT will prove you have completed the onboarding so won't have to do it again in future.<br/><br/>View the NFT here"
   }
 };
 export const stepBorrowAave: OnboardingStep = {
@@ -89,8 +90,10 @@ export const stepSignMessage: OnboardingStep = {
   component: SignTestMessage,
   description: {
     whatIsRequired: 'Sign a test transaction',
-    whyIsRequired: 'In order to authorize transactions from your crypto wallet, you have to sign them via a popup window. Please click the button below to sign a test transaction',
-    notes: 'This transaction doesn\'t incur a gas fee. However, in future signing transactions will incur gas fees that are paid for in the network\'s native token.'
+    whyIsRequired:
+      'In order to authorize transactions from your crypto wallet, you have to sign them via a popup window. Please click the button below to sign a test transaction',
+    notes:
+      "This transaction doesn't incur a gas fee. However, in future signing transactions will incur gas fees that are paid for in the network's native token."
   }
 };
 // REVIEW - hack, too tightly coupled
@@ -125,7 +128,7 @@ export const stepConnectWallet: OnboardingStep = {
   </ul>
     `,
     whyIsRequired: `A wallet is required to interact with the blockchain and access your assets.`,
-    notes: "Store seed phrases and passwords securely, mello will never be able to access them!"
+    notes: 'Store seed phrases and passwords securely, mello will never be able to access them!'
   }
 };
 export const stepTermsAndConditions: OnboardingStep = {
@@ -146,7 +149,7 @@ const steps: OnboardingStep[] = [
   stepPerformSwap,
   stepDepositAave,
   stepBorrowAave,
-  stepMintNft,
+  stepMintNft
 ];
 const initialState: OnboardingState = {
   steps,

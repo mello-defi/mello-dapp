@@ -32,10 +32,6 @@ function DashboardLink({ text, navTab }: { text: string; navTab: NavTab }) {
 export default function Dashboard() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const walletBalances = useSelector((state: AppState) => state.wallet.balances);
-  const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const provider = useSelector((state: AppState) => state.web3.provider);
-  // const aaveReserves = useAaveReserves()
-  // ethers.providers.
   const userSummary = useAaveUserSummary();
   const marketPrices = useMarketPrices();
   const [totalAssets, setTotalAssets] = useState<number>(0);
@@ -82,7 +78,6 @@ export default function Dashboard() {
       setHealthFactor(parseFloat(userSummary.healthFactor).toFixed(2));
     }
   }, [userSummary, walletBalances]);
-  // const totalAss
 
   return (
     <div>

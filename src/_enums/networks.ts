@@ -43,7 +43,9 @@ export interface EvmNetworkDefinition {
   gasStationUrl?: string;
 }
 
-export function findEvmNetworkById(id: EVMChainIdNumerical | number | string): EvmNetworkDefinition {
+export function findEvmNetworkById(
+  id: EVMChainIdNumerical | number | string
+): EvmNetworkDefinition {
   if (typeof id === 'string') {
     id = parseInt(id);
   }

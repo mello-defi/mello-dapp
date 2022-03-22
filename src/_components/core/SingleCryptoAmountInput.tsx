@@ -1,10 +1,21 @@
 import { formatTokenValueInFiat } from '_services/priceService';
 import React from 'react';
 import { decimalPlacesAreValid } from '_utils/index';
-import { EvmTokenDefinition, TokenDefinition } from '_enums/tokens';
+import { TokenDefinition } from '_enums/tokens';
 
-export default function SingleCryptoAmountInput ({disabled, tokenPrice, amount, amountChanged, token}: {disabled: boolean, tokenPrice: number, amount: string, amountChanged: (amount: string) => void, token: TokenDefinition}) {
-
+export default function SingleCryptoAmountInput({
+  disabled,
+  tokenPrice,
+  amount,
+  amountChanged,
+  token
+}: {
+  disabled: boolean;
+  tokenPrice: number;
+  amount: string;
+  amountChanged: (amount: string) => void;
+  token: TokenDefinition;
+}) {
   const handleAmountChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value;
     if (token && value && !decimalPlacesAreValid(value, token.decimals)) {
@@ -34,23 +45,17 @@ export default function SingleCryptoAmountInput ({disabled, tokenPrice, amount, 
           onChange={handleAmountChanged}
         />
         <span className="flex-row-center max-w-2/5 items-center rounded-2xl bg-white px-4 py-2 justify-center">
-          <img
-            src={token.image}
-            alt="person"
-            className="flex-shrink-0 h-6 w-6 rounded-full"
-          />
+          <img src={token.image} alt="person" className="flex-shrink-0 h-6 w-6 rounded-full" />
           <span className="ml-2 block truncate">{token.symbol}</span>
         </span>
       </div>
       <div className={'text-body-smaller text-gray-500 px-2 sm:px-0'}>
         {tokenPrice ? (
-          <div className={'text-left font-mono'}>
-            {formatTokenValueInFiat(tokenPrice, amount)}
-          </div>
+          <div className={'text-left font-mono'}>{formatTokenValueInFiat(tokenPrice, amount)}</div>
         ) : (
           <span>&nbsp;</span>
         )}
       </div>
     </div>
-  )
+  );
 }

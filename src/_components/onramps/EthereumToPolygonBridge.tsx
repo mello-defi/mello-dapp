@@ -15,8 +15,6 @@ import TransactionError from '_components/transactions/TransactionError';
 // @ts-ignore
 import { Hyphen, RESPONSE_CODES, SIGNATURE_TYPES } from '@biconomy/hyphen';
 import useMarketPrices from '_hooks/useMarketPrices';
-import { formatTokenValueInFiat } from '_services/priceService';
-import { decimalPlacesAreValid } from '_utils/index';
 import { getGasPrice } from '_services/gasService';
 import { logTransactionHash } from '_services/dbService';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
@@ -101,7 +99,9 @@ export default function EthereumToPolygonBridge() {
         setBiconomyInitialized(true);
         const preTransferStatus: BiconomyPreTransferStatus = await hyphen.preDepositStatus({
           tokenAddress: ethereumTokenDefinition.address,
-          amount: ethers.utils.parseUnits(transferAmount, ethereumTokenDefinition.decimals).toString(),
+          amount: ethers.utils
+            .parseUnits(transferAmount, ethereumTokenDefinition.decimals)
+            .toString(),
           fromChainId: EVMChainIdNumerical.ETHEREUM_MAINNET,
           toChainId: EVMChainIdNumerical.POLYGON_MAINNET,
           userAddress
@@ -163,7 +163,13 @@ export default function EthereumToPolygonBridge() {
             <PoweredByLink url={'https://hyphen.biconomy.io/'} logo={hyphenLogo} isRound={false} />
           </div>
           {ethereumPrice && (
-            <SingleCryptoAmountInput disabled={isTransferring} tokenPrice={ethereumPrice?.current_price} amount={transferAmount} amountChanged={setTransferAmount} token={ethereumTokenDefinition}/>
+            <SingleCryptoAmountInput
+              disabled={isTransferring}
+              tokenPrice={ethereumPrice?.current_price}
+              amount={transferAmount}
+              amountChanged={setTransferAmount}
+              token={ethereumTokenDefinition}
+            />
           )}
           <Button className={'mt-4'} onClick={deposit} disabled={isTransferring}>
             Deposit

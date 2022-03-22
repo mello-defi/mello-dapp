@@ -34,7 +34,7 @@ export default function AaveFunctionContent({
   token: EvmTokenDefinition;
   buttonOnClick: () => void;
   buttonDisabled: boolean;
-  children: any;
+  children: React.ReactNode;
   healthFactorImpact: HealthFactorImpact;
   healthFactorResource: HealthFactorResource;
 }) {

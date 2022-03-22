@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { getMarketDataForSymbol, MarketDataResult } from '_services/marketDataService';
 import { formatTokenValueInFiat } from '_services/priceService';
 import { BigNumber, ethers } from 'ethers';
-import { DefaultTransition } from '_components/core/Transition';
 import CryptoAmountWithTooltip from '_components/core/CryptoAmountTooltip';
 
 export default function WalletBalance({
@@ -41,7 +40,11 @@ export default function WalletBalance({
             <div className={'flex flex-col ml-3'}>
               <span>{token.name}</span>
               <span className={'text-color-light'}>
-                <CryptoAmountWithTooltip token={token} amount={userBalance.toString()} showSymbol={true}/>
+                <CryptoAmountWithTooltip
+                  token={token}
+                  amount={userBalance.toString()}
+                  showSymbol={true}
+                />
               </span>
             </div>
           </div>

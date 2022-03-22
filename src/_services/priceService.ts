@@ -4,7 +4,6 @@ export function convertCryptoAmounts(
   amount: string | number,
   sourcePrice: number,
   destinationPrice: number,
-  currency: CurrencyDefinition = currencies.usd
 ): number {
   if (typeof amount === 'string') {
     amount = parseFloat(amount);

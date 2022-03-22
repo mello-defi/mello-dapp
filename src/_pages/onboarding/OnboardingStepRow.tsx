@@ -6,7 +6,6 @@ import { CheckCircle, ExpandLess, ExpandMore, Info } from '@mui/icons-material';
 import { DefaultTransition } from '_components/core/Transition';
 import OnboardingStepDescription from '_pages/onboarding/OnboardingStepDescription';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
-import { Button, ButtonSize } from '_components/core/Buttons';
 
 export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);

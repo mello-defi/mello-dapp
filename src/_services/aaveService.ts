@@ -1,4 +1,5 @@
 import {
+  BigNumber as AaveBigNumber,
   calculateHealthFactorFromBalancesBigUnits,
   ComputedReserveData,
   eEthereumTxType,
@@ -10,8 +11,7 @@ import {
   TxBuilderV2,
   UserSummaryData,
   v2,
-  valueToBigNumber,
-  BigNumber as AaveBigNumber
+  valueToBigNumber
 } from '@aave/protocol-js';
 import { executeEthTransaction } from '_services/walletService';
 import { BigNumber, ethers } from 'ethers';

@@ -44,7 +44,9 @@ export default function Wallet() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const [walletPageTab, setWalletPageTab] = useState<WalletPageTab | undefined>();
   const walletBalances = useSelector((state: AppState) => state.wallet.balances);
-  const [sortedTokenSet, setSortedTokenSet] = useState<EvmTokenDefinition[]>(Object.values(tokenSet));
+  const [sortedTokenSet, setSortedTokenSet] = useState<EvmTokenDefinition[]>(
+    Object.values(tokenSet)
+  );
 
   useEffect(() => {
     // setSortedTokenSet();

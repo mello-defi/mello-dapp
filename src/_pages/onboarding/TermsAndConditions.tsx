@@ -16,10 +16,12 @@ export default function TermsAndConditions() {
     if (currentStep) {
       dispatch(setStep(currentStep.nextStep));
     }
-  }
+  };
   return (
     <div className={'flex flex-col items-center justify-center'}>
-      <Button className={'w-full md:w-1/2'} onClick={acceptTermsAndConditions}>Accept</Button>
+      <Button className={'w-full md:w-1/2'} onClick={acceptTermsAndConditions}>
+        Accept
+      </Button>
     </div>
-  )
+  );
 }

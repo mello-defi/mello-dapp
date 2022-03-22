@@ -12,12 +12,14 @@ export default function SignTestMessage() {
       await signer?.signMessage('Welcome to mello!');
       dispatch(setStep(currentStep?.nextStep));
     }
-  }
+  };
   return (
     <div className={'flex justify-center mb-2'}>
       {signer && (
-        <Button className={'w-full md:w-1/2'} onClick={signMessage}>Sign Message</Button>
+        <Button className={'w-full md:w-1/2'} onClick={signMessage}>
+          Sign Message
+        </Button>
       )}
     </div>
-  )
+  );
 }

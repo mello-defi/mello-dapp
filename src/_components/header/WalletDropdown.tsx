@@ -16,7 +16,7 @@ import {
   LogoutOutlined
 } from '@mui/icons-material';
 
-function WalletDropdownListItem({ children }: { children: any }) {
+function WalletDropdownListItem({ children }: { children: React.ReactNode }) {
   return <div className={'py-2 cursor-pointer'}>{children}</div>;
 }
 

@@ -1,4 +1,4 @@
-import { GenericTokenSet, EvmTokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition, GenericTokenSet } from '_enums/tokens';
 
 export const shortenBlockchainAddress = (address: string) => {
   return address.substring(0, 6) + '...' + address.substring(address.length - 4, address.length);
