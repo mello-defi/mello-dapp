@@ -13,7 +13,7 @@ import { TransactionStep } from '_components/transactions/TransactionStep';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
 // @ts-ignore
-import { Hyphen, RESPONSE_CODES, SIGNATURE_TYPES } from '@biconomy/hyphen';
+import { Hyphen, RESPONSE_CODES } from '@biconomy/hyphen';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { getGasPrice } from '_services/gasService';
 import { logTransactionHash } from '_services/dbService';

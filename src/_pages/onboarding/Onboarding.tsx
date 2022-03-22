@@ -12,7 +12,6 @@ import { DefaultTransition } from '_components/core/Transition';
 export default function Onboarding() {
   const dispatch = useDispatch();
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
-  const signer = useSelector((state: AppState) => state.web3.signer);
   const steps = useSelector((state: AppState) => state.onboarding.steps);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const gasToken = Object.values(tokenSet).find((token) => token.isGasToken);
