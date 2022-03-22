@@ -35,7 +35,7 @@ function RenBridge() {
     // @ts-ignore
     // console.log('userAddress', userAddress);
     // logError(""); // Reset error
-    // log(`Generating deposit address...`);
+    // log(`Generating Deposit address...`);
     if (provider && signer) {
       const web3Provider: EthProvider = {
         signer,
@@ -62,7 +62,7 @@ function RenBridge() {
       //  @ts-ignore
       setGatewayAddress(mint.gatewayAddress);
       mint.on('deposit', async (deposit) => {
-        // Details of the deposit are available from `deposit.depositDetails`.
+        // Details of the Deposit are available from `Deposit.depositDetails`.
 
         const hash = deposit.txHash();
         console.log('hash', hash);
@@ -72,12 +72,12 @@ function RenBridge() {
         console.log('number of confs', await deposit.confirmations());
         // const depositLog = (msg: string) =>
         //   log(
-        //     `BTC deposit: ${Bitcoin.utils.transactionExplorerLink(
-        //       deposit.depositDetails.transaction,
+        //     `BTC Deposit: ${Bitcoin.utils.transactionExplorerLink(
+        //       Deposit.depositDetails.transaction,
         //       'testnet'
         //     )}\n
         //   RenVM Hash: ${hash}\n
-        //   Status: ${deposit.status}\n
+        //   Status: ${Deposit.status}\n
         //   ${msg}`
         //   );
 
@@ -103,7 +103,7 @@ function RenBridge() {
           })
           .on('confirmation', (confs, target) => {
             console.log('IN  CONFIRMATION');
-            // const link = Bitcoin.utils.transactionExplorerLink(deposit.depositDetails.transaction, 'testnet');
+            // const link = Bitcoin.utils.transactionExplorerLink(Deposit.depositDetails.transaction, 'testnet');
             console.log('CONFS', confs);
             console.log('TARGET', target);
             setNumberOfConfirmedTransactions(confs > target ? target : confs);

@@ -13,7 +13,7 @@ export async function getTransactionCount(
 export async function getErc20TokenBalance(
   token: EvmTokenDefinition,
   provider: ethers.providers.Web3Provider,
-  userAddress: string,
+  userAddress: string
 ): Promise<BigNumber> {
   const newContract = new ethers.Contract(token.address, token.abi, provider);
   const balance = await newContract.balanceOf(userAddress);

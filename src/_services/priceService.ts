@@ -3,7 +3,7 @@ import { currencies, CurrencyDefinition } from '_enums/currency';
 export function convertCryptoAmounts(
   amount: string | number,
   sourcePrice: number,
-  destinationPrice: number,
+  destinationPrice: number
 ): number {
   if (typeof amount === 'string') {
     amount = parseFloat(amount);

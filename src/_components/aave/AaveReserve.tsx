@@ -37,7 +37,7 @@ import { convertCryptoAmounts } from '_services/priceService';
 import { getGasPrice } from '_services/gasService';
 import { getMarketDataForSymbol } from '_services/marketDataService';
 import { logTransactionHash } from '_services/dbService';
-import { OnboardingStep, stepBorrowAave, stepDepositAave } from '_pages/onboarding/OnboardingSteps';
+import { OnboardingStep, stepBorrowAave, stepDepositAave } from '_pages/Onboarding/OnboardingSteps';
 
 // REVIEW huge refactor needed, too big
 export default function AaveReserve({
@@ -52,7 +52,7 @@ export default function AaveReserve({
   const userSummary = useAaveUserSummary();
   const provider = useSelector((state: AppState) => state.web3.provider);
   // const userSummaryStale = useSelector((state: AppState) => state.aave.userSummaryStale);
-  // const userAddress = useSelector((state: AppState) => state.wallet.ad);
+  // const userAddress = useSelector((state: AppState) => state.Wallet.ad);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const network = useSelector((state: AppState) => state.web3.network);
@@ -237,7 +237,7 @@ export default function AaveReserve({
         setDepositAmount,
         setDepositSubmitting,
         getDepositTransactions,
-        stepDepositAave.nextStep?.number,
+        stepDepositAave.nextStep?.number
       );
     }
   };
@@ -358,7 +358,7 @@ export default function AaveReserve({
                         healthFactorResource={HealthFactorResource.Collateral}
                         reserveTitle={'Wallet'}
                         reserve={reserve}
-                        summaryTitle={'Amount to deposit'}
+                        summaryTitle={'Amount to Deposit'}
                         userBalance={userBalance}
                         tokenPrice={marketPriceForToken}
                         amount={depositAmount}
@@ -449,7 +449,7 @@ export default function AaveReserve({
                         reserveTitle={'Borrowing power'}
                         healthFactorResource={HealthFactorResource.Borrows}
                         healthFactorImpact={HealthFactorImpact.Decrease}
-                        summaryTitle={'Amount to borrow'}
+                        summaryTitle={'Amount to Borrow'}
                         reserve={reserve}
                         userBalance={
                           maxBorrowAmount

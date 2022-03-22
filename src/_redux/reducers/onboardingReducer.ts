@@ -9,7 +9,7 @@ import {
 const initialState: OnboardingState = {
   complete: false,
   ongoing: false,
-  currentStep: 1,
+  currentStep: 1
 };
 
 export const getOnboardingReducer = (

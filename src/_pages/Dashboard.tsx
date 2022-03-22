@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { EvmTokenDefinition } from '_enums/tokens';
-import WalletBalance from '_pages/wallet/WalletBalance';
+import WalletBalance from '_pages/Wallet/WalletBalance';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { NavTab } from '_redux/types/uiTypes';
@@ -12,8 +12,8 @@ import HealthFactorNumber from '_components/aave/HealthFactorNumber';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { ethers } from 'ethers';
 import { CryptoCurrencySymbol } from '_enums/currency';
-import UserBorrowSummary from '_pages/borrow/UserBorrowSummary';
-import UserDepositSummary from '_pages/deposit/UserDepositSummary';
+import UserBorrowSummary from '_pages/Borrow/UserBorrowSummary';
+import UserDepositSummary from '_pages/Deposit/UserDepositSummary';
 import { getMarketDataForSymbol } from '_services/marketDataService';
 
 function DashboardLink({ text, navTab }: { text: string; navTab: NavTab }) {

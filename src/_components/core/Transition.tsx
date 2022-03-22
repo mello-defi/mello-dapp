@@ -1,7 +1,13 @@
 import { Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 
-export function DefaultTransition({ children, isOpen }: { children: React.ReactNode; isOpen: boolean }) {
+export function DefaultTransition({
+  children,
+  isOpen
+}: {
+  children: React.ReactNode;
+  isOpen: boolean;
+}) {
   return (
     <Transition
       show={isOpen}
