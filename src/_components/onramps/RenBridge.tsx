@@ -132,7 +132,7 @@ function RenBridge() {
           // })
           .catch((e) => {
             console.log('SIGNED ERRRO');
-            console.log(e);
+            console.error(e);
             setTransactionError(e.message);
           });
         await deposit

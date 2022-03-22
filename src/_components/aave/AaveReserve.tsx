@@ -197,6 +197,7 @@ export default function AaveReserve({
           dispatch(setStep(nextStep));
         }
       } catch (e: any) {
+        console.error(e);
         const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
         setTransactionError(
           `${errorParsed.message}${errorParsed.data ? ' - ' + errorParsed.data.message : ''}`

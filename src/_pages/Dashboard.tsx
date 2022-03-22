@@ -68,7 +68,7 @@ export default function Dashboard() {
               parseFloat(ethers.utils.formatUnits(balance, decimals)) * data.current_price;
           }
         } catch (error: any) {
-          console.log(error);
+          console.error(error);
         }
       }
       setTotalAssets(totalAaveDeposits + totalWalletBalances);

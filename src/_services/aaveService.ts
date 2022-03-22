@@ -305,7 +305,7 @@ export function calculateNewHealthFactor(
       ).toFixed(2);
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
   return '';
 }

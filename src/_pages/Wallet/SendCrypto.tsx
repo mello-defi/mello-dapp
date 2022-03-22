@@ -102,6 +102,7 @@ export default function SendCrypto() {
         setTransactionCompleted(true);
         dispatch(toggleBalanceIsStale(token.symbol, true));
       } catch (e: any) {
+        console.error(e);
         const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
         setTransactionError(
           `${errorParsed.message}${errorParsed.data ? ' - ' + errorParsed.data.message : ''}`

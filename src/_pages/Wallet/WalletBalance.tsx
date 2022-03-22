@@ -27,7 +27,7 @@ export default function WalletBalance({
           setAttemptedToGetMarketData(true);
         }
       } catch (e: any) {
-        console.log(e);
+        console.error(e);
       }
     }
   }, [attemptedToGetMarketData, marketPrices]);

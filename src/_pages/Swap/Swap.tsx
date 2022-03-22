@@ -28,6 +28,7 @@ import { setStep } from '_redux/effects/onboardingEffects';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { logTransactionHash } from '_services/dbService';
 import { stepPerformSwap } from '_pages/Onboarding/OnboardingSteps';
+import { EthereumTransactionError } from '_interfaces/errors';
 
 export default function Swap({
   initialSourceTokenSymbol,
@@ -118,7 +119,7 @@ export default function Swap({
         setDestinationAmount(ethers.utils.formatUnits(rate.destAmount, destToken.decimals));
         setSwapConfirmed(false);
       } catch (e: any) {
-        console.log(e);
+        console.error(e);
         setFetchingPriceError(e.message);
       }
       setFetchingPrices(false);
@@ -182,8 +183,11 @@ export default function Swap({
         dispatch(toggleBalanceIsStale(destinationToken.symbol, true));
         dispatch(setStep(stepPerformSwap.number + 1));
       } catch (e: any) {
-        setTransactionError(e.data?.message || e.message);
-        console.log(e);
+        console.error(e);
+        const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
+        setTransactionError(
+          `${errorParsed.message}${errorParsed.data ? ' - ' + errorParsed.data.message : ''}`
+        );
       }
     }
   };
@@ -281,6 +285,7 @@ export default function Swap({
           sourceToken.symbol === destinationToken.symbol ||
           (sourceTokenBalance &&
             sourceToken.isGasToken &&
+            sourceAmount !== '' &&
             ethers.utils.parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance))
         }
         onClick={handleSwap}

@@ -149,6 +149,7 @@ export default function EthereumToPolygonBridge() {
         await depositTx.wait(gasPrice?.blockTime || 3);
         setEthereumTransactionComplete(true);
       } catch (e: any) {
+        console.error(e);
         setTransactionError(e.message);
       }
     }
