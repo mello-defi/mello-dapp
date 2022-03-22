@@ -25,9 +25,9 @@ import useWalletBalance from '_hooks/useWalletBalance';
 import { SwapVert } from '@mui/icons-material';
 import { toggleBalanceIsStale } from '_redux/effects/walletEffects';
 import { setStep } from '_redux/effects/onboardingEffects';
-import { stepPerformSwap } from '_redux/reducers/onboardingReducer';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { logTransactionHash } from '_services/dbService';
+import { stepPerformSwap } from '_pages/onboarding/OnboardingSteps';
 
 export default function Swap({
   initialSourceTokenSymbol,
@@ -180,7 +180,7 @@ export default function Swap({
         resetState();
         dispatch(toggleBalanceIsStale(sourceToken.symbol, true));
         dispatch(toggleBalanceIsStale(destinationToken.symbol, true));
-        dispatch(setStep(stepPerformSwap.nextStep));
+        dispatch(setStep(stepPerformSwap.number + 1));
       } catch (e: any) {
         setTransactionError(e.data?.message || e.message);
         console.log(e);

@@ -1,4 +1,3 @@
-import { OnboardingStep } from '_redux/types/onboardingTypes';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import React, { useEffect, useState } from 'react';
@@ -6,13 +5,14 @@ import { CheckCircle, ExpandLess, ExpandMore, Info } from '@mui/icons-material';
 import { DefaultTransition } from '_components/core/Transition';
 import OnboardingStepDescription from '_pages/onboarding/OnboardingStepDescription';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
+import { OnboardingStep } from '_pages/onboarding/OnboardingSteps';
 
 export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
-  const stepIsCurrentStep = (currentStep && currentStep.number === step.number) || false;
-  const stepIsAhead = (currentStep && currentStep.number < step.number) || false;
+  const stepIsCurrentStep = (currentStep && currentStep === step.number) || false;
+  const stepIsAhead = (currentStep && currentStep < step.number) || false;
   const [isExpanded, setIsExpanded] = useState(false);
-  const [nextStep, setNextStep] = useState<OnboardingStep | undefined>(undefined);
+  const [nextStep, setNextStep] = useState<number | undefined>(undefined);
   const [waitingToAdvance, setWaitingToAdvance] = useState(false);
   useEffect(() => {
     if (waitingToAdvance) {
@@ -66,7 +66,7 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
                 </div>
               </DefaultTransition>
             </div>
-            {step.number === currentStep?.number && step.component !== undefined && (
+            {step.number === currentStep && step.component !== undefined && (
               <>
                 <HorizontalLineBreak />
                 <>{React.createElement(step.component, step.componentProps)}</>

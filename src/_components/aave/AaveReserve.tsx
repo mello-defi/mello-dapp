@@ -30,15 +30,14 @@ import { EthereumTransactionError } from '_interfaces/errors';
 import { toggleUserSummaryStale } from '_redux/effects/aaveEffects';
 import { findTokenByAddress } from '_utils/index';
 import { setStep } from '_redux/effects/onboardingEffects';
-import { stepBorrowAave, stepDepositAave } from '_redux/reducers/onboardingReducer';
 import useAaveReserves from '_hooks/useAaveReserves';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { convertCryptoAmounts } from '_services/priceService';
 import { getGasPrice } from '_services/gasService';
-import { OnboardingStep } from '_redux/types/onboardingTypes';
 import { getMarketDataForSymbol } from '_services/marketDataService';
 import { logTransactionHash } from '_services/dbService';
+import { OnboardingStep, stepBorrowAave, stepDepositAave } from '_pages/onboarding/OnboardingSteps';
 
 // REVIEW huge refactor needed, too big
 export default function AaveReserve({
@@ -175,7 +174,7 @@ export default function AaveReserve({
       underlyingAsset: string,
       amount: string
     ) => Promise<EthereumTransactionTypeExtended[]>,
-    nextStep?: OnboardingStep | null
+    nextStep?: number | null
   ) => {
     if (provider && userAddress && reserve) {
       try {
@@ -215,7 +214,7 @@ export default function AaveReserve({
         setBorrowAmount,
         setBorrowSubmitting,
         getBorrowTransactions,
-        stepBorrowAave.nextStep
+        stepBorrowAave.nextStep?.number
       );
     }
   };
@@ -238,7 +237,7 @@ export default function AaveReserve({
         setDepositAmount,
         setDepositSubmitting,
         getDepositTransactions,
-        stepDepositAave.nextStep
+        stepDepositAave.nextStep?.number,
       );
     }
   };

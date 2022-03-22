@@ -10,7 +10,7 @@ export default function SignTestMessage() {
   const signMessage = async () => {
     if (signer && currentStep) {
       await signer?.signMessage('Welcome to mello!');
-      dispatch(setStep(currentStep?.nextStep));
+      dispatch(setStep(currentStep + 1));
     }
   };
   return (

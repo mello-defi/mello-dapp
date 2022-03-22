@@ -5,7 +5,7 @@ import { AppState } from '_redux/store';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { setAddress } from '_redux/effects/walletEffects';
 import { setStep } from '_redux/effects/onboardingEffects';
-import { stepSignMessage } from '_redux/reducers/onboardingReducer';
+import { stepSignMessage } from '_pages/onboarding/OnboardingSteps';
 
 function App() {
   const dispatch = useDispatch();
@@ -18,7 +18,7 @@ function App() {
       signer.getAddress().then((address) => {
         dispatch(setAddress(address));
       });
-      dispatch(setStep(stepSignMessage));
+      dispatch(setStep(stepSignMessage.number));
     }
   }, [isConnected, network, dispatch]);
 

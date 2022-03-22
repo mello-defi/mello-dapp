@@ -11,27 +11,16 @@ export interface OnboardingStepDescription {
   notes?: string;
 }
 
-export interface OnboardingStep {
-  number: number;
-  title: string;
-  nextStep: OnboardingStep | null;
-  component?: FunctionComponent<any>;
-  componentProps?: any;
-  description: OnboardingStepDescription;
-}
-
 export interface OnboardingState {
-  currentStep?: OnboardingStep;
+  currentStep: number;
   complete: boolean;
   ongoing: boolean;
-  termsAndConditionsAccepted?: boolean;
-  steps: OnboardingStep[];
 }
 
 interface SetStep {
   type: typeof SET_STEP;
   payload: {
-    step: OnboardingStep;
+    step: number;
   };
 }
 

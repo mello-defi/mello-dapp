@@ -2,17 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import useWalletBalance from '_hooks/useWalletBalance';
-import { stepAddGasToWallet, stepPerformSwap, stepSignMessage } from '_redux/reducers/onboardingReducer';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { getTransactionCount } from '_services/walletService';
 import { Button } from '_components/core/Buttons';
 import OnboardingStepRow from '_pages/onboarding/OnboardingStepRow';
 import { DefaultTransition } from '_components/core/Transition';
+import { stepAddGasToWallet, stepPerformSwap, steps, stepSignMessage } from '_pages/onboarding/OnboardingSteps';
 
 export default function Onboarding() {
   const dispatch = useDispatch();
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
-  const steps = useSelector((state: AppState) => state.onboarding.steps);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const gasToken = Object.values(tokenSet).find((token) => token.isGasToken);
   const walletBalance = useWalletBalance(gasToken);
@@ -26,13 +25,13 @@ export default function Onboarding() {
         provider &&
         currentStep &&
         walletBalance &&
-        currentStep.number !== stepSignMessage.number
+        currentStep !== stepSignMessage.number
       ) {
         const transactionCount: number = await getTransactionCount(userAddress, provider);
         if (walletBalance.eq(0) && transactionCount === 0) {
-          dispatch(setStep(stepAddGasToWallet));
-        } else if (walletBalance.gt(0) && currentStep.number <= stepAddGasToWallet.number) {
-          dispatch(setStep(stepPerformSwap));
+          dispatch(setStep(stepAddGasToWallet.number));
+        } else if (walletBalance.gt(0) && currentStep <= stepAddGasToWallet.number) {
+          dispatch(setStep(stepPerformSwap.number));
         }
       }
     }

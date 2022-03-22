@@ -14,7 +14,7 @@ export default function TermsAndConditions() {
   }, [currentStep]);
   const acceptTermsAndConditions = () => {
     if (currentStep) {
-      dispatch(setStep(currentStep.nextStep));
+      dispatch(setStep(currentStep + 1));
     }
   };
   return (

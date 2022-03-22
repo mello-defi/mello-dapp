@@ -1,4 +1,4 @@
-import { OnboardingActionTypes, OnboardingStep } from '_redux/types/onboardingTypes';
+import { OnboardingActionTypes } from '_redux/types/onboardingTypes';
 import { Dispatch } from 'redux';
 import {
   setCurrentStepAction,
@@ -6,11 +6,9 @@ import {
   setOnboardingOngoingAction
 } from '_redux/actions/onboardingActions';
 
-export const setStep = (step: OnboardingStep | null) => {
+export const setStep = (step: number) => {
   return function (dispatch: Dispatch<OnboardingActionTypes>) {
-    if (step) {
-      dispatch(setCurrentStepAction(step));
-    }
+    dispatch(setCurrentStepAction(step));
   };
 };
 

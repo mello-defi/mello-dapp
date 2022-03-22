@@ -1,5 +1,5 @@
 import React from 'react';
-import { OnboardingStep } from '_redux/types/onboardingTypes';
+import { OnboardingStep } from '_pages/onboarding/OnboardingSteps';
 
 export default function OnboardingStepDescription({ step }: { step: OnboardingStep }) {
   return (

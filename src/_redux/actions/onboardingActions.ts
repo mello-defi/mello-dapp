@@ -1,12 +1,11 @@
 import {
   OnboardingActionTypes,
-  OnboardingStep,
   SET_IS_COMPLETE,
   SET_IS_ONGOING,
   SET_STEP
 } from '_redux/types/onboardingTypes';
 
-export const setCurrentStepAction = (step: OnboardingStep): OnboardingActionTypes => {
+export const setCurrentStepAction = (step: number): OnboardingActionTypes => {
   return {
     type: SET_STEP,
     payload: {
