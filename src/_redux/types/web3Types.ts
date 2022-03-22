@@ -5,9 +5,7 @@ import { AnyAction } from 'redux';
 
 export const CONNECT = 'CONNECT';
 export const DISCONNECT = 'DISCONNECT';
-// export const SET_PROVIDER = 'SET_PROVIDER';
 export const SET_NETWORK = 'GET_WEB3_ADDRESS';
-export const GET_WEB3_BALANCE = 'GET_WEB3_BALANCE';
 
 export interface Web3State {
   provider?: ethers.providers.Web3Provider;

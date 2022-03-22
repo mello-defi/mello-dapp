@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { connect } from '_redux/effects/web3Effects';
+import { autoConnect, connect } from '_redux/effects/web3Effects';
 import { AppState } from '_redux/store';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { setAddress } from '_redux/effects/walletEffects';
@@ -22,9 +22,11 @@ function App() {
     }
   }, [isConnected, network, dispatch]);
 
-  const login = async () => {
+  const login = () => {
     dispatch(connect());
   };
+
+  dispatch(autoConnect());
 
   return (
     <div>

@@ -7,19 +7,20 @@ import Web3Modal, { IProviderOptions } from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import Torus from '@toruslabs/torus-embed';
 import { socialsLogo } from '_assets/images';
+import * as Net from 'net';
 
-const rpcUrl = process.env.REACT_APP_POLYGON_RPC_URL;
+const polygonRpcUrl = process.env.REACT_APP_POLYGON_RPC_URL;
 // REVIEW move these to env vars, remove hardcoded network values
 const providerOptions: IProviderOptions = {
   walletconnect: {
     package: WalletConnectProvider, // required
     options: {
       rpc: {
-        137: rpcUrl
+        137: polygonRpcUrl
       },
       chainId: EVMChainIdNumerical.POLYGON_MAINNET,
       networkId: 'matic',
-      rpcUrl: rpcUrl
+      rpcUrl: polygonRpcUrl
     }
   },
   torus: {
@@ -31,7 +32,7 @@ const providerOptions: IProviderOptions = {
     package: Torus,
     options: {
       networkParams: {
-        host: rpcUrl,
+        host: polygonRpcUrl,
         chainId: EVMChainIdNumerical.POLYGON_MAINNET
       }
     }
@@ -40,23 +41,37 @@ const providerOptions: IProviderOptions = {
 const web3Modal = new Web3Modal({
   network: 'mainnet', // optional
   cacheProvider: true, // optional
-  // cacheProvider: false, // optional
   disableInjectedProvider: false, // optional
   providerOptions // required
 });
+
+const getNetworkDefinition = async (provider: ethers.providers.Web3Provider): Promise<EvmNetworkDefinition> => {
+  const network = await provider.getNetwork();
+  return findEvmNetworkById(network.chainId);
+}
+
+const getProvider = async (): Promise<ethers.providers.Web3Provider> => {
+  const web3ModalProvider = await web3Modal.connect();
+  return new ethers.providers.Web3Provider(web3ModalProvider, 'any');
+}
+export const autoConnect = () => {
+  return async (dispatch: Dispatch<Web3ActionTypes>) => {
+    if (web3Modal.cachedProvider) {
+      const provider = await getProvider();
+      const signer = provider.getSigner();
+      dispatch(connectAction(provider, signer));
+      const networkDefinition = await getNetworkDefinition(provider);
+      dispatch(setNetworkAction(networkDefinition));
+    }
+  }
+}
 export const connect = () => {
   return async (dispatch: Dispatch<Web3ActionTypes>) => {
-    const web3ModalProvider = await web3Modal.connect();
-    // web3ModalProvider.on('disconnect', (code: number, reason: string) => {
-    //   console.log(code, reason);
-    // });
-
-    const provider = new ethers.providers.Web3Provider(web3ModalProvider, 'any');
-    const network = await provider.getNetwork();
-    const networkDefinition = findEvmNetworkById(network.chainId);
-    dispatch(setNetworkAction(networkDefinition));
+    const provider = await getProvider();
     const signer = provider.getSigner();
     dispatch(connectAction(provider, signer));
+    const networkDefinition = await getNetworkDefinition(provider);
+    dispatch(setNetworkAction(networkDefinition));
   };
 };
 
