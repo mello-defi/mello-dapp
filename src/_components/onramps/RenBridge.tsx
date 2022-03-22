@@ -35,7 +35,6 @@ function RenBridge() {
   const [transactionExplorerLink, setTransactionExplorerLink] = useState('');
   const [numberOfConfirmedTransactions, setNumberOfConfirmedTransactions] = useState(0);
   const [transactionConfirmationTarget, setTransactionConfirmationTarget] = useState(0);
-  const [btcTransactionHash, setBtcTransactionHash] = useState('');
   const [evmTransactionHash, setEvmTransactionHash] = useState('');
   const [eventHandlersInitialized, setEventHandlersInitialized] = useState(false);
   const marketPrices = useMarketPrices();
@@ -61,16 +60,10 @@ function RenBridge() {
 
   const onConfirmationTarget = (target: number) => {
     console.log('onConfirmationTarget', target);
-    // if (depositObject) {
-    const link = Bitcoin.utils.transactionExplorerLink(btcTransactionHash, 'testnet');
     setNumberOfConfirmedTransactions(
       numberOfConfirmedTransactions > target ? target : numberOfConfirmedTransactions
     );
     setTransactionConfirmationTarget(target);
-    if (link) {
-      setTransactionExplorerLink(link);
-    }
-    // }
   };
 
   const onMint = async (txHash: string) => {
@@ -109,9 +102,11 @@ function RenBridge() {
       mint.on(
         'deposit',
         (depositResponse: LockAndMintDeposit<BtcTransaction, BtcDeposit, string, any, any>) => {
-          // setDepositObject(depositResponse);
-          setBtcTransactionHash(depositResponse.depositDetails.transaction.txHash);
           setDepositedAmount(depositResponse.depositDetails.amount);
+          const link = Bitcoin.utils.transactionExplorerLink(depositResponse.depositDetails.transaction.txHash, 'testnet');
+          if (link) {
+            setTransactionExplorerLink(link);
+          }
 
           depositResponse
             .confirmed()
