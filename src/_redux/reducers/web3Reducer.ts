@@ -1,7 +1,6 @@
 import {
   CONNECT,
   DISCONNECT,
-  GET_WEB3_BALANCE,
   SET_NETWORK,
   Web3ActionTypes,
   Web3State
@@ -18,7 +17,6 @@ const initialState: Web3State = {
   provider: undefined,
   signer: undefined,
   isConnected: false,
-  balance: 0,
   network,
   tokenSet: polygonMainnetTokens
 };
@@ -32,11 +30,6 @@ export const getWeb3Reducer = (
       return {
         ...state,
         network: action.payload.network
-      };
-    case GET_WEB3_BALANCE:
-      return {
-        ...state,
-        balance: action.payload.balance
       };
     case CONNECT:
       return {

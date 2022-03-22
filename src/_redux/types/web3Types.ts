@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { EvmNetworkDefinition } from '_enums/networks';
 import { GenericTokenSet } from '_enums/tokens';
+import { AnyAction } from 'redux';
 
 export const CONNECT = 'CONNECT';
 export const DISCONNECT = 'DISCONNECT';
@@ -12,34 +13,18 @@ export interface Web3State {
   provider?: ethers.providers.Web3Provider;
   signer?: ethers.Signer;
   isConnected: boolean;
-  balance: number;
   network: EvmNetworkDefinition;
   tokenSet: GenericTokenSet;
 }
 
-// interface SetProviderAction {
-//   type: typeof SET_PROVIDER;
-//   payload: {
-//     provider: ethers.providers.Web3Provider;
-//     address: string;
-//   };
-// }
-
-interface GetNetworkAction {
+interface GetNetworkAction extends AnyAction {
   type: typeof SET_NETWORK;
   payload: {
     network: EvmNetworkDefinition;
   };
 }
 
-interface GetWeb3BalanceActionType {
-  type: typeof GET_WEB3_BALANCE;
-  payload: {
-    balance: number;
-  };
-}
-
-interface ConnectWeb3ActionType {
+interface ConnectWeb3ActionType extends AnyAction {
   type: typeof CONNECT;
   payload: {
     provider: ethers.providers.Web3Provider;
@@ -47,7 +32,7 @@ interface ConnectWeb3ActionType {
   };
 }
 
-interface DisconnectWeb3ActionType {
+interface DisconnectWeb3ActionType extends AnyAction {
   type: typeof DISCONNECT;
   payload: {
     provider: null;
@@ -56,6 +41,5 @@ interface DisconnectWeb3ActionType {
 }
 export type Web3ActionTypes =
   | GetNetworkAction
-  | GetWeb3BalanceActionType
   | ConnectWeb3ActionType
   | DisconnectWeb3ActionType;

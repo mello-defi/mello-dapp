@@ -179,10 +179,6 @@ function RenBridge() {
     // this.setState({ error: String((error || {}).message || error) });
   };
 
-  const log = (message: string) => {
-    setMessage(message);
-  };
-
   return (
     <>
       <div className="rounded-2xl flex flex-col">
@@ -243,14 +239,6 @@ function RenBridge() {
           Tokens minted
           <BlockExplorerLink transactionHash={transactionHash} />
         </TransactionStep>
-        {/*<div*/}
-        {/*  className={*/}
-        {/*    'flex flex-row items-center justify-between bg-gray-200 px-2 py-4 my-2 rounded-2xl'*/}
-        {/*  }*/}
-        {/*>*/}
-        {/*  <div>Transaction status</div>*/}
-        {/*  <div>{transactionStatus}</div>*/}
-        {/*</div>*/}
         <TransactionError transactionError={transactionError} />
         <div className={'text-lg mt-2 font-bold'}>
           {message.split('\n').map((line) => (

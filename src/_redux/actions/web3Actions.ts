@@ -2,7 +2,6 @@ import { ethers } from 'ethers';
 import {
   CONNECT,
   DISCONNECT,
-  GET_WEB3_BALANCE,
   SET_NETWORK,
   Web3ActionTypes
 } from '_redux/types/web3Types';
@@ -17,27 +16,6 @@ export const setNetworkAction = (network: EvmNetworkDefinition): Web3ActionTypes
   };
 };
 
-export const getWalletBalanceAction = (balance: number): Web3ActionTypes => {
-  return {
-    type: GET_WEB3_BALANCE,
-    payload: {
-      balance
-    }
-  };
-};
-
-// export const setProviderAction = (
-//   provider: ethers.providers.Web3Provider,
-//   address: string
-// ): Web3ActionTypes => {
-//   return {
-//     type: SET_PROVIDER,
-//     payload: {
-//       provider,
-//       address
-//     }
-//   };
-// };
 export const connectAction = (
   provider: ethers.providers.Web3Provider,
   signer: ethers.Signer

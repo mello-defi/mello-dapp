@@ -1,4 +1,5 @@
 import { FunctionComponent } from 'react';
+import { Action, AnyAction } from 'redux';
 
 export const SET_STEP = 'SET_STEP';
 export const SET_IS_COMPLETE = 'SET_IS_COMPLETE';
@@ -17,21 +18,21 @@ export interface OnboardingState {
   ongoing: boolean;
 }
 
-interface SetStep {
+interface SetStep extends AnyAction {
   type: typeof SET_STEP;
   payload: {
     step: number;
   };
 }
 
-interface SetIsComplete {
+interface SetIsComplete extends AnyAction {
   type: typeof SET_IS_COMPLETE;
   payload: {
     complete: boolean;
   };
 }
 
-interface SetIsOngoing {
+interface SetIsOngoing extends AnyAction {
   type: typeof SET_IS_ONGOING;
   payload: {
     ongoing: boolean;

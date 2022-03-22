@@ -4,9 +4,12 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
-import store from '_redux/store';
+// import { store, persistor } from '_redux/store';
 import * as Sentry from '@sentry/react';
+// import { } from '_redux/store';
 import { BrowserTracing } from '@sentry/tracing';
+import { store, persistor} from '_redux/store';
+import { PersistGate } from 'redux-persist/integration/react'
 
 Sentry.init({
   dsn: 'https://dc6ad1de607440fb96abd7913538948f@o1155179.ingest.sentry.io/6235471',
@@ -21,7 +24,9 @@ Sentry.init({
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <PersistGate loading={null} persistor={persistor}>
+        <App />
+      </PersistGate>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

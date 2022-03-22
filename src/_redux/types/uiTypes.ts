@@ -1,3 +1,5 @@
+import { AnyAction } from 'redux';
+
 export const TOGGLE_SIDEBAR = 'TOGGLE_SIDEBAR';
 export const SET_ACTIVE_TAB = 'SET_ACTIVE_TAB';
 
@@ -23,12 +25,12 @@ export interface UIState {
   navLinks: NavLinkDefinition[];
 }
 
-interface ToggleSidebarActionType {
+interface ToggleSidebarActionType extends AnyAction {
   type: typeof TOGGLE_SIDEBAR;
   payload: boolean;
 }
 
-interface SetActiveTabActionType {
+interface SetActiveTabActionType extends AnyAction {
   type: typeof SET_ACTIVE_TAB;
   payload: NavTab;
 }

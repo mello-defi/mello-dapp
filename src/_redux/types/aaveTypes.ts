@@ -1,4 +1,5 @@
 import { ComputedReserveData, ReserveData, UserSummaryData } from '@aave/protocol-js';
+import { Action, AnyAction } from 'redux';
 
 export const TOGGLE_USER_SUMMARY_STALE = 'TOGGLE_USER_SUMMARY_STALE';
 export const GET_USER_SUMMARY = 'GET_USER_RESERVES';
@@ -10,21 +11,21 @@ export interface AaveState {
   reserves?: ComputedReserveData[];
   rawReserves?: ReserveData[];
 }
-export interface ToggleUserSummaryStaleAction {
+interface ToggleUserSummaryStaleAction extends AnyAction {
   type: typeof TOGGLE_USER_SUMMARY_STALE;
   payload: {
     userSummaryStale: boolean;
   };
 }
 
-export interface GetUserSummaryAction {
+interface GetUserSummaryAction extends AnyAction {
   type: typeof GET_USER_SUMMARY;
   payload: {
     userSummary: UserSummaryData;
   };
 }
 
-export interface GetAaveReservesAction {
+interface GetAaveReservesAction extends AnyAction {
   type: typeof GET_AAVE_RESERVES;
   payload: {
     reserves: ComputedReserveData[];

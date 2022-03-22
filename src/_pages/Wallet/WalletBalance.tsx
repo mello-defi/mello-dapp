@@ -33,7 +33,7 @@ export default function WalletBalance({
   }, [attemptedToGetMarketData, marketPrices]);
   return (
     <>
-      {marketData && userBalance && (userBalance?.gt(0) || !hideZeroBalance) && (
+      {marketData && userBalance !== undefined && (userBalance?.gt(0) || !hideZeroBalance) && (
         <div className={'flex-row-center justify-between my-2 space-y-4 px-2'} key={token.symbol}>
           <div className={'flex-row-center space-y-1'}>
             <img src={token.image} className={'w-10 h-10 rounded-full'} alt={token.symbol} />
