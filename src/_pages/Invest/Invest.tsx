@@ -15,7 +15,198 @@ import { BigNumber, Contract, ethers } from 'ethers';
 import { WeightedPoolEncoder } from '@balancer-labs/balancer-js';
 import { getPoolAddress, StablePoolEncoder } from '@balancer-labs/sdk';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
-//
+import useMarketPrices from '_hooks/useMarketPrices';
+import { findTokenByAddress } from '_utils/index';
+import { MarketDataResult } from '_services/marketDataService';
+import { getAddress } from 'ethers/lib/utils';
+//\
+
+const collectorAbi = [
+  {
+    "inputs": [
+      {
+        "internalType": "contract IVault",
+        "name": "_vault",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newFlashLoanFeePercentage",
+        "type": "uint256"
+      }
+    ],
+    "name": "FlashLoanFeePercentageChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newSwapFeePercentage",
+        "type": "uint256"
+      }
+    ],
+    "name": "SwapFeePercentageChanged",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "selector",
+        "type": "bytes4"
+      }
+    ],
+    "name": "getActionId",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAuthorizer",
+    "outputs": [
+      {
+        "internalType": "contract IAuthorizer",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IERC20[]",
+        "name": "tokens",
+        "type": "address[]"
+      }
+    ],
+    "name": "getCollectedFeeAmounts",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "feeAmounts",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getFlashLoanFeePercentage",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getSwapFeePercentage",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "newFlashLoanFeePercentage",
+        "type": "uint256"
+      }
+    ],
+    "name": "setFlashLoanFeePercentage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "newSwapFeePercentage",
+        "type": "uint256"
+      }
+    ],
+    "name": "setSwapFeePercentage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "vault",
+    "outputs": [
+      {
+        "internalType": "contract IVault",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IERC20[]",
+        "name": "tokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "amounts",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      }
+    ],
+    "name": "withdrawCollectedFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+];
+const vaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
+
+type LiquidityMiningTokenRewards = {
+  tokenAddress: string;
+  amount: number;
+};
+
+
 const defaultOptions: DefaultOptions = {
   watchQuery: {
     fetchPolicy: 'no-cache',
@@ -39,6 +230,7 @@ export default function Invest () {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const walletBAlances = useSelector((state: AppState) => state.wallet.balances);
+  const prices = useMarketPrices();
   // const tokenSet =
 
   const doStuff = async () => {
@@ -51,7 +243,7 @@ export default function Invest () {
     // REVIEW get working as query param, not stringify
     const GET_POOLS = gql`
       query GetPools {
-        pools(first: 1000, skip:0, orderBy:totalLiquidity, orderDirection:desc, where: {totalLiquidity_gt: 10}) {
+        pools(first: 1000, skip:0, orderBy:totalLiquidity, orderDirection:desc, where: {id: "0xcf354603a9aebd2ff9f33e1b04246d8ea204ae9500020000000000000000005a"}) {
           id
           address
           poolType
@@ -106,7 +298,6 @@ export default function Invest () {
   // https://sourcegraph.com/github.com/balancer-labs/frontend-v2/-/blob/src/composables/pools/usePoolCreation.ts?L447:46#tab=def
   const exitPool = async (pool: any) => {
     const poolId = '0x0d34e5dd4d8f043557145598e4e2dc286b35fd4f000000000000000000000068';
-    const vaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
     const tokenAddresses = [
       '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // USDC
       "0x2e1ad108ff1d8c782fcbbb89aad783ac49586756", // TUSD
@@ -131,6 +322,7 @@ export default function Invest () {
     // await tx1.wait(3);
 
     const vault = new Contract(vaultAddress, Vault__factory.abi, signer);
+    console.log(vault.functions);
     const tx = await vault.exitPool(
       poolId,
       userAddress,
@@ -218,7 +410,262 @@ export default function Invest () {
     }
   }
 
+    const calcTotalAPR = (
+        poolAPR: string,
+        liquidityMiningAPR: string,
+        thirdPartyAPR: string
+    ): string => {
+        return bnum(poolAPR)
+          .plus(liquidityMiningAPR)
+          .plus(thirdPartyAPR)
+          .toString();
+      }
+
+  function computeAPRForPool(
+    rewards: number,
+    tokenPrice: number | null | undefined,
+    totalLiquidity: string
+  ) {
+    // Guard against null price
+    if (tokenPrice === null || tokenPrice === undefined) return '0';
+    // console.log('calculating aprfor pool')
+    // console.log(rewards)
+    // console.log(tokenPrice)
+    // console.log(totalLiquidity)
+
+    return bnum(rewards)
+      .div(7)
+      .times(tokenPrice)
+      .times(365)
+      .div(totalLiquidity)
+      .toString();
+  }
+
+
+  const getPriceForAddress = (address: string): number => {
+    const token = findTokenByAddress(tokenSet, address);
+    const p = prices.find((p: MarketDataResult) => p.symbol.toLowerCase() === token.symbol.toLowerCase());
+    return p ? p.current_price: 0;
+  }
+  function computeTotalAPRForPool(
+    tokenRewards: LiquidityMiningTokenRewards[],
+    totalLiquidity: string
+  ) {
+    // console.log('REWAORDS,',tokenRewards)
+    // console.log('totalLiquidity', totalLiquidity)
+    return tokenRewards
+      .reduce(
+        (totalRewards: AaveBigNumber, { amount, tokenAddress }) =>
+          totalRewards.plus(
+            computeAPRForPool(
+              amount,
+              getPriceForAddress(tokenAddress),
+              totalLiquidity
+            )
+          ),
+        bnum(0)
+      )
+      .toString();
+  }
+
+  function computeAPRsForPool(
+    tokenRewards: LiquidityMiningTokenRewards[],
+    totalLiquidity: string
+  ): { [address: string]: string } {
+    const rewardAPRs = tokenRewards.map(reward => [
+      getAddress(reward.tokenAddress),
+      computeAPRForPool(
+        reward.amount,
+        getPriceForAddress(reward.tokenAddress),
+        totalLiquidity
+      )
+    ]);
+    // console.log('REWARD APRS', rewardAPRs)
+    return Object.fromEntries(rewardAPRs);
+  }
+
+  function removeAddressesFromTotalLiquidity(
+    // excludedAddresses: ExcludedAddresses,
+    pool: any,
+    totalLiquidityString: string
+  ) {
+    const totalLiquidity = bnum(totalLiquidityString);
+    const miningTotalLiquidity = totalLiquidity;
+    //
+    // if (excludedAddresses != null && excludedAddresses[pool.address] != null) {
+    //   Object.values(excludedAddresses[pool.address]).forEach(accountBalance => {
+    //     const accountBalanceFormatted = formatUnits(accountBalance, 18);
+    //     const poolShare = bnum(accountBalanceFormatted).div(pool.totalShares);
+    //
+    //     miningTotalLiquidity = miningTotalLiquidity.minus(
+    //       totalLiquidity.times(poolShare)
+    //     );
+    //   });
+    // }
+
+    return miningTotalLiquidity.toString();
+  }
+
+  const removeExcludedAddressesFromTotalLiquidity = (
+    pool: any,
+    totalLiquidityString: string
+)  => {
+    return removeAddressesFromTotalLiquidity(
+      pool,
+      totalLiquidityString
+    );
+  }
+
+  function bnum(val: string | number | BigNumber): AaveBigNumber {
+    const number = typeof val === 'string' ? val : val ? val.toString() : '0';
+    return new AaveBigNumber(number);
+  }
+
+
+  const oneSecondInMs = 1000;
+  const oneMinInMs = 60 * oneSecondInMs;
+  const oneHourInMs = 60 * oneMinInMs;
+
+  const twentyFourHoursInMs = 24 * oneHourInMs;
+  const twentyFourHoursInSecs = twentyFourHoursInMs / oneSecondInMs;
+
+  const getblocknum = async (): Promise<number> => {
+    // @ts-ignore
+    const currentBlock = await provider.getBlockNumber();
+    const blocksInDay = Math.round(
+      twentyFourHoursInSecs / 2
+    );
+    return currentBlock - blocksInDay;
+  }
+
+  const getPastPools = async () => {
+    // const pastPoolsQuery = this.query({ where: isInPoolIds, block });
+    const blockNum = await getblocknum();
+    const q = gql`
+          query GetPools($block: Int!) {
+        pools(where:{id_in:["0xcf354603a9aebd2ff9f33e1b04246d8ea204ae9500020000000000000000005a"]}, block:{number: $block}) {
+          id
+          address
+          poolType
+          totalLiquidity
+          strategyType
+          totalSwapFee
+          swapFee
+          symbol
+          amp
+          tokens {
+            id 
+            symbol
+            name
+            decimals
+            address
+            balance
+            invested
+            investments {
+              id
+              amount
+            }
+            weight
+          }
+        }
+      }
+`
+
+    // console.log('blockNum', blockNum)
+    const poolReslts = await client.query({
+      query: q,
+      variables: { block: blockNum}
+    });
+    // console.log
+    // return p
+    console.log('poolReslts', poolReslts)
+    return poolReslts.data ? poolReslts.data.pools[0] : null;
+  }
+
   const calculateApr = (pool: any) => {
+    // const poolApr =
+    if (pool.id === '0xcf354603a9aebd2ff9f33e1b04246d8ea204ae9500020000000000000000005a') {
+      // console.log('POOl', pool)
+      // const
+      // const block = { number: blockNumber };
+      // const isInPoolIds = { id_in: pools.map(pool => pool.id) };
+      // const pastPoolsQuery = this.query({ where: isInPoolIds, block });
+
+      getPastPools().then((pastPool: any) => {
+        console.log('PAST POOL', pastPool);
+        const vault = new Contract(vaultAddress, Vault__factory.abi, signer);
+        vault.getProtocolFeesCollector().then((c: string) => {
+          const collector = new Contract(c, collectorAbi, signer);
+          collector.getSwapFeePercentage().then((fee: string) => {
+            console.log('COLLECTOR FEE', fee.toString());
+          })
+        })
+        const protocolFeePercentage = (500000000000000000 / (10 ** 18));
+        let poolApr: any = '';
+        if (!pastPool) {
+          poolApr = bnum(pool.totalSwapFee)
+            .times(1 - protocolFeePercentage)
+            .dividedBy(pool.totalLiquidity)
+            .multipliedBy(365)
+            // .toString();
+        } else {
+          const swapFees = bnum(pool.totalSwapFee).minus(pastPool.totalSwapFee);
+          poolApr = swapFees
+            .times(1 - protocolFeePercentage)
+            .dividedBy(pool.totalLiquidity)
+            .multipliedBy(365)
+            // .toString();
+        }
+
+
+        console.log('pool APR', poolApr.times(100).toString());
+      })
+
+      // const poolAPR = bnum(pool.totalSwapFee)
+      //   .times(1 - protocolFeePercentage)
+      //   .dividedBy(pool.totalLiquidity)
+      //   .multipliedBy(365)
+      //   .toString();
+
+      let liquidityMiningAPR = '0';
+      let liquidityMiningBreakdown = {};
+
+      // https://raw.githubusercontent.com/balancer-labs/frontend-v2/develop/src/lib/utils/liquidityMining/MultiTokenLiquidityMining.json
+      // const liquidityMiningRewards = currentLiquidityMiningRewards[pool.id];
+      const liquidityMiningRewards = [
+        {
+          "tokenAddress": "0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3",
+          "amount": 1750
+        }
+      ]
+      const miningTotalLiquidity = removeExcludedAddressesFromTotalLiquidity(
+        pool,
+        pool.totalLiquidity
+      );
+      const IS_LIQUIDITY_MINING_ENABLED = true;
+      const hasLiquidityMiningRewards = IS_LIQUIDITY_MINING_ENABLED
+        ? !!liquidityMiningRewards
+        : false;
+
+      if (hasLiquidityMiningRewards) {
+        liquidityMiningAPR = computeTotalAPRForPool(
+          liquidityMiningRewards,
+          miningTotalLiquidity
+        );
+        liquidityMiningBreakdown = computeAPRsForPool(
+          liquidityMiningRewards,
+          miningTotalLiquidity
+        );
+      }
+      console.log('luquidity',liquidityMiningAPR);
+      console.log('liquidityMiningBreakdown', liquidityMiningBreakdown);
+      // console.log(bnum(poolAPR)
+      //   .plus(liquidityMiningAPR)
+      //   // .plus(thirdPartyAPR)
+      //   .toString());
+
+    }
+
 
     // calculateIncentivesAPY()
   // private calcAPR(
@@ -227,11 +674,11 @@ export default function Invest () {
   //     protocolFeePercentage: number
   // ) {
   //     if (!pastPool)
-        return new AaveBigNumber(pool.totalSwapFee)
-          .times(1 - parseFloat(pool.swapFee))
-          .dividedBy(pool.totalLiquidity)
-          .multipliedBy(365)
-          .toString();
+  //       return bnum(pool.totalSwapFee)
+  //         .times(1 - parseFloat(pool.swapFee))
+  //         .dividedBy(pool.totalLiquidity)
+  //         .multipliedBy(365)
+  //         .toString();
 
   //     const swapFees = bnum(pool.totalSwapFee).minus(pastPool.totalSwapFee);
   //     return swapFees

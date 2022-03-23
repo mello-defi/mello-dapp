@@ -34,6 +34,7 @@ export function getMarketData(
 ): Promise<MarketDataResult[]> {
   const params: CoinGeckoParams = {
     vs_currency: currency.toLocaleLowerCase(),
+    // REVIEW use contract acddresses https://api.coingecko.com/api/v3/simple/token_price/polygon-pos?contract_addresses=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&vs_currencies=usd
     // ids: tokenIds.join(',').toLocaleLowerCase(),
     ids: [
       'bitcoin',
@@ -43,7 +44,8 @@ export function getMarketData(
       'dai',
       'wrapped-bitcoin',
       'jarvis-synthetic-euro',
-      'renbtc'
+      'renbtc',
+      'balancer'
     ]
       .join(',')
       .toLocaleLowerCase()

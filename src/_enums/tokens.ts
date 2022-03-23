@@ -21,7 +21,8 @@ export const validPolygonTokenSymbols: CryptoCurrencySymbol | string[] = [
   CryptoCurrencySymbol.WBTC,
   CryptoCurrencySymbol.RENBTC,
   CryptoCurrencySymbol.USDC,
-  CryptoCurrencySymbol.WETH
+  CryptoCurrencySymbol.WETH,
+  CryptoCurrencySymbol.BAL,
 ];
 // export const validPolygonTokenSymbolsUppercase: string[] = validPolygonTokenSymbols.map((symbol) =>
 //   symbol.toUpperCase()
@@ -57,7 +58,8 @@ export enum PolygonMainnetTokenContracts {
   MATIC = '0x0000000000000000000000000000000000001010',
   DAI = '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
   RENBTC = '0xdbf31df14b66535af65aac99c32e9ea844e14501',
-  JEUR = '0x4e3decbb3645551b8a19f0ea1678079fcb33fb4c'
+  JEUR = '0x4e3decbb3645551b8a19f0ea1678079fcb33fb4c',
+  BAL = '0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3'
 }
 
 export enum PolygonTestnetMumbaiTokenContracts {
@@ -187,6 +189,7 @@ export interface PolygonTokenSet extends GenericTokenSet {
   [CryptoCurrencySymbol.WBTC]: EvmTokenDefinition;
   [CryptoCurrencySymbol.RENBTC]: EvmTokenDefinition;
   [CryptoCurrencySymbol.JEUR]?: EvmTokenDefinition;
+  [CryptoCurrencySymbol.BAL]?: EvmTokenDefinition;
 }
 
 export const polygonTestnetMumbaiTokens: PolygonTokenSet = {
@@ -255,6 +258,14 @@ export const polygonMainnetTokens: PolygonTokenSet = {
     address: PolygonMainnetTokenContracts.DAI,
     image: daiLogo,
     name: CryptoCurrencyName.DAI,
+    abi: ERC20Abi
+  },
+  [CryptoCurrencySymbol.BAL]: {
+    symbol: CryptoCurrencySymbol.BAL,
+    decimals: 18,
+    address: PolygonMainnetTokenContracts.BAL,
+    image: daiLogo,
+    name: CryptoCurrencyName.BAL,
     abi: ERC20Abi
   },
   [CryptoCurrencySymbol.USDC]: {

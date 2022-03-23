@@ -12,6 +12,7 @@ export enum CryptoCurrencyName {
   WAVAX = 'Wrapped AVAX',
   USDCE = 'USD Coin',
   DAIE = 'DAI',
+  BAL = 'Balancer',
   JEUR = 'Jarvis Synthetic Euro',
   WBTCE = 'Wrapped BTC'
 }
@@ -22,6 +23,7 @@ export enum CryptoCurrencySymbol {
   RENBTC = 'renBTC',
   ETH = 'ETH',
   WETH = 'WETH',
+  BAL = 'BAL',
   MATIC = 'MATIC',
   WMATIC = 'WMATIC',
   USDC = 'USDC',
