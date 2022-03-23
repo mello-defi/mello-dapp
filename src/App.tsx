@@ -20,6 +20,7 @@ import Onboarding from '_pages/Onboarding/Onboarding';
 import { setOnboardingComplete, setOnboardingOngoing } from '_redux/effects/onboardingEffects';
 import { setActiveTab } from '_redux/effects/uiEffects';
 import { ArrowForward, Info } from '@mui/icons-material';
+import Invest from '_pages/Invest/Invest';
 
 function OnboardingGuardButton({
   text,
@@ -92,10 +93,11 @@ interface TabContentDefinition {
   hideOnEthereumMainnet?: boolean;
   requiresLogin: boolean;
 }
+// REVIEW move to a separate file with navtab definitions
 const tabsContent: TabContentDefinition[] = [
   {
     tab: NavTab.DASHBOARD,
-    component: <Dashboard />,
+    component: <Invest />,
     hideOnEthereumMainnet: true,
     requiresLogin: true
   },
@@ -108,6 +110,12 @@ const tabsContent: TabContentDefinition[] = [
   {
     tab: NavTab.BORROW,
     component: <Borrow />,
+    hideOnEthereumMainnet: true,
+    requiresLogin: true
+  },
+  {
+    tab: NavTab.INVEST,
+    component: <Invest />,
     hideOnEthereumMainnet: true,
     requiresLogin: true
   },

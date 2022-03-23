@@ -19,24 +19,9 @@ function DesktopNavLinks({ navLinks }: { navLinks: NavLinkDefinition[] }) {
 }
 
 export default function Header() {
-  const provider = useSelector((state: AppState) => state.web3.provider);
-  const signer = useSelector((state: AppState) => state.web3.signer);
   const navLinks = useSelector((state: AppState) => state.ui.navLinks);
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  useEffect(() => {
-    const getWalletInfo = async () => {
-      if (provider && signer) {
-        // supabase
-        //   .from('wallet_history')
-        //   .insert([walletHistory])
-        //   .then((data) => {
-        //     console.log(data);
-        //   });
-      }
-    };
-    provider && getWalletInfo();
-  }, [provider]);
   return (
     <header className={'mb-2 py-2 sm:py-4 px-2 w-full bg-white'}>
       <div className={'max-w-5xl mx-auto flex-row-center justify-between'}>

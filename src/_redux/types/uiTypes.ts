@@ -10,6 +10,7 @@ export enum NavTab {
   BORROW = 'BORROW',
   FUND = 'FUND',
   LEARN = 'LEARN',
+  INVEST = 'INVEST',
   WALLET = 'WALLET',
   ONBOARDING = 'ONBOARDING'
 }
@@ -22,6 +23,7 @@ export interface NavLinkDefinition {
 export interface UIState {
   sidebarOpen: boolean;
   activeTab: NavTab;
+  // REVIEW move to separate file out of redux
   navLinks: NavLinkDefinition[];
 }
 

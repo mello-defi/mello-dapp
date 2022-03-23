@@ -77,7 +77,7 @@ export default function MultiCryptoAmountInput({
             type={'number'}
             disabled={disabled}
             // style={{fontFamily: 'monospace'}}
-            className={`text-2xl font-mono sm:text-3xl bg-gray-100 focus:outline-none px-2 sm:px-0 mt-2 sm:mt-0 py-1 sm:py-0 ${
+            className={`text-2xl font-mono sm:text-3xl w-full bg-gray-100 focus:outline-none px-2 sm:px-0 mt-2 sm:mt-0 py-1 sm:py-0 ${
               parseFloat(amount) === 0 ? 'text-gray-400' : 'text-gray-700'
             }`}
             // value={Number(amount).toString() === '0' ? '0.0' : Number(amount).toString()}

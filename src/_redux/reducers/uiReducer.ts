@@ -13,6 +13,7 @@ const initialState: UIState = {
     { tab: NavTab.DASHBOARD, title: 'Dashboard' },
     { tab: NavTab.DEPOSIT, title: 'Deposit' },
     { tab: NavTab.BORROW, title: 'Borrow' },
+    { tab: NavTab.INVEST, title: 'Invest' },
     { tab: NavTab.SWAP, title: 'Swap' },
     { tab: NavTab.FUND, title: 'Fund' },
     { tab: NavTab.ONBOARDING, title: 'Onboarding' }

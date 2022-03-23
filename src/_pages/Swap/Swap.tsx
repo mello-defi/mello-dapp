@@ -18,7 +18,7 @@ import TransactionError from '_components/transactions/TransactionError';
 import MultiCryptoAmountInput from '_components/core/MultiCryptoAmountInput';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { paraswapLogo } from '_assets/images';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber, Contract, ethers } from 'ethers';
 import { getGasPrice } from '_services/gasService';
 import SwapPriceInformation from '_pages/Swap/SwapPriceInformation';
 import useWalletBalance from '_hooks/useWalletBalance';
@@ -29,6 +29,8 @@ import { CryptoCurrencySymbol } from '_enums/currency';
 import { logTransactionHash } from '_services/dbService';
 import { stepPerformSwap } from '_pages/Onboarding/OnboardingSteps';
 import { EthereumTransactionError } from '_interfaces/errors';
+
+
 
 export default function Swap({
   initialSourceTokenSymbol,
