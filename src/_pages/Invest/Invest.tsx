@@ -1,18 +1,19 @@
-
-import { getPoolAddress } from "@balancer-labs/balancer-js";
+// import { getPoolAddress } from "@balancer-labs/balancer-js";
 // import { BigNumber, Contract, ethers } from 'ethers';
 // import { IERC20Abi } from ./IERC20.json
-import ERC20Abi from '_enums/erc20.js';
+import { Vault__factory } from '@balancer-labs/typechain';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { Button } from '_components/core/Buttons';
-import { JoinPoolRequest } from '@balancer-labs/sdk';
-import { polygonMainnetTokens } from '_enums/tokens';
-import { CryptoCurrencySymbol } from '_enums/currency';
+// import { JoinPoolRequest } from '@balancer-labs/sdk';
+import { PolygonMainnetTokenContracts, polygonMainnetTokens } from '_enums/tokens';
 import { ApolloClient, DefaultOptions, gql, InMemoryCache } from '@apollo/client';
 import { useState } from 'react';
-import { findTokenByAddress } from '_utils/index';
-import { BigNumber, calculateIncentivesAPY } from '@aave/protocol-js';
+import { BigNumber as AaveBigNumber } from '@aave/protocol-js';
+import { BigNumber, Contract, ethers } from 'ethers';
+import { WeightedPoolEncoder } from '@balancer-labs/balancer-js';
+import { StablePoolEncoder } from '@balancer-labs/sdk';
+import { CryptoCurrencySymbol } from '_enums/currency';
 
 //
 const defaultOptions: DefaultOptions = {
@@ -37,12 +38,12 @@ export default function Invest () {
   const signer = useSelector((state: AppState) => state.web3.signer);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
+  const walletBAlances = useSelector((state: AppState) => state.wallet.balances);
   // const tokenSet =
 
-  // https://dev.balancer.fi/resources/joins-and-exits/pool-joins
-  // https://dev.balancer.fi/resources/internal-user-balances
   const doStuff = async () => {
-    // const provider = ethers.Wallet.createRandom();
+  // https://dev.balancer.fi/resources/joins-and-exits/pool-joins
+
     const addresses = Object.values(polygonMainnetTokens).map(t => t.address);
 
     console.log(addresses);
@@ -50,7 +51,7 @@ export default function Invest () {
     // REVIEW get working as query param, not stringify
     const GET_POOLS = gql`
       query GetPools {
-        pools(first: 1000, skip:0, orderBy:totalLiquidity, orderDirection:desc) {
+        pools(first: 1000, skip:0, orderBy:totalLiquidity, orderDirection:desc, where: {totalLiquidity_gt: 10}) {
           id
           address
           poolType
@@ -84,12 +85,80 @@ export default function Invest () {
     const temp = [];
     for (const pool of poolReslts.data.pools) {
       const tok = pool.tokens.filter((t: any) => addresses.includes(t.address));
-      if (tok.length === pool.tokens.length) {
+      if (tok.length > 0) {
         temp.push(pool);
         console.log(pool);
       }
     }
     setPools(temp);
+  }
+
+  const calcLiquidityMiningAPR = (pool: any) => {
+    console.log(pool);
+  }
+
+  // https://sourcegraph.com/github.com/balancer-labs/frontend-v2/-/blob/src/services/balancer/pools/weighted-pool.service.ts?L109:16
+  // https://sourcegraph.com/github.com/balancer-labs/frontend-v2/-/blob/src/composables/pools/usePoolCreation.ts?L447:46#tab=def
+  const join = async (pool: any) => {
+    try {
+
+      // console.log(pool);
+      // const poolId = '0x0d34e5dd4d8f043557145598e4e2dc286b35fd4f000000000000000000000068';
+      // const vaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
+      // const tokenAddresses = pool.tokens.map((tok: any) => tok.address); // USDC
+      // const amountsIn: string[] = [];
+      // const matchingtoken = polygonMainnetTokens[CryptoCurrencySymbol.USDC];
+      // for (const tokenAddress of tokenAddresses) {
+      //   let val = '0';
+      //   if (tokenAddress === matchingtoken.address) {
+      //     val = ethers.utils.parseUnits('0.1', matchingtoken.decimals).toString();
+      //   }
+      //   amountsIn.push(val);
+      // }
+      //
+      // const vault = new Contract(vaultAddress, Vault__factory.abi, signer);
+      // const tx = await vault.joinPool(
+      //   pool.id,
+      //   userAddress,
+      //   userAddress,
+      //   {
+      //     assets: tokenAddresses,
+      //     maxAmountsIn: amountsIn,
+      //     fromInternalBalance: false,
+      //     userData: pool.poolType === 'Stable' ? StablePoolEncoder.joinInit(amountsIn) : WeightedPoolEncoder.joinInit(amountsIn),
+      //   }
+      // );
+      // console.log('tx', tx);
+      const poolId = '0x0d34e5dd4d8f043557145598e4e2dc286b35fd4f000000000000000000000068';
+      const vaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
+      const tokenAddresses = [
+        '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // USDC
+        "0x2e1ad108ff1d8c782fcbbb89aad783ac49586756", // TUSD
+        "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063", // DAI
+        "0xc2132d05d31c914a87c6611c10748aeb04b58e8f"  // USDT
+      ]
+      const amountsIn: string[] = [
+        '1000000',
+        '0',
+        '0',
+        '0'
+      ];
+      const vault = new Contract(vaultAddress, Vault__factory.abi, signer);
+      const tx = await vault.joinPool(
+        poolId,
+        userAddress,
+        userAddress,
+        {
+          assets: tokenAddresses,
+          maxAmountsIn: amountsIn,
+          fromInternalBalance: false,
+          userData: StablePoolEncoder.joinExactTokensInForBPTOut(amountsIn, BigNumber.from('0')),
+        }
+      );
+      console.log('tx', tx);
+    } catch (e: any) {
+      console.log(e);
+    }
   }
 
   const calculateApr = (pool: any) => {
@@ -101,7 +170,7 @@ export default function Invest () {
   //     protocolFeePercentage: number
   // ) {
   //     if (!pastPool)
-        return new BigNumber(pool.totalSwapFee)
+        return new AaveBigNumber(pool.totalSwapFee)
           .times(1 - parseFloat(pool.swapFee))
           .dividedBy(pool.totalLiquidity)
           .multipliedBy(365)
@@ -129,7 +198,7 @@ export default function Invest () {
                 {p.tokens.map((t: any) => {
                   return (
                     <span key={t.id}>
-                    <img className={'h-7 w-7 overflow-x-hidden'} alt={t.id} src={findTokenByAddress(tokenSet, t.address).image}/>
+                    {/*<img className={'h-7 w-7 overflow-x-hidden'} alt={t.id} src={findTokenByAddress(tokenSet, t.address).image}/>*/}
                   </span>
                   )
                 })}
@@ -146,11 +215,18 @@ export default function Invest () {
               <div
               onClick={() => window.open(`https://polygon.balancer.fi/#/pool/${p.id}`, '_blank')}
                 className={'ml-2 font-mono text-body-smaller '}>
-                ${parseFloat(p.totalLiquidity).toFixed(2)}
+                {/*${parseFloat(p.totalLiquidity).toFixed(2)}*/}
+                {p.totalLiquidity}
                 <br/>
                 {/*{p.id}*/}
                 {calculateApr(p)}
               </div>
+              <div className={'ml-2'}>
+                {p.poolType}
+              </div>
+            </div>
+            <div>
+              <Button onClick={() => join(p)}>Join</Button>
             </div>
           </div>
         )

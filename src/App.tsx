@@ -20,6 +20,7 @@ import Onboarding from '_pages/Onboarding/Onboarding';
 import { setOnboardingComplete, setOnboardingOngoing } from '_redux/effects/onboardingEffects';
 import { setActiveTab } from '_redux/effects/uiEffects';
 import { ArrowForward, Info } from '@mui/icons-material';
+import Invest from '_pages/Invest/Invest';
 
 function OnboardingGuardButton({
   text,
@@ -95,7 +96,7 @@ interface TabContentDefinition {
 const tabsContent: TabContentDefinition[] = [
   {
     tab: NavTab.DASHBOARD,
-    component: <Dashboard />,
+    component: <Invest />,
     hideOnEthereumMainnet: true,
     requiresLogin: true
   },
