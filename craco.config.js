@@ -30,6 +30,7 @@ module.exports = {
       }
     }
   ],
+  
   // webpack: {
   // configure: (webpackConfig, {paths}) => {
   //   const {hasFoundAny, matches} = getLoaders(
@@ -37,7 +38,7 @@ module.exports = {
   //     loaderByName('babel-loader')
   //   );
   //   if (!hasFoundAny) throwError('failed to find babel-loader');
-  //
+  
   //   console.log('removing babel-loader');
   //   const {hasRemovedAny, removedCount} = removeLoaders(
   //     webpackConfig,
@@ -46,16 +47,16 @@ module.exports = {
   //   if (!hasRemovedAny) throwError('no babel-loader to remove');
   //   if (removedCount !== 2)
   //     throwError('had expected to remove 2 babel loader instances');
-  //
+  
   //   console.log('adding ts-loader');
-  //
+  
   //   const tsLoader = {
   //     test: /\.(js|mjs|jsx|ts|tsx)$/,
   //     include: paths.appSrc,
   //     loader: require.resolve('ts-loader'),
   //     options: {transpileOnly: true},
   //   };
-  //
+  
   //   const {isAdded: tsLoaderIsAdded} = addAfterLoader(
   //     webpackConfig,
   //     loaderByName('url-loader'),
@@ -63,7 +64,7 @@ module.exports = {
   //   );
   //   if (!tsLoaderIsAdded) throwError('failed to add ts-loader');
   //   console.log('added ts-loader');
-  //
+  
   //   console.log('adding non-application JS babel-loader back');
   //   const {isAdded: babelLoaderIsAdded} = addAfterLoader(
   //     webpackConfig,
@@ -73,7 +74,7 @@ module.exports = {
   //   if (!babelLoaderIsAdded)
   //     throwError('failed to add back babel-loader for non-application JS');
   //   console.log('added non-application JS babel-loader back');
-  //
+  
   //   return webpackConfig;
   // },
   // },
@@ -81,5 +82,18 @@ module.exports = {
     postcss: {
       plugins: [require('tailwindcss'), require('autoprefixer')]
     }
-  }
+  },
+  webpack: {
+    configure: {
+      module: {
+        rules: [
+          {
+            type: 'javascript/auto',
+            test: /\.mjs$/,
+            use: [],
+          },
+        ],
+      },
+    },
+  },
 };
