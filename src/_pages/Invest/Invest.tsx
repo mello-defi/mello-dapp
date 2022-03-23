@@ -7,6 +7,8 @@ import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { Button } from '_components/core/Buttons';
 // import { JoinPoolRequest } from '@balancer-labs/sdk';
+import { differenceInWeeks } from 'date-fns';
+
 import { PolygonMainnetTokenContracts, polygonMainnetTokens } from '_enums/tokens';
 import { ApolloClient, DefaultOptions, gql, InMemoryCache } from '@apollo/client';
 import { useState } from 'react';
@@ -14,6 +16,7 @@ import { BigNumber as AaveBigNumber } from '@aave/protocol-js';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { WeightedPoolEncoder } from '@balancer-labs/balancer-js';
 import { getPoolAddress, StablePoolEncoder } from '@balancer-labs/sdk';
+import axios from 'axios';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { findTokenByAddress } from '_utils/index';
@@ -443,9 +446,14 @@ export default function Invest () {
 
 
   const getPriceForAddress = (address: string): number => {
-    const token = findTokenByAddress(tokenSet, address);
-    const p = prices.find((p: MarketDataResult) => p.symbol.toLowerCase() === token.symbol.toLowerCase());
-    return p ? p.current_price: 0;
+    try {
+      const token = findTokenByAddress(tokenSet, address);
+      const p = prices.find((p: MarketDataResult) => p.symbol.toLowerCase() === token.symbol.toLowerCase());
+      return p ? p.current_price: 0;
+    } catch (e: any) {
+      // console.lo
+    }
+    return 0;
   }
   function computeTotalAPRForPool(
     tokenRewards: LiquidityMiningTokenRewards[],
@@ -582,90 +590,123 @@ export default function Invest () {
     return poolReslts.data ? poolReslts.data.pools[0] : null;
   }
 
+  const getSwapApr = async (pool: any): Promise<number> => {
+    const pastPool = await getPastPools();
+    // console.log('PAST POOL', pastPool);
+    const vault = new Contract(vaultAddress, Vault__factory.abi, signer);
+    const collectorAddress = await vault.getProtocolFeesCollector();
+    const collector = new Contract(collectorAddress, collectorAbi, signer);
+    const swapFeePercentage = await collector.getSwapFeePercentage();
+    const protocolFeePercentage = (swapFeePercentage / (10 ** 18));
+    let poolApr: any = '';
+    if (!pastPool) {
+      poolApr = bnum(pool.totalSwapFee)
+        .times(1 - protocolFeePercentage)
+        .dividedBy(pool.totalLiquidity)
+        .multipliedBy(365)
+    } else {
+      const swapFees = bnum(pool.totalSwapFee).minus(pastPool.totalSwapFee);
+      poolApr = swapFees
+        .times(1 - protocolFeePercentage)
+        .dividedBy(pool.totalLiquidity)
+        .multipliedBy(365)
+    }
+    return Number(poolApr.times(100));
+  }
+
+  function toUtcTime(date: Date) {
+    return Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+      date.getUTCHours(),
+      date.getUTCMinutes(),
+      date.getUTCSeconds()
+    );
+  }
+
+
+  // Liquidity mining started on June 1, 2020 00:00 UTC
+  const liquidityMiningStartTime = Date.UTC(2020, 5, 1, 0, 0);
+
+  function getCurrentLiquidityMiningWeek() {
+    return differenceInWeeks(toUtcTime(new Date()), liquidityMiningStartTime) + 1;
+  }
+
+  const getMiningLiquidityApr = async (pool: any) : Promise<number> => {
+    let liquidityMiningAPR = '0';
+    let liquidityMiningBreakdown = {};
+
+    const url = 'https://raw.githubusercontent.com/balancer-labs/frontend-v2/develop/src/lib/utils/liquidityMining/MultiTokenLiquidityMining.json';
+    const { data} = await axios.get(url);
+    const week = `week_${getCurrentLiquidityMiningWeek()}`;
+    const weekStats = data[week];
+    let liquidityMiningRewards : any = {};
+    if (weekStats) {
+      const hasrewards = weekStats.find((p: any) => p.chainId === 137)?.pools
+      if (hasrewards && hasrewards[pool.id]) {
+        liquidityMiningRewards = hasrewards[pool.id];
+        // console.log(rewards);
+      }
+    }
+    // const liquidityMiningRewards = currentLiquidityMiningRewards[pool.id];
+    // const rewards = [
+    //   {
+    //     "tokenAddress": "0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3",
+    //     "amount": 1750
+    //   }
+    // ]
+    const miningTotalLiquidity = removeExcludedAddressesFromTotalLiquidity(
+      pool,
+      pool.totalLiquidity
+    );
+    const IS_LIQUIDITY_MINING_ENABLED = true;
+    const hasLiquidityMiningRewards = IS_LIQUIDITY_MINING_ENABLED
+      ? !!liquidityMiningRewards
+      : false;
+
+    if (hasLiquidityMiningRewards) {
+      liquidityMiningAPR = computeTotalAPRForPool(
+        liquidityMiningRewards,
+        miningTotalLiquidity
+      );
+      liquidityMiningBreakdown = computeAPRsForPool(
+        liquidityMiningRewards,
+        miningTotalLiquidity
+      );
+    }
+    return parseFloat(liquidityMiningAPR);
+  }
   const calculateApr = (pool: any) => {
     // const poolApr =
-    if (pool.id === '0xcf354603a9aebd2ff9f33e1b04246d8ea204ae9500020000000000000000005a') {
+    // if (pool.id === '0xcf354603a9aebd2ff9f33e1b04246d8ea204ae9500020000000000000000005a') {
       // console.log('POOl', pool)
       // const
       // const block = { number: blockNumber };
       // const isInPoolIds = { id_in: pools.map(pool => pool.id) };
       // const pastPoolsQuery = this.query({ where: isInPoolIds, block });
-
-      getPastPools().then((pastPool: any) => {
-        console.log('PAST POOL', pastPool);
-        const vault = new Contract(vaultAddress, Vault__factory.abi, signer);
-        vault.getProtocolFeesCollector().then((c: string) => {
-          const collector = new Contract(c, collectorAbi, signer);
-          collector.getSwapFeePercentage().then((fee: string) => {
-            console.log('COLLECTOR FEE', fee.toString());
-          })
-        })
-        const protocolFeePercentage = (500000000000000000 / (10 ** 18));
-        let poolApr: any = '';
-        if (!pastPool) {
-          poolApr = bnum(pool.totalSwapFee)
-            .times(1 - protocolFeePercentage)
-            .dividedBy(pool.totalLiquidity)
-            .multipliedBy(365)
-            // .toString();
-        } else {
-          const swapFees = bnum(pool.totalSwapFee).minus(pastPool.totalSwapFee);
-          poolApr = swapFees
-            .times(1 - protocolFeePercentage)
-            .dividedBy(pool.totalLiquidity)
-            .multipliedBy(365)
-            // .toString();
-        }
-
-
-        console.log('pool APR', poolApr.times(100).toString());
+      getMiningLiquidityApr(pool).then((apr: number) => {
+        // console.log('apr', apr)
+        getSwapApr(pool).then((swapApr: number) => {
+          console.log('swapApr', swapApr)
+          console.log('jmining apr', apr)
+          const totalApr = apr + swapApr;
+          console.log('total apr', totalApr)
+          return totalApr;
+          // console.log('totalApr', totalApr)
+          // setApr(totalApr);
+        });
       })
 
-      // const poolAPR = bnum(pool.totalSwapFee)
-      //   .times(1 - protocolFeePercentage)
-      //   .dividedBy(pool.totalLiquidity)
-      //   .multipliedBy(365)
-      //   .toString();
-
-      let liquidityMiningAPR = '0';
-      let liquidityMiningBreakdown = {};
-
-      // https://raw.githubusercontent.com/balancer-labs/frontend-v2/develop/src/lib/utils/liquidityMining/MultiTokenLiquidityMining.json
-      // const liquidityMiningRewards = currentLiquidityMiningRewards[pool.id];
-      const liquidityMiningRewards = [
-        {
-          "tokenAddress": "0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3",
-          "amount": 1750
-        }
-      ]
-      const miningTotalLiquidity = removeExcludedAddressesFromTotalLiquidity(
-        pool,
-        pool.totalLiquidity
-      );
-      const IS_LIQUIDITY_MINING_ENABLED = true;
-      const hasLiquidityMiningRewards = IS_LIQUIDITY_MINING_ENABLED
-        ? !!liquidityMiningRewards
-        : false;
-
-      if (hasLiquidityMiningRewards) {
-        liquidityMiningAPR = computeTotalAPRForPool(
-          liquidityMiningRewards,
-          miningTotalLiquidity
-        );
-        liquidityMiningBreakdown = computeAPRsForPool(
-          liquidityMiningRewards,
-          miningTotalLiquidity
-        );
-      }
-      console.log('luquidity',liquidityMiningAPR);
-      console.log('liquidityMiningBreakdown', liquidityMiningBreakdown);
+      // console.log('luquidity', parseFloat(liquidityMiningAPR) * 100);
+      // console.log('liquidityMiningBreakdown', liquidityMiningBreakdown);
       // console.log(bnum(poolAPR)
       //   .plus(liquidityMiningAPR)
       //   // .plus(thirdPartyAPR)
       //   .toString());
+    // }
 
-    }
-
+    // return 'aaa';
 
     // calculateIncentivesAPY()
   // private calcAPR(
