@@ -116,7 +116,7 @@ export default function Invest () {
     const amountsOUt: string[] = [
       '0',
       '0',
-      '10000',
+      ethers.utils.parseUnits('0.05', 18).toString(),
       '0'
     ];
     // https://sourcegraph.com/github.com/balancer-labs/balancer-v2-monorepo/-/blob/pkg/pool-weighted/contracts/BaseWeightedPool.sol?L410\
@@ -195,7 +195,7 @@ export default function Invest () {
       const aa: BigNumber = await contract2.allowance(userAddress, contract2.address);
       console.log(aa.toString());
       const amountsIn: string[] = [
-        '100',
+        '100000',
         '0',
         '0',
         '0'
