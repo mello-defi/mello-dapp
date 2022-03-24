@@ -45,7 +45,11 @@ export function getMarketData(
       'wrapped-bitcoin',
       'jarvis-synthetic-euro',
       'renbtc',
-      'balancer'
+      'balancer',
+      'true-usd',
+      'tether',
+      'qi-dao',
+      'mimatic'
     ]
       .join(',')
       .toLocaleLowerCase()

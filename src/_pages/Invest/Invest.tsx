@@ -276,10 +276,10 @@ export default function Invest() {
     // //   }
   };
   useEffect(() => {
-    if (!pools.length) {
+    if (!pools.length && prices.length > 0) {
       doStuff();
     }
-  }, [pools]);
+  }, [pools, prices]);
 
   return (
     <div>
@@ -326,7 +326,9 @@ export default function Invest() {
                   maximumFractionDigits: 0
                 })}
               </div>
-              {p.liquidityMiningApr}
+              <div className={'ml-2'}>
+                {p.liquidityMiningApr}
+              </div>
             </div>
           </div>
         );

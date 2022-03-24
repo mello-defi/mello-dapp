@@ -17,6 +17,7 @@ export enum CryptoCurrencyName {
   WBTCE = 'Wrapped BTC',
   MAI = 'MAI',
   TUSD = 'TrueUSD',
+  QI = 'Qi',
   USDT = 'Tether'
 }
 
@@ -33,6 +34,7 @@ export enum CryptoCurrencySymbol {
   MIMATIC = 'miMATIC',
   WMATIC = 'WMATIC',
   USDC = 'USDC',
+  QI = 'QI',
   DAI = 'DAI',
   JEUR = 'jEUR',
   DAIE = 'DAI.e',

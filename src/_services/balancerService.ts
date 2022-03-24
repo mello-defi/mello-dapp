@@ -17,7 +17,7 @@ import { GenericTokenSet } from '_enums/tokens';
 
 const GET_POOLS = gql`
   query GetPools {
-    pools(first: 1000, skip: 0, orderBy: totalLiquidity, orderDirection: desc) {
+    pools(first: 5, skip: 0, orderBy: totalLiquidity, orderDirection: desc) {
       id
       address
       poolType
@@ -111,10 +111,16 @@ const removeExcludedAddressesFromTotalLiquidity = (pool: any, totalLiquidityStri
 const getPriceForAddress = (tokenSet: GenericTokenSet, prices: MarketDataResult[], address: string): number => {
   try {
     const token = findTokenByAddress(tokenSet, address);
+    // console.log(token);
+    console.log(token.symbol.toLowerCase());
+    for (const a of prices) {
+      console.log(a.symbol.toLowerCase());
+    }
     const p = prices.find((p: MarketDataResult) => p.symbol.toLowerCase() === token.symbol.toLowerCase());
+    console.log('PPP for ', address, p);
     return p ? p.current_price: 0;
   } catch (e: any) {
-    // console.lo
+    console.log(e);
   }
   return 0;
 }
@@ -196,7 +202,9 @@ export async function getMiningLiquidityApr (tokenSet: GenericTokenSet, pool: Po
   const week = `week_${getCurrentLiquidityMiningWeek()}`;
   const weekStats: LiquidityMiningPoolResult[] | undefined = data[week];
   let liquidityMiningRewards: any = {};
+
   if (weekStats) {
+    console.log('weekStats', weekStats)
     const rewards = weekStats.find((p: LiquidityMiningPoolResult) => p.chainId === 137)?.pools;
     if (rewards && rewards[pool.id]) {
       liquidityMiningRewards = rewards[pool.id];
@@ -206,15 +214,18 @@ export async function getMiningLiquidityApr (tokenSet: GenericTokenSet, pool: Po
     pool,
     pool.totalLiquidity
   );
+  console.log('miningTotalLiquidity', miningTotalLiquidity);
   const IS_LIQUIDITY_MINING_ENABLED = true;
   const hasLiquidityMiningRewards = IS_LIQUIDITY_MINING_ENABLED
-    ? !!liquidityMiningRewards.length
+    ? !!liquidityMiningRewards
     : false;
-
+  console.log('hasLiquidityMiningRewards', hasLiquidityMiningRewards)
   if (hasLiquidityMiningRewards) {
+
     liquidityMiningAPR = computeTotalAPRForPool(liquidityMiningRewards, miningTotalLiquidity, marketPrices, tokenSet);
     liquidityMiningBreakdown = computeAPRsForPool(liquidityMiningRewards, miningTotalLiquidity, marketPrices, tokenSet);
   }
+  console.log('liquidityMiningBreakdown', liquidityMiningAPR);
   return parseFloat(liquidityMiningAPR);
 }
 

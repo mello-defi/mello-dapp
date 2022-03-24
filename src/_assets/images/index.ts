@@ -16,6 +16,7 @@ import tusdLogo from '_assets/images/logos/tokens/tusd.png';
 import usdtLogo from '_assets/images/logos/tokens/usdt.png';
 import mimaticLogo from '_assets/images/logos/tokens/mimatic.png';
 import balLogo from '_assets/images/logos/tokens/bal.png';
+import qiLogo from '_assets/images/logos/tokens/qi.png';
 import hyphenLogo from '_assets/images/logos/services/hyphen.svg';
 import melloLogoFace from '_assets/images/logos/mello_logo_face.svg';
 import jeurLogo from '_assets/images/logos/tokens/jeur.png';
@@ -31,6 +32,7 @@ export {
   mimaticLogo,
   balLogo,
   mtPellerinLogo,
+  qiLogo,
   paraswapLogo,
   rampNetworkLogo,
   polygonLogo,

@@ -6,7 +6,7 @@ import {
   ethLogo,
   jeurLogo,
   mimaticLogo,
-  polygonLogo,
+  polygonLogo, qiLogo,
   renbtcLogo,
   tusdLogo,
   usdcLogo,
@@ -68,7 +68,8 @@ export enum PolygonMainnetTokenContracts {
   BAL = '0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3',
   TUSD = '0x2e1AD108fF1D8C782fcBbB89AAd783aC49586756',
   MIMATIC = '0xa3Fa99A148fA48D14Ed51d610c367C61876997F1',
-  USDT = '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'
+  USDT = '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+  QI = '0x580a84c73811e1839f75d86d75d88cca0c241ff4'
 }
 
 export enum PolygonTestnetMumbaiTokenContracts {
@@ -202,6 +203,7 @@ export interface PolygonTokenSet extends GenericTokenSet {
   [CryptoCurrencySymbol.TUSD]?: EvmTokenDefinition;
   [CryptoCurrencySymbol.USDT]?: EvmTokenDefinition;
   [CryptoCurrencySymbol.MIMATIC]?: EvmTokenDefinition;
+  [CryptoCurrencySymbol.QI]?: EvmTokenDefinition;
 }
 
 export const polygonTestnetMumbaiTokens: PolygonTokenSet = {
@@ -270,6 +272,14 @@ export const polygonMainnetTokens: PolygonTokenSet = {
     address: PolygonMainnetTokenContracts.DAI,
     image: daiLogo,
     name: CryptoCurrencyName.DAI,
+    abi: ERC20Abi
+  },
+  [CryptoCurrencySymbol.QI]: {
+    symbol: CryptoCurrencySymbol.QI,
+    decimals: 18,
+    address: PolygonMainnetTokenContracts.QI,
+    image: qiLogo,
+    name: CryptoCurrencyName.QI,
     abi: ERC20Abi
   },
   [CryptoCurrencySymbol.BAL]: {
