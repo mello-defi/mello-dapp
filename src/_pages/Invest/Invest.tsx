@@ -24,10 +24,9 @@ import { MarketDataResult } from '_services/marketDataService';
 import { getAddress } from 'ethers/lib/utils';
 import { ProtocolFeeCollectorAbi } from '_abis/index';
 import { LiquidityMiningTokenRewards, Pool } from '_interfaces/balancer';
-import { getMiningLiquidityApr, getPools } from '_services/balancerService';
+import { getMiningLiquidityApr, getPools, getSwapApr } from '_services/balancerService';
 //\
 
-const vaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 
 export default function Invest() {
   const [pools, setPools] = useState<Pool[]>([]);
@@ -39,12 +38,15 @@ export default function Invest() {
   const prices = useMarketPrices();
 
   const doStuff = async () => {
+
     const addresses = Object.values(tokenSet).map((t) => t.address);
     console.log('addresses', addresses);
     const pools = await getPools(addresses);
     for (const p of pools) {
 
       p.liquidityMiningApr = await getMiningLiquidityApr(tokenSet, p, prices);
+      // @ts-ignoreG
+      p.swapApr = await getSwapApr(p, provider, signer)
     }
     setPools(pools);
   };
@@ -81,15 +83,15 @@ export default function Invest() {
     // const tx1: TransactionResponse = await bptToken.approve(userAddress, MaxUint256)
     // await tx1.wait(3);
 
-    const vault = new Contract(vaultAddress, Vault__factory.abi, signer);
-    console.log(vault.functions);
-    const tx = await vault.exitPool(poolId, userAddress, userAddress, {
-      assets: tokenAddresses,
-      minAmountsOut: amountsOUt,
-      fromInternalBalance: false,
-      userData: StablePoolEncoder.exitBPTInForExactTokensOut(amountsOUt, MaxUint256)
-    });
-    console.log(tx);
+    // const vault = new Contract(vaultAddress, Vault__factory.abi, signer);
+    // console.log(vault.functions);
+    // const tx = await vault.exitPool(poolId, userAddress, userAddress, {
+    //   assets: tokenAddresses,
+    //   minAmountsOut: amountsOUt,
+    //   fromInternalBalance: false,
+    //   userData: StablePoolEncoder.exitBPTInForExactTokensOut(amountsOUt, MaxUint256)
+    // });
+    // console.log(tx);
   };
   const join = async (pool: any) => {
     try {
@@ -131,93 +133,6 @@ export default function Invest() {
 
 
 
-
-  const oneSecondInMs = 1000;
-  const oneMinInMs = 60 * oneSecondInMs;
-  const oneHourInMs = 60 * oneMinInMs;
-
-  const twentyFourHoursInMs = 24 * oneHourInMs;
-  const twentyFourHoursInSecs = twentyFourHoursInMs / oneSecondInMs;
-
-  const getblocknum = async (): Promise<number> => {
-    // @ts-ignore
-    const currentBlock = await provider.getBlockNumber();
-    const blocksInDay = Math.round(twentyFourHoursInSecs / 2);
-    return currentBlock - blocksInDay;
-  };
-
-  const getPastPools = async () => {
-    // const pastPoolsQuery = this.query({ where: isInPoolIds, block });
-    const blockNum = await getblocknum();
-    const q = gql`
-      query GetPools($block: Int!) {
-        pools(
-          where: { id_in: ["0xcf354603a9aebd2ff9f33e1b04246d8ea204ae9500020000000000000000005a"] }
-          block: { number: $block }
-        ) {
-          id
-          address
-          poolType
-          totalLiquidity
-          strategyType
-          totalSwapFee
-          swapFee
-          symbol
-          amp
-          tokens {
-            id
-            symbol
-            name
-            decimals
-            address
-            balance
-            invested
-            investments {
-              id
-              amount
-            }
-            weight
-          }
-        }
-      }
-    `;
-
-    // console.log('blockNum', blockNum)
-    // const poolReslts = await client.query({
-    //   query: q,
-    //   variables: { block: blockNum}
-    // });
-    // // console.log
-    // // return p
-    // console.log('poolReslts', poolReslts)
-    // return poolReslts.data ? poolReslts.data.pools[0] : null;
-    return null;
-  };
-
-  const getSwapApr = async (pool: any): Promise<number> => {
-    const pastPool = await getPastPools();
-    // console.log('PAST POOL', pastPool);
-    const vault = new Contract(vaultAddress, Vault__factory.abi, signer);
-    const collectorAddress = await vault.getProtocolFeesCollector();
-    const collector = new Contract(collectorAddress, ProtocolFeeCollectorAbi, signer);
-    const swapFeePercentage = await collector.getSwapFeePercentage();
-    const protocolFeePercentage = swapFeePercentage / 10 ** 18;
-    // let poolApr: any = '';
-    // if (!pastPool) {
-    //   poolApr = bnum(pool.totalSwapFee)
-    //     .times(1 - protocolFeePercentage)
-    //     .dividedBy(pool.totalLiquidity)
-    //     .multipliedBy(365)
-    // } else {
-    //   const swapFees = bnum(pool.totalSwapFee).minus(pastPool.totalSwapFee);
-    //   poolApr = swapFees
-    //     .times(1 - protocolFeePercentage)
-    //     .dividedBy(pool.totalLiquidity)
-    //     .multipliedBy(365)
-    // }
-    // return Number(poolApr.times(100));u
-    return 0;
-  };
 
 
   // Liquidity mining started on June 1, 2020 00:00 UTC
@@ -327,6 +242,8 @@ export default function Invest() {
                 })}
               </div>
               <div className={'ml-2'}>
+                {p.swapApr}
+                <br/>
                 {p.liquidityMiningApr}
               </div>
             </div>

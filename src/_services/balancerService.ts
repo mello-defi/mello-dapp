@@ -8,12 +8,14 @@ import {
 } from '_interfaces/balancer';
 import axios from 'axios';
 import { differenceInWeeks } from 'date-fns';
-import { BigNumber } from 'ethers';
+import { BigNumber, Contract, ethers } from 'ethers';
 import { BigNumber as AaveBigNumber } from '@aave/protocol-js';
 import { findTokenByAddress } from '_utils/index';
 import { MarketDataResult } from '_services/marketDataService';
 import { getAddress } from 'ethers/lib/utils';
 import { GenericTokenSet } from '_enums/tokens';
+import { Vault__factory } from '@balancer-labs/typechain';
+import { ProtocolFeeCollectorAbi } from '../_abis';
 
 const GET_POOLS = gql`
   query GetPools {
@@ -44,6 +46,9 @@ const GET_POOLS = gql`
     }
   }
 `;
+
+const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
+
 const defaultOptions: DefaultOptions = {
   watchQuery: {
     fetchPolicy: 'no-cache',
@@ -111,13 +116,7 @@ const removeExcludedAddressesFromTotalLiquidity = (pool: any, totalLiquidityStri
 const getPriceForAddress = (tokenSet: GenericTokenSet, prices: MarketDataResult[], address: string): number => {
   try {
     const token = findTokenByAddress(tokenSet, address);
-    // console.log(token);
-    console.log(token.symbol.toLowerCase());
-    for (const a of prices) {
-      console.log(a.symbol.toLowerCase());
-    }
     const p = prices.find((p: MarketDataResult) => p.symbol.toLowerCase() === token.symbol.toLowerCase());
-    console.log('PPP for ', address, p);
     return p ? p.current_price: 0;
   } catch (e: any) {
     console.log(e);
@@ -176,6 +175,91 @@ function computeTotalAPRForPool(
     )
     .toString();
 }
+
+
+const oneSecondInMs = 1000;
+const oneMinInMs = 60 * oneSecondInMs;
+const oneHourInMs = 60 * oneMinInMs;
+
+const twentyFourHoursInMs = 24 * oneHourInMs;
+const twentyFourHoursInSecs = twentyFourHoursInMs / oneSecondInMs;
+
+const getblocknum = async (provider: ethers.providers.Web3Provider): Promise<number> => {
+  // @ts-ignore
+  const currentBlock = await provider.getBlockNumber();
+  const blocksInDay = Math.round(twentyFourHoursInSecs / 2);
+  return currentBlock - blocksInDay;
+};
+
+const getPastPools = async (poolId: string, provider: ethers.providers.Web3Provider) => {
+  // const pastPoolsQuery = this.query({ where: isInPoolIds, block });
+  const blockNum = await getblocknum(provider);
+  const q = gql`
+      query GetPools($block: Int!, $poolId: String!) {
+        pools(
+          where: { id: $poolId }
+          block: { number: $block }
+        ) {
+          id
+          address
+          poolType
+          totalLiquidity
+          strategyType
+          totalSwapFee
+          swapFee
+          symbol
+          amp
+          tokens {
+            id
+            symbol
+            name
+            decimals
+            address
+            balance
+            invested
+            investments {
+              id
+              amount
+            }
+            weight
+          }
+        }
+      }
+    `;
+
+  console.log('blockNum', blockNum)
+  const poolReslts = await client.query({
+    query: q,
+    variables: { block: blockNum, poolId },
+  });
+  // console.log
+  // return p
+  console.log('poolReslts', poolReslts)
+  return poolReslts.data ? poolReslts.data.pools[0] : null;
+};
+export const getSwapApr = async (pool: Pool, provider: ethers.providers.Web3Provider, signer: ethers.Signer): Promise<number> => {
+  const pastPool = await getPastPools(pool.id, provider);
+  console.log('PAST POOL', pastPool);
+  const vault = new Contract(polygonVaultAddress, Vault__factory.abi, signer);
+  const collectorAddress = await vault.getProtocolFeesCollector();
+  const collector = new Contract(collectorAddress, ProtocolFeeCollectorAbi, signer);
+  const swapFeePercentage = await collector.getSwapFeePercentage();
+  const protocolFeePercentage = swapFeePercentage / 10 ** 18;
+  let poolApr: any = '';
+  if (!pastPool) {
+    poolApr = bnum(pool.totalSwapFee)
+      .times(1 - protocolFeePercentage)
+      .dividedBy(pool.totalLiquidity)
+      .multipliedBy(365)
+  } else {
+    const swapFees = bnum(pool.totalSwapFee).minus(pastPool.totalSwapFee);
+    poolApr = swapFees
+      .times(1 - protocolFeePercentage)
+      .dividedBy(pool.totalLiquidity)
+      .multipliedBy(365)
+  }
+  return Number(poolApr.times(100));
+};
 
 function computeAPRsForPool(
   tokenRewards: LiquidityMiningTokenRewards[],

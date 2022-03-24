@@ -46,6 +46,7 @@ export interface Pool {
   totalSwapVolume: string;
   poolApr: string;
   liquidityMiningApr: string | number;
+  swapApr: string | number;
   thirdPartyApr: string;
   hasLiquidityMiningRewards: boolean;
   createTime: number;
