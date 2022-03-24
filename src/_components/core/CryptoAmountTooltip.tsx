@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { EvmTokenDefinition } from '_enums/tokens';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { DefaultTransition } from '_components/core/Transition';
 
 export default function CryptoAmountWithTooltip({

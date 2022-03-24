@@ -134,7 +134,13 @@ export default function Swap({
     userAddress: string
   ) => {
     const transferProxy = await getTokenTransferProxy();
-    const allowance = await getTokenAllowance(sourceToken.address, sourceToken.abi, provider, userAddress, transferProxy);
+    const allowance = await getTokenAllowance(
+      sourceToken.address,
+      sourceToken.abi,
+      provider,
+      userAddress,
+      transferProxy
+    );
     const amount: BigNumber = ethers.utils.parseUnits(
       sourceAmount.toString(),
       sourceToken.decimals

@@ -12,6 +12,12 @@ export interface LiquidityMiningPoolResult {
   pools: LiquidityMiningPool;
 }
 
+export interface UserPool {
+  id: string;
+  poolId: Pool;
+  balance: string;
+}
+
 export enum PoolType {
   Weighted = 'Weighted',
   Investment = 'Investment',
@@ -44,9 +50,9 @@ export interface Pool {
   totalShares: string;
   totalSwapFee: string;
   totalSwapVolume: string;
-  poolApr: string;
-  liquidityMiningApr: string | number;
-  swapApr: string | number;
+  totalApr: string;
+  liquidityMiningApr: number;
+  swapApr: number;
   thirdPartyApr: string;
   hasLiquidityMiningRewards: boolean;
   createTime: number;

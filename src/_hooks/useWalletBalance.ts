@@ -21,6 +21,7 @@ const useWalletBalance = (token?: EvmTokenDefinition) => {
 
   useEffect(() => {
     if (token && provider && userAddress) {
+      console.log('useWalletBalance', token);
       if (
         walletBalances[token.symbol]?.isStale ||
         (!walletBalances[token.symbol] && (!(token.symbol in fetching) || !fetching[token.symbol]))
