@@ -3,7 +3,7 @@ import React, { ChangeEvent, useEffect, useState } from 'react';
 import { MarketDataResult } from '_services/marketDataService';
 import TokenSelectDropdown from '_components/TokenSelectDropdown';
 import { Spinner, SpinnerSize } from '_components/core/Animations';
-import useWalletBalance from '_hooks/useWalletBalance';
+import useWalletBalances from '_hooks/useWalletBalances';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { BigNumber, ethers } from 'ethers';
 import { decimalPlacesAreValid } from '_utils/index';
@@ -23,8 +23,18 @@ export default function MultiCryptoAmountInput({
   disabled: boolean;
   amountInFiat: number;
 }) {
-  const userBalance: BigNumber | undefined = useWalletBalance(token);
   const marketPrices = useMarketPrices();
+
+  const [userBalance, setUserBalance] = useState<BigNumber | undefined>();
+  const walletBalances = useWalletBalances();
+
+  useEffect(() => {
+    console.log('token changed OR walletbalances', token);
+    console.log('walletBalances', walletBalances);
+    if (token) {
+      setUserBalance(walletBalances[token.symbol]?.balance);
+    }
+  }, [walletBalances, token])
   const [tokenPrice, setTokenPrice] = useState<number>();
 
   useEffect(() => {

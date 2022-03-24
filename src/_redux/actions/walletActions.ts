@@ -1,30 +1,28 @@
 import {
-  GET_BALANCE_FOR_TOKEN,
+  SET_TOKEN_BALANCES,
   SET_ADDRESS,
-  TOGGLE_BALANCE_IS_STALE,
+  TOGGLE_BALANCES_ARE_STALE,
   WalletActionTypes,
   WalletTokenBalances
 } from '_redux/types/walletTypes';
 import { CryptoCurrencySymbol } from '_enums/currency';
 
-export const getBalanceForTokenAction = (balance: WalletTokenBalances): WalletActionTypes => {
+export const setTokenBalancesAction = (balances: WalletTokenBalances): WalletActionTypes => {
   return {
-    type: GET_BALANCE_FOR_TOKEN,
+    type: SET_TOKEN_BALANCES,
     payload: {
-      balance
+      balances
     }
   };
 };
 
-export const toggleBalanceIsStaleAction = (
-  tokenSymbol: CryptoCurrencySymbol,
-  isStale: boolean
+export const toggleBalancesAreStaleAction = (
+  balancesAreStale: boolean
 ): WalletActionTypes => {
   return {
-    type: TOGGLE_BALANCE_IS_STALE,
+    type: TOGGLE_BALANCES_ARE_STALE,
     payload: {
-      isStale,
-      tokenSymbol: tokenSymbol
+      balancesAreStale,
     }
   };
 };
@@ -37,12 +35,3 @@ export const setAddressAction = (address: string): WalletActionTypes => {
     }
   };
 };
-//
-// export const getBalanceForAllTokensAction = (balances: WalletTokenBalance): WalletActionTypes => {
-//   return {
-//     type: GET_BALANCE_FOR_ALL_TOKENS,
-//     payload: {
-//       balances,
-//     }
-//   };
-// };

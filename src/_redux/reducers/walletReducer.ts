@@ -1,14 +1,15 @@
 import {
-  GET_BALANCE_FOR_TOKEN,
+  SET_TOKEN_BALANCES,
   SET_ADDRESS,
-  TOGGLE_BALANCE_IS_STALE,
+  TOGGLE_BALANCES_ARE_STALE,
   WalletActionTypes,
   WalletState
 } from '_redux/types/walletTypes';
 
 const initialState: WalletState = {
   address: undefined,
-  balances: {}
+  balances: {},
+  balancesAreStale: true,
 };
 
 export const getWalletReducer = (
@@ -16,34 +17,23 @@ export const getWalletReducer = (
   action: WalletActionTypes
 ): WalletState => {
   switch (action.type) {
-    case GET_BALANCE_FOR_TOKEN:
+    case SET_TOKEN_BALANCES:
       return {
         ...state,
         balances: {
-          ...state.balances,
-          ...action.payload.balance
-        }
+          ...action.payload.balances
+        },
+        balancesAreStale: false
       };
     case SET_ADDRESS:
       return {
         ...state,
         address: action.payload.address
       };
-    case TOGGLE_BALANCE_IS_STALE:
-      if (state.balances[action.payload.tokenSymbol]) {
-        return {
-          ...state,
-          balances: {
-            ...state.balances,
-            [action.payload.tokenSymbol]: {
-              ...state.balances[action.payload.tokenSymbol],
-              isStale: action.payload.isStale
-            }
-          }
-        };
-      }
+    case TOGGLE_BALANCES_ARE_STALE:
       return {
-        ...state
+        ...state,
+        balancesAreStale: action.payload.balancesAreStale
       };
     default:
       return state;

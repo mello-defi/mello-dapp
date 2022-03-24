@@ -6,7 +6,7 @@ import { CryptoCurrencySymbol } from '_enums/currency';
 import { MarketDataResult } from '_services/marketDataService';
 import { BigNumber, ethers } from 'ethers';
 import { Button, ButtonSize } from '_components/core/Buttons';
-import useWalletBalance from '_hooks/useWalletBalance';
+import useWalletBalances from '_hooks/useWalletBalances';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
@@ -16,7 +16,7 @@ import TransactionError from '_components/transactions/TransactionError';
 import { EthereumTransactionError } from '_interfaces/errors';
 import { approveToken, getTokenAllowance, sendErc20Token } from '_services/walletService';
 import { getGasPrice } from '_services/gasService';
-import { toggleBalanceIsStale } from '_redux/effects/walletEffects';
+import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { logTransactionHash } from '_services/dbService';
 
 export default function SendCrypto() {
@@ -26,7 +26,7 @@ export default function SendCrypto() {
   const provider = useSelector((state: AppState) => state.web3.provider);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const network = useSelector((state: AppState) => state.web3.network);
-  const walletBalance = useWalletBalance(token);
+  // const walletBalance = useWalletBalances(token);
   const [amountToSend, setAmountToSend] = useState<string>('0.0');
   const [amountInFiat, setAmountInFiat] = useState<number>(0);
   const [destinationAddress, setDestinationAddress] = useState<string>('');
@@ -36,6 +36,15 @@ export default function SendCrypto() {
   const [approveTransactionHash, setApproveTransactionHash] = useState<string>('');
   const [tokenApproved, setTokenApproved] = useState<boolean>(false);
   const [transactionError, setTransactionError] = useState<string>('');
+
+  const [walletBalance, setWalletBalance] = useState<BigNumber | undefined>();
+  const walletBalances = useWalletBalances();
+
+  useEffect(() => {
+    if (token) {
+      setWalletBalance(walletBalances[token.symbol]?.balance);
+    }
+  }, [walletBalances, token])
 
   const updateMarketPrice = () => {
     if (token && amountToSend) {
@@ -106,7 +115,7 @@ export default function SendCrypto() {
         setSendTransactionHash(txResponse.hash);
         await txResponse.wait(gasPriceResult?.blockTime || 3);
         setTransactionCompleted(true);
-        dispatch(toggleBalanceIsStale(token.symbol, true));
+        dispatch(toggleBalancesAreStale(true));
       } catch (e: any) {
         console.error(e);
         const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;

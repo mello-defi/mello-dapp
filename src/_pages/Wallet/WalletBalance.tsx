@@ -1,5 +1,5 @@
 import { EvmTokenDefinition } from '_enums/tokens';
-import useWalletBalance from '_hooks/useWalletBalance';
+import useWalletBalances from '_hooks/useWalletBalances';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { useEffect, useState } from 'react';
 import { getMarketDataForSymbol, MarketDataResult } from '_services/marketDataService';
@@ -14,7 +14,16 @@ export default function WalletBalance({
   token: EvmTokenDefinition;
   hideZeroBalance: boolean;
 }) {
-  const userBalance: BigNumber | undefined = useWalletBalance(token);
+  // const userBalance: BigNumber | undefined = useWalletBalances(token);
+  const [userBalance, setUserBalance] = useState<BigNumber | undefined>();
+  const walletBalances = useWalletBalances();
+
+  useEffect(() => {
+    if (token) {
+      setUserBalance(walletBalances[token.symbol]?.balance);
+    }
+  }, [walletBalances, token])
+
   const marketPrices = useMarketPrices();
   const [attemptedToGetMarketData, setAttemptedToGetMarketData] = useState(false);
   const [marketData, setMarketData] = useState<MarketDataResult | null>(null);

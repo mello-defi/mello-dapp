@@ -18,8 +18,8 @@ import {
   runAaveActionTransaction,
   runAaveApprovalTransaction
 } from '_services/aaveService';
-import { getBalanceForToken, toggleBalanceIsStale } from '_redux/effects/walletEffects';
-import useWalletBalance from '_hooks/useWalletBalance';
+import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
+import useWalletBalances from '_hooks/useWalletBalances';
 import { EvmTokenDefinition } from '_enums/tokens';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
@@ -38,6 +38,7 @@ import { getGasPrice } from '_services/gasService';
 import { getMarketDataForSymbol } from '_services/marketDataService';
 import { logTransactionHash } from '_services/dbService';
 import { OnboardingStep, stepBorrowAave, stepDepositAave } from '_pages/Onboarding/OnboardingSteps';
+import { setUser } from '@sentry/react';
 
 // REVIEW huge refactor needed, too big
 export default function AaveReserve({
@@ -80,7 +81,14 @@ export default function AaveReserve({
   const [aaveFunction, setAaveFunction] = useState<AaveFunction | null>(null);
   const [token, setToken] = useState<EvmTokenDefinition | undefined>();
   // console.log('token', token);
-  const userBalance = useWalletBalance(token);
+  const [userBalance, setUserBalance] = useState<BigNumber | undefined>();
+  const walletBalances = useWalletBalances();
+
+  useEffect(() => {
+    if (token) {
+      setUserBalance(walletBalances[token.symbol]?.balance);
+    }
+  }, [walletBalances, token])
 
   useEffect(() => {
     if (!token) {
@@ -160,7 +168,7 @@ export default function AaveReserve({
     setTransactionConfirmed(true);
 
     if (token && userAddress) {
-      dispatch(getBalanceForToken(token, provider, userAddress, true));
+      dispatch(toggleBalancesAreStale(true));
     }
   };
 
@@ -191,7 +199,7 @@ export default function AaveReserve({
         setTransactionInProgress(false);
         dispatch(toggleUserSummaryStale(true));
         dispatch(
-          toggleBalanceIsStale(findTokenByAddress(tokenSet, reserve.underlyingAsset).symbol, true)
+          toggleBalancesAreStale(true)
         );
         if (nextStep) {
           dispatch(setStep(nextStep));

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import useWalletBalance from '_hooks/useWalletBalance';
+import useWalletBalances from '_hooks/useWalletBalances';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { getTransactionCount } from '_services/walletService';
 import { Button } from '_components/core/Buttons';
@@ -13,35 +13,44 @@ import {
   steps,
   stepSignMessage
 } from '_pages/Onboarding/OnboardingSteps';
+import { BigNumber } from 'ethers';
 
 export default function Onboarding() {
   const dispatch = useDispatch();
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const gasToken = Object.values(tokenSet).find((token) => token.isGasToken);
-  const walletBalance = useWalletBalance(gasToken);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const [onboardingInitiated, setOnboardingInitiated] = useState(false);
+  const [userBalance, setUserBalance] = useState<BigNumber | undefined>();
+  const walletBalances = useWalletBalances();
+
+  useEffect(() => {
+    if (gasToken) {
+      setUserBalance(walletBalances[gasToken.symbol]?.balance);
+    }
+  }, [walletBalances, gasToken])
+
   useEffect(() => {
     async function getTransactionCountAndAdvance() {
       if (
         userAddress &&
         provider &&
         currentStep &&
-        walletBalance &&
+        userBalance &&
         currentStep === stepAddGasToWallet.number
       ) {
         const transactionCount: number = await getTransactionCount(userAddress, provider);
-        if (walletBalance.eq(0) && transactionCount === 0) {
+        if (userBalance.eq(0) && transactionCount === 0) {
           dispatch(setStep(stepAddGasToWallet.number));
-        } else if (walletBalance.gt(0) && currentStep <= stepAddGasToWallet.number) {
+        } else if (userBalance.gt(0) && currentStep <= stepAddGasToWallet.number) {
           dispatch(setStep(stepPerformSwap.number));
         }
       }
     }
     getTransactionCountAndAdvance();
-  }, [userAddress, walletBalance, currentStep]);
+  }, [userAddress, userBalance, currentStep]);
 
   return (
     <div>

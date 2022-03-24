@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { OptimalRate } from 'paraswap-core';
@@ -21,9 +21,9 @@ import { paraswapLogo } from '_assets/images';
 import { BigNumber, ethers } from 'ethers';
 import { getGasPrice } from '_services/gasService';
 import SwapPriceInformation from '_pages/Swap/SwapPriceInformation';
-import useWalletBalance from '_hooks/useWalletBalance';
+import useWalletBalances from '_hooks/useWalletBalances';
 import { SwapVert } from '@mui/icons-material';
-import { toggleBalanceIsStale } from '_redux/effects/walletEffects';
+import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { logTransactionHash } from '_services/dbService';
@@ -47,7 +47,14 @@ export default function Swap({
   const [sourceToken, setSourceToken] = useState<EvmTokenDefinition>(
     (initialSourceTokenSymbol && tokens[initialSourceTokenSymbol]) || Object.values(tokens)[0]
   );
-  const sourceTokenBalance = useWalletBalance(sourceToken);
+  const [sourceTokenBalance, setSourceTokenBalance] = useState<BigNumber | undefined>();
+  const walletBalances = useWalletBalances();
+
+  useEffect(() => {
+    if (initialSourceTokenSymbol) {
+      setSourceTokenBalance(walletBalances[initialSourceTokenSymbol]?.balance);
+    }
+  }, [walletBalances, initialSourceTokenSymbol])
   const [destinationToken, setDestinationToken] = useState<EvmTokenDefinition>(
     (initialDestinationTokenSymbol && tokens[initialDestinationTokenSymbol]) ||
       Object.values(tokens)[1]
@@ -186,8 +193,7 @@ export default function Swap({
         await swapTxHash.wait(actionGasResult?.blockTime || 3);
         setSwapConfirmed(true);
         resetState();
-        dispatch(toggleBalanceIsStale(sourceToken.symbol, true));
-        dispatch(toggleBalanceIsStale(destinationToken.symbol, true));
+        dispatch(toggleBalancesAreStale(true));
         dispatch(setStep(stepPerformSwap.number + 1));
       } catch (e: any) {
         console.error(e);

@@ -1,6 +1,10 @@
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber, Contract, ethers } from 'ethers';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
-import { EvmTokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition, GenericTokenSet } from '_enums/tokens';
+import { Interface } from '@ethersproject/abi';
+import { ERC20Abi } from '../_abis';
+import { WalletTokenBalances } from '_redux/types/walletTypes';
+import { findTokenByAddress } from '_utils/index';
 
 export async function getTransactionCount(
   address: string,
@@ -10,14 +14,52 @@ export async function getTransactionCount(
   return BigNumber.from(txCount).toNumber();
 }
 
-export async function getErc20TokenBalance(
-  token: EvmTokenDefinition,
+// export async function getErc20TokenBalance(
+//   token: EvmTokenDefinition,
+//   provider: ethers.providers.Web3Provider,
+//   userAddress: string
+// ): Promise<BigNumber> {
+//   const newContract = new ethers.Contract(token.address, token.abi, provider);
+//   const balance = await newContract.balanceOf(userAddress);
+//   return BigNumber.from(balance);
+// }
+
+export async function getAllErc20TokenBalances (
   provider: ethers.providers.Web3Provider,
+  tokenSet: GenericTokenSet,
   userAddress: string
-): Promise<BigNumber> {
-  const newContract = new ethers.Contract(token.address, token.abi, provider);
-  const balance = await newContract.balanceOf(userAddress);
-  return BigNumber.from(balance);
+) {
+  // REVIEW - make network generic, move ABI to file
+  const multi = new Contract(
+    '0x275617327c958bD06b5D6b871E7f491D76113dd8', // polygon makerdao multicall
+    [
+      'function tryAggregate(bool requireSuccess, tuple(address, bytes)[] memory calls) public view returns (tuple(bool, bytes)[] memory returnData)'
+    ],
+    provider
+  );
+  const tokenAddresses = Object.values(tokenSet).map(({ address }) => address);
+  const calls: any[] = tokenAddresses.map((address: string) => [address, 'balanceOf', [userAddress]]);
+  const itf = new Interface(ERC20Abi);
+  const res: [boolean, string][] = await multi.tryAggregate(
+    // if false, allows individual calls to fail without causing entire multicall to fail
+    true,
+    calls.map(call => [
+      call[0].toLowerCase(),
+      itf.encodeFunctionData(call[1], call[2])
+    ]),
+    {}
+  );
+
+  const walletBalances: WalletTokenBalances = {};
+  res.forEach(([success, returnData], i) => {
+    if (!success) return null;
+    const decodedResult = itf.decodeFunctionResult(calls[i][1], returnData);
+    const symbol = findTokenByAddress(tokenSet, calls[i][0]).symbol;
+    walletBalances[symbol] = {
+      balance: decodedResult.length > 1 ? decodedResult : decodedResult[0]
+    }
+  });
+  return walletBalances;
 }
 
 export async function sendErc20Token(

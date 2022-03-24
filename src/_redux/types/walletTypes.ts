@@ -2,14 +2,12 @@ import { CryptoCurrencySymbol } from '_enums/currency';
 import { BigNumber } from 'ethers';
 import { AnyAction } from 'redux';
 
-export const TOGGLE_BALANCE_IS_STALE = 'TOGGLE_BALANCE_IS_STALE';
+export const TOGGLE_BALANCES_ARE_STALE = 'TOGGLE_BALANCES_ARE_STALE';
 export const SET_ADDRESS = 'SET_ADDRESS';
-export const GET_BALANCE_FOR_TOKEN = 'GET_BALANCE_FOR_TOKEN';
-export const GET_BALANCE_FOR_ALL_TOKENS = 'GET_BALANCE_FOR_ALL_TOKENS';
+export const SET_TOKEN_BALANCES = 'SET_TOKEN_BALANCES';
 
 export interface WalletTokenBalance {
   balance: BigNumber;
-  isStale: boolean;
 }
 export type WalletTokenBalances = {
   [key in CryptoCurrencySymbol]?: WalletTokenBalance;
@@ -18,12 +16,13 @@ export type WalletTokenBalances = {
 export interface WalletState {
   address?: string;
   balances: WalletTokenBalances;
+  balancesAreStale: boolean;
 }
 
-interface GetBalanceForTokenAction extends AnyAction {
-  type: typeof GET_BALANCE_FOR_TOKEN;
+interface SetTokenBalancesAction extends AnyAction {
+  type: typeof SET_TOKEN_BALANCES;
   payload: {
-    balance: WalletTokenBalances;
+    balances: WalletTokenBalances;
   };
 }
 
@@ -34,15 +33,14 @@ interface SetAddressAction extends AnyAction {
   };
 }
 
-interface ToggleBalanceIsStaleAction extends AnyAction {
-  type: typeof TOGGLE_BALANCE_IS_STALE;
+interface ToggleBalancesAreStaleAction extends AnyAction {
+  type: typeof TOGGLE_BALANCES_ARE_STALE;
   payload: {
-    tokenSymbol: CryptoCurrencySymbol;
-    isStale: boolean;
+    balancesAreStale: boolean;
   };
 }
 
 export type WalletActionTypes =
-  | GetBalanceForTokenAction
+  | SetTokenBalancesAction
   | SetAddressAction
-  | ToggleBalanceIsStaleAction;
+  | ToggleBalancesAreStaleAction;

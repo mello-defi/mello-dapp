@@ -26,6 +26,7 @@ import PoolTokenSymbols from '_components/balancer/PoolTokenSymbols';
 // import configs from '@makerdao/multicall/src/addresses.json'
 // import { Interface } from 'readline';
 import { Interface } from '@ethersproject/abi';
+import useWalletBalances from '_hooks/useWalletBalances';
 //\
 
 
@@ -39,38 +40,12 @@ export default function Invest() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const walletBAlances = useSelector((state: AppState) => state.wallet.balances);
   const prices = useMarketPrices();
+  const b = useWalletBalances();
   // const balance = useWalletBalance(tokenSet.USDC)
 
   // configs.
   const initPools = async () => {
     if (provider && signer && userAddress) {
-      const multi = new Contract(
-        '0x275617327c958bD06b5D6b871E7f491D76113dd8',
-        [
-          'function tryAggregate(bool requireSuccess, tuple(address, bytes)[] memory calls) public view returns (tuple(bool, bytes)[] memory returnData)'
-        ],
-        provider
-      );
-      const calls: any[] = [PolygonMainnetTokenContracts.USDC, PolygonMainnetTokenContracts.DAI].map((address: string) => [address, 'balanceOf', [userAddress]]);
-      const itf = new Interface(ERC20Abi);
-      const res: [boolean, string][] = await multi.tryAggregate(
-        // if false, allows individual calls to fail without causing entire multicall to fail
-        true,
-        calls.map(call => [
-          call[0].toLowerCase(),
-          itf.encodeFunctionData(call[1], call[2])
-        ]),
-        {}
-      );
-
-      return res.map(([success, returnData], i) => {
-        if (!success) return null;
-        console.log('returnData', returnData);
-        const decodedResult = itf.decodeFunctionResult(calls[i][1], returnData);
-        console.log('aaa', decodedResult.toString());
-        return decodedResult.length > 1 ? decodedResult : decodedResult[0];
-      });
-
 
       // const addresses = Object.values(tokenSet).map((t: EvmTokenDefinition) => t.address);
       // const pools = await getPools(addresses);
