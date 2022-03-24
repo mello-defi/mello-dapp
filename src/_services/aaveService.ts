@@ -1,5 +1,5 @@
 import {
-  BigNumber as AaveBigNumber,
+  BigNumber as AdvancedBigNumber,
   calculateHealthFactorFromBalancesBigUnits,
   ComputedReserveData,
   eEthereumTxType,
@@ -234,7 +234,7 @@ export function calculateMaxWithdrawAmount(
 ): BigNumber {
   // lifted directly from
   // https://sourcegraph.com/github.com/aave/aave-ui/-/blob/src/modules/withdraw/screens/WithdrawAmount/index.tsx?L40
-  let maxUserAmountToWithdraw = AaveBigNumber.min(
+  let maxUserAmountToWithdraw = AdvancedBigNumber.min(
     userReserve.underlyingBalance,
     reserve.availableLiquidity
   ).toString(10);
@@ -255,13 +255,13 @@ export function calculateMaxWithdrawAmount(
         .div(Number(reserve.reserveLiquidationThreshold) + 0.01)
         .multipliedBy('0.99');
     }
-    maxUserAmountToWithdraw = AaveBigNumber.min(
+    maxUserAmountToWithdraw = AdvancedBigNumber.min(
       maxUserAmountToWithdraw,
       totalCollateralToWithdrawInETH.dividedBy(reserve.price.priceInEth)
     ).toString();
   }
-  // console.log(AaveBigNumber.max(maxUserAmountToWithdraw, 0).toString());
-  maxUserAmountToWithdraw = AaveBigNumber.max(maxUserAmountToWithdraw, 0).toString();
+  // console.log(AdvancedBigNumber.max(maxUserAmountToWithdraw, 0).toString());
+  maxUserAmountToWithdraw = AdvancedBigNumber.max(maxUserAmountToWithdraw, 0).toString();
   maxUserAmountToWithdraw = (+maxUserAmountToWithdraw).toFixed(reserve.decimals).toString();
   return ethers.utils.parseUnits(maxUserAmountToWithdraw, reserve.decimals);
 }

@@ -71,13 +71,14 @@ export default function SendCrypto() {
         const amountInUnits = ethers.utils.parseUnits(amountToSend, token.decimals);
         setTransactionSubmitting(true);
 
-        const allowance: BigNumber = await getTokenAllowance(token, provider, userAddress);
+        const allowance: BigNumber = await getTokenAllowance(token.address, token.abi, provider, userAddress);
         console.log(amountInUnits.toString());
         console.log(allowance.toString());
         if (allowance.lt(amountInUnits)) {
           const gasPriceResult = await getGasPrice(network.gasStationUrl);
           const tx: TransactionResponse = await approveToken(
-            token,
+            token.address,
+            token.abi,
             signer,
             userAddress,
             amountInUnits,

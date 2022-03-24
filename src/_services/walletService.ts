@@ -37,24 +37,26 @@ export async function sendErc20Token(
 }
 
 export async function getTokenAllowance(
-  token: EvmTokenDefinition,
+  tokenAddress: string,
+  tokenAbi: any,
   provider: ethers.providers.Web3Provider,
   userAddress: string,
   spender?: string
 ): Promise<BigNumber> {
-  const contract = new ethers.Contract(token.address, token.abi, provider);
+  const contract = new ethers.Contract(tokenAddress, tokenAbi, provider);
   return contract.allowance(userAddress, spender || contract.address);
 }
 
 export async function approveToken(
-  token: EvmTokenDefinition,
+  tokenAddress: string,
+  tokenAbi: any,
   signer: ethers.Signer,
   userAddress: string,
   amount: BigNumber,
   gasPrice: BigNumber | undefined,
   spender?: string
 ): Promise<TransactionResponse> {
-  const contract = new ethers.Contract(token.address, token.abi, signer);
+  const contract = new ethers.Contract(tokenAddress, tokenAbi, signer);
   const options: TransactionRequest = {};
   if (gasPrice) {
     options.gasPrice = gasPrice.toString();

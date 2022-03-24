@@ -1,10 +1,10 @@
-export interface LiquidityMiningTokenRewards {
+export interface LiquidityMiningTokenReward {
   tokenAddress: string;
   amount: number;
 }
 
 export interface LiquidityMiningPool {
-  [key: string]: LiquidityMiningTokenRewards[];
+  [key: string]: LiquidityMiningTokenReward[];
 }
 
 export interface LiquidityMiningPoolResult {

@@ -1,7 +1,7 @@
 import { ApolloClient, DefaultOptions, gql, InMemoryCache } from '@apollo/client';
 import {
   LiquidityMiningPoolResult,
-  LiquidityMiningTokenRewards,
+  LiquidityMiningTokenReward,
   Pool,
   PoolToken,
   PoolType
@@ -9,15 +9,56 @@ import {
 import axios from 'axios';
 import { differenceInWeeks } from 'date-fns';
 import { BigNumber, Contract, ethers } from 'ethers';
-import { BigNumber as AaveBigNumber } from '@aave/protocol-js';
+import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 import { findTokenByAddress } from '_utils/index';
 import { MarketDataResult } from '_services/marketDataService';
 import { getAddress } from 'ethers/lib/utils';
 import { GenericTokenSet } from '_enums/tokens';
 import { Vault__factory } from '@balancer-labs/typechain';
 import { ProtocolFeeCollectorAbi } from '../_abis';
+import { toUtcTime, twentyFourHoursInSecs } from '_utils/time';
+import { getPoolAddress, StablePoolEncoder } from '@balancer-labs/sdk';
+import ERC20Abi from '../_abis/ERC20.json';
+import { MaxUint256 } from '_utils/maths';
+import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
+import { GasPriceResult } from '_interfaces/gas';
 
-const GET_POOLS = gql`
+const liquidityMiningStartTime = Date.UTC(2020, 5, 1, 0, 0);
+const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
+
+const GET_PAST_POOL_FOR_ID = gql`
+  query GetPools($block: Int!, $poolId: String!) {
+    pools(
+      where: { id: $poolId }
+      block: { number: $block }
+    ) {
+      id
+      address
+      poolType
+      totalLiquidity
+      strategyType
+      totalSwapFee
+      swapFee
+      symbol
+      amp
+      tokens {
+        id
+        symbol
+        name
+        decimals
+        address
+        balance
+        invested
+        investments {
+          id
+          amount
+        }
+        weight
+      }
+    }
+  }
+`;
+const GET_ALL_POOLS = gql`
   query GetPools {
     pools(first: 5, skip: 0, orderBy: totalLiquidity, orderDirection: desc) {
       id
@@ -47,7 +88,6 @@ const GET_POOLS = gql`
   }
 `;
 
-const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 
 const defaultOptions: DefaultOptions = {
   watchQuery: {
@@ -66,53 +106,15 @@ const client = new ApolloClient({
   defaultOptions
 });
 
-function toUtcTime(date: Date) {
-  return Date.UTC(
-    date.getUTCFullYear(),
-    date.getUTCMonth(),
-    date.getUTCDate(),
-    date.getUTCHours(),
-    date.getUTCMinutes(),
-    date.getUTCSeconds()
-  );
-}
-
-const liquidityMiningStartTime = Date.UTC(2020, 5, 1, 0, 0);
-
 function getCurrentLiquidityMiningWeek() {
   return differenceInWeeks(toUtcTime(new Date()), liquidityMiningStartTime) + 1;
 }
 
-function bnum(val: string | number | BigNumber): AaveBigNumber {
+function bnum(val: string | number | BigNumber): AdvancedBigNumber {
   const number = typeof val === 'string' ? val : val ? val.toString() : '0';
-  return new AaveBigNumber(number);
+  return new AdvancedBigNumber(number);
 }
 
-function removeAddressesFromTotalLiquidity(
-  // excludedAddresses: ExcludedAddresses,
-  pool: any,
-  totalLiquidityString: string
-) {
-  const totalLiquidity = bnum(totalLiquidityString);
-  const miningTotalLiquidity = totalLiquidity;
-  //
-  // if (excludedAddresses != null && excludedAddresses[pool.address] != null) {
-  //   Object.values(excludedAddresses[pool.address]).forEach(accountBalance => {
-  //     const accountBalanceFormatted = formatUnits(accountBalance, 18);
-  //     const poolShare = bnum(accountBalanceFormatted).div(pool.totalShares);
-  //
-  //     miningTotalLiquidity = miningTotalLiquidity.minus(
-  //       totalLiquidity.times(poolShare)
-  //     );
-  //   });
-  // }
-
-  return miningTotalLiquidity.toString();
-}
-
-const removeExcludedAddressesFromTotalLiquidity = (pool: any, totalLiquidityString: string) => {
-  return removeAddressesFromTotalLiquidity(pool, totalLiquidityString);
-};
 const getPriceForAddress = (tokenSet: GenericTokenSet, prices: MarketDataResult[], address: string): number => {
   try {
     const token = findTokenByAddress(tokenSet, address);
@@ -131,43 +133,18 @@ function computeAPRForPool(
 ) {
   // Guard against null price
   if (tokenPrice === null || tokenPrice === undefined) return '0';
-  // console.log('calculating aprfor pool')
-  // console.log(rewards)
-  // console.log(tokenPrice)
-  // console.log(totalLiquidity)
-
   return bnum(rewards).div(7).times(tokenPrice).times(365).div(totalLiquidity).toString();
 }
-const calcTotalAPR = (
-  poolAPR: string,
-  liquidityMiningAPR: string,
-  thirdPartyAPR: string
-): string => {
-  return bnum(poolAPR).plus(liquidityMiningAPR).plus(thirdPartyAPR).toString();
-};
 
-
-// const getPriceForAddress = (address: string): number => {
-//   try {
-//     const token = findTokenByAddress(tokenSet, address);
-//     const p = prices.find(
-//       (p: MarketDataResult) => p.symbol.toLowerCase() === token.symbol.toLowerCase()
-//     );
-//     return p ? p.current_price : 0;
-//   } catch (e: any) {
-//     // console.lo
-//   }
-//   return 0;
-// };
 function computeTotalAPRForPool(
-  tokenRewards: LiquidityMiningTokenRewards[],
+  tokenRewards: LiquidityMiningTokenReward[],
   totalLiquidity: string,
   marketPrices: MarketDataResult[],
   tokenSet: GenericTokenSet,
 ) {
   return tokenRewards
     .reduce(
-      (totalRewards: AaveBigNumber, { amount, tokenAddress }) =>
+      (totalRewards: AdvancedBigNumber, { amount, tokenAddress }) =>
         totalRewards.plus(
           computeAPRForPool(amount, getPriceForAddress(tokenSet, marketPrices, tokenAddress), totalLiquidity)
         ),
@@ -177,75 +154,32 @@ function computeTotalAPRForPool(
 }
 
 
-const oneSecondInMs = 1000;
-const oneMinInMs = 60 * oneSecondInMs;
-const oneHourInMs = 60 * oneMinInMs;
-
-const twentyFourHoursInMs = 24 * oneHourInMs;
-const twentyFourHoursInSecs = twentyFourHoursInMs / oneSecondInMs;
-
-const getblocknum = async (provider: ethers.providers.Web3Provider): Promise<number> => {
-  // @ts-ignore
+const getBlockNum = async (provider: ethers.providers.Web3Provider): Promise<number> => {
   const currentBlock = await provider.getBlockNumber();
   const blocksInDay = Math.round(twentyFourHoursInSecs / 2);
   return currentBlock - blocksInDay;
 };
 
-const getPastPools = async (poolId: string, provider: ethers.providers.Web3Provider) => {
-  // const pastPoolsQuery = this.query({ where: isInPoolIds, block });
-  const blockNum = await getblocknum(provider);
-  const q = gql`
-      query GetPools($block: Int!, $poolId: String!) {
-        pools(
-          where: { id: $poolId }
-          block: { number: $block }
-        ) {
-          id
-          address
-          poolType
-          totalLiquidity
-          strategyType
-          totalSwapFee
-          swapFee
-          symbol
-          amp
-          tokens {
-            id
-            symbol
-            name
-            decimals
-            address
-            balance
-            invested
-            investments {
-              id
-              amount
-            }
-            weight
-          }
-        }
-      }
-    `;
-
-  console.log('blockNum', blockNum)
-  const poolReslts = await client.query({
-    query: q,
+const getPastPools = async (poolId: string, provider: ethers.providers.Web3Provider): Promise<Pool> => {
+  const blockNum = await getBlockNum(provider);
+  const poolResults = await client.query({
+    query: GET_PAST_POOL_FOR_ID,
     variables: { block: blockNum, poolId },
   });
-  // console.log
-  // return p
-  console.log('poolReslts', poolReslts)
-  return poolReslts.data ? poolReslts.data.pools[0] : null;
+  return poolResults.data ? poolResults.data.pools[0] : null;
 };
-export const getSwapApr = async (pool: Pool, provider: ethers.providers.Web3Provider, signer: ethers.Signer): Promise<number> => {
+
+function getVaultContract (signer: ethers.Signer): Contract {
+  return new Contract(polygonVaultAddress, Vault__factory.abi, signer);
+}
+export async function getSwapApr (pool: Pool, provider: ethers.providers.Web3Provider, signer: ethers.Signer): Promise<number> {
   const pastPool = await getPastPools(pool.id, provider);
-  console.log('PAST POOL', pastPool);
-  const vault = new Contract(polygonVaultAddress, Vault__factory.abi, signer);
+  const vault: Contract = getVaultContract(signer);
   const collectorAddress = await vault.getProtocolFeesCollector();
   const collector = new Contract(collectorAddress, ProtocolFeeCollectorAbi, signer);
   const swapFeePercentage = await collector.getSwapFeePercentage();
   const protocolFeePercentage = swapFeePercentage / 10 ** 18;
-  let poolApr: any = '';
+  let poolApr: AdvancedBigNumber | string = '';
   if (!pastPool) {
     poolApr = bnum(pool.totalSwapFee)
       .times(1 - protocolFeePercentage)
@@ -258,64 +192,39 @@ export const getSwapApr = async (pool: Pool, provider: ethers.providers.Web3Prov
       .dividedBy(pool.totalLiquidity)
       .multipliedBy(365)
   }
-  return Number(poolApr.times(100));
-};
-
-function computeAPRsForPool(
-  tokenRewards: LiquidityMiningTokenRewards[],
-  totalLiquidity: string,
-  marketPrices: MarketDataResult[],
-  tokenSet: GenericTokenSet,
-): { [address: string]: string } {
-  // if (!tokenRewards || !tokenRewards.length) return '0';
-
-  const rewardAPRs = tokenRewards.map((reward) => [
-    getAddress(reward.tokenAddress),
-    computeAPRForPool(reward.amount, getPriceForAddress(tokenSet, marketPrices, reward.tokenAddress), totalLiquidity)
-  ]);
-  // console.log('REWARD APRS', rewardAPRs)
-  return Object.fromEntries(rewardAPRs);
+  return Number(poolApr.times(100).toFixed(2));
 }
+
 export async function getMiningLiquidityApr (tokenSet: GenericTokenSet, pool: Pool, marketPrices: MarketDataResult[]): Promise<number> {
   let liquidityMiningAPR = '0';
-  let liquidityMiningBreakdown = {};
-
   const url =
     'https://raw.githubusercontent.com/balancer-labs/frontend-v2/develop/src/lib/utils/liquidityMining/MultiTokenLiquidityMining.json';
   const { data } = await axios.get(url);
   const week = `week_${getCurrentLiquidityMiningWeek()}`;
   const weekStats: LiquidityMiningPoolResult[] | undefined = data[week];
-  let liquidityMiningRewards: any = {};
+  let liquidityMiningRewards: LiquidityMiningTokenReward[] = [];
 
   if (weekStats) {
-    console.log('weekStats', weekStats)
     const rewards = weekStats.find((p: LiquidityMiningPoolResult) => p.chainId === 137)?.pools;
     if (rewards && rewards[pool.id]) {
       liquidityMiningRewards = rewards[pool.id];
     }
   }
-  const miningTotalLiquidity = removeExcludedAddressesFromTotalLiquidity(
-    pool,
-    pool.totalLiquidity
-  );
-  console.log('miningTotalLiquidity', miningTotalLiquidity);
+
+  const miningTotalLiquidity = bnum(pool.totalLiquidity).toString();
   const IS_LIQUIDITY_MINING_ENABLED = true;
   const hasLiquidityMiningRewards = IS_LIQUIDITY_MINING_ENABLED
-    ? !!liquidityMiningRewards
+    ? !!liquidityMiningRewards.length
     : false;
-  console.log('hasLiquidityMiningRewards', hasLiquidityMiningRewards)
   if (hasLiquidityMiningRewards) {
-
     liquidityMiningAPR = computeTotalAPRForPool(liquidityMiningRewards, miningTotalLiquidity, marketPrices, tokenSet);
-    liquidityMiningBreakdown = computeAPRsForPool(liquidityMiningRewards, miningTotalLiquidity, marketPrices, tokenSet);
   }
-  console.log('liquidityMiningBreakdown', liquidityMiningAPR);
-  return parseFloat(liquidityMiningAPR);
+  return Number(bnum(liquidityMiningAPR).times(100).toFixed(2));
 }
 
 export async function getPools(addresses: string[]): Promise<Pool[]> {
   const poolResults = await client.query({
-    query: GET_POOLS
+    query: GET_ALL_POOLS
   });
   const allowedPools: Pool[] = [];
   const lowercaseAddresses = addresses.map((address) => address.toLowerCase());
@@ -329,4 +238,33 @@ export async function getPools(addresses: string[]): Promise<Pool[]> {
     }
   }
   return allowedPools;
+}
+
+export async function joinPool (pool: Pool, userAddress: string, signer: ethers.Signer, amountsIn: string[], gasPrice?: string): Promise<TransactionResponse> {
+  const vault: Contract = getVaultContract(signer);
+  const options: TransactionRequest = {};
+  if (gasPrice) {
+    options.gasPrice = gasPrice.toString();
+  }
+
+  return await vault.joinPool(pool.id, userAddress, userAddress, {
+    assets: pool.tokens.map((t: PoolToken) => t.address),
+    maxAmountsIn: amountsIn,
+    fromInternalBalance: false,
+    userData: StablePoolEncoder.joinExactTokensInForBPTOut(amountsIn, BigNumber.from('0'))
+  }, options);
+}
+
+export async function exitPool (pool: Pool, userAddress: string, signer: ethers.Signer, amountsOut: string[], gasPrice?: string): Promise<TransactionResponse> {
+  const vault: Contract = getVaultContract(signer);
+  const options: TransactionRequest = {};
+  if (gasPrice) {
+    options.gasPrice = gasPrice.toString();
+  }
+  return await vault.exitPool(pool.id, userAddress, userAddress, {
+    assets: pool.tokens.map((t: PoolToken) => t.address),
+    minAmountsOut: amountsOut,
+    fromInternalBalance: false,
+    userData: StablePoolEncoder.exitBPTInForExactTokensOut(amountsOut, MaxUint256)
+  }, options);
 }
