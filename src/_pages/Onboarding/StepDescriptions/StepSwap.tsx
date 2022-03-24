@@ -1,7 +1,7 @@
 import OnboardingStepDescription from '_pages/Onboarding/OnboardingStepDescription';
 
 export default function StepSwap() {
-  const whatIsRequired = <>Swap some $MATIC for $wBTC</>;
+  const whatIsRequired = <>Swap some $MATIC for $WBTC</>;
   const whyIsRequired = (
     <>
       A token swap is the exchanging of one token for another. This allows you to easily exchange

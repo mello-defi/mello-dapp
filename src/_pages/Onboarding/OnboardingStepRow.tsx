@@ -17,13 +17,13 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
 
   const advanceToNextStep = () => {
     setWaitingToAdvance(false);
-  }
+  };
 
   useEffect(() => {
     if (currentStep === step.number + 1) {
       setWaitingToAdvance(true);
     }
-  }, [currentStep])
+  }, [currentStep]);
   return (
     <>
       {currentStep && (

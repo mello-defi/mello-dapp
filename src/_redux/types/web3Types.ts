@@ -37,7 +37,4 @@ interface DisconnectWeb3ActionType extends AnyAction {
     signer: null;
   };
 }
-export type Web3ActionTypes =
-  | GetNetworkAction
-  | ConnectWeb3ActionType
-  | DisconnectWeb3ActionType;
+export type Web3ActionTypes = GetNetworkAction | ConnectWeb3ActionType | DisconnectWeb3ActionType;

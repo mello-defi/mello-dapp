@@ -45,15 +45,17 @@ const web3Modal = new Web3Modal({
   providerOptions // required
 });
 
-const getNetworkDefinition = async (provider: ethers.providers.Web3Provider): Promise<EvmNetworkDefinition> => {
+const getNetworkDefinition = async (
+  provider: ethers.providers.Web3Provider
+): Promise<EvmNetworkDefinition> => {
   const network = await provider.getNetwork();
   return findEvmNetworkById(network.chainId);
-}
+};
 
 const getProvider = async (): Promise<ethers.providers.Web3Provider> => {
   const web3ModalProvider = await web3Modal.connect();
   return new ethers.providers.Web3Provider(web3ModalProvider, 'any');
-}
+};
 export const autoConnect = () => {
   return async (dispatch: Dispatch<Web3ActionTypes>) => {
     if (web3Modal.cachedProvider) {
@@ -63,8 +65,8 @@ export const autoConnect = () => {
       const networkDefinition = await getNetworkDefinition(provider);
       dispatch(setNetworkAction(networkDefinition));
     }
-  }
-}
+  };
+};
 export const connect = () => {
   return async (dispatch: Dispatch<Web3ActionTypes>) => {
     const provider = await getProvider();

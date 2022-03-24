@@ -1,17 +1,20 @@
-import ERC20Abi from '_enums/erc20.js';
-import WETHAbi from '_enums/weth.json';
 import { CryptoCurrencyName, CryptoCurrencySymbol } from '_enums/currency';
 import {
+  balLogo,
   btcLogo,
   daiLogo,
   ethLogo,
   jeurLogo,
+  mimaticLogo,
   polygonLogo,
   renbtcLogo,
+  tusdLogo,
   usdcLogo,
+  usdtLogo,
   wbtcLogo,
   wethLogo
 } from '_assets/images';
+import { ERC20Abi, WETHAbi } from '_abis/index';
 
 export const validPolygonTokenSymbols: CryptoCurrencySymbol | string[] = [
   CryptoCurrencySymbol.ETH,
@@ -23,6 +26,9 @@ export const validPolygonTokenSymbols: CryptoCurrencySymbol | string[] = [
   CryptoCurrencySymbol.USDC,
   CryptoCurrencySymbol.WETH,
   CryptoCurrencySymbol.BAL,
+  CryptoCurrencySymbol.TUSD,
+  CryptoCurrencySymbol.MIMATIC,
+  CryptoCurrencySymbol.USDT
 ];
 // export const validPolygonTokenSymbolsUppercase: string[] = validPolygonTokenSymbols.map((symbol) =>
 //   symbol.toUpperCase()
@@ -59,7 +65,10 @@ export enum PolygonMainnetTokenContracts {
   DAI = '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
   RENBTC = '0xdbf31df14b66535af65aac99c32e9ea844e14501',
   JEUR = '0x4e3decbb3645551b8a19f0ea1678079fcb33fb4c',
-  BAL = '0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3'
+  BAL = '0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3',
+  TUSD = '0x2e1AD108fF1D8C782fcBbB89AAd783aC49586756',
+  MIMATIC = '0xa3Fa99A148fA48D14Ed51d610c367C61876997F1',
+  USDT = '0xc2132D05D31c914a87C6611C10748AEb04B58e8F'
 }
 
 export enum PolygonTestnetMumbaiTokenContracts {
@@ -190,6 +199,9 @@ export interface PolygonTokenSet extends GenericTokenSet {
   [CryptoCurrencySymbol.RENBTC]: EvmTokenDefinition;
   [CryptoCurrencySymbol.JEUR]?: EvmTokenDefinition;
   [CryptoCurrencySymbol.BAL]?: EvmTokenDefinition;
+  [CryptoCurrencySymbol.TUSD]?: EvmTokenDefinition;
+  [CryptoCurrencySymbol.USDT]?: EvmTokenDefinition;
+  [CryptoCurrencySymbol.MIMATIC]?: EvmTokenDefinition;
 }
 
 export const polygonTestnetMumbaiTokens: PolygonTokenSet = {
@@ -264,8 +276,32 @@ export const polygonMainnetTokens: PolygonTokenSet = {
     symbol: CryptoCurrencySymbol.BAL,
     decimals: 18,
     address: PolygonMainnetTokenContracts.BAL,
-    image: daiLogo,
+    image: balLogo,
     name: CryptoCurrencyName.BAL,
+    abi: ERC20Abi
+  },
+  [CryptoCurrencySymbol.TUSD]: {
+    symbol: CryptoCurrencySymbol.TUSD,
+    decimals: 18,
+    address: PolygonMainnetTokenContracts.TUSD,
+    image: tusdLogo,
+    name: CryptoCurrencyName.TUSD,
+    abi: ERC20Abi
+  },
+  [CryptoCurrencySymbol.USDT]: {
+    symbol: CryptoCurrencySymbol.USDT,
+    decimals: 6,
+    address: PolygonMainnetTokenContracts.USDT,
+    image: usdtLogo,
+    name: CryptoCurrencyName.USDT,
+    abi: ERC20Abi
+  },
+  [CryptoCurrencySymbol.MIMATIC]: {
+    symbol: CryptoCurrencySymbol.MIMATIC,
+    decimals: 18,
+    address: PolygonMainnetTokenContracts.MIMATIC,
+    image: mimaticLogo,
+    name: CryptoCurrencyName.MAI,
     abi: ERC20Abi
   },
   [CryptoCurrencySymbol.USDC]: {

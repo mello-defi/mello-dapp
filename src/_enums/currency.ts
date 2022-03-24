@@ -14,17 +14,23 @@ export enum CryptoCurrencyName {
   DAIE = 'DAI',
   BAL = 'Balancer',
   JEUR = 'Jarvis Synthetic Euro',
-  WBTCE = 'Wrapped BTC'
+  WBTCE = 'Wrapped BTC',
+  MAI = 'MAI',
+  TUSD = 'TrueUSD',
+  USDT = 'Tether'
 }
 
 export enum CryptoCurrencySymbol {
   BTC = 'BTC',
-  WBTC = 'wBTC',
+  WBTC = 'WBTC',
   RENBTC = 'renBTC',
   ETH = 'ETH',
   WETH = 'WETH',
   BAL = 'BAL',
   MATIC = 'MATIC',
+  TUSD = 'TUSD',
+  USDT = 'USDT',
+  MIMATIC = 'miMATIC',
   WMATIC = 'WMATIC',
   USDC = 'USDC',
   DAI = 'DAI',

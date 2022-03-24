@@ -1,5 +1,5 @@
 import PoweredByLink from '_components/core/PoweredByLink';
-import aaveLogo from '_assets/images/logos/aave.svg';
+import aaveLogo from '_assets/images/logos/services/aave.svg';
 import React, { useEffect, useState } from 'react';
 import { sortUserReservesByKey } from '_services/aaveService';
 import { ComputedReserveData } from '@aave/protocol-js';

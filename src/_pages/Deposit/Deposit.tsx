@@ -1,6 +1,6 @@
 import { ComputedReserveData } from '@aave/protocol-js';
 import React from 'react';
-import aaveLogo from '_assets/images/logos/aave.svg';
+import aaveLogo from '_assets/images/logos/services/aave.svg';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { AaveSection } from '_enums/aave';
 import AaveReserve from '_components/aave/AaveReserve';

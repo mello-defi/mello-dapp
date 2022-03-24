@@ -14,7 +14,7 @@ export default function OnboardingStepDescription({
   return (
     <>
       {children ? (
-        <div>{ children }</div>
+        <div>{children}</div>
       ) : (
         <>
           {whatIsRequired && whyIsRequired && (

@@ -35,6 +35,7 @@ const defaultOptions: DefaultOptions = {
 };
 
 const client = new ApolloClient({
+  // REVIEW - make network specific
   uri: 'https://api.thegraph.com/subgraphs/name/aave/aave-v2-matic',
   cache: new InMemoryCache({ resultCaching: false }),
   defaultOptions

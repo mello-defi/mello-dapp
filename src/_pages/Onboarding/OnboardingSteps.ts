@@ -45,7 +45,7 @@ export const stepBorrowAave: OnboardingStep = {
 
 export const stepDepositAave: OnboardingStep = {
   number: 6,
-  title: 'Deposit $wBTC into Aave',
+  title: 'Deposit $WBTC into Aave',
   nextStep: stepBorrowAave,
   actionComponent: AaveReserve,
   actionComponentProps: {
@@ -57,7 +57,7 @@ export const stepDepositAave: OnboardingStep = {
 
 export const stepPerformSwap: OnboardingStep = {
   number: 5,
-  title: 'Swap gas token for $wBTC',
+  title: 'Swap gas token for $WBTC',
   nextStep: stepDepositAave,
   actionComponent: Swap,
   actionComponentProps: {
