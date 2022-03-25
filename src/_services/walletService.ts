@@ -1,6 +1,6 @@
 import { BigNumber, Contract, ethers } from 'ethers';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
-import { EvmTokenDefinition, GenericTokenSet } from '_enums/tokens';
+import { EvmTokenDefinition, GenericTokenSet, TokenDefinition } from '_enums/tokens';
 import { Interface } from '@ethersproject/abi';
 import { ERC20Abi } from '../_abis';
 import { WalletTokenBalances } from '_redux/types/walletTypes';
@@ -107,6 +107,23 @@ export async function approveToken(
     options.gasPrice = gasPrice.toString();
   }
   return contract.approve(spender || userAddress, amount, options);
+}
+
+export async function getErc20TokenInfo(
+  provider: ethers.providers.Web3Provider,
+  address: string,
+): Promise<EvmTokenDefinition> {
+  const paths = ['symbol', 'decimals', 'name'];
+  const calls: any[] = [
+    [address, 'symbol', []],
+    [address, 'decimals', []],
+    [address, 'name', []],
+  ];
+  const token: EvmTokenDefinition = await multicall(provider, paths, calls, ERC20Abi);
+  token.address = address;
+  token.isGasToken = false;
+  token.abi = ERC20Abi;
+  return token;
 }
 
 export async function executeEthTransaction(

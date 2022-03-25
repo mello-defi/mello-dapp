@@ -100,7 +100,7 @@ export enum AvalancheTestnetTokenContracts {
 export interface TokenDefinition {
   symbol: CryptoCurrencySymbol;
   name: CryptoCurrencyName;
-  image: string;
+  image?: string;
   decimals: number;
 }
 export interface EvmTokenDefinition extends TokenDefinition {
