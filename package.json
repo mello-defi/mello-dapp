@@ -45,10 +45,12 @@
     "redux": "^4.1.2",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.1",
+    "source-map-explorer": "^2.5.2",
     "web-vitals": "^2.1.0",
     "web3modal": "^1.9.5"
   },
   "scripts": {
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
