@@ -30,7 +30,7 @@ function App() {
     }
   };
 
-  dispatch(autoConnect());
+  // dispatch(autoConnect());
 
   return (
     <div>
