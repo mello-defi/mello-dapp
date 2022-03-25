@@ -38,6 +38,21 @@ export interface PoolToken {
   priceRate: string | null;
   symbol?: string;
 }
+export interface TokenInfo {
+  readonly chainId: number;
+  readonly address: string;
+  readonly name: string;
+  readonly decimals: number;
+  readonly symbol: string;
+  readonly logoURI?: string;
+  readonly tags?: string[];
+  readonly extensions?: {
+    readonly [key: string]: string | number | boolean | null;
+  };
+}
+
+export type TokenInfoMap = { [address: string]: PoolToken };
+
 
 export interface Pool {
   id: string;
@@ -134,13 +149,18 @@ export interface RawOnchainPoolData {
   tokenRates?: BigNumber[];
 }
 
+export type LinearPoolDataMap = Record<string, LinearPoolData>;
+
 export type OnchainTokenDataMap = Record<string, OnchainTokenData>;
+
+export type RawLinearPoolDataMap = Record<string, RawLinearPoolData>;
 
 export interface OnchainPoolData {
   tokens: Record<string, OnchainTokenData>;
   totalSupply: string;
   decimals: number;
   swapFee: string;
+  swapEnabled: boolean;
   amp?: string;
   // swapEnabled: boolean;
   linearPools?: Record<string, LinearPoolData>;

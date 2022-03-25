@@ -1,15 +1,18 @@
 import { ApolloClient, DefaultOptions, gql, InMemoryCache } from '@apollo/client';
+import { pick } from 'lodash';
 import {
+  LinearPoolDataMap,
   LiquidityMiningPoolResult,
   LiquidityMiningTokenReward,
-  OnchainPoolData,
+  OnchainPoolData, OnchainTokenDataMap,
   Pool,
   PoolToken,
   PoolType,
-  RawLinearPoolData,
-  RawOnchainPoolData,
+  RawLinearPoolData, RawLinearPoolDataMap,
+  RawOnchainPoolData, RawPoolTokens, TokenInfoMap,
   UserPool
 } from '_interfaces/balancer';
+
 import axios from 'axios';
 import { differenceInWeeks } from 'date-fns';
 import { BigNumber, Contract, ethers } from 'ethers';
@@ -32,6 +35,7 @@ import { MaxUint256 } from '_utils/maths';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
 import { WalletTokenBalances } from '_redux/types/walletTypes';
 import { multicall } from '_services/walletService';
+import { formatUnits, getAddress } from 'ethers/lib/utils';
 
 const liquidityMiningStartTime = Date.UTC(2020, 5, 1, 0, 0);
 const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
@@ -429,21 +433,147 @@ export function isTradingHaltable(poolType: PoolType): boolean {
   return isManaged(poolType) || isLiquidityBootstrapping(poolType);
 }
 
-function normalizeWeights(weights: BigNumber[], type: PoolType, tokens: PoolToken[]): number[] {
+function normalizeWeights(
+  weights: BigNumber[],
+  type: PoolType,
+  tokens: TokenInfoMap
+): number[] {
   if (isWeightedLike(type)) {
-    // toNormalizedWeights returns weights as 18 decimal fixed point
-    return toNormalizedWeights(weights).map((w) => Number(ethers.utils.formatUnits(w, 18)));
+    return toNormalizedWeights(weights).map(w => Number(ethers.utils.formatUnits(w, 18)));
   } else if (isStableLike(type)) {
-    // const tokensList = Object.values(tokens);
-    return tokens.map(() => 1 / tokens.length);
+    const tokensList = Object.values(tokens);
+    return tokensList.map(() => 1 / tokensList.length);
   } else {
     return [];
   }
 }
 
-export async function getPoolOnChainData(pool: Pool, provider: ethers.providers.Web3Provider) {
-  const paths: string[] = ['totalSupply', 'decimals', 'swapFee']
-  const calls: any[] = [
+
+function formatPoolTokens(
+  poolTokens: RawPoolTokens,
+  tokenInfo: TokenInfoMap,
+  weights: number[],
+  poolAddress: string
+): OnchainTokenDataMap {
+  const tokens = <OnchainTokenDataMap>{};
+
+  poolTokens.tokens.forEach((token, i) => {
+    const tokenBalance = poolTokens.balances[i];
+    const tokenAddressLowercase = token.toLowerCase();
+    const decimals = tokenInfo[tokenAddressLowercase]?.decimals;
+    tokens[tokenAddressLowercase] = {
+      decimals,
+      balance: formatUnits(tokenBalance, decimals),
+      weight: weights[i],
+      // @ts-ignore
+      symbol: tokenInfo[tokenAddressLowercase]?.symbol,
+      name: tokenInfo[tokenAddressLowercase]?.name,
+    };
+  });
+
+  // Remove pre-minted BPT
+  delete tokens[poolAddress];
+
+  return tokens;
+}
+
+
+function formatLinearPools(
+  linearPools: RawLinearPoolDataMap
+): LinearPoolDataMap {
+  const _linearPools = <LinearPoolDataMap>{};
+
+  Object.keys(linearPools).forEach(address => {
+    const {
+      id,
+      mainToken,
+      wrappedToken,
+      priceRate,
+      unwrappedTokenAddress,
+      tokenData,
+      totalSupply
+    } = linearPools[address];
+
+    _linearPools[address] = {
+      id,
+      priceRate: formatUnits(priceRate.toString(), 18),
+      mainToken: {
+        address: getAddress(mainToken.address),
+        index: mainToken.index.toNumber(),
+        balance: tokenData.balances[mainToken.index.toNumber()].toString()
+      },
+      wrappedToken: {
+        address: getAddress(wrappedToken.address),
+        index: wrappedToken.index.toNumber(),
+        balance: tokenData.balances[wrappedToken.index.toNumber()].toString(),
+        priceRate: formatUnits(wrappedToken.rate, 18)
+      },
+      unwrappedTokenAddress: getAddress(unwrappedTokenAddress),
+      totalSupply: formatUnits(totalSupply, 18)
+    };
+  });
+
+  return _linearPools;
+}
+
+function formatPoolData(
+  rawData: RawOnchainPoolData,
+  type: PoolType,
+  tokens: TokenInfoMap,
+  poolAddress: string
+): OnchainPoolData {
+  const poolData = <OnchainPoolData>{};
+
+  // Filter out pre-minted BPT token if exists
+  const validTokens = Object.keys(tokens).filter(
+    address => address !== poolAddress
+  );
+  tokens = pick(tokens, validTokens);
+
+  const normalizedWeights = normalizeWeights(
+    rawData?.weights || [],
+    type,
+    tokens
+  );
+
+  console.log('RAW DATA', rawData.poolTokens);
+  poolData.tokens = formatPoolTokens(
+    rawData.poolTokens,
+    tokens,
+    normalizedWeights,
+    poolAddress
+  );
+
+  poolData.amp = '0';
+  if (rawData?.amp) {
+    poolData.amp = rawData.amp.value.div(rawData.amp.precision).toString();
+  }
+
+  poolData.swapEnabled = true;
+  if (rawData.swapEnabled !== undefined) {
+    poolData.swapEnabled = rawData.swapEnabled;
+  }
+
+  if (rawData?.linearPools) {
+    poolData.linearPools = formatLinearPools(rawData.linearPools);
+  }
+
+  if (rawData.tokenRates) {
+    poolData.tokenRates = rawData.tokenRates.map(rate =>
+      ethers.utils.formatUnits(rate.toString(), 18)
+    );
+  }
+
+  poolData.totalSupply = ethers.utils.formatUnits(rawData.totalSupply, rawData.decimals);
+  poolData.decimals = rawData.decimals;
+  poolData.swapFee = ethers.utils.formatUnits(rawData.swapFee, 18);
+
+  return poolData;
+}
+
+export async function getPoolOnChainData(pool: Pool, provider: ethers.providers.Web3Provider): Promise<OnchainPoolData> {
+  let paths: string[] = ['totalSupply', 'decimals', 'swapFee']
+  let calls: any[] = [
     // totalSupply
     [pool.address, 'totalSupply', []],
     // decimals
@@ -501,73 +631,62 @@ export async function getPoolOnChainData(pool: Pool, provider: ethers.providers.
     }
   }
 
-  const poolMulticallResult = await multicall(provider,paths, calls, getAbiForPoolType(pool.poolType));
-  console.log(poolMulticallResult);
-  // // const onChainData: OnchainPoolData = {};
-  // poolMulticallResult.forEach(([success, result], i) => {
-  //   if (success && result) {
-  //     console.log(`${calls[i][1]} = ${result}`);
-  //   }
-  // });
+  let result: RawOnchainPoolData = await multicall(provider,paths, calls, getAbiForPoolType(pool.poolType));
+  // const onChainData: OnchainPoolData = {};
+  paths = [];
+  calls = [];
+  if (isStablePhantom(pool.poolType) && result.linearPools) {
+    const wrappedTokensMap: Record<string, string> = {};
 
-  // let result = <RawOnchainPoolData>{};
+    Object.keys(result.linearPools).forEach(address => {
+      if (!result.linearPools) return;
+      const linearPool: RawLinearPoolData = result.linearPools[address];
 
-  // if (isStablePhantom(pool.poolType) && result.linearPools) {
-  //   const wrappedTokensMap: Record<string, string> = {};
-  //
-  //   Object.keys(result.linearPools).forEach(address => {
-  //     if (!result.linearPools) return;
-  //     const linearPool: RawLinearPoolData = result.linearPools[address];
-  //
-  //     vaultMultiCaller.call(
-  //       `linearPools.${address}.tokenData`,
-  //       this.address,
-  //       'getPoolTokens',
-  //       [linearPool.id]
-  //     );
-  //
-  //     wrappedTokensMap[address] = linearPool.wrappedToken.address;
-  //   });
-  //
-  //   Object.entries(wrappedTokensMap).forEach(([address, wrappedToken]) => {
-  //     calls.push(
-  //       [
-  //       wrappedToken,
-  //       'ATOKEN',[]
-  //         ]
-  //     );
-  //     calls.push([
-  //       address,
-  //       'getVirtualSupply',
-  //       []]
-  //     );
-  //   });
-  //
-  //   result = await poolMulticaller.execute(result);
-  // }
+      paths.push(`linearPools.${address}.tokenData`)
+      calls.push([
+        pool.address,
+        'getPoolTokens',
+        [linearPool.id]
+        ]
+      );
 
-  // vaultMultiCaller.call('poolTokens', this.address, 'getPoolTokens', [id]);
-  // result = await vaultMultiCaller.execute(result);
+      wrappedTokensMap[address] = linearPool.wrappedToken.address;
+    });
 
-  // const walletBalances: WalletTokenBalances = {};
-  // res.forEach(([success, result], i) => {
-  //   if (success && result) {
-  //     const symbol = getTokenByAddress(tokenSet, calls[i][0]).symbol;
-  //     walletBalances[symbol] = {
-  //       balance: result.length > 1 ? result : result[0]
-  //     }
-  //   }
-  // });
-  // // const vaultContract = getReadVaultContract(provider);
-  // const poolTokens = await vaultContract.getPoolTokens(pool.id);
+    Object.entries(wrappedTokensMap).forEach(([address, wrappedToken]) => {
+      paths.push(`linearPools.${address}.unwrappedTokenAddress`)
+      calls.push([
+        wrappedToken,
+        'ATOKEN',
+        []
+        ]
+      );
+      paths.push(`linearPools.${address}.totalSupply`);
+      calls.push([
+        address,
+        'getVirtualSupply',
+        [],
+        ]
+      );
+    });
+    const result2 = await multicall(provider, paths, calls, getAbiForPoolType(pool.poolType));
+    result = {
+      ...result,
+      ...result2,
+    }
+  }
 
-  // const poolContract = new Contract(pool.address, StablePool__factory.abi, provider);
-  // const supply = await poolContract.totalSupply();
-  // const decimals = await poolContract.decimals();
-  // const swapFee = await poolContract.getSwapFeePercentage();
-  // const tokens = await vaultContract.getPoolTokens(pool.id);
-  // console.log('supply', supply);
-  // console.log('decimals', decimals);
-  // console.log('swapFee', swapFee);
-  // console.log('tokens', tokens);
+  const vaultContract = getReadVaultContract(provider);
+  const pt: RawPoolTokens = await vaultContract.getPoolTokens(pool.id);
+  result = {
+    ...result,
+    poolTokens: pt,
+  }
+
+  const tokens: TokenInfoMap = {};
+  for (const token of pool.tokens) {
+    tokens[token.address.toLowerCase()] = token;
+  }
+  return formatPoolData(result, pool.poolType, tokens, pool.address);
 }
+
