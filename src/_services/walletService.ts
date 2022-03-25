@@ -5,6 +5,7 @@ import { Interface } from '@ethersproject/abi';
 import { ERC20Abi } from '../_abis';
 import { WalletTokenBalances } from '_redux/types/walletTypes';
 import { getTokenByAddress } from '_utils/index';
+import set from 'lodash/set';
 
 export async function getTransactionCount(
   address: string,
@@ -18,7 +19,7 @@ export async function multicall(
   paths: string[],
   calls: any[],
   abi: any
-): Promise<[boolean, ethers.utils.Result | null][]> {
+): Promise<any> {
   // REVIEW - make network generic, move ABI to file
   const multi = new Contract(
     '0x275617327c958bD06b5D6b871E7f491D76113dd8', // polygon makerdao multicall
@@ -34,21 +35,27 @@ export async function multicall(
     calls.map((call) => [call[0].toLowerCase(), itf.encodeFunctionData(call[1], call[2])]),
     {}
   );
-  const results: [boolean, ethers.utils.Result | null][] = res.map(([success, data], i) => {
-    // const [success, data] = r;
-    if (!success) return [success, null];
+  const result = {};
+  res.forEach(([success, data], i) => {
     const decodedResult = itf.decodeFunctionResult(calls[i][1], data);
-    return [success, decodedResult];
+    console.log()
+    set(result, paths[i], success ? decodedResult.length > 1 ? decodedResult : decodedResult[0] : null)
   });
-  return results;
+  console.log('multicall result', result);
+  return result;
 }
 export async function getAllErc20TokenBalances(
   provider: ethers.providers.Web3Provider,
   tokenSet: GenericTokenSet,
   userAddress: string
-) {
-  const tokenAddresses = Object.values(tokenSet).map(({ address }) => address);
-  const paths = tokenAddresses;
+): Promise<WalletTokenBalances> {
+  const paths = [];
+  const tokenAddresses = [];
+  for (const token of Object.values(tokenSet)) {
+    tokenAddresses.push(token.address);
+    paths.push(`${token.symbol}.balance`);
+  }
+
   const calls: any[] = tokenAddresses.map((address: string) => [
     address,
     'balanceOf',
@@ -56,17 +63,7 @@ export async function getAllErc20TokenBalances(
   ]);
 
   const res = await multicall(provider, paths, calls, ERC20Abi);
-  const walletBalances: WalletTokenBalances = {};
-  res.forEach(([success, result], i) => {
-    if (success && result) {
-      const symbol = getTokenByAddress(tokenSet, calls[i][0]).symbol;
-      walletBalances[symbol] = {
-        balance: result.length > 1 ? result : result[0]
-      };
-    }
-  });
-
-  return walletBalances;
+  return res as WalletTokenBalances;
 }
 
 export async function sendErc20Token(

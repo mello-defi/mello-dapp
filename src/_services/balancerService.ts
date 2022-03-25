@@ -442,6 +442,7 @@ function normalizeWeights(weights: BigNumber[], type: PoolType, tokens: PoolToke
 }
 
 export async function getPoolOnChainData(pool: Pool, provider: ethers.providers.Web3Provider) {
+  const paths: string[] = ['totalSupply', 'decimals', 'swapFee']
   const calls: any[] = [
     // totalSupply
     [pool.address, 'totalSupply', []],
@@ -452,52 +453,62 @@ export async function getPoolOnChainData(pool: Pool, provider: ethers.providers.
   ];
 
   if (isWeightedLike(pool.poolType)) {
-    // weights
+    paths.push('weights');
     calls.push([pool.address, 'getNormalizedWeights', []]);
 
     if (isTradingHaltable(pool.poolType)) {
-      // swapEnabled
+      paths.push('swapEnabled');
       calls.push([pool.address, 'getSwapEnabled', []]);
     }
   } else if (isStableLike(pool.poolType)) {
-    // amp
+    paths.push('amp');
     calls.push([pool.address, 'getAmplificationParameter', []]);
 
     if (isStablePhantom(pool.poolType)) {
       // Overwrite totalSupply with virtualSupply for StablePhantom pools
       // totalSupply
+      paths.push('totalSupply');
       calls.push([pool.address, 'getVirtualSupply', []]);
 
       pool.tokens
         .map((t) => t.address.toLowerCase())
         .forEach((token, i) => {
-          // linearPools.${token}.id
+          paths.push(`linearPools.${token}.id`);
           calls.push([token, 'getPoolId']);
-          // linearPools.${token}.priceRate
+
+          paths.push(`linearPools.${token}.priceRate`)
           calls.push([token, 'getRate', []]);
-          // tokenRates[${i}]
+
+          paths.push(`tokenRates[${i}]`)
           calls.push([pool.address, 'getTokenRate', [token]]);
-          // linearPools.${token}.mainToken.address
+
+          paths.push(`linearPools.${token}.mainToken.address`)
           calls.push([token, 'getMainToken', [token]]);
-          // linearPools.${token}.mainToken.index
+
+          paths.push(`linearPools.${token}.mainToken.index`)
           calls.push([token, 'getMainIndex', []]);
-          // linearPools.${token}.wrappedToken.address
+
+          paths.push(`linearPools.${token}.wrappedToken.address`)
           calls.push([token, 'getWrappedToken', []]);
-          // linearPools.${token}.wrappedToken.index
+
+          paths.push(`linearPools.${token}.wrappedToken.index`)
           calls.push([token, 'getWrappedIndex', []]);
-          // linearPools.${token}.wrappedToken.rate
+
+          paths.push(`linearPools.${token}.wrappedToken.rate`)
           calls.push([token, 'getWrappedTokenRate', []]);
+
         });
     }
   }
 
-  const poolMulticallResult = await multicall(provider, calls, getAbiForPoolType(pool.poolType));
-  // const onChainData: OnchainPoolData = {};
-  poolMulticallResult.forEach(([success, result], i) => {
-    if (success && result) {
-      console.log(`${calls[i][1]} = ${result}`);
-    }
-  });
+  const poolMulticallResult = await multicall(provider,paths, calls, getAbiForPoolType(pool.poolType));
+  console.log(poolMulticallResult);
+  // // const onChainData: OnchainPoolData = {};
+  // poolMulticallResult.forEach(([success, result], i) => {
+  //   if (success && result) {
+  //     console.log(`${calls[i][1]} = ${result}`);
+  //   }
+  // });
 
   // let result = <RawOnchainPoolData>{};
 
