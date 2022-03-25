@@ -30,7 +30,6 @@ export default function Invest() {
   const prices = useMarketPrices();
   // const walletBalances = useWalletBalances();
   const initPools = async () => {
-    console.log('initPools');
     if (provider && signer && userAddress) {
       const addresses = Object.values(tokenSet).map((t: EvmTokenDefinition) => t.address);
       const pools = await getPools(addresses);

@@ -40,7 +40,7 @@ export default function SingleCryptoAmountInput({
       `}>
         <input
           disabled={disabled}
-          onWheel={() => false}
+          onWheel={(e) => e.currentTarget.blur()}
           type={'number'}
           min={'0'}
           className={`text-2xl w-3/5 font-mono sm:text-3xl bg-gray-100 focus:outline-none px-2 sm:px-0 sm:mt-0 py-1 sm:py-0 ${
@@ -63,8 +63,20 @@ export default function SingleCryptoAmountInput({
           )}
         </div>
         {balance && (
-          <div>
-            {ethers.utils.formatUnits(balance, token.decimals)}
+          <div className={'flex-row-center'}>
+            <div>
+              {ethers.utils.formatUnits(balance, token.decimals)}
+            </div>
+            <div
+              onClick={() => {
+                amountChanged(ethers.utils.formatUnits(balance, token?.decimals));
+              }}
+              className={
+                'rounded-2xl text-body-smaller px-2 py-1 bg-gray-200 hover:bg-gray-300 transition ml-1 flex-row-center cursor-pointer'
+              }
+            >
+              Max
+            </div>
           </div>
         )}
       </div>

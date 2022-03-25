@@ -144,7 +144,7 @@ function PoolWithdraw ({pool}: {pool: Pool}) {
       {tokenAmountMap && pool.tokens.map((token) => (
         <div key={token.symbol} className={'px-2'}>
           <SingleCryptoAmountInput
-            disabled={!walletBalanceGreaterThanZero(token)}
+            disabled={false}
             tokenPrice={getMarketPricesForPoolToken(token)}
             amount={tokenAmountMap[token.address]}
             balance={getUserPoolBalance(token)}

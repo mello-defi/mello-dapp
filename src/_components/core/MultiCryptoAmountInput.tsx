@@ -81,7 +81,7 @@ export default function MultiCryptoAmountInput({
         <div className={'mr-2 w-full md:w-2/3'}>
           <input
             step={'0.01'}
-            onWheel={() => false}
+            onWheel={(e) => e.currentTarget.blur()}
             type={'number'}
             disabled={disabled}
             // style={{fontFamily: 'monospace'}}

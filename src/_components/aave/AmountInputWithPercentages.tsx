@@ -70,7 +70,7 @@ export default function AmountInputWithPercentages({
           step={'0.01'}
           max={maxAmount ? parseFloat(maxAmount) : undefined}
           disabled={!maxAmount || parseFloat(maxAmount) === 0}
-          onWheel={() => false}
+          onWheel={(e) => e.currentTarget.blur()}
           value={inputAmount}
           onChange={handleAmountChanged}
           type={'number'}
