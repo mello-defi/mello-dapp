@@ -23,10 +23,14 @@ function App() {
   }, [isConnected, network, dispatch]);
 
   const login = () => {
-    dispatch(connect());
+    try {
+      dispatch(connect());
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  dispatch(autoConnect());
+  // dispatch(autoConnect());
 
   return (
     <div>
