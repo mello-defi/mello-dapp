@@ -13,22 +13,12 @@ export async function getTransactionCount(
   const txCount: string = await provider.send('eth_getTransactionCount', [address, 'latest']);
   return BigNumber.from(txCount).toNumber();
 }
-
-// export async function getErc20TokenBalance(
-//   token: EvmTokenDefinition,
-//   provider: ethers.providers.Web3Provider,
-//   userAddress: string
-// ): Promise<BigNumber> {
-//   const newContract = new ethers.Contract(token.address, token.abi, provider);
-//   const balance = await newContract.balanceOf(userAddress);
-//   return BigNumber.from(balance);
-// }
-
-export async function getAllErc20TokenBalances (
+export async function multicall(
   provider: ethers.providers.Web3Provider,
-  tokenSet: GenericTokenSet,
-  userAddress: string
-) {
+  paths: string[],
+  calls: any[],
+  abi: any
+): Promise<[boolean, ethers.utils.Result | null][]> {
   // REVIEW - make network generic, move ABI to file
   const multi = new Contract(
     '0x275617327c958bD06b5D6b871E7f491D76113dd8', // polygon makerdao multicall
@@ -37,28 +27,45 @@ export async function getAllErc20TokenBalances (
     ],
     provider
   );
-  const tokenAddresses = Object.values(tokenSet).map(({ address }) => address);
-  const calls: any[] = tokenAddresses.map((address: string) => [address, 'balanceOf', [userAddress]]);
-  const itf = new Interface(ERC20Abi);
+  const itf = new Interface(abi);
   const res: [boolean, string][] = await multi.tryAggregate(
     // if false, allows individual calls to fail without causing entire multicall to fail
     true,
-    calls.map(call => [
-      call[0].toLowerCase(),
-      itf.encodeFunctionData(call[1], call[2])
-    ]),
+    calls.map((call) => [call[0].toLowerCase(), itf.encodeFunctionData(call[1], call[2])]),
     {}
   );
+  const results: [boolean, ethers.utils.Result | null][] = res.map(([success, data], i) => {
+    // const [success, data] = r;
+    if (!success) return [success, null];
+    const decodedResult = itf.decodeFunctionResult(calls[i][1], data);
+    return [success, decodedResult];
+  });
+  return results;
+}
+export async function getAllErc20TokenBalances(
+  provider: ethers.providers.Web3Provider,
+  tokenSet: GenericTokenSet,
+  userAddress: string
+) {
+  const tokenAddresses = Object.values(tokenSet).map(({ address }) => address);
+  const paths = tokenAddresses;
+  const calls: any[] = tokenAddresses.map((address: string) => [
+    address,
+    'balanceOf',
+    [userAddress]
+  ]);
 
+  const res = await multicall(provider, paths, calls, ERC20Abi);
   const walletBalances: WalletTokenBalances = {};
-  res.forEach(([success, returnData], i) => {
-    if (!success) return null;
-    const decodedResult = itf.decodeFunctionResult(calls[i][1], returnData);
-    const symbol = getTokenByAddress(tokenSet, calls[i][0]).symbol;
-    walletBalances[symbol] = {
-      balance: decodedResult.length > 1 ? decodedResult : decodedResult[0]
+  res.forEach(([success, result], i) => {
+    if (success && result) {
+      const symbol = getTokenByAddress(tokenSet, calls[i][0]).symbol;
+      walletBalances[symbol] = {
+        balance: result.length > 1 ? result : result[0]
+      };
     }
   });
+
   return walletBalances;
 }
 

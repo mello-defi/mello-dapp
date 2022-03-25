@@ -18,10 +18,16 @@ const useCheckAndApproveTokenBalance = () => {
     userAddress: string,
     setTransactionHash: (hash: string) => void,
     amount: ethers.BigNumber = MaxUint256,
-    spenderAddress?: string,
+    spenderAddress?: string
   ) => {
     if (provider && signer && network) {
-      const allowance = await getTokenAllowance(tokenAddress, ERC20Abi, provider, userAddress, spenderAddress);
+      const allowance = await getTokenAllowance(
+        tokenAddress,
+        ERC20Abi,
+        provider,
+        userAddress,
+        spenderAddress
+      );
       if (allowance.eq(0)) {
         const approvalGasResult = await getGasPrice(network.gasStationUrl);
         const approvalTxHash = await approveToken(
@@ -31,7 +37,7 @@ const useCheckAndApproveTokenBalance = () => {
           userAddress,
           amount,
           approvalGasResult?.fastest,
-          spenderAddress,
+          spenderAddress
         );
         logTransactionHash(approvalTxHash.hash, network.chainId);
         setTransactionHash(approvalTxHash.hash);

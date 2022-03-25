@@ -7,7 +7,7 @@ import { DefaultTransition } from '_components/core/Transition';
 import { useState } from 'react';
 import PoolFunctions from '_components/balancer/PoolFunctions';
 
-export default function PoolRow ({pool}: {pool: Pool}) {
+export default function PoolRow({ pool }: { pool: Pool }) {
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <div
@@ -29,21 +29,16 @@ export default function PoolRow ({pool}: {pool: Pool}) {
                 maximumFractionDigits: 0
               })}
             </div>
-            {pool.totalApr ? (
-              <div>
-                {pool.totalApr}% APR
-              </div>
-            ) : (
-              <Spinner show={true} />
-            )}
+            {pool.totalApr ? <div>{pool.totalApr}% APR</div> : <Spinner show={true} />}
           </div>
           <div className={'text-3xl'}>
             <ExpandMore
               onClick={() => setIsExpanded(!isExpanded)}
-              fontSize={'inherit'} className={'cursor-pointer text-color-light hover:text-black transition ml-2 mb-1'} />
+              fontSize={'inherit'}
+              className={'cursor-pointer text-color-light hover:text-black transition ml-2 mb-1'}
+            />
           </div>
         </div>
-
       </div>
       <DefaultTransition isOpen={isExpanded}>
         <div className={'mt-2'}>
@@ -51,5 +46,5 @@ export default function PoolRow ({pool}: {pool: Pool}) {
         </div>
       </DefaultTransition>
     </div>
-  )
+  );
 }

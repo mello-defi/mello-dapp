@@ -54,7 +54,7 @@ export default function Swap({
     if (initialSourceTokenSymbol) {
       setSourceTokenBalance(walletBalances[initialSourceTokenSymbol]?.balance);
     }
-  }, [walletBalances, initialSourceTokenSymbol])
+  }, [walletBalances, initialSourceTokenSymbol]);
   const [destinationToken, setDestinationToken] = useState<EvmTokenDefinition>(
     (initialDestinationTokenSymbol && tokens[initialDestinationTokenSymbol]) ||
       Object.values(tokens)[1]

@@ -87,7 +87,7 @@ export default function AaveReserve({
     if (token) {
       setUserBalance(walletBalances[token.symbol]?.balance);
     }
-  }, [walletBalances, token])
+  }, [walletBalances, token]);
 
   useEffect(() => {
     if (!token) {
@@ -137,7 +137,6 @@ export default function AaveReserve({
       }
     }
   }, [token, marketPrices]);
-
 
   // REVIEW - move to hook
   const runAaveTransactions = async (
@@ -199,9 +198,7 @@ export default function AaveReserve({
         setAmount('0.0');
         setTransactionInProgress(false);
         dispatch(toggleUserSummaryStale(true));
-        dispatch(
-          toggleBalancesAreStale(true)
-        );
+        dispatch(toggleBalancesAreStale(true));
         if (nextStep) {
           dispatch(setStep(nextStep));
         }

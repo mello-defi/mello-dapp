@@ -20,7 +20,7 @@ const useWalletBalances = (token?: EvmTokenDefinition) => {
         const balances = await getAllErc20TokenBalances(provider, tokenSet, userAddress);
         dispatch(setTokenBalances(balances));
       }
-    }
+    };
     getAllBalances();
   }, [walletBalances, token, userAddress, balancesAreStale]);
 

@@ -9,7 +9,7 @@ import {
 const initialState: WalletState = {
   address: undefined,
   balances: {},
-  balancesAreStale: true,
+  balancesAreStale: true
 };
 
 export const getWalletReducer = (

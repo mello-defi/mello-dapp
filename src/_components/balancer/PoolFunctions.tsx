@@ -5,7 +5,13 @@ import { ERC20Abi } from '../../_abis';
 import { getGasPrice } from '_services/gasService';
 import { MaxUint256 } from '_utils/maths';
 import { logTransactionHash } from '_services/dbService';
-import { exitPool, getUserPools, getVaultAddress, joinPool } from '_services/balancerService';
+import {
+  exitPool,
+  getPoolOnChainData,
+  getUserPools,
+  getVaultAddress,
+  joinPool
+} from '_services/balancerService';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { useEffect, useState } from 'react';
@@ -22,14 +28,14 @@ import useCheckAndApproveTokenBalance from '_hooks/useCheckAndApproveTokenBalanc
 
 export enum BalancerFunction {
   Invest = 'Invest',
-  Withdraw = 'Withdraw',
+  Withdraw = 'Withdraw'
 }
 
 interface TokenAmountMap {
   [address: string]: string;
 }
 
-function PoolWithdraw ({pool}: {pool: Pool}) {
+function PoolWithdraw({ pool }: { pool: Pool }) {
   const walletBalances = useWalletBalances();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const signer = useSelector((state: AppState) => state.web3.signer);
@@ -46,16 +52,19 @@ function PoolWithdraw ({pool}: {pool: Pool}) {
     if (!tokenAmountMap) {
       const freshTokenMap: TokenAmountMap = {};
       for (const token of pool.tokens) {
-        freshTokenMap[token.address] = '0.0'
+        freshTokenMap[token.address] = '0.0';
       }
       setTokenAmountMap(freshTokenMap);
     }
-    if (userAddress && !userPools) {
+    if (userAddress && !userPools && provider) {
       const initUserPools = async () => {
         const results = await getUserPools(userAddress);
         setUserPools(results);
-      }
-      initUserPools()
+      };
+      initUserPools();
+      getPoolOnChainData(pool, provider).then((poolData) => {
+        console.log(poolData);
+      });
     }
   }, [pool, userAddress]);
   const walletBalanceGreaterThanZero = (token: PoolToken): boolean => {
@@ -68,7 +77,7 @@ function PoolWithdraw ({pool}: {pool: Pool}) {
       return price.current_price;
     }
     return 0;
-  }
+  };
 
   const getUserPoolBalance = (token: PoolToken): BigNumber | undefined => {
     if (!userPools) {
@@ -78,7 +87,9 @@ function PoolWithdraw ({pool}: {pool: Pool}) {
     if (!userPool) {
       return undefined;
     }
-    const decimals = userPool.poolId.tokens.find((t) => t.address.toLowerCase() === token.address.toLowerCase())?.decimals;
+    const decimals = userPool.poolId.tokens.find(
+      (t) => t.address.toLowerCase() === token.address.toLowerCase()
+    )?.decimals;
     if (!decimals) {
       return undefined;
     }
@@ -89,13 +100,13 @@ function PoolWithdraw ({pool}: {pool: Pool}) {
       userPool.balance = fixDecimalPlaces(userPool.balance, decimals);
     }
     return ethers.utils.parseUnits(userPool.balance, decimals);
-  }
+  };
 
   const handleTokenAmountChange = (token: PoolToken, amount: string) => {
-    const newTokenAmountMap = {...tokenAmountMap};
+    const newTokenAmountMap = { ...tokenAmountMap };
     newTokenAmountMap[token.address] = amount;
     setTokenAmountMap(newTokenAmountMap);
-  }
+  };
 
   const calculateInvestTotal = (): number | string => {
     if (!tokenAmountMap) {
@@ -108,12 +119,11 @@ function PoolWithdraw ({pool}: {pool: Pool}) {
       const data = getMarketDataForSymbol(marketPrices, tokenData.symbol);
       if (data) {
         const price = data && data.current_price;
-        total += (price * parseFloat(amount));
+        total += price * parseFloat(amount);
       }
     }
     return total;
-  }
-
+  };
 
   const exit = async () => {
     if (userAddress && signer && tokenAmountMap && provider && network) {
@@ -127,7 +137,13 @@ function PoolWithdraw ({pool}: {pool: Pool}) {
           amountsIn.push(amount);
           if (amount !== '0') {
             if (tokenAmountMap[address] && parseFloat(tokenAmountMap[address]) > 0) {
-              await checkAndApproveAllowance(address, userAddress, setApprovalHash, MaxUint256, vaultAddress)
+              await checkAndApproveAllowance(
+                address,
+                userAddress,
+                setApprovalHash,
+                MaxUint256,
+                vaultAddress
+              );
             }
           }
         }
@@ -141,32 +157,36 @@ function PoolWithdraw ({pool}: {pool: Pool}) {
 
   return (
     <div className={'flex flex-col'}>
-      {tokenAmountMap && pool.tokens.map((token) => (
-        <div key={token.symbol} className={'px-2'}>
-          <SingleCryptoAmountInput
-            disabled={false}
-            tokenPrice={getMarketPricesForPoolToken(token)}
-            amount={tokenAmountMap[token.address]}
-            balance={getUserPoolBalance(token)}
-            amountChanged={(amount: string) => handleTokenAmountChange(token, amount)}
-            token={getTokenByAddress(tokenSet, token.address)}/>
-        </div>
-      ))}
+      {tokenAmountMap &&
+        pool.tokens.map((token) => (
+          <div key={token.symbol} className={'px-2'}>
+            <SingleCryptoAmountInput
+              disabled={false}
+              tokenPrice={getMarketPricesForPoolToken(token)}
+              amount={tokenAmountMap[token.address]}
+              balance={getUserPoolBalance(token)}
+              amountChanged={(amount: string) => handleTokenAmountChange(token, amount)}
+              token={getTokenByAddress(tokenSet, token.address)}
+            />
+          </div>
+        ))}
 
       <div className={'px-4 mt-2'}>
-        <HorizontalLineBreak/>
+        <HorizontalLineBreak />
         <div className={'flex-row-center justify-between text-body'}>
           <div>Total:</div>
           <div className={'font-mono'}>${calculateInvestTotal()}</div>
         </div>
         <div>
-          <Button className={'w-full'} onClick={exit}>{BalancerFunction.Withdraw}</Button>
+          <Button className={'w-full'} onClick={exit}>
+            {BalancerFunction.Withdraw}
+          </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }
-function PoolInvest ({pool}: {pool: Pool}) {
+function PoolInvest({ pool }: { pool: Pool }) {
   const walletBalances = useWalletBalances();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const signer = useSelector((state: AppState) => state.web3.signer);
@@ -182,7 +202,7 @@ function PoolInvest ({pool}: {pool: Pool}) {
     if (!tokenAmountMap) {
       const freshTokenMap: TokenAmountMap = {};
       for (const token of pool.tokens) {
-        freshTokenMap[token.address] = '0.0'
+        freshTokenMap[token.address] = '0.0';
       }
       setTokenAmountMap(freshTokenMap);
     }
@@ -197,18 +217,18 @@ function PoolInvest ({pool}: {pool: Pool}) {
       return price.current_price;
     }
     return 0;
-  }
+  };
 
   const getUserBalanceForPoolToken = (token: PoolToken): BigNumber | undefined => {
     const bal = walletBalances[token.symbol as CryptoCurrencySymbol];
     return bal && bal.balance;
-  }
+  };
 
   const handleTokenAmountChange = (token: PoolToken, amount: string) => {
-    const newTokenAmountMap = {...tokenAmountMap};
+    const newTokenAmountMap = { ...tokenAmountMap };
     newTokenAmountMap[token.address] = amount;
     setTokenAmountMap(newTokenAmountMap);
-  }
+  };
 
   const calculateInvestTotal = (): number | string => {
     if (!tokenAmountMap) {
@@ -221,12 +241,11 @@ function PoolInvest ({pool}: {pool: Pool}) {
       const data = getMarketDataForSymbol(marketPrices, tokenData.symbol);
       if (data) {
         const price = data && data.current_price;
-        total += (price * parseFloat(amount));
+        total += price * parseFloat(amount);
       }
     }
     return total;
-  }
-
+  };
 
   const join = async () => {
     if (userAddress && signer && tokenAmountMap && provider && network) {
@@ -240,7 +259,13 @@ function PoolInvest ({pool}: {pool: Pool}) {
           amountsIn.push(amount);
           if (amount !== '0') {
             if (tokenAmountMap[address] && parseFloat(tokenAmountMap[address]) > 0) {
-              await checkAndApproveAllowance(address, userAddress, setApprovalHash, MaxUint256, vaultAddress)
+              await checkAndApproveAllowance(
+                address,
+                userAddress,
+                setApprovalHash,
+                MaxUint256,
+                vaultAddress
+              );
             }
           }
         }
@@ -254,53 +279,64 @@ function PoolInvest ({pool}: {pool: Pool}) {
 
   return (
     <div className={'flex flex-col'}>
-      {tokenAmountMap && pool.tokens.map((token) => (
-        <div key={token.symbol} className={'px-2'}>
-          <SingleCryptoAmountInput
-            disabled={!walletBalanceGreaterThanZero(token)}
-            tokenPrice={getMarketPricesForPoolToken(token)}
-            amount={tokenAmountMap[token.address]}
-            balance={getUserBalanceForPoolToken(token)}
-            amountChanged={(amount: string) => handleTokenAmountChange(token, amount)}
-            token={getTokenByAddress(tokenSet, token.address)}/>
-        </div>
-      ))}
+      {tokenAmountMap &&
+        pool.tokens.map((token) => (
+          <div key={token.symbol} className={'px-2'}>
+            <SingleCryptoAmountInput
+              disabled={!walletBalanceGreaterThanZero(token)}
+              tokenPrice={getMarketPricesForPoolToken(token)}
+              amount={tokenAmountMap[token.address]}
+              balance={getUserBalanceForPoolToken(token)}
+              amountChanged={(amount: string) => handleTokenAmountChange(token, amount)}
+              token={getTokenByAddress(tokenSet, token.address)}
+            />
+          </div>
+        ))}
 
       <div className={'px-4 mt-2'}>
-        <HorizontalLineBreak/>
+        <HorizontalLineBreak />
         <div className={'flex-row-center justify-between text-body'}>
           <div>Total:</div>
           <div className={'font-mono'}>${calculateInvestTotal()}</div>
         </div>
         <div>
-          <Button className={'w-full'} onClick={join}>{BalancerFunction.Invest}</Button>
+          <Button className={'w-full'} onClick={join}>
+            {BalancerFunction.Invest}
+          </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }
-export default function PoolFunctions({pool}: {pool: Pool}) {
-  const [balancerFunction, setBalancerFunction] = useState<BalancerFunction>(BalancerFunction.Invest);
+export default function PoolFunctions({ pool }: { pool: Pool }) {
+  const [balancerFunction, setBalancerFunction] = useState<BalancerFunction>(
+    BalancerFunction.Invest
+  );
   return (
     <div className={'flex flex-col shadow rounded-2xl'}>
-      <ul
-        className="font-medium  cursor-pointer text-center text-color-light text-body-smaller divide-x divide-gray-200 flex ">
-        <li
-          onClick={() => setBalancerFunction(BalancerFunction.Invest)}
-          className="w-full">
-        <span
-          className={`${balancerFunction === BalancerFunction.Invest ? 'text-black bg-gray-100' : ''} rounded-tl-2xl inline-block p-4 w-full bg-white hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none`}>Invest</span>
+      <ul className="font-medium  cursor-pointer text-center text-color-light text-body-smaller divide-x divide-gray-200 flex ">
+        <li onClick={() => setBalancerFunction(BalancerFunction.Invest)} className="w-full">
+          <span
+            className={`${
+              balancerFunction === BalancerFunction.Invest ? 'text-black bg-gray-100' : ''
+            } rounded-tl-2xl inline-block p-4 w-full bg-white hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none`}
+          >
+            Invest
+          </span>
         </li>
-        <li
-          onClick={() => setBalancerFunction(BalancerFunction.Withdraw)}
-          className="w-full">
-        <span
-          className={`${balancerFunction === BalancerFunction.Withdraw ? 'text-black bg-gray-100' : ''} inline-block rounded-tr-2xl p-4 w-full bg-white hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none`}>Withdraw</span>
+        <li onClick={() => setBalancerFunction(BalancerFunction.Withdraw)} className="w-full">
+          <span
+            className={`${
+              balancerFunction === BalancerFunction.Withdraw ? 'text-black bg-gray-100' : ''
+            } inline-block rounded-tr-2xl p-4 w-full bg-white hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none`}
+          >
+            Withdraw
+          </span>
         </li>
       </ul>
-      {balancerFunction === BalancerFunction.Invest && <PoolInvest pool={pool}/>}
-      {balancerFunction === BalancerFunction.Withdraw && <PoolWithdraw pool={pool}/>}
+      {balancerFunction === BalancerFunction.Invest && <PoolInvest pool={pool} />}
+      {balancerFunction === BalancerFunction.Withdraw && <PoolWithdraw pool={pool} />}
       {/*<PoolInvest pool={pool}/>*/}
     </div>
-  )
+  );
 }

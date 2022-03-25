@@ -87,7 +87,6 @@ export default function TokenSelectDropdown({
               })}
             </ul>
           </div>
-          {/*</Transition>*/}
         </DefaultTransition>
       </div>
     </div>

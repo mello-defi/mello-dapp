@@ -20,7 +20,7 @@ export default function WalletBalance({
     if (token) {
       setUserBalance(walletBalances[token.symbol]?.balance);
     }
-  }, [walletBalances, token])
+  }, [walletBalances, token]);
 
   const marketPrices = useMarketPrices();
   const [attemptedToGetMarketData, setAttemptedToGetMarketData] = useState(false);

@@ -16,13 +16,11 @@ export const setTokenBalancesAction = (balances: WalletTokenBalances): WalletAct
   };
 };
 
-export const toggleBalancesAreStaleAction = (
-  balancesAreStale: boolean
-): WalletActionTypes => {
+export const toggleBalancesAreStaleAction = (balancesAreStale: boolean): WalletActionTypes => {
   return {
     type: TOGGLE_BALANCES_ARE_STALE,
     payload: {
-      balancesAreStale,
+      balancesAreStale
     }
   };
 };

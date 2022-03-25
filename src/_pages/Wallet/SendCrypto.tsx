@@ -44,7 +44,7 @@ export default function SendCrypto() {
     if (token) {
       setWalletBalance(walletBalances[token.symbol]?.balance);
     }
-  }, [walletBalances, token])
+  }, [walletBalances, token]);
 
   const updateMarketPrice = () => {
     if (token && amountToSend) {

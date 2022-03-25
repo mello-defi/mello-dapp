@@ -30,7 +30,7 @@ export default function Onboarding() {
     if (gasToken) {
       setUserBalance(walletBalances[gasToken.symbol]?.balance);
     }
-  }, [walletBalances, gasToken])
+  }, [walletBalances, gasToken]);
 
   useEffect(() => {
     async function getTransactionCountAndAdvance() {

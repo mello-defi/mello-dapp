@@ -12,11 +12,13 @@ import { toggleUserSummaryStale } from '_redux/effects/aaveEffects';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { EthereumTransactionError } from '_interfaces/errors';
 
-export default function useHandleAaveFunction () {
+export default function useHandleAaveFunction() {
   const network = useSelector((state: AppState) => state.web3.network);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const [approvalTransactionHash, setApprovalTransactionHash] = useState<string | undefined>(undefined);
+  const [approvalTransactionHash, setApprovalTransactionHash] = useState<string | undefined>(
+    undefined
+  );
   const [tokenApproved, setTokenApproved] = useState<boolean>(false);
   const [actionTransactionHash, setActionTransactionHash] = useState<string | undefined>(undefined);
   const [transactionConfirmed, setTransactionConfirmed] = useState<boolean>(false);
@@ -47,7 +49,7 @@ export default function useHandleAaveFunction () {
 
   const runAaveTransactions = async (
     provider: ethers.providers.Web3Provider,
-    transactions: EthereumTransactionTypeExtended[],
+    transactions: EthereumTransactionTypeExtended[]
   ) => {
     const approvalGas = await getGasPrice(network.gasStationUrl);
     const approvalHash = await runAaveApprovalTransaction(
@@ -74,8 +76,6 @@ export default function useHandleAaveFunction () {
     setTransactionConfirmed(true);
     dispatch(toggleBalancesAreStale(true));
   };
-
-
 
   // REVIEW make into hook
   const handleAaveFunction = async (
@@ -105,9 +105,7 @@ export default function useHandleAaveFunction () {
         setAmount('0.0');
         setTransactionInProgress(false);
         dispatch(toggleUserSummaryStale(true));
-        dispatch(
-          toggleBalancesAreStale(true)
-        );
+        dispatch(toggleBalancesAreStale(true));
         if (nextStep) {
           dispatch(setStep(nextStep));
         }
@@ -129,6 +127,6 @@ export default function useHandleAaveFunction () {
     transactionConfirmed,
     transactionInProgress,
     transactionError,
-    resetTransactionState,
+    resetTransactionState
   };
 }

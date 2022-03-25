@@ -11,13 +11,12 @@ import {
   getMiningLiquidityApr,
   getPools,
   getSwapApr,
-  getUserPools,
+  getUserPools
 } from '_services/balancerService';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import PoolTokenIcons from '_components/balancer/PoolTokenIcons';
 import PoolRow from '_components/balancer/PoolRow';
 //\
-
 
 export default function Invest() {
   const [pools, setPools] = useState<Pool[]>([]);
@@ -46,13 +45,13 @@ export default function Invest() {
         for (const p of tempPools) {
           p.liquidityMiningApr = await getMiningLiquidityApr(tokenSet, p, prices);
           p.swapApr = await getSwapApr(p, provider, signer);
-          p.totalApr = (p.liquidityMiningApr + p.swapApr).toFixed(2)
+          p.totalApr = (p.liquidityMiningApr + p.swapApr).toFixed(2);
         }
         setPools(tempPools);
-      }
-      getPoolAprs()
+      };
+      getPoolAprs();
     }
-  }, [pools])
+  }, [pools]);
 
   useEffect(() => {
     if (!pools.length && prices.length > 0) {
@@ -72,9 +71,7 @@ export default function Invest() {
         ))}
       <HorizontalLineBreak />
       {pools.map((p: Pool) => {
-        return (
-          <PoolRow key={p.id} pool={p}/>
-        );
+        return <PoolRow key={p.id} pool={p} />;
       })}
     </div>
   );

@@ -32,7 +32,7 @@ export default function MultiCryptoAmountInput({
     if (token) {
       setUserBalance(walletBalances[token.symbol]?.balance);
     }
-  }, [walletBalances, token])
+  }, [walletBalances, token]);
   const [tokenPrice, setTokenPrice] = useState<number>();
 
   useEffect(() => {
