@@ -12,17 +12,17 @@ import * as Net from 'net';
 const polygonRpcUrl = process.env.REACT_APP_POLYGON_RPC_URL;
 // REVIEW move these to env vars, remove hardcoded network values
 const providerOptions: IProviderOptions = {
-  walletconnect: {
-    package: WalletConnectProvider, // required
-    options: {
-      rpc: {
-        137: polygonRpcUrl
-      },
-      chainId: EVMChainIdNumerical.POLYGON_MAINNET,
-      networkId: 'matic',
-      rpcUrl: polygonRpcUrl
-    }
-  },
+  // walletconnect: {
+  //   package: WalletConnectProvider, // required
+  //   options: {
+  //     rpc: {
+  //       137: polygonRpcUrl
+  //     },
+  //     chainId: EVMChainIdNumerical.POLYGON_MAINNET,
+  //     networkId: 'matic',
+  //     rpcUrl: polygonRpcUrl
+  //   }
+  // },
   torus: {
     display: {
       logo: socialsLogo,
