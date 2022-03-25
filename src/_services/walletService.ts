@@ -41,7 +41,6 @@ export async function multicall(
     console.log()
     set(result, paths[i], success ? decodedResult.length > 1 ? decodedResult : decodedResult[0] : null)
   });
-  console.log('multicall result', result);
   return result;
 }
 export async function getAllErc20TokenBalances(

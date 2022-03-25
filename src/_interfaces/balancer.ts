@@ -36,7 +36,7 @@ export interface PoolToken {
   decimals: number;
   name: string;
   priceRate: string | null;
-  symbol?: string;
+  symbol: string;
 }
 export interface TokenInfo {
   readonly chainId: number;
@@ -51,7 +51,7 @@ export interface TokenInfo {
   };
 }
 
-export type TokenInfoMap = { [address: string]: PoolToken };
+export type TokenInfoMap = { [address: string]: TokenInfo };
 
 
 export interface Pool {
@@ -165,4 +165,10 @@ export interface OnchainPoolData {
   // swapEnabled: boolean;
   linearPools?: Record<string, LinearPoolData>;
   tokenRates?: string[];
+}
+
+export interface Amounts {
+  send: string[];
+  receive: string[];
+  fixedToken: number;
 }

@@ -10,12 +10,11 @@ export function convertCryptoAmounts(
   }
   return amount * (sourcePrice / destinationPrice);
 }
-
-export function formatTokenValueInFiat(
+export function getTokenValueInFiat(
   price: number | string,
   amount: number | string,
   currency: CurrencyDefinition = currencies.usd
-): string {
+): number {
   if (typeof amount === 'string') {
     amount = parseFloat(amount);
   }
@@ -27,6 +26,15 @@ export function formatTokenValueInFiat(
   if (isNaN(total)) {
     total = 0;
   }
+  return total;
+}
+
+export function formatTokenValueInFiat(
+  price: number | string,
+  amount: number | string,
+  currency: CurrencyDefinition = currencies.usd
+): string {
+  const total = getTokenValueInFiat(price, amount, currency);
   return `${currency.symbol}${total.toFixed(2)}`;
 }
 

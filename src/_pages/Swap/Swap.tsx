@@ -186,10 +186,10 @@ export default function Swap({
           slippagePercentage,
           actionGasResult?.fastest
         );
+        setSwapSubmitted(true);
         const swapTxHash = await executeEthTransaction(tx, provider);
         logTransactionHash(swapTxHash.hash, network.chainId);
         setSwapTransactionHash(swapTxHash.hash);
-        setSwapSubmitted(true);
         await swapTxHash.wait(actionGasResult?.blockTime || 3);
         setSwapConfirmed(true);
         resetState();

@@ -1,5 +1,7 @@
-import { Pool, PoolToken, UserPool } from '_interfaces/balancer';
+import { Pool, PoolToken, TokenInfoMap, UserPool } from '_interfaces/balancer';
 import { BigNumber, ethers } from 'ethers';
+import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
+
 import { approveToken, getTokenAllowance } from '_services/walletService';
 import { ERC20Abi } from '../../_abis';
 import { getGasPrice } from '_services/gasService';
@@ -10,7 +12,7 @@ import {
   getPoolOnChainData,
   getUserPools,
   getVaultAddress,
-  joinPool
+  joinPool, propAmountsgiven
 } from '_services/balancerService';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
@@ -19,12 +21,13 @@ import useWalletBalances from '_hooks/useWalletBalances';
 import { CryptoCurrencyName, CryptoCurrencySymbol } from '_enums/currency';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import useMarketPrices from '_hooks/useMarketPrices';
-import { TokenDefinition } from '_enums/tokens';
+import { PolygonMainnetTokenContracts, TokenDefinition } from '_enums/tokens';
 import { decimalPlacesAreValid, fixDecimalPlaces, getTokenByAddress } from '_utils/index';
 import { getMarketDataForSymbol } from '_services/marketDataService';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { Button } from '_components/core/Buttons';
 import useCheckAndApproveTokenBalance from '_hooks/useCheckAndApproveTokenBalance';
+import { getTokenValueInFiat } from '_services/priceService';
 
 export enum BalancerFunction {
   Invest = 'Invest',
@@ -62,11 +65,79 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
         setUserPools(results);
       };
       initUserPools();
-      getPoolOnChainData(pool, provider).then((poolData) => {
-        console.log(poolData);
-      });
     }
   }, [pool, userAddress]);
+
+  const canInvestAmount = (): string => {
+    const fiatValue = pool.tokens
+      .map((t: PoolToken) => {
+        const token = getTokenByAddress(tokenSet, t.address);
+        // if (token.isGasToken) {
+        //   const wrappedBalance = balanceFor(address);
+        //   const nativeBalance = balanceFor(nativeAsset.address);
+        //   tokenBalance = bnum(nativeBalance).gt(wrappedBalance)
+        //     ? nativeBalance
+        //     : wrappedBalance;
+        // } else {
+
+        const tokenBalance = walletBalances[token.symbol]?.balance
+        // }
+        const price = marketPrices.find(m => m.symbol.toLowerCase() === token.symbol.toLowerCase())?.current_price;
+        // @ts-ignore
+        const f = getTokenValueInFiat(price, ethers.utils.formatUnits(tokenBalance, token.decimals))
+        return f.toString();
+      })
+      .reduce((total, value) =>
+        new AdvancedBigNumber(total)
+          .plus(value)
+          .toString()
+      );
+
+    return fiatValue;
+  }
+  useEffect(() => {
+    if (provider && userPools){
+      getPoolOnChainData(pool, provider).then((onchain) => {
+        // console.log('CAN IVST AMOUNT', canInvestAmount())
+        // console.log(poolData);
+        const tokens: TokenInfoMap = {};
+        for (const token of pool.tokens) {
+          tokens[token.address.toLowerCase()] = {
+            ...token,
+            symbol: token.symbol.toLowerCase(),
+            chainId: 137
+          };
+        }
+        tokens[pool.address.toLowerCase()] = {
+          address: pool.address.toLowerCase(),
+          decimals: 18,
+          chainId: 137,
+          name: 'Balancer 50 WBTC 50 WETH',
+          symbol: 'BPSP-TUSD'
+        }
+        // tokens[]
+        //
+
+        // for (let i = 0; i < pool.tokens.length; i++) {
+        // const tinfo = getTokenByAddress(tokenSet, pool.tokens[i].address.toLowerCase());
+        // // @ts-ignore
+        // const balance = walletBalances[tinfo.symbol].balance;
+        //
+        // // @ts-ignore
+        // // const amounvar = ethers.utils.formatUnits(balance, tinfo.decimals).toString()
+        const btpBalance = userPools?.find((userPool) => userPool.poolId.address.toLowerCase() === pool.address.toLowerCase())?.balance;
+        console.log('BTP BALANCE', btpBalance?.toString())
+        // const btpBalance = amount?.toString()
+        // console.log('AMOUNT REQUESTING', tinfo.symbol, amounvar);
+        // const amounvar =
+        // @ts-ignore
+        const amounts = propAmountsgiven(pool.address, onchain, tokens, btpBalance?.toString() || '0', 0, 'send', 'exit');
+        console.log(amounts)
+          // canInvestAmount
+        // }
+      });
+    }
+  }, [userPools])
   const walletBalanceGreaterThanZero = (token: PoolToken): boolean => {
     const bal = walletBalances[token.symbol as CryptoCurrencySymbol];
     return !bal || (bal && bal.balance.gt(0));

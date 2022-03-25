@@ -1,6 +1,7 @@
 import { ApolloClient, DefaultOptions, gql, InMemoryCache } from '@apollo/client';
 import { pick } from 'lodash';
 import {
+  Amounts,
   LinearPoolDataMap,
   LiquidityMiningPoolResult,
   LiquidityMiningTokenReward,
@@ -15,7 +16,7 @@ import {
 
 import axios from 'axios';
 import { differenceInWeeks } from 'date-fns';
-import { BigNumber, Contract, ethers } from 'ethers';
+import { BigNumber, BigNumberish, Contract, ethers } from 'ethers';
 import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 import { getTokenByAddress } from '_utils/index';
 import { MarketDataResult } from '_services/marketDataService';
@@ -35,7 +36,7 @@ import { MaxUint256 } from '_utils/maths';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
 import { WalletTokenBalances } from '_redux/types/walletTypes';
 import { multicall } from '_services/walletService';
-import { formatUnits, getAddress } from 'ethers/lib/utils';
+import { formatUnits, getAddress, parseUnits } from 'ethers/lib/utils';
 
 const liquidityMiningStartTime = Date.UTC(2020, 5, 1, 0, 0);
 const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
@@ -468,6 +469,7 @@ function formatPoolTokens(
       // @ts-ignore
       symbol: tokenInfo[tokenAddressLowercase]?.symbol,
       name: tokenInfo[tokenAddressLowercase]?.name,
+      logoURI: undefined,
     };
   });
 
@@ -536,7 +538,6 @@ function formatPoolData(
     tokens
   );
 
-  console.log('RAW DATA', rawData.poolTokens);
   poolData.tokens = formatPoolTokens(
     rawData.poolTokens,
     tokens,
@@ -685,8 +686,126 @@ export async function getPoolOnChainData(pool: Pool, provider: ethers.providers.
 
   const tokens: TokenInfoMap = {};
   for (const token of pool.tokens) {
-    tokens[token.address.toLowerCase()] = token;
+    tokens[token.address.toLowerCase()] = {
+      ...token,
+      chainId: 137,
+    };
   }
   return formatPoolData(result, pool.poolType, tokens, pool.address);
 }
 
+function poolTokenDecimals(onchain: OnchainPoolData, index: number): number {
+  return Object.values(onchain.tokens).map(t => t.decimals)[index]
+}
+
+function poolTokenBalances(onchain: OnchainPoolData): BigNumber[] {
+  const normalizedBalances = Object.values(
+    onchain.tokens
+  ).map(t => t.balance);
+  return normalizedBalances.map((balance, i) =>
+    parseUnits(balance, poolTokenDecimals(onchain, i))
+  );
+}
+
+function poolDecimals(onchain: OnchainPoolData): number {
+  return onchain.decimals;
+}
+
+
+function poolTotalSupply(onchain: OnchainPoolData): BigNumber {
+  return parseUnits(onchain.totalSupply, poolDecimals(onchain));
+}
+
+function sendRatios(action: string, onchain: OnchainPoolData): BigNumberish[] {
+  if (action === 'join') return poolTokenBalances(onchain);
+  return [poolTotalSupply(onchain)];
+}
+
+function receiveRatios(action: string, onchain: OnchainPoolData): BigNumberish[] {
+  if (action === 'join') return [poolTotalSupply(onchain)];
+  return poolTokenBalances(onchain);
+}
+
+function ratioOf( action: string, type: string, index: number, onchain: OnchainPoolData) {
+  if (type === 'send') {
+    return sendRatios(action, onchain)[index];
+  } else {
+    return receiveRatios(action, onchain)[index];
+  }
+}
+
+function tokenAddresses(onchain: OnchainPoolData): string[] {
+  // if (this.useNativeAsset.value) {
+  //   return this.pool.value.tokenAddresses.map(address => {
+  //     if (address === this.config.network.addresses.weth)
+  //       return this.config.network.nativeAsset.address;
+  //     return address;
+  //   });
+  // }
+  return Object.keys(onchain.tokens);
+}
+
+function sendTokens(action: string, onchain: OnchainPoolData, poolAddress: string): string[] {
+  if (action === 'join') return tokenAddresses(onchain);
+  return [poolAddress];
+}
+
+function receiveTokens(action: string, onchain: OnchainPoolData, poolAddress: string): string[] {
+  if (action === 'join') return [poolAddress];
+  return tokenAddresses(onchain);
+}
+
+function tokenOf(action: string, type: string, index: number, onchain: OnchainPoolData, poolAddress: string) {
+  if (type === 'send') {
+    return sendTokens(action, onchain,poolAddress)[index];
+  } else {
+    return receiveTokens(action, onchain, poolAddress)[index];
+  }
+}
+
+
+export function propAmountsgiven (
+  poolAddress: string,
+  onchain: OnchainPoolData,
+  tokenInfoMap: TokenInfoMap,
+  fixedAmount: string,
+  index: number,
+  type: 'send' | 'receive',
+  action: 'join' | 'exit',
+): Amounts {
+  if (fixedAmount.trim() === '')
+    return { send: [], receive: [], fixedToken: 0 };
+
+  const types = ['send', 'receive'];
+  const fixedTokenAddress = tokenOf(action, type, index, onchain, poolAddress.toLowerCase());
+  console.log(`fixedTokenAddress: ${fixedTokenAddress}`);
+  const fixedToken = tokenInfoMap[fixedTokenAddress.toLowerCase()];
+  // console.log(`fixedToken:`, fixedToken);
+  const fixedDenormAmount = parseUnits(fixedAmount, fixedToken.decimals);
+  console.log(`fixedDenormAmount: ${fixedDenormAmount}`);
+  const fixedRatio = ratioOf(action, type, index, onchain);
+  console.log(`native amount of token in pool: ${fixedRatio}`);
+  const amounts = {
+    send: sendTokens(action, onchain, poolAddress.toLowerCase()).map(() => ''),
+    receive: receiveTokens(action, onchain, poolAddress.toLowerCase()).map(() => ''),
+    fixedToken: index
+  };
+  amounts[type][index] = fixedAmount;
+
+  [sendRatios(action, onchain), receiveRatios(action, onchain)].forEach((ratios, ratioType) => {
+    ratios.forEach((ratio, i) => {
+      if (i !== index || type !== types[ratioType]) {
+        const tokenAddress = tokenOf(action, types[ratioType], i, onchain, poolAddress.toLowerCase());
+        const token = tokenInfoMap[tokenAddress.toLowerCase()];
+        // @ts-ignore
+        amounts[types[ratioType]][i] = formatUnits(
+          fixedDenormAmount.mul(ratio).div(fixedRatio),
+          token.decimals
+        );
+      }
+    });
+  });
+
+  return amounts;
+
+}
