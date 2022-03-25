@@ -14,10 +14,8 @@ export default function WalletBalance({
   token: EvmTokenDefinition;
   hideZeroBalance: boolean;
 }) {
-  // const userBalance: BigNumber | undefined = useWalletBalances(token);
   const [userBalance, setUserBalance] = useState<BigNumber | undefined>();
   const walletBalances = useWalletBalances();
-
   useEffect(() => {
     if (token) {
       setUserBalance(walletBalances[token.symbol]?.balance);

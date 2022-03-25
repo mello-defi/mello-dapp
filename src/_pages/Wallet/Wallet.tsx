@@ -8,6 +8,10 @@ import WalletBalance from '_pages/Wallet/WalletBalance';
 import ReceiveCrypto from '_pages/Wallet/ReceiveCrypto';
 import SendCrypto from '_pages/Wallet/SendCrypto';
 import { MoveToInbox, Send } from '@mui/icons-material';
+import useWalletBalances from '_hooks/useWalletBalances';
+import { WalletTokenBalances } from '_redux/types/walletTypes';
+import { CryptoCurrencySymbol } from '_enums/currency';
+import { BigNumber } from 'ethers';
 
 export enum WalletPageTab {
   RECEIVE = 'Receive',
@@ -43,28 +47,12 @@ const WalletActionButton = ({
 export default function Wallet() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const [walletPageTab, setWalletPageTab] = useState<WalletPageTab | undefined>();
-  const walletBalances = useSelector((state: AppState) => state.wallet.balances);
-  const [sortedTokenSet, setSortedTokenSet] = useState<EvmTokenDefinition[]>(
-    Object.values(tokenSet)
-  );
+  const walletBalances = useWalletBalances();
+  const [sortedBalances, setSortedBalances] = useState<WalletTokenBalances>();
 
   useEffect(() => {
-    // setSortedTokenSet();
-    // console.log('walletBalances', walletBalances);
-    // const
-    // const walletBalancesKeys = Object.keys(walletBalances);
-    // setSortedTokenSet()
-    // const sortable = [];
-    // for (const key in walletBalances) {
-    //   const k = key as CryptoCurrencySymbol;
-    //   sortable.push([Wallet, walletBalances[k]?.balance?.toString() || '0']);
-    // }
-    //
-    // sortable.sort(function(a, b) {
-    //   return parseFloat(b[1]) - parseFloat(a[1]);
-    // });
-    // console.log('sortable', sortable);
-    // setSortedTokenSet(sortable.map(item => item[0] as CryptoCurrencySymbol));
+    // walletBalances.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
+
   }, [walletBalances]);
   const handleWalletPageTabClick = (tab: WalletPageTab) => {
     if (tab === walletPageTab) {

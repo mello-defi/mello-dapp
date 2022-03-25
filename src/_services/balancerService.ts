@@ -10,7 +10,7 @@ import axios from 'axios';
 import { differenceInWeeks } from 'date-fns';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
-import { findTokenByAddress } from '_utils/index';
+import { getTokenByAddress } from '_utils/index';
 import { MarketDataResult } from '_services/marketDataService';
 import { GenericTokenSet } from '_enums/tokens';
 import { Vault__factory } from '@balancer-labs/typechain';
@@ -148,7 +148,7 @@ const getPriceForAddress = (
   address: string
 ): number => {
   try {
-    const token = findTokenByAddress(tokenSet, address);
+    const token = getTokenByAddress(tokenSet, address);
     const p = prices.find(
       (p: MarketDataResult) => p.symbol.toLowerCase() === token.symbol.toLowerCase()
     );
@@ -279,8 +279,11 @@ export async function getUserPools(userAddress: string): Promise<UserPool[]> {
     query: GET_USER_POOLS,
     variables: { userAddress: userAddress.toLowerCase() }
   });
-  console.log('USPA', userPools);
   return userPools.data ? userPools.data.poolShares : [];
+}
+
+export function getVaultAddress(chainId: number): string {
+  return polygonVaultAddress;
 }
 
 export async function getPools(addresses: string[]): Promise<Pool[]> {
@@ -305,7 +308,7 @@ export async function joinPool(
   userAddress: string,
   signer: ethers.Signer,
   amountsIn: string[],
-  gasPrice?: string
+  gasPrice?: BigNumber
 ): Promise<TransactionResponse> {
   const vault: Contract = getVaultContract(signer);
   const options: TransactionRequest = {};
@@ -332,7 +335,7 @@ export async function exitPool(
   userAddress: string,
   signer: ethers.Signer,
   amountsOut: string[],
-  gasPrice?: string
+  gasPrice?: BigNumber
 ): Promise<TransactionResponse> {
   const vault: Contract = getVaultContract(signer);
   const options: TransactionRequest = {};

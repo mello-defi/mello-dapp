@@ -4,7 +4,7 @@ import { EvmTokenDefinition, GenericTokenSet } from '_enums/tokens';
 import { Interface } from '@ethersproject/abi';
 import { ERC20Abi } from '../_abis';
 import { WalletTokenBalances } from '_redux/types/walletTypes';
-import { findTokenByAddress } from '_utils/index';
+import { getTokenByAddress } from '_utils/index';
 
 export async function getTransactionCount(
   address: string,
@@ -54,7 +54,7 @@ export async function getAllErc20TokenBalances (
   res.forEach(([success, returnData], i) => {
     if (!success) return null;
     const decodedResult = itf.decodeFunctionResult(calls[i][1], returnData);
-    const symbol = findTokenByAddress(tokenSet, calls[i][0]).symbol;
+    const symbol = getTokenByAddress(tokenSet, calls[i][0]).symbol;
     walletBalances[symbol] = {
       balance: decodedResult.length > 1 ? decodedResult : decodedResult[0]
     }

@@ -28,7 +28,6 @@ import AaveFunctionButton from '_components/aave/AaveFunctionButton';
 import AaveFunctionContent from '_components/aave/AaveFunctionContent';
 import { EthereumTransactionError } from '_interfaces/errors';
 import { toggleUserSummaryStale } from '_redux/effects/aaveEffects';
-import { findTokenByAddress } from '_utils/index';
 import { setStep } from '_redux/effects/onboardingEffects';
 import useAaveReserves from '_hooks/useAaveReserves';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
@@ -139,6 +138,8 @@ export default function AaveReserve({
     }
   }, [token, marketPrices]);
 
+
+  // REVIEW - move to hook
   const runAaveTransactions = async (
     provider: ethers.providers.Web3Provider,
     transactions: EthereumTransactionTypeExtended[]

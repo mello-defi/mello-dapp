@@ -2,17 +2,20 @@ import { formatTokenValueInFiat } from '_services/priceService';
 import React from 'react';
 import { decimalPlacesAreValid } from '_utils/index';
 import { TokenDefinition } from '_enums/tokens';
+import { BigNumber, ethers } from 'ethers';
 
 export default function SingleCryptoAmountInput({
   disabled,
   tokenPrice,
   amount,
   amountChanged,
+  balance,
   token
 }: {
   disabled: boolean;
   tokenPrice: number;
   amount: string;
+  balance?: BigNumber;
   amountChanged: (amount: string) => void;
   token: TokenDefinition;
 }) {
@@ -32,7 +35,9 @@ export default function SingleCryptoAmountInput({
         'rounded-2xl bg-gray-100 transition border-2 py-2 border-gray-50 bg-gray-50 px-2 sm:px-4 flex flex-col justify-between hover:border-gray-100 transition mt-2'
       }
     >
-      <div className={'flex-row-center justify-between my-2 w-full'}>
+      <div className={`flex-row-center justify-between my-2 w-full
+                ${disabled ? 'text-gray-400 cursor-default' : ''}
+      `}>
         <input
           disabled={disabled}
           onWheel={() => false}
@@ -49,11 +54,18 @@ export default function SingleCryptoAmountInput({
           <span className="ml-2 block truncate">{token.symbol}</span>
         </span>
       </div>
-      <div className={'text-body-smaller text-gray-500 px-2 sm:px-0'}>
-        {tokenPrice ? (
-          <div className={'text-left font-mono'}>{formatTokenValueInFiat(tokenPrice, amount)}</div>
-        ) : (
-          <span>&nbsp;</span>
+      <div className={'flex-row-center px-2 sm:px-1 justify-between text-body-smaller text-gray-500'}>
+        <div>
+          {tokenPrice ? (
+            <div className={'text-left font-mono'}>{formatTokenValueInFiat(tokenPrice, amount)}</div>
+          ) : (
+            <span>&nbsp;</span>
+          )}
+        </div>
+        {balance && (
+          <div>
+            {ethers.utils.formatUnits(balance, token.decimals)}
+          </div>
         )}
       </div>
     </div>

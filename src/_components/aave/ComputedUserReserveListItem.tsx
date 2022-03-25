@@ -3,7 +3,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import useMarketPrices from '_hooks/useMarketPrices';
-import { findTokenByAddress } from '_utils/index';
+import { getTokenByAddress } from '_utils/index';
 import CryptoAmountWithTooltip from '_components/core/CryptoAmountTooltip';
 import { ethers } from 'ethers';
 
@@ -27,7 +27,7 @@ export default function ComputedUserReserveListItem({
   //   }
   //   return amount.toFixed(6);
   // };
-  const token = findTokenByAddress(tokenSet, reserveAddress);
+  const token = getTokenByAddress(tokenSet, reserveAddress);
   return (
     <div key={reserveSymbol} className={'flex flex-row justify-between items-center mb-4 px-1'}>
       <div className={'flex-row-center'}>

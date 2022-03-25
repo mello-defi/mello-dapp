@@ -31,6 +31,8 @@ export interface PoolToken {
   address: string;
   balance: string;
   weight: string;
+  decimals: number;
+  name: string;
   priceRate: string | null;
   symbol?: string;
 }

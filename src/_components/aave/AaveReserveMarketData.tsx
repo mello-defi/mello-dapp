@@ -3,7 +3,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { AaveSection } from '_enums/aave';
-import { findTokenByAddress } from '_utils/index';
+import { getTokenByAddress } from '_utils/index';
 
 export default function AaveReserveMarketData({
   reserve,
@@ -22,7 +22,7 @@ export default function AaveReserveMarketData({
         <div className={'flex-row-center'}>
           {tokenSet && (
             <img
-              src={findTokenByAddress(tokenSet, reserve.underlyingAsset).image}
+              src={getTokenByAddress(tokenSet, reserve.underlyingAsset).image}
               height={30}
               width={30}
               alt={reserve.name}

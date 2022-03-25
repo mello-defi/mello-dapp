@@ -29,8 +29,6 @@ export default function MultiCryptoAmountInput({
   const walletBalances = useWalletBalances();
 
   useEffect(() => {
-    console.log('token changed OR walletbalances', token);
-    console.log('walletBalances', walletBalances);
     if (token) {
       setUserBalance(walletBalances[token.symbol]?.balance);
     }

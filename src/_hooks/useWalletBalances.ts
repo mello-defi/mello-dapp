@@ -2,12 +2,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { useEffect, useState } from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
-import { BigNumber, Contract } from 'ethers';
-import { CryptoCurrencySymbol } from '_enums/currency';
-import { Interface } from '@ethersproject/abi';
-import { ERC20Abi } from '../_abis';
-import { WalletTokenBalances } from '_redux/types/walletTypes';
-import { findTokenByAddress } from '_utils/index';
 import { getAllErc20TokenBalances } from '_services/walletService';
 import { setTokenBalances } from '_redux/effects/walletEffects';
 
@@ -22,12 +16,8 @@ const useWalletBalances = (token?: EvmTokenDefinition) => {
 
   useEffect(() => {
     const getAllBalances = async () => {
-      console.log('Getting all balances MAYBE');
-      console.log('balancesAreStale: ', balancesAreStale);
       if (provider && userAddress && balancesAreStale) {
-        console.log('Getting all balances YES');
         const balances = await getAllErc20TokenBalances(provider, tokenSet, userAddress);
-        console.log('balances', balances);
         dispatch(setTokenBalances(balances));
       }
     }
