@@ -1,4 +1,4 @@
-import { Pool, PoolToken, TokenInfoMap, UserPool } from '_interfaces/balancer';
+import { Amounts, Pool, PoolToken, TokenInfoMap, UserPool } from '_interfaces/balancer';
 import { BigNumber, ethers } from 'ethers';
 import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 
@@ -50,6 +50,7 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
   const [approvalHash, setApprovalHash] = useState<string | null>(null);
   const [tokenAmountMap, setTokenAmountMap] = useState<TokenAmountMap | undefined>(undefined);
   const [userPools, setUserPools] = useState<UserPool[] | undefined>(undefined);
+  const [poolAmounts, setPoolAmounts] = useState<Amounts | undefined>();
 
   useEffect(() => {
     if (!tokenAmountMap) {
@@ -118,6 +119,7 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
         console.log('BTP BALANCE', btpBalance?.toString())
         const amounts = propAmountsgiven(pool.address, onchain, tokens, btpBalance?.toString() || '0', 0, 'send', 'exit');
         console.log(amounts)
+        setPoolAmounts(amounts);
       }
       aaa();
     }
@@ -212,14 +214,14 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
 
   return (
     <div className={'flex flex-col'}>
-      {tokenAmountMap &&
-        pool.tokens.map((token) => (
+      {tokenAmountMap && poolAmounts &&
+        pool.tokens.map((token, index: number) => (
           <div key={token.symbol} className={'px-2'}>
             <SingleCryptoAmountInput
               disabled={false}
               tokenPrice={getMarketPricesForPoolToken(token)}
               amount={tokenAmountMap[token.address]}
-              balance={getUserPoolBalance(token)}
+              balance={ethers.utils.parseUnits(poolAmounts?.receive[index], token.decimals)}
               amountChanged={(amount: string) => handleTokenAmountChange(token, amount)}
               token={getTokenByAddress(tokenSet, token.address)}
             />
