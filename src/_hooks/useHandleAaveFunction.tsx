@@ -77,7 +77,7 @@ export default function useHandleAaveFunction() {
     dispatch(toggleBalancesAreStale(true));
   };
 
-  // REVIEW make into hook
+  // TODOmake into hook
   const handleAaveFunction = async (
     reserve: ComputedReserveData,
     amount: string,

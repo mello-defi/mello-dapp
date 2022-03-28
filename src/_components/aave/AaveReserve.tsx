@@ -39,7 +39,7 @@ import { logTransactionHash } from '_services/dbService';
 import { OnboardingStep, stepBorrowAave, stepDepositAave } from '_pages/Onboarding/OnboardingSteps';
 import { setUser } from '@sentry/react';
 
-// REVIEW huge refactor needed, too big
+// TODOhuge refactor needed, too big
 export default function AaveReserve({
   reserveSymbol,
   aaveSection
@@ -56,7 +56,7 @@ export default function AaveReserve({
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const network = useSelector((state: AppState) => state.web3.network);
-  // REVIEW - centralise this
+  // TODO- centralise this
   const gasStationUrl = useSelector((state: AppState) => state.web3.network.gasStationUrl);
   const marketPrices = useMarketPrices();
   const [reserve, setReserve] = useState<ComputedReserveData | undefined>();
@@ -138,7 +138,7 @@ export default function AaveReserve({
     }
   }, [token, marketPrices]);
 
-  // REVIEW - move to hook
+  // TODO- move to hook
   const runAaveTransactions = async (
     provider: ethers.providers.Web3Provider,
     transactions: EthereumTransactionTypeExtended[]
@@ -213,7 +213,7 @@ export default function AaveReserve({
     }
   };
 
-  // REVIEW all methods almost identical
+  // TODOall methods almost identical
   const handleBorrow = async () => {
     if (borrowAmount && provider && userAddress) {
       await handleAaveFunction(

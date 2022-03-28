@@ -10,7 +10,7 @@ import { socialsLogo } from '_assets/images';
 import * as Net from 'net';
 
 const polygonRpcUrl = process.env.REACT_APP_POLYGON_RPC_URL;
-// REVIEW move these to env vars, remove hardcoded network values
+// TODOmove these to env vars, remove hardcoded network values
 const providerOptions: IProviderOptions = {
   // walletconnect: {
   //   package: WalletConnectProvider, // required

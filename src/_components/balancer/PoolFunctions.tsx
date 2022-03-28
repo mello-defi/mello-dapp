@@ -1,4 +1,4 @@
-import { Amounts, Pool, PoolToken, TokenInfoMap, UserPool } from '_interfaces/balancer';
+import { Amounts, OnchainPoolData, Pool, PoolToken, TokenInfoMap, UserPool } from '_interfaces/balancer';
 import { BigNumber, ethers } from 'ethers';
 import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 
@@ -8,10 +8,12 @@ import { getGasPrice } from '_services/gasService';
 import { MaxUint256 } from '_utils/maths';
 import { logTransactionHash } from '_services/dbService';
 import {
+  absMaxBpt,
+  exactBPTInForTokenOut,
   exitPool,
   getPoolOnChainData,
   getUserPools,
-  getVaultAddress,
+  getVaultAddress, isStablePhantom,
   joinPool, propAmountsgiven
 } from '_services/balancerService';
 import { useSelector } from 'react-redux';
@@ -28,6 +30,9 @@ import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { Button } from '_components/core/Buttons';
 import useCheckAndApproveTokenBalance from '_hooks/useCheckAndApproveTokenBalance';
 import { getTokenValueInFiat } from '_services/priceService';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { StablePool } from '@georgeroman/balancer-v2-pools';
+// import { initFromOnchain } from "@georgeroman/balancer-v2-pools/dist/src/initializers/stable";
 
 export enum BalancerFunction {
   Invest = 'Invest',
@@ -48,9 +53,84 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
   const network = useSelector((state: AppState) => state.web3.network);
   const checkAndApproveAllowance = useCheckAndApproveTokenBalance();
   const [approvalHash, setApprovalHash] = useState<string | null>(null);
+  const [totalPoolBAlance, setTotalPoolBalance] = useState<string | null>(null);
   const [tokenAmountMap, setTokenAmountMap] = useState<TokenAmountMap | undefined>(undefined);
+  const [onChainData, setOnchain] = useState<OnchainPoolData | undefined>(undefined);
   const [userPools, setUserPools] = useState<UserPool[] | undefined>(undefined);
   const [poolAmounts, setPoolAmounts] = useState<Amounts | undefined>();
+
+
+  useEffect(() => {
+    const val = singleAssetMaxes();
+    console.log('SINGLE ASSET MAXES', val);
+  }, [userPools, onChainData, poolAmounts])
+  const singleAssetMaxes = () => {
+    // if (isStablePhantom(pool.poolType)) return batchSwapSingleAssetMaxes.value;
+
+    const btpBalance = userPools?.find((userPool) => userPool.poolId.address.toLowerCase() === pool.address.toLowerCase())?.balance;
+
+
+    if (poolAmounts && onChainData && btpBalance && provider) {
+      try {
+        const amountsInbignuber: string[] = [];
+        for (let i = 0; i < poolAmounts.receive.length; i++) {
+          amountsInbignuber.push(ethers.utils.parseUnits(poolAmounts.receive[i], pool.tokens[i].decimals).toString());
+        }
+        // StablePool.initFromOnchain(provider, pool.id, 'polygon').then((stablepool) => {
+        //   console.log('STABLEPOOL', stablepool);
+        // })
+        // StablePool.initFromSubgraph(pool.id, 'polygon').then((stabkepol) => {
+        //   console.log('POOL', stabkepol);
+        // })
+        return [];
+        // return pool.tokens.map((token, tokenIndex) => {
+        //   console.log('*************************************************************\n\n')
+        //   console.log(token.symbol);
+        //   return formatUnits(
+        //     exactBPTInForTokenOut(
+        //       parseUnits(btpBalance, onChainData.decimals).toString(),
+        //       tokenIndex,
+        //       pool.poolType,
+        //       amountsInbignuber,
+        //       Object.values(onChainData.tokens).map((t) => t.weight.toString()),
+        //       pool.tokens,
+        //       onChainData.decimals,
+        //       onChainData,
+        //       parseUnits(onChainData?.totalSupply, onChainData.decimals).toString(),
+        //       onChainData?.swapFee,
+        //     )
+        //       .toString(),
+        //     token.decimals
+        //   );
+        // });
+    } catch (error) {
+      console.error(error);
+      if ((error as Error).message.includes('MIN_BPT_IN_FOR_TOKEN_OUT')) {
+        // setError(WithdrawalError.SINGLE_ASSET_WITHDRAWAL_MIN_BPT_LIMIT);
+        return pool.tokens.map((token, tokenIndex) => {
+          return formatUnits(
+              exactBPTInForTokenOut(
+                parseUnits(absMaxBpt(pool, onChainData, btpBalance), onChainData.decimals).toString(),
+                tokenIndex,
+                pool.poolType,
+                poolAmounts?.receive,
+                pool.tokens.map((t) => t.weight),
+                pool.tokens,
+                onChainData.decimals,
+                onChainData,
+                parseUnits(onChainData?.totalSupply, onChainData.decimals).toString(),
+                onChainData?.swapFee,
+              )
+        .toString(),
+            token.decimals
+          );
+        });
+      }
+      return [];
+    }
+    }
+
+  }
 
   useEffect(() => {
     if (!tokenAmountMap) {
@@ -100,6 +180,7 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
     if (provider && userPools){
       const aaa = async () => {
         const onchain = await getPoolOnChainData(pool, provider);
+        setOnchain(onchain);
         // console.log('CAN IVST AMOUNT', canInvestAmount())
         // console.log(poolData);
         const tokens: TokenInfoMap = {};
@@ -120,6 +201,7 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
         const amounts = propAmountsgiven(pool.address, onchain, tokens, btpBalance?.toString() || '0', 0, 'send', 'exit');
         console.log(amounts)
         setPoolAmounts(amounts);
+        setTotalPoolBalance(btpBalance?.toString() || '0');
       }
       aaa();
     }

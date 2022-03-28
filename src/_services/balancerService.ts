@@ -1,5 +1,6 @@
 import { ApolloClient, DefaultOptions, gql, InMemoryCache } from '@apollo/client';
 import { pick } from 'lodash';
+
 import {
   Amounts,
   LinearPoolDataMap,
@@ -13,7 +14,7 @@ import {
   RawOnchainPoolData, RawPoolTokens, TokenInfoMap,
   UserPool
 } from '_interfaces/balancer';
-
+import * as SDK from '@georgeroman/balancer-v2-pools';
 import axios from 'axios';
 import { differenceInWeeks } from 'date-fns';
 import { BigNumber, BigNumberish, Contract, ethers } from 'ethers';
@@ -29,7 +30,7 @@ import {
   Vault__factory,
   WeightedPool__factory
 } from '@balancer-labs/typechain';
-import { ERC20Abi, ProtocolFeeCollectorAbi } from '../_abis';
+import { ERC20Abi, ProtocolFeeCollectorAbi } from '_abis';
 import { toUtcTime, twentyFourHoursInSecs } from '_utils/time';
 import { StablePoolEncoder, toNormalizedWeights } from '@balancer-labs/sdk';
 import { MaxUint256 } from '_utils/maths';
@@ -61,6 +62,7 @@ const GET_USER_POOLS = gql`
           name
           decimals
           address
+          priceRate
           balance
           invested
           investments {
@@ -95,6 +97,7 @@ const GET_PAST_POOL_FOR_ID = gql`
         address
         balance
         invested
+        priceRate
         investments {
           id
           amount
@@ -121,6 +124,7 @@ const GET_ALL_POOLS = gql`
         symbol
         name
         decimals
+        priceRate
         address
         balance
         invested
@@ -145,7 +149,7 @@ const defaultOptions: DefaultOptions = {
   }
 };
 const client = new ApolloClient({
-  // REVIEW make network specific
+  // TODOmake network specific
   uri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-v2',
   cache: new InMemoryCache({ resultCaching: false }),
   defaultOptions
@@ -763,6 +767,198 @@ function tokenOf(action: string, type: string, index: number, onchain: OnchainPo
   }
 }
 
+function weightedExactBPTInForTokenOut (
+  bptAmount: string,
+  tokenIndex: number,
+  balances: string[],
+  weights: string[],
+  poolTotalSupply: string,
+  poolSwapFee: string,
+) {
+
+  const tokenBalance = bnum(
+    balances[tokenIndex].toString()
+  );
+  const tokenNormalizedWeight = bnum(
+    weights[tokenIndex].toString()
+  );
+
+  console.log('bptAmount', bptAmount);
+  console.log('tokenBalance', tokenBalance.toString());
+  console.log('tokenNormalizedWeight', tokenNormalizedWeight.toString());
+  console.log('poolTotalSupply', poolTotalSupply);
+  console.log('poolSwapFee', poolSwapFee);
+  return BigNumber.from(new AdvancedBigNumber(SDK.WeightedMath._calcTokenOutGivenExactBptIn(
+    tokenBalance,
+    tokenNormalizedWeight,
+    bnum(bptAmount),
+    bnum(poolTotalSupply.toString()),
+    bnum(poolSwapFee.toString())
+  )).toString());
+}
+
+function scaleOutput (
+  amount: string,
+  decimals: number,
+  priceRate: string | null,
+  rounding: AdvancedBigNumber.RoundingMode
+): BigNumber {
+  if (priceRate === null) priceRate = '1';
+
+  console.log('amount', amount);
+  console.log('decimals', decimals);
+  console.log('priceRate', priceRate);
+  console.log('rounding', rounding);
+  const amountAfterPriceRate = bnum(amount)
+    .div(priceRate)
+    .toString();
+
+  console.log('amountAfterPriceRate', amountAfterPriceRate);
+  const normalizedAmount = bnum(amountAfterPriceRate)
+    .div(parseUnits('1', 18).toString())
+    .toFixed(decimals, rounding);
+  console.log('normalizedAmount', normalizedAmount);
+  const scaledAmount = parseUnits(normalizedAmount, decimals);
+
+  return BigNumber.from(scaledAmount.toString());
+
+}
+
+function adjustAmp(amp: AdvancedBigNumber): AdvancedBigNumber {
+  const AMP_PRECISION = bnum(1000);
+  return amp.times(AMP_PRECISION);
+}
+
+
+function scaleInput(
+  normalizedAmount: string,
+  priceRate: string | null = null
+): AdvancedBigNumber {
+  if (priceRate === null) priceRate = '1';
+
+  const denormAmount = bnum(parseUnits(normalizedAmount, 18).toString())
+    .times(priceRate)
+    .toFixed(0, AdvancedBigNumber.ROUND_UP);
+
+  return bnum(denormAmount.toString());
+}
+
+function getScaledBalances(balances: string[], pookTokens: PoolToken[]): AdvancedBigNumber[] {
+  return balances.map((balance, i) => {
+    // console.log(balance, pookTokens[i].decimals);
+    const normalizedBalance = formatUnits(
+      balance,
+      pookTokens[i].decimals
+    );
+    const scaledBalance = scaleInput(
+      normalizedBalance,
+      pookTokens[i].priceRate
+    );
+    return scaledBalance;
+  });
+
+}
+function stableExactBPTInForTokenOut(
+  bptAmount: string,
+  tokenIndex: number,
+  balances: string[],
+  weights: string[],
+  poolTokens: PoolToken[],
+  poolDecimals: number,
+  onchain: OnchainPoolData,
+  poolTotalSupply: string,
+  poolSwapFee: string,
+): BigNumber {
+  if (bnum(bptAmount).eq(0)) {
+    console.log(poolTokens[tokenIndex])
+    return scaleOutput(
+      '0',
+      poolTokens[tokenIndex].decimals,
+      poolTokens[tokenIndex].priceRate,
+      AdvancedBigNumber.ROUND_DOWN // If OUT given IN, round down
+    );
+  }
+
+  const amp = bnum(onchain.amp?.toString() || '0');
+  const ampAdjusted = adjustAmp(amp);
+  const normalizedAmountIn = formatUnits(bptAmount, poolDecimals);
+  const bptAmountIn = scaleInput(normalizedAmountIn);
+  const scaledbalance = getScaledBalances(balances, poolTokens);
+  console.log('scaledbalance', scaledbalance.map((b) => b.toString()));
+  // const totalsupplynum = bnum(poolTotalSupply);
+  const normalizedSupply = formatUnits(
+    poolTotalSupply,
+    poolDecimals
+  );
+  const scaledSupply = parseUnits(normalizedSupply, 18);
+  const sclaedTotalSupply = bnum(scaledSupply.toString());
+
+  const swapfreenum = bnum(parseUnits(poolSwapFee, 18));
+  console.log('scaledbalance', scaledbalance[tokenIndex].toString());
+  const tokenAmountOut = SDK.StableMath._calcTokenOutGivenExactBptIn(
+    ampAdjusted,
+    scaledbalance,
+    tokenIndex,
+    bptAmountIn,
+    sclaedTotalSupply,
+    swapfreenum
+  );
+  console.log('tokenAmountOut', tokenAmountOut.toString());
+
+  return scaleOutput(
+    tokenAmountOut.toString(),
+    poolTokens[tokenIndex].decimals,
+    poolTokens[tokenIndex].priceRate,
+    AdvancedBigNumber.ROUND_DOWN // If OUT given IN, round down
+  );
+}
+
+export function absMaxBpt(pool: Pool,onchain: OnchainPoolData, bptBalance: string): string {
+  if (!isWeightedLike(pool.poolType)) return bptBalance;
+  // Maximum BPT allowed from weighted pool is 30%
+  const poolMax = bnum(pool.totalShares)
+    .times(0.3)
+    .toFixed(onchain.decimals, AdvancedBigNumber.ROUND_DOWN);
+  // If the user's bpt balance is greater than the withdrawal limit for
+  // weighted pools we need to return the poolMax bpt value.
+  return AdvancedBigNumber.min(bptBalance, poolMax).toString();
+
+}
+export function exactBPTInForTokenOut(
+  bptAmount: string,
+  tokenIndex: number,
+  poolType: PoolType,
+  balances: string[],
+  weights: string[],
+  poolTokens: PoolToken[],
+  poolDecimals: number,
+  onchain: OnchainPoolData,
+  poolTotalSupply: string,
+  poolSwapFee: string,
+): BigNumber {
+  if (isStableLike(poolType)) {
+    return stableExactBPTInForTokenOut(
+      bptAmount,
+      tokenIndex,
+      balances,
+      weights,
+      poolTokens,
+      poolDecimals,
+      onchain,
+      poolTotalSupply,
+      poolSwapFee,
+    );
+  }
+  return weightedExactBPTInForTokenOut(
+    bptAmount,
+    tokenIndex,
+    balances,
+    weights,
+    poolTotalSupply,
+    poolSwapFee,
+    );
+
+}
 
 export function propAmountsgiven (
   poolAddress: string,

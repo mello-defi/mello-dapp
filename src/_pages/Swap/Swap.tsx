@@ -72,7 +72,7 @@ export default function Swap({
   const [transactionError, setTransactionError] = useState<string>('');
   const [priceRoute, setPriceRoute] = useState<OptimalRate>();
   const [isApproving, setIsApproving] = useState<boolean>(false);
-  // REVIEW -- redux?
+  // TODO-- redux?
   if (provider) {
     initialiseParaSwap(provider, network.chainId);
   }

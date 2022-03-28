@@ -14,7 +14,7 @@ const network = evmNetworks.polygonMainnet;
 //   network = evmNetworks.findById(initialChainId);
 // }
 const initialState: Web3State = {
-  // REVIEW move to hook
+  // TODOmove to hook
   provider: undefined,
   signer: undefined,
   isConnected: false,

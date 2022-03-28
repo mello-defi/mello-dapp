@@ -20,7 +20,7 @@ export async function multicall(
   calls: any[],
   abi: any
 ): Promise<any> {
-  // REVIEW - make network generic, move ABI to file
+  // TODO- make network generic, move ABI to file
   const multi = new Contract(
     '0x275617327c958bD06b5D6b871E7f491D76113dd8', // polygon makerdao multicall
     [

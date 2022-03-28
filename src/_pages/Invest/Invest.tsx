@@ -25,6 +25,7 @@ export default function Invest() {
   const signer = useSelector((state: AppState) => state.web3.signer);
   const network = useSelector((state: AppState) => state.web3.network);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
+  const [aprsSet, setAprsSet] = useState(false);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const prices = useMarketPrices();
   // const walletBalances = useWalletBalances();
@@ -39,7 +40,7 @@ export default function Invest() {
   };
 
   useEffect(() => {
-    if (pools.length && provider && signer) {
+    if (pools.length && provider && signer && !aprsSet) {
       const getPoolAprs = async () => {
         const tempPools = [...pools];
         for (const p of tempPools) {
@@ -48,6 +49,7 @@ export default function Invest() {
           p.totalApr = (p.liquidityMiningApr + p.swapApr).toFixed(2);
         }
         setPools(tempPools);
+        setAprsSet(true)
       };
       getPoolAprs();
     }
