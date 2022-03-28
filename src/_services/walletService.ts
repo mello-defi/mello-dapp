@@ -38,8 +38,12 @@ export async function multicall(
   const result = {};
   res.forEach(([success, data], i) => {
     const decodedResult = itf.decodeFunctionResult(calls[i][1], data);
-    console.log()
-    set(result, paths[i], success ? decodedResult.length > 1 ? decodedResult : decodedResult[0] : null)
+    console.log();
+    set(
+      result,
+      paths[i],
+      success ? (decodedResult.length > 1 ? decodedResult : decodedResult[0]) : null
+    );
   });
   return result;
 }
@@ -111,13 +115,13 @@ export async function approveToken(
 
 export async function getErc20TokenInfo(
   provider: ethers.providers.Web3Provider,
-  address: string,
+  address: string
 ): Promise<EvmTokenDefinition> {
   const paths = ['symbol', 'decimals', 'name'];
   const calls: any[] = [
     [address, 'symbol', []],
     [address, 'decimals', []],
-    [address, 'name', []],
+    [address, 'name', []]
   ];
   const token: EvmTokenDefinition = await multicall(provider, paths, calls, ERC20Abi);
   token.address = address;

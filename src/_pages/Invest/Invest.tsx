@@ -1,78 +1,64 @@
-import { useSelector } from 'react-redux';
-import { AppState } from '_redux/store';
-import { ERC20Abi } from '_abis/index';
-
-import { EvmTokenDefinition, PolygonMainnetTokenContracts } from '_enums/tokens';
-import { useEffect, useState } from 'react';
-import { Contract, ethers } from 'ethers';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { Pool, UserPool } from '_interfaces/balancer';
-import {
-  getMiningLiquidityApr,
-  getPools,
-  getSwapApr,
-  getUserPools
-} from '_services/balancerService';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import PoolTokenIcons from '_components/balancer/PoolTokenIcons';
 import PoolRow from '_components/balancer/PoolRow';
-//\
+import useUserBalancerPools from '_hooks/useUserBalancerPools';
+import useBalancerPools from '_hooks/useBalancerPools';
+import { useEffect, useState } from 'react';
+import { keyBy } from 'lodash';
+import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 
 export default function Invest() {
-  const [pools, setPools] = useState<Pool[]>([]);
-  const [userPools, setUserPools] = useState<UserPool[]>([]);
-  const provider = useSelector((state: AppState) => state.web3.provider);
-  const signer = useSelector((state: AppState) => state.web3.signer);
-  const network = useSelector((state: AppState) => state.web3.network);
-  const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const [aprsSet, setAprsSet] = useState(false);
-  const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const prices = useMarketPrices();
-  // const walletBalances = useWalletBalances();
-  const initPools = async () => {
-    if (provider && signer && userAddress) {
-      const addresses = Object.values(tokenSet).map((t: EvmTokenDefinition) => t.address);
-      const pools = await getPools(addresses);
-      setPools(pools);
-      const results = await getUserPools(userAddress);
-      setUserPools(results);
-    }
-  };
+  const userPools = useUserBalancerPools();
+  const pools = useBalancerPools(prices);
+  const [totalInvested, setTotalInvested] = useState('');
 
   useEffect(() => {
-    if (pools.length && provider && signer && !aprsSet) {
-      const getPoolAprs = async () => {
-        const tempPools = [...pools];
-        for (const p of tempPools) {
-          p.liquidityMiningApr = await getMiningLiquidityApr(tokenSet, p, prices);
-          p.swapApr = await getSwapApr(p, provider, signer);
-          p.totalApr = (p.liquidityMiningApr + p.swapApr).toFixed(2);
+    if (userPools && userPools.length > 0 && pools && pools.length > 0) {
+      const poolsWithShares = userPools.map((userPool: UserPool) => {
+        const pool = userPool.poolId;
+        return {
+          ...pool,
+          shares: new AdvancedBigNumber(pool.totalLiquidity)
+            .div(pool.totalShares)
+            .times(userPool.balance)
+            .toString()
         }
-        setPools(tempPools);
-        setAprsSet(true)
-      };
-      getPoolAprs();
-    }
-  }, [pools]);
+      });
 
-  useEffect(() => {
-    if (!pools.length && prices.length > 0) {
-      initPools();
+      const totalInvestedAmount = poolsWithShares
+        .map(pool => pool.shares)
+        .reduce((totalShares, shares) => totalShares.plus(shares), new AdvancedBigNumber(0))
+        .toNumber()
+        .toLocaleString(undefined, {
+          maximumFractionDigits: 2
+        })
+      setTotalInvested(totalInvestedAmount);
     }
-  }, [pools, prices, provider, signer, userAddress]);
+  }, [userPools, pools]);
 
+  const getPool = (poolId: string): Pool => {
+    // @ts-ignore
+    return pools?.find(pool => pool.id === poolId);
+  }
   return (
     <div>
-      <h1>Invest</h1>
-      {userPools &&
-        userPools.map((pool: UserPool) => (
-          <div key={pool.poolId.address}>
-            <PoolTokenIcons tokens={pool.poolId.tokens} />
-            <h2>{pool.balance}</h2>
+      {userPools && userPools?.length > 0 && pools && pools.length > 0 && (
+        <div>
+          <div className={'flex-row-center justify-between px-2'}>
+            <span className={'text-body'}>My Investments</span>
+            <span>Total invested: <span className={'font-mono'}>${totalInvested}</span></span>
           </div>
-        ))}
+          {userPools?.map((pool: UserPool) => (
+            <PoolRow pool={getPool(pool.poolId.id)} key={pool.id} userBalance={pool.balance} />
+          ))}
+        </div>
+      )}
       <HorizontalLineBreak />
-      {pools.map((p: Pool) => {
+      <span className={'text-body'}>Investment pools</span>
+      {pools?.map((p: Pool) => {
         return <PoolRow key={p.id} pool={p} />;
       })}
     </div>

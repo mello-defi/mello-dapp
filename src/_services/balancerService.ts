@@ -6,12 +6,16 @@ import {
   LinearPoolDataMap,
   LiquidityMiningPoolResult,
   LiquidityMiningTokenReward,
-  OnchainPoolData, OnchainTokenDataMap,
+  OnchainPoolData,
+  OnchainTokenDataMap,
   Pool,
   PoolToken,
   PoolType,
-  RawLinearPoolData, RawLinearPoolDataMap,
-  RawOnchainPoolData, RawPoolTokens, TokenInfoMap,
+  RawLinearPoolData,
+  RawLinearPoolDataMap,
+  RawOnchainPoolData,
+  RawPoolTokens,
+  TokenInfoMap,
   UserPool
 } from '_interfaces/balancer';
 import * as SDK from '@georgeroman/balancer-v2-pools';
@@ -44,7 +48,7 @@ const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 
 const GET_USER_POOLS = gql`
   query getUserPools($userAddress: String!) {
-    poolShares(where: { userAddress: $userAddress }) {
+    poolShares(where: { userAddress: $userAddress, balance_gt: 0 }) {
       id
       poolId {
         id
@@ -53,6 +57,7 @@ const GET_USER_POOLS = gql`
         totalLiquidity
         strategyType
         totalSwapFee
+        totalShares
         swapFee
         symbol
         amp
@@ -85,6 +90,7 @@ const GET_PAST_POOL_FOR_ID = gql`
       poolType
       totalLiquidity
       strategyType
+      totalShares
       totalSwapFee
       swapFee
       symbol
@@ -117,6 +123,7 @@ const GET_ALL_POOLS = gql`
       strategyType
       totalSwapFee
       swapFee
+      totalShares
       symbol
       amp
       tokens {
@@ -438,13 +445,9 @@ export function isTradingHaltable(poolType: PoolType): boolean {
   return isManaged(poolType) || isLiquidityBootstrapping(poolType);
 }
 
-function normalizeWeights(
-  weights: BigNumber[],
-  type: PoolType,
-  tokens: TokenInfoMap
-): number[] {
+function normalizeWeights(weights: BigNumber[], type: PoolType, tokens: TokenInfoMap): number[] {
   if (isWeightedLike(type)) {
-    return toNormalizedWeights(weights).map(w => Number(ethers.utils.formatUnits(w, 18)));
+    return toNormalizedWeights(weights).map((w) => Number(ethers.utils.formatUnits(w, 18)));
   } else if (isStableLike(type)) {
     const tokensList = Object.values(tokens);
     return tokensList.map(() => 1 / tokensList.length);
@@ -452,7 +455,6 @@ function normalizeWeights(
     return [];
   }
 }
-
 
 function formatPoolTokens(
   poolTokens: RawPoolTokens,
@@ -473,7 +475,7 @@ function formatPoolTokens(
       // @ts-ignore
       symbol: tokenInfo[tokenAddressLowercase]?.symbol,
       name: tokenInfo[tokenAddressLowercase]?.name,
-      logoURI: undefined,
+      logoURI: undefined
     };
   });
 
@@ -483,13 +485,10 @@ function formatPoolTokens(
   return tokens;
 }
 
-
-function formatLinearPools(
-  linearPools: RawLinearPoolDataMap
-): LinearPoolDataMap {
+function formatLinearPools(linearPools: RawLinearPoolDataMap): LinearPoolDataMap {
   const _linearPools = <LinearPoolDataMap>{};
 
-  Object.keys(linearPools).forEach(address => {
+  Object.keys(linearPools).forEach((address) => {
     const {
       id,
       mainToken,
@@ -531,23 +530,12 @@ function formatPoolData(
   const poolData = <OnchainPoolData>{};
 
   // Filter out pre-minted BPT token if exists
-  const validTokens = Object.keys(tokens).filter(
-    address => address !== poolAddress
-  );
+  const validTokens = Object.keys(tokens).filter((address) => address !== poolAddress);
   tokens = pick(tokens, validTokens);
 
-  const normalizedWeights = normalizeWeights(
-    rawData?.weights || [],
-    type,
-    tokens
-  );
+  const normalizedWeights = normalizeWeights(rawData?.weights || [], type, tokens);
 
-  poolData.tokens = formatPoolTokens(
-    rawData.poolTokens,
-    tokens,
-    normalizedWeights,
-    poolAddress
-  );
+  poolData.tokens = formatPoolTokens(rawData.poolTokens, tokens, normalizedWeights, poolAddress);
 
   poolData.amp = '0';
   if (rawData?.amp) {
@@ -564,7 +552,7 @@ function formatPoolData(
   }
 
   if (rawData.tokenRates) {
-    poolData.tokenRates = rawData.tokenRates.map(rate =>
+    poolData.tokenRates = rawData.tokenRates.map((rate) =>
       ethers.utils.formatUnits(rate.toString(), 18)
     );
   }
@@ -576,8 +564,11 @@ function formatPoolData(
   return poolData;
 }
 
-export async function getPoolOnChainData(pool: Pool, provider: ethers.providers.Web3Provider): Promise<OnchainPoolData> {
-  let paths: string[] = ['totalSupply', 'decimals', 'swapFee']
+export async function getPoolOnChainData(
+  pool: Pool,
+  provider: ethers.providers.Web3Provider
+): Promise<OnchainPoolData> {
+  let paths: string[] = ['totalSupply', 'decimals', 'swapFee'];
   let calls: any[] = [
     // totalSupply
     [pool.address, 'totalSupply', []],
@@ -611,110 +602,94 @@ export async function getPoolOnChainData(pool: Pool, provider: ethers.providers.
           paths.push(`linearPools.${token}.id`);
           calls.push([token, 'getPoolId']);
 
-          paths.push(`linearPools.${token}.priceRate`)
+          paths.push(`linearPools.${token}.priceRate`);
           calls.push([token, 'getRate', []]);
 
-          paths.push(`tokenRates[${i}]`)
+          paths.push(`tokenRates[${i}]`);
           calls.push([pool.address, 'getTokenRate', [token]]);
 
-          paths.push(`linearPools.${token}.mainToken.address`)
+          paths.push(`linearPools.${token}.mainToken.address`);
           calls.push([token, 'getMainToken', [token]]);
 
-          paths.push(`linearPools.${token}.mainToken.index`)
+          paths.push(`linearPools.${token}.mainToken.index`);
           calls.push([token, 'getMainIndex', []]);
 
-          paths.push(`linearPools.${token}.wrappedToken.address`)
+          paths.push(`linearPools.${token}.wrappedToken.address`);
           calls.push([token, 'getWrappedToken', []]);
 
-          paths.push(`linearPools.${token}.wrappedToken.index`)
+          paths.push(`linearPools.${token}.wrappedToken.index`);
           calls.push([token, 'getWrappedIndex', []]);
 
-          paths.push(`linearPools.${token}.wrappedToken.rate`)
+          paths.push(`linearPools.${token}.wrappedToken.rate`);
           calls.push([token, 'getWrappedTokenRate', []]);
-
         });
     }
   }
 
-  let result: RawOnchainPoolData = await multicall(provider,paths, calls, getAbiForPoolType(pool.poolType));
+  let result: RawOnchainPoolData = await multicall(
+    provider,
+    paths,
+    calls,
+    getAbiForPoolType(pool.poolType)
+  );
   // const onChainData: OnchainPoolData = {};
   paths = [];
   calls = [];
   if (isStablePhantom(pool.poolType) && result.linearPools) {
     const wrappedTokensMap: Record<string, string> = {};
 
-    Object.keys(result.linearPools).forEach(address => {
+    Object.keys(result.linearPools).forEach((address) => {
       if (!result.linearPools) return;
       const linearPool: RawLinearPoolData = result.linearPools[address];
 
-      paths.push(`linearPools.${address}.tokenData`)
-      calls.push([
-        pool.address,
-        'getPoolTokens',
-        [linearPool.id]
-        ]
-      );
+      paths.push(`linearPools.${address}.tokenData`);
+      calls.push([pool.address, 'getPoolTokens', [linearPool.id]]);
 
       wrappedTokensMap[address] = linearPool.wrappedToken.address;
     });
 
     Object.entries(wrappedTokensMap).forEach(([address, wrappedToken]) => {
-      paths.push(`linearPools.${address}.unwrappedTokenAddress`)
-      calls.push([
-        wrappedToken,
-        'ATOKEN',
-        []
-        ]
-      );
+      paths.push(`linearPools.${address}.unwrappedTokenAddress`);
+      calls.push([wrappedToken, 'ATOKEN', []]);
       paths.push(`linearPools.${address}.totalSupply`);
-      calls.push([
-        address,
-        'getVirtualSupply',
-        [],
-        ]
-      );
+      calls.push([address, 'getVirtualSupply', []]);
     });
     const result2 = await multicall(provider, paths, calls, getAbiForPoolType(pool.poolType));
     result = {
       ...result,
-      ...result2,
-    }
+      ...result2
+    };
   }
 
   const vaultContract = getReadVaultContract(provider);
   const pt: RawPoolTokens = await vaultContract.getPoolTokens(pool.id);
   result = {
     ...result,
-    poolTokens: pt,
-  }
+    poolTokens: pt
+  };
 
   const tokens: TokenInfoMap = {};
   for (const token of pool.tokens) {
     tokens[token.address.toLowerCase()] = {
       ...token,
-      chainId: 137,
+      chainId: 137
     };
   }
   return formatPoolData(result, pool.poolType, tokens, pool.address);
 }
 
 function poolTokenDecimals(onchain: OnchainPoolData, index: number): number {
-  return Object.values(onchain.tokens).map(t => t.decimals)[index]
+  return Object.values(onchain.tokens).map((t) => t.decimals)[index];
 }
 
 function poolTokenBalances(onchain: OnchainPoolData): BigNumber[] {
-  const normalizedBalances = Object.values(
-    onchain.tokens
-  ).map(t => t.balance);
-  return normalizedBalances.map((balance, i) =>
-    parseUnits(balance, poolTokenDecimals(onchain, i))
-  );
+  const normalizedBalances = Object.values(onchain.tokens).map((t) => t.balance);
+  return normalizedBalances.map((balance, i) => parseUnits(balance, poolTokenDecimals(onchain, i)));
 }
 
 function poolDecimals(onchain: OnchainPoolData): number {
   return onchain.decimals;
 }
-
 
 function poolTotalSupply(onchain: OnchainPoolData): BigNumber {
   return parseUnits(onchain.totalSupply, poolDecimals(onchain));
@@ -730,7 +705,7 @@ function receiveRatios(action: string, onchain: OnchainPoolData): BigNumberish[]
   return poolTokenBalances(onchain);
 }
 
-function ratioOf( action: string, type: string, index: number, onchain: OnchainPoolData) {
+function ratioOf(action: string, type: string, index: number, onchain: OnchainPoolData) {
   if (type === 'send') {
     return sendRatios(action, onchain)[index];
   } else {
@@ -759,45 +734,50 @@ function receiveTokens(action: string, onchain: OnchainPoolData, poolAddress: st
   return tokenAddresses(onchain);
 }
 
-function tokenOf(action: string, type: string, index: number, onchain: OnchainPoolData, poolAddress: string) {
+function tokenOf(
+  action: string,
+  type: string,
+  index: number,
+  onchain: OnchainPoolData,
+  poolAddress: string
+) {
   if (type === 'send') {
-    return sendTokens(action, onchain,poolAddress)[index];
+    return sendTokens(action, onchain, poolAddress)[index];
   } else {
     return receiveTokens(action, onchain, poolAddress)[index];
   }
 }
 
-function weightedExactBPTInForTokenOut (
+function weightedExactBPTInForTokenOut(
   bptAmount: string,
   tokenIndex: number,
   balances: string[],
   weights: string[],
   poolTotalSupply: string,
-  poolSwapFee: string,
+  poolSwapFee: string
 ) {
-
-  const tokenBalance = bnum(
-    balances[tokenIndex].toString()
-  );
-  const tokenNormalizedWeight = bnum(
-    weights[tokenIndex].toString()
-  );
+  const tokenBalance = bnum(balances[tokenIndex].toString());
+  const tokenNormalizedWeight = bnum(weights[tokenIndex].toString());
 
   console.log('bptAmount', bptAmount);
   console.log('tokenBalance', tokenBalance.toString());
   console.log('tokenNormalizedWeight', tokenNormalizedWeight.toString());
   console.log('poolTotalSupply', poolTotalSupply);
   console.log('poolSwapFee', poolSwapFee);
-  return BigNumber.from(new AdvancedBigNumber(SDK.WeightedMath._calcTokenOutGivenExactBptIn(
-    tokenBalance,
-    tokenNormalizedWeight,
-    bnum(bptAmount),
-    bnum(poolTotalSupply.toString()),
-    bnum(poolSwapFee.toString())
-  )).toString());
+  return BigNumber.from(
+    new AdvancedBigNumber(
+      SDK.WeightedMath._calcTokenOutGivenExactBptIn(
+        tokenBalance,
+        tokenNormalizedWeight,
+        bnum(bptAmount),
+        bnum(poolTotalSupply.toString()),
+        bnum(poolSwapFee.toString())
+      )
+    ).toString()
+  );
 }
 
-function scaleOutput (
+function scaleOutput(
   amount: string,
   decimals: number,
   priceRate: string | null,
@@ -809,9 +789,7 @@ function scaleOutput (
   console.log('decimals', decimals);
   console.log('priceRate', priceRate);
   console.log('rounding', rounding);
-  const amountAfterPriceRate = bnum(amount)
-    .div(priceRate)
-    .toString();
+  const amountAfterPriceRate = bnum(amount).div(priceRate).toString();
 
   console.log('amountAfterPriceRate', amountAfterPriceRate);
   const normalizedAmount = bnum(amountAfterPriceRate)
@@ -821,7 +799,6 @@ function scaleOutput (
   const scaledAmount = parseUnits(normalizedAmount, decimals);
 
   return BigNumber.from(scaledAmount.toString());
-
 }
 
 function adjustAmp(amp: AdvancedBigNumber): AdvancedBigNumber {
@@ -829,11 +806,7 @@ function adjustAmp(amp: AdvancedBigNumber): AdvancedBigNumber {
   return amp.times(AMP_PRECISION);
 }
 
-
-function scaleInput(
-  normalizedAmount: string,
-  priceRate: string | null = null
-): AdvancedBigNumber {
+function scaleInput(normalizedAmount: string, priceRate: string | null = null): AdvancedBigNumber {
   if (priceRate === null) priceRate = '1';
 
   const denormAmount = bnum(parseUnits(normalizedAmount, 18).toString())
@@ -846,17 +819,10 @@ function scaleInput(
 function getScaledBalances(balances: string[], pookTokens: PoolToken[]): AdvancedBigNumber[] {
   return balances.map((balance, i) => {
     // console.log(balance, pookTokens[i].decimals);
-    const normalizedBalance = formatUnits(
-      balance,
-      pookTokens[i].decimals
-    );
-    const scaledBalance = scaleInput(
-      normalizedBalance,
-      pookTokens[i].priceRate
-    );
+    const normalizedBalance = formatUnits(balance, pookTokens[i].decimals);
+    const scaledBalance = scaleInput(normalizedBalance, pookTokens[i].priceRate);
     return scaledBalance;
   });
-
 }
 function stableExactBPTInForTokenOut(
   bptAmount: string,
@@ -867,10 +833,10 @@ function stableExactBPTInForTokenOut(
   poolDecimals: number,
   onchain: OnchainPoolData,
   poolTotalSupply: string,
-  poolSwapFee: string,
+  poolSwapFee: string
 ): BigNumber {
   if (bnum(bptAmount).eq(0)) {
-    console.log(poolTokens[tokenIndex])
+    console.log(poolTokens[tokenIndex]);
     return scaleOutput(
       '0',
       poolTokens[tokenIndex].decimals,
@@ -884,12 +850,12 @@ function stableExactBPTInForTokenOut(
   const normalizedAmountIn = formatUnits(bptAmount, poolDecimals);
   const bptAmountIn = scaleInput(normalizedAmountIn);
   const scaledbalance = getScaledBalances(balances, poolTokens);
-  console.log('scaledbalance', scaledbalance.map((b) => b.toString()));
-  // const totalsupplynum = bnum(poolTotalSupply);
-  const normalizedSupply = formatUnits(
-    poolTotalSupply,
-    poolDecimals
+  console.log(
+    'scaledbalance',
+    scaledbalance.map((b) => b.toString())
   );
+  // const totalsupplynum = bnum(poolTotalSupply);
+  const normalizedSupply = formatUnits(poolTotalSupply, poolDecimals);
   const scaledSupply = parseUnits(normalizedSupply, 18);
   const sclaedTotalSupply = bnum(scaledSupply.toString());
 
@@ -913,7 +879,7 @@ function stableExactBPTInForTokenOut(
   );
 }
 
-export function absMaxBpt(pool: Pool,onchain: OnchainPoolData, bptBalance: string): string {
+export function absMaxBpt(pool: Pool, onchain: OnchainPoolData, bptBalance: string): string {
   if (!isWeightedLike(pool.poolType)) return bptBalance;
   // Maximum BPT allowed from weighted pool is 30%
   const poolMax = bnum(pool.totalShares)
@@ -922,7 +888,6 @@ export function absMaxBpt(pool: Pool,onchain: OnchainPoolData, bptBalance: strin
   // If the user's bpt balance is greater than the withdrawal limit for
   // weighted pools we need to return the poolMax bpt value.
   return AdvancedBigNumber.min(bptBalance, poolMax).toString();
-
 }
 export function exactBPTInForTokenOut(
   bptAmount: string,
@@ -934,7 +899,7 @@ export function exactBPTInForTokenOut(
   poolDecimals: number,
   onchain: OnchainPoolData,
   poolTotalSupply: string,
-  poolSwapFee: string,
+  poolSwapFee: string
 ): BigNumber {
   if (isStableLike(poolType)) {
     return stableExactBPTInForTokenOut(
@@ -946,7 +911,7 @@ export function exactBPTInForTokenOut(
       poolDecimals,
       onchain,
       poolTotalSupply,
-      poolSwapFee,
+      poolSwapFee
     );
   }
   return weightedExactBPTInForTokenOut(
@@ -955,22 +920,20 @@ export function exactBPTInForTokenOut(
     balances,
     weights,
     poolTotalSupply,
-    poolSwapFee,
-    );
-
+    poolSwapFee
+  );
 }
 
-export function propAmountsgiven (
+export function propAmountsgiven(
   poolAddress: string,
   onchain: OnchainPoolData,
   tokenInfoMap: TokenInfoMap,
   fixedAmount: string,
   index: number,
   type: 'send' | 'receive',
-  action: 'join' | 'exit',
+  action: 'join' | 'exit'
 ): Amounts {
-  if (fixedAmount.trim() === '')
-    return { send: [], receive: [], fixedToken: 0 };
+  if (fixedAmount.trim() === '') return { send: [], receive: [], fixedToken: 0 };
 
   const types = ['send', 'receive'];
   const fixedTokenAddress = tokenOf(action, type, index, onchain, poolAddress.toLowerCase());
@@ -991,7 +954,13 @@ export function propAmountsgiven (
   [sendRatios(action, onchain), receiveRatios(action, onchain)].forEach((ratios, ratioType) => {
     ratios.forEach((ratio, i) => {
       if (i !== index || type !== types[ratioType]) {
-        const tokenAddress = tokenOf(action, types[ratioType], i, onchain, poolAddress.toLowerCase());
+        const tokenAddress = tokenOf(
+          action,
+          types[ratioType],
+          i,
+          onchain,
+          poolAddress.toLowerCase()
+        );
         const token = tokenInfoMap[tokenAddress.toLowerCase()];
         // @ts-ignore
         amounts[types[ratioType]][i] = formatUnits(
@@ -1003,5 +972,5 @@ export function propAmountsgiven (
   });
 
   return amounts;
-
+  // SDK.StableMath.
 }

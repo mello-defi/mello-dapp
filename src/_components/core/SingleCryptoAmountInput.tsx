@@ -1,8 +1,9 @@
 import { formatTokenValueInFiat } from '_services/priceService';
-import React from 'react';
-import { decimalPlacesAreValid } from '_utils/index';
+import React, { useEffect } from 'react';
+import { amountIsValidNumberGtZero, decimalPlacesAreValid } from '_utils/index';
 import { TokenDefinition } from '_enums/tokens';
 import { BigNumber, ethers } from 'ethers';
+import { DefaultTransition } from '_components/core/Transition';
 
 export default function SingleCryptoAmountInput({
   disabled,
@@ -10,7 +11,8 @@ export default function SingleCryptoAmountInput({
   amount,
   amountChanged,
   balance,
-  token
+  token,
+  maxAmount
 }: {
   disabled: boolean;
   tokenPrice: number;
@@ -18,7 +20,9 @@ export default function SingleCryptoAmountInput({
   balance?: BigNumber;
   amountChanged: (amount: string) => void;
   token: TokenDefinition;
+  maxAmount?: BigNumber;
 }) {
+  const [amountGreaterThanMax, setAmountGreaterThanMax] = React.useState(false);
   const handleAmountChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     let value = event.target.value;
     if (token && value && !decimalPlacesAreValid(value, token.decimals)) {
@@ -29,6 +33,16 @@ export default function SingleCryptoAmountInput({
     }
     amountChanged(value);
   };
+
+  useEffect(() => {
+    if (maxAmount) {
+      // const amountIsValid = amount !== '' && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0;
+      if (amountIsValidNumberGtZero(amount)) {
+        const amountBn = ethers.utils.parseUnits(amount, token.decimals);
+        setAmountGreaterThanMax(maxAmount !== undefined && maxAmount.lt(amountBn));
+      }
+    }
+  }, [amount, maxAmount]);
   return (
     <div
       className={
@@ -84,6 +98,11 @@ export default function SingleCryptoAmountInput({
           </div>
         )}
       </div>
+      <DefaultTransition isOpen={amountGreaterThanMax}>
+        <div className={'flex-row-center text-body-smaller justify-end'}>
+          <span className={'text-red-400'}>Insufficient balance</span>
+        </div>
+      </DefaultTransition>
     </div>
   );
 }

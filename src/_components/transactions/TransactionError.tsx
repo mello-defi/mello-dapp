@@ -20,7 +20,7 @@ export default function TransactionError({
             <div className={'mr-4 text-3xl'}>
               <ErrorOutlineOutlined className={'text-white mb-0.5'} fontSize={'inherit'} />
             </div>
-            <span className={'flex-row-center text-body'}>{transactionError}</span>
+            <span className={'flex-row-center break-all text-body'}>{transactionError}</span>
           </div>
           <div onClick={onClickClear} className={'text-3xl'}>
             <Close

@@ -53,7 +53,6 @@ export interface TokenInfo {
 
 export type TokenInfoMap = { [address: string]: TokenInfo };
 
-
 export interface Pool {
   id: string;
   address: string;

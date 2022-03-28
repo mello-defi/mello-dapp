@@ -5,6 +5,7 @@ import { getWalletReducer } from '_redux/reducers/walletReducer';
 import { getMarketReducer } from '_redux/reducers/marketReducer';
 import { getAaveReducer } from '_redux/reducers/aaveReducer';
 import { getOnboardingReducer } from '_redux/reducers/onboardingReducer';
+import { getBalancerReducer } from '_redux/reducers/balancerReducer';
 
 const rootReducer = combineReducers({
   ui: getUIReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
   wallet: getWalletReducer,
   markets: getMarketReducer,
   aave: getAaveReducer,
-  onboarding: getOnboardingReducer
+  onboarding: getOnboardingReducer,
+  balancer: getBalancerReducer
 });
 
 export default rootReducer;

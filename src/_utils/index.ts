@@ -31,3 +31,7 @@ export function getTokenByAddress(tokenSet: GenericTokenSet, address: string): E
   }
   return token;
 }
+
+export function amountIsValidNumberGtZero(amount: string): boolean {
+  return amount !== '' && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0;
+}

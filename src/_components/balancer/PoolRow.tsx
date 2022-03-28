@@ -7,7 +7,7 @@ import { DefaultTransition } from '_components/core/Transition';
 import { useState } from 'react';
 import PoolFunctions from '_components/balancer/PoolFunctions';
 
-export default function PoolRow({ pool }: { pool: Pool }) {
+export default function PoolRow({ pool, userBalance }: { pool: Pool, userBalance?: string }) {
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <div
@@ -24,9 +24,8 @@ export default function PoolRow({ pool }: { pool: Pool }) {
         <div className={'flex-row-center justify-between w-full md:w-auto mt-3 md:mt-0'}>
           <div className={'flex flex-col text-body-smaller text-left md:text-right'}>
             <div className={'font-mono'}>
-              $
-              {parseFloat(pool.totalLiquidity).toLocaleString(undefined, {
-                maximumFractionDigits: 0
+              ${parseFloat(userBalance ? userBalance : pool.totalLiquidity).toLocaleString(undefined, {
+                maximumFractionDigits: 2
               })}
             </div>
             {pool.totalApr ? <div>{pool.totalApr}% APR</div> : <Spinner show={true} />}
