@@ -54,6 +54,7 @@ import { EthereumTransactionError } from '_interfaces/errors';
 import { toggleUserPoolDataStaleAction } from '_redux/actions/balancerActions';
 import { toggleUserPoolDataStale } from '_redux/effects/balancerEffects';
 import MaxAmountButton from '_components/core/MaxAmountButton';
+import { TabHeader, TabHeaderContainer } from '_components/core/Tabs';
 // import { initFromOnchain } from '@georgeroman/balancer-v2-pools/dist/src/initializers/stable';
 // import { StablePool } from '@georgeroman/balancer-v2-pools';
 // import { initFromOnchain } from "@georgeroman/balancer-v2-pools/dist/src/initializers/stable";
@@ -593,26 +594,15 @@ export default function PoolFunctions({ pool }: { pool: Pool }) {
   );
   return (
     <div className={'flex flex-col shadow rounded-2xl'}>
-      <ul className="font-medium  cursor-pointer text-center text-color-light text-body-smaller divide-x divide-gray-200 flex ">
-        <li onClick={() => setBalancerFunction(BalancerFunction.Invest)} className="w-full">
-          <span
-            className={`${
-              balancerFunction === BalancerFunction.Invest ? 'text-black bg-gray-100' : ''
-            } rounded-tl-2xl inline-block p-4 w-full bg-white hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none`}
-          >
-            Invest
-          </span>
-        </li>
-        <li onClick={() => setBalancerFunction(BalancerFunction.Withdraw)} className="w-full">
-          <span
-            className={`${
-              balancerFunction === BalancerFunction.Withdraw ? 'text-black bg-gray-100' : ''
-            } inline-block rounded-tr-2xl p-4 w-full bg-white hover:text-gray-700 hover:bg-gray-50 focus:ring-4 focus:ring-blue-300 focus:outline-none`}
-          >
-            Withdraw
-          </span>
-        </li>
-      </ul>
+      <TabHeaderContainer>
+        {[BalancerFunction.Invest, BalancerFunction.Withdraw].map((functionType, index) => (
+          <TabHeader
+            title={functionType}
+            key={index}
+            isActive={balancerFunction === functionType}
+            onClick={() => setBalancerFunction(functionType)}/>
+        ))}
+      </TabHeaderContainer>
       <DefaultTransition isOpen={balancerFunction === BalancerFunction.Invest}>
         <div>
           <PoolInvest pool={pool} />

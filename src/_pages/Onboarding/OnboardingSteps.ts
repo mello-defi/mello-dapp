@@ -1,5 +1,5 @@
 import { OnboardingStepDescription } from '_redux/types/onboardingTypes';
-import AaveReserve from '_components/aave/AaveReserve';
+import AaveReserveRow from '_components/aave/AaveReserveRow';
 import { AaveSection } from '_enums/aave';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import Swap from '_pages/Swap/Swap';
@@ -35,7 +35,7 @@ export const stepBorrowAave: OnboardingStep = {
   number: 7,
   title: 'Borrow $USDC from Aave',
   nextStep: stepMintNft,
-  actionComponent: AaveReserve,
+  actionComponent: AaveReserveRow,
   actionComponentProps: {
     aaveSection: AaveSection.Borrow,
     reserveSymbol: CryptoCurrencySymbol.USDC
@@ -47,7 +47,7 @@ export const stepDepositAave: OnboardingStep = {
   number: 6,
   title: 'Deposit $WBTC into Aave',
   nextStep: stepBorrowAave,
-  actionComponent: AaveReserve,
+  actionComponent: AaveReserveRow,
   actionComponentProps: {
     aaveSection: AaveSection.Deposit,
     reserveSymbol: CryptoCurrencySymbol.WBTC

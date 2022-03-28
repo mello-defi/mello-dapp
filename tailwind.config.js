@@ -8,6 +8,11 @@ module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   darkMode: 'class', // or 'media' or 'class'
+  variants: {
+    extend: {
+      borderRadius: ['first', 'last']
+    },
+  },
   theme: {
     fontFamily: fontFamily, // <-- this is where the override is happening
     extend: {
