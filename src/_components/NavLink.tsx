@@ -6,6 +6,7 @@ import React from 'react';
 
 export default function NavLink({ tab, title }: { tab: NavTab; title: string }) {
   const dispatch = useDispatch();
+  console.log('NAVLINK', tab, title);
   const activeTab = useSelector((state: AppState) => state.ui.activeTab);
   const onboardingComplete = useSelector((state: AppState) => state.onboarding.complete);
   const ongoing = useSelector((state: AppState) => state.onboarding.ongoing);

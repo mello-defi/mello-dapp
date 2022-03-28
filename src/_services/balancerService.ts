@@ -974,3 +974,10 @@ export function propAmountsgiven(
   return amounts;
   // SDK.StableMath.
 }
+
+export function calculateUserSharesInFiat (pool: Pool, userPool: UserPool): string {
+  return new AdvancedBigNumber(pool.totalLiquidity)
+    .div(pool.totalShares)
+    .times(userPool.balance)
+    .toString()
+}

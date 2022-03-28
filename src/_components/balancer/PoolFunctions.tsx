@@ -53,6 +53,7 @@ import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { EthereumTransactionError } from '_interfaces/errors';
 import { toggleUserPoolDataStaleAction } from '_redux/actions/balancerActions';
 import { toggleUserPoolDataStale } from '_redux/effects/balancerEffects';
+import MaxAmountButton from '_components/core/MaxAmountButton';
 // import { initFromOnchain } from '@georgeroman/balancer-v2-pools/dist/src/initializers/stable';
 // import { StablePool } from '@georgeroman/balancer-v2-pools';
 // import { initFromOnchain } from "@georgeroman/balancer-v2-pools/dist/src/initializers/stable";
@@ -514,6 +515,15 @@ function PoolInvest({ pool }: { pool: Pool }) {
     setTokensApproved(false);
   };
 
+  const handleMaxAmountPressed = () => {
+    const newTokenAmounts = [...tokenAmounts];
+    for (let i = 0; i < newTokenAmounts.length; i++) {
+      const token = pool.tokens[i];
+      const balance = getUserBalanceForPoolToken(token);
+      newTokenAmounts[i] = balance ? ethers.utils.formatUnits(balance.toString(), token.decimals) : '0';
+    }
+    setTokenAmounts(newTokenAmounts);
+  }
   return (
     <div className={'flex flex-col'}>
       {tokenAmounts &&
@@ -533,9 +543,12 @@ function PoolInvest({ pool }: { pool: Pool }) {
 
       <div className={'px-4 mt-2'}>
         <HorizontalLineBreak />
-        <div className={'flex-row-center justify-between text-body'}>
+        <div className={'flex-row-center mb-2 justify-between text-body'}>
           <div>Total:</div>
-          <div className={'font-mono'}>{investmentTotal ? `$${investmentTotal}` : '-'}</div>
+          <div className={'flex-row-center'}>
+            <div className={'font-mono'}>{investmentTotal ? `$${investmentTotal}` : '-'}</div>
+            <MaxAmountButton onClick={handleMaxAmountPressed} />
+          </div>
         </div>
         <div>
           <Button

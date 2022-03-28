@@ -8,7 +8,8 @@ import MobileHamburgerMenu from '_components/header/MobileHamburgerMenu';
 import Web3Login from '_components/Web3Login';
 import NavLink from '_components/NavLink';
 
-function DesktopNavLinks({ navLinks }: { navLinks: NavLinkDefinition[] }) {
+function DesktopNavLinks() {
+  const navLinks = useSelector((state: AppState) => state.ui.navLinks);
   return (
     <div className={'flex-row justify-evenly hidden sm:flex'}>
       {navLinks.map((link: NavLinkDefinition) => (
@@ -21,7 +22,6 @@ function DesktopNavLinks({ navLinks }: { navLinks: NavLinkDefinition[] }) {
 export default function Header() {
   const provider = useSelector((state: AppState) => state.web3.provider);
   const signer = useSelector((state: AppState) => state.web3.signer);
-  const navLinks = useSelector((state: AppState) => state.ui.navLinks);
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function Header() {
           <div className={'border-r-2 pr-2 mr-2 sm:pr-4 sm:mr-4 border-gray-200'}>
             <img src={melloLogoFaceWithText} className={'h-10 sm:h-12'} alt={'mello logo'} />
           </div>
-          <DesktopNavLinks navLinks={navLinks} />
+          <DesktopNavLinks />
         </div>
         <div className={'flex-row-center'}>
           <MobileHamburgerMenu />

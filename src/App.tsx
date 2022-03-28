@@ -96,6 +96,12 @@ interface TabContentDefinition {
 const tabsContent: TabContentDefinition[] = [
   {
     tab: NavTab.DASHBOARD,
+    component: <Dashboard />,
+    hideOnEthereumMainnet: true,
+    requiresLogin: true
+  },
+  {
+    tab: NavTab.INVEST,
     component: <Invest />,
     hideOnEthereumMainnet: true,
     requiresLogin: true

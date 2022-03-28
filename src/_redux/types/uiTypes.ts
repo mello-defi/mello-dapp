@@ -11,6 +11,7 @@ export enum NavTab {
   FUND = 'FUND',
   LEARN = 'LEARN',
   WALLET = 'WALLET',
+  INVEST = 'INVEST',
   ONBOARDING = 'ONBOARDING'
 }
 

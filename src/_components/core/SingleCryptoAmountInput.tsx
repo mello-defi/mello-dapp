@@ -4,6 +4,7 @@ import { amountIsValidNumberGtZero, decimalPlacesAreValid } from '_utils/index';
 import { TokenDefinition } from '_enums/tokens';
 import { BigNumber, ethers } from 'ethers';
 import { DefaultTransition } from '_components/core/Transition';
+import MaxAmountButton from '_components/core/MaxAmountButton';
 
 export default function SingleCryptoAmountInput({
   disabled,
@@ -85,16 +86,7 @@ export default function SingleCryptoAmountInput({
         {balance && (
           <div className={'flex-row-center'}>
             <div>{ethers.utils.formatUnits(balance, token.decimals)}</div>
-            <div
-              onClick={() => {
-                amountChanged(ethers.utils.formatUnits(balance, token?.decimals));
-              }}
-              className={
-                'rounded-2xl text-body-smaller px-2 py-1 bg-gray-200 hover:bg-gray-300 transition ml-1 flex-row-center cursor-pointer'
-              }
-            >
-              Max
-            </div>
+            <MaxAmountButton onClick={() => amountChanged(ethers.utils.formatUnits(balance, token?.decimals))} />
           </div>
         )}
       </div>

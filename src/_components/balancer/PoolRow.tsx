@@ -25,6 +25,7 @@ export default function PoolRow({ pool, userBalance }: { pool: Pool, userBalance
           <div className={'flex flex-col text-body-smaller text-left md:text-right'}>
             <div className={'font-mono'}>
               ${parseFloat(userBalance ? userBalance : pool.totalLiquidity).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
                 maximumFractionDigits: 2
               })}
             </div>

@@ -15,6 +15,8 @@ import { CryptoCurrencySymbol } from '_enums/currency';
 import UserBorrowSummary from '_pages/Borrow/UserBorrowSummary';
 import UserDepositSummary from '_pages/Deposit/UserDepositSummary';
 import { getMarketDataForSymbol } from '_services/marketDataService';
+import PoolSkeleton from '_components/balancer/PoolSkeleton';
+import UserPools from '_components/balancer/UserPools';
 
 function DashboardLink({ text, navTab }: { text: string; navTab: NavTab }) {
   const dispatch = useDispatch();
@@ -33,6 +35,7 @@ export default function Dashboard() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const walletBalances = useSelector((state: AppState) => state.wallet.balances);
   const userSummary = useAaveUserSummary();
+  // const user
   const marketPrices = useMarketPrices();
   const [totalAssets, setTotalAssets] = useState<number>(0);
   const [totalDebts, setTotalDebts] = useState<number>(0);
@@ -103,6 +106,7 @@ export default function Dashboard() {
         </div>
       </div>
       <HorizontalLineBreak />
+      <UserPools />
       <div>
         <DashboardLink text={'Wallet'} navTab={NavTab.WALLET} />
         {Object.values(tokenSet).map((token: EvmTokenDefinition) => (
