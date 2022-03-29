@@ -342,28 +342,17 @@ export async function getPools(addresses: string[]): Promise<Pool[]> {
   const poolResults = await client.query({
     query: GET_ALL_POOLS,
     variables: {
-      // addresses: addressesLowercase,
       minimumLiquidity: MINIMUM_LIQUIDITY,
     }
   });
   if (!poolResults.data) {
     return [];
   }
-  console.log(addressesLowercase);
 
-  const returning = poolResults.data.pools.filter((pool: Pool) => {
+  return poolResults.data.pools.filter((pool: Pool) => {
     const tokenAddresses = pool.tokens.map((token: PoolToken) => token.address.toLowerCase());
-    const matches = tokenAddresses.filter(address => addressesLowercase.includes(address));
-    console.log('**************')
-    console.log(matches.length);
-    console.log(tokenAddresses.length);
-    console.log(matches.length !== tokenAddresses.length ? 'NOT RETUENING POOLID ' + pool.id : '');
-    return matches.length === tokenAddresses.length;
-    // return matches.length > 0;
+    return tokenAddresses.filter(address => addressesLowercase.includes(address)).length === tokenAddresses.length;
   });
-  console.log(returning.length);
-  console.log(poolResults.data.pools.length);
-  return returning;
 }
 
 export async function joinPool(
