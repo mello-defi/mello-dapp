@@ -361,7 +361,7 @@ export default function AaveReserveRow({
               </div>
             )}
           </div>
-          <DefaultTransition isOpen={isExpanded}>
+          <DefaultTransition isOpen={aaveFunction !== null}>
             <div>
               {/*<TabHeaderContainer>*/}
               {/*  {aaveSection === AaveSection.Deposit && (*/}

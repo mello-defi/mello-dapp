@@ -3,7 +3,7 @@ import { BalancerActionTypes } from '_redux/types/balancerTypes';
 import {
   setPoolsAction,
   getUserPoolDataAction,
-  toggleUserPoolDataStaleAction
+  toggleUserPoolDataStaleAction, setTotalInvestedAmountAction
 } from '_redux/actions/balancerActions';
 import {
   getMiningLiquidityApr,
@@ -22,6 +22,11 @@ export const toggleUserPoolDataStale = (userDataStale: boolean) => {
   };
 };
 
+export const setTotalInvestedAmount = (totalAmountInvested: number) => {
+  return async function (dispatch: Dispatch<BalancerActionTypes>) {
+    dispatch(setTotalInvestedAmountAction(totalAmountInvested));
+  };
+};
 export const getUserBalancerPools = (userAddress: string) => {
   return async function (dispatch: Dispatch<BalancerActionTypes>) {
     const results = await getUserPools(userAddress);

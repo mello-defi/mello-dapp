@@ -19,14 +19,11 @@ import PoolSkeleton from '_components/balancer/PoolSkeleton';
 import UserPools from '_components/balancer/UserPools';
 
 function DashboardLink({ text, navTab }: { text: string; navTab: NavTab }) {
-  const dispatch = useDispatch();
   return (
     <div
-      onClick={() => dispatch(setActiveTab(navTab))}
-      className={'flex-row-center cursor-pointer hover:text-gray-400 transition'}
+      className={'flex-row-center hover:text-gray-400'}
     >
       <span className={'text-body'}>{text}</span>
-      <ArrowForward className={'ml-2'} />
     </div>
   );
 }
@@ -34,6 +31,7 @@ function DashboardLink({ text, navTab }: { text: string; navTab: NavTab }) {
 export default function Dashboard() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const walletBalances = useSelector((state: AppState) => state.wallet.balances);
+  const totalInvestedAmount = useSelector((state: AppState) => state.balancer.totalInvestedAmount);
   const userSummary = useAaveUserSummary();
   // const user
   const marketPrices = useMarketPrices();
@@ -74,13 +72,16 @@ export default function Dashboard() {
           console.error(error);
         }
       }
-      setTotalAssets(totalAaveDeposits + totalWalletBalances);
+      if (totalInvestedAmount && totalInvestedAmount > 0) {
+        totalWalletBalances += totalInvestedAmount;
+      }
+      setTotalAssets(totalAaveDeposits + totalWalletBalances );
       setTotalDebts(totalAaveDebts);
     }
     if (!healthFactor && userSummary) {
       setHealthFactor(parseFloat(userSummary.healthFactor).toFixed(2));
     }
-  }, [userSummary, walletBalances]);
+  }, [userSummary, walletBalances, totalInvestedAmount]);
 
   return (
     <div>
@@ -90,13 +91,13 @@ export default function Dashboard() {
       <HorizontalLineBreak />
       <div className={'flex-row-center justify-evenly flex-wrap'}>
         <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>
-          Net worth: <span className={'font-mono'}>${(totalAssets - totalDebts).toFixed(2)}</span>
+          Net worth: <span className={'font-mono'}>${(totalAssets - totalDebts).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
         </div>
         <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>
-          Total assets: <span className={'font-mono'}>${totalAssets.toFixed(2)}</span>{' '}
+          Total assets: <span className={'font-mono'}>${totalAssets.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>{' '}
         </div>
         <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>
-          Total debts: <span className={'font-mono'}>${totalDebts.toFixed(2)}</span>
+          Total debts: <span className={'font-mono'}>${totalDebts.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
         </div>
         <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>
           Health factor{' '}
@@ -107,6 +108,7 @@ export default function Dashboard() {
       </div>
       <HorizontalLineBreak />
       <UserPools />
+      <HorizontalLineBreak />
       <div>
         <DashboardLink text={'Wallet'} navTab={NavTab.WALLET} />
         {Object.values(tokenSet).map((token: EvmTokenDefinition) => (

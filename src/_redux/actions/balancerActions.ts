@@ -2,7 +2,7 @@ import {
   BalancerActionTypes,
   SET_POOL_DATA,
   GET_USER_POOL_DATA,
-  TOGGLE_USER_POOL_DATA_STALE
+  TOGGLE_USER_POOL_DATA_STALE, SET_TOTAL_INVESTED_AMOUNT
 } from '_redux/types/balancerTypes';
 import { Pool, UserPool } from '_interfaces/balancer';
 
@@ -33,6 +33,15 @@ export const setPoolsAction = (
     payload: {
       pools,
       aprsSet
+    }
+  };
+};
+
+export const setTotalInvestedAmountAction = (totalInvestedAmount: number): BalancerActionTypes => {
+  return {
+    type: SET_TOTAL_INVESTED_AMOUNT,
+    payload: {
+      totalInvestedAmount
     }
   };
 };
