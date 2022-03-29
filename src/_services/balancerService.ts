@@ -40,6 +40,7 @@ import { WalletTokenBalances } from '_redux/types/walletTypes';
 import { multicall } from '_services/walletService';
 import { formatUnits, getAddress, parseUnits } from 'ethers/lib/utils';
 import { InvestmentPoolEncoder } from '@balancer-labs/balancer-js';
+import { getUserPoolsAprs } from '_redux/effects/balancerEffects';
 // import { exitExactBptInForTokenOut } from '@georgeroman/balancer-v2-pools/dist/src/utils/test/pools/query';
 // import { _calcTokenOutGivenExactBptIn } from '@georgeroman/balancer-v2-pools/dist/src/pools/stable/math';
 
@@ -122,9 +123,9 @@ const GET_PAST_POOL_FOR_ID = gql`
   }
 `;
 const GET_ALL_POOLS = gql`
-  query GetPools($addresses: [Bytes!], $minimumLiquidity: String!) {
+  query GetPools($minimumLiquidity: String!) {
     pools(
-    first: 25, 
+    first: 1000, 
     skip: 0, 
     orderBy: totalLiquidity,
     orderDirection: desc,
@@ -142,9 +143,7 @@ const GET_ALL_POOLS = gql`
       totalShares
       symbol
       amp
-      tokens(where:{
-        address_in:$addresses
-      }) {
+      tokens{
         id
         symbol
         name
@@ -315,6 +314,7 @@ export async function getMiningLiquidityApr(
     ? !!liquidityMiningRewards.length
     : false;
   if (hasLiquidityMiningRewards) {
+    console.log(pool.id);
     liquidityMiningAPR = computeTotalAPRForPool(
       liquidityMiningRewards,
       miningTotalLiquidity,
@@ -338,15 +338,32 @@ export function getVaultAddress(chainId: number): string {
 }
 
 export async function getPools(addresses: string[]): Promise<Pool[]> {
-  console.log(addresses.map(a => a.toLowerCase()));
+  const addressesLowercase = addresses.map(address => address.toLowerCase());
   const poolResults = await client.query({
     query: GET_ALL_POOLS,
     variables: {
-      addresses: addresses.map(a => a.toLowerCase()),
+      // addresses: addressesLowercase,
       minimumLiquidity: MINIMUM_LIQUIDITY,
     }
   });
-  return poolResults.data ? poolResults.data.pools : [];
+  if (!poolResults.data) {
+    return [];
+  }
+  console.log(addressesLowercase);
+
+  const returning = poolResults.data.pools.filter((pool: Pool) => {
+    const tokenAddresses = pool.tokens.map((token: PoolToken) => token.address.toLowerCase());
+    const matches = tokenAddresses.filter(address => addressesLowercase.includes(address));
+    console.log('**************')
+    console.log(matches.length);
+    console.log(tokenAddresses.length);
+    console.log(matches.length !== tokenAddresses.length ? 'NOT RETUENING POOLID ' + pool.id : '');
+    return matches.length === tokenAddresses.length;
+    // return matches.length > 0;
+  });
+  console.log(returning.length);
+  console.log(poolResults.data.pools.length);
+  return returning;
 }
 
 export async function joinPool(

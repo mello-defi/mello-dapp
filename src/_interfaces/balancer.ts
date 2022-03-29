@@ -62,7 +62,6 @@ export interface Pool {
   factory: string;
   tokens: PoolToken[];
   tokensList: string[];
-  tokenAddresses: string[];
   totalLiquidity: string;
   miningTotalLiquidity: string;
   totalShares: string;
