@@ -32,7 +32,7 @@ import useWalletBalances from '_hooks/useWalletBalances';
 import { CryptoCurrencyName, CryptoCurrencySymbol } from '_enums/currency';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import useMarketPrices from '_hooks/useMarketPrices';
-import { PolygonMainnetTokenContracts, TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition, PolygonMainnetTokenContracts, TokenDefinition } from '_enums/tokens';
 import {
   amountIsValidNumberGtZero,
   decimalPlacesAreValid,
@@ -55,6 +55,7 @@ import { toggleUserPoolDataStaleAction } from '_redux/actions/balancerActions';
 import { toggleUserPoolDataStale } from '_redux/effects/balancerEffects';
 import MaxAmountButton from '_components/core/MaxAmountButton';
 import { TabHeader, TabHeaderContainer } from '_components/core/Tabs';
+import TokenSelectDropdown from '_components/TokenSelectDropdown';
 // import { initFromOnchain } from '@georgeroman/balancer-v2-pools/dist/src/initializers/stable';
 // import { StablePool } from '@georgeroman/balancer-v2-pools';
 // import { initFromOnchain } from "@georgeroman/balancer-v2-pools/dist/src/initializers/stable";
@@ -83,53 +84,39 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
   const [onChainData, setOnchain] = useState<OnchainPoolData | undefined>(undefined);
   const [userPools, setUserPools] = useState<UserPool[] | undefined>(undefined);
   const [poolAmounts, setPoolAmounts] = useState<Amounts | undefined>();
+  const [singleAssetMaxes, setSingleAssetMaxes] = useState<string[] | undefined>();
 
   useEffect(() => {
-    const val = singleAssetMaxes();
-    console.log('SINGLE ASSET MAXES', val);
+    // if (!singleAssetMaxes || singleAssetMaxes.length === 0) {
+    const maxes = getSingleAssetMaxes();
+    setSingleAssetMaxes(maxes);
+    // }
   }, [userPools, onChainData, poolAmounts]);
-  const singleAssetMaxes = () => {
-    // if (isStablePhantom(pool.poolType)) return batchSwapSingleAssetMaxes.value;
-
+  const getSingleAssetMaxes = (): string[] => {
     const btpBalance = userPools?.find(
       (userPool) => userPool.poolId.address.toLowerCase() === pool.address.toLowerCase()
     )?.balance;
-
     if (poolAmounts && onChainData && btpBalance && provider) {
       try {
-        const amountsInbignuber: string[] = [];
-        for (let i = 0; i < poolAmounts.receive.length; i++) {
-          amountsInbignuber.push(
-            ethers.utils.parseUnits(poolAmounts.receive[i], pool.tokens[i].decimals).toString()
+        return pool.tokens.map((token, tokenIndex) => {
+          return formatUnits(
+            exactBPTInForTokenOut(
+              parseUnits(btpBalance, onChainData.decimals).toString(),
+              tokenIndex,
+              pool.poolType,
+              poolAmounts.receive,
+              Object.values(onChainData.tokens).map((t) => t.weight.toString()),
+              pool.tokens,
+              onChainData.decimals,
+              onChainData,
+              parseUnits(onChainData.totalSupply, onChainData.decimals).toString(),
+              onChainData.swapFee,
+              provider,
+            )
+              .toString(),
+            token.decimals
           );
-        }
-        // initFromOnchain(provider, pool.id, 'polygon').then((stablepool) => {
-        //   console.log('STABLEPOOL', stablepool);
-        // })
-        // StablePool.initFromSubgraph(pool.id, 'polygon').then((stabkepol) => {
-        //   console.log('POOL', stabkepol);
-        // })
-        return [];
-        // return pool.tokens.map((token, tokenIndex) => {
-        //   console.log('*************************************************************\n\n')
-        //   console.log(token.symbol);
-        //   return formatUnits(
-        //     exactBPTInForTokenOut(
-        //       parseUnits(btpBalance, onChainData.decimals).toString(),
-        //       tokenIndex,
-        //       pool.poolType,
-        //       amountsInbignuber,
-        //       Object.values(onChainData.tokens).map((t) => t.weight.toString()),
-        //       pool.tokens,
-        //       onChainData.decimals,
-        //       onChainData,
-        //       parseUnits(onChainData?.totalSupply, onChainData.decimals).toString(),
-        //       onChainData?.swapFee,
-        //     )
-        //       .toString(),
-        //     token.decimals
-        //   );
-        // });
+        });
       } catch (error) {
         console.error(error);
         if ((error as Error).message.includes('MIN_BPT_IN_FOR_TOKEN_OUT')) {
@@ -149,15 +136,16 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
                 onChainData.decimals,
                 onChainData,
                 parseUnits(onChainData?.totalSupply, onChainData.decimals).toString(),
-                onChainData?.swapFee
+                onChainData?.swapFee,
+                provider,
               ).toString(),
               token.decimals
             );
           });
         }
-        return [];
       }
     }
+    return Array.from({ length: pool.tokens.length }, () => '0');
   };
 
   useEffect(() => {
@@ -337,6 +325,15 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
 
   return (
     <div className={'flex flex-col'}>
+      {onChainData && (
+        <div className={'px-2'}>
+          <TokenSelectDropdown
+            tokenFilter={(t) => Object.keys(onChainData.tokens).map((address: string) => address.toLowerCase()).includes(t.address.toLowerCase())}
+            onSelectToken={(token: EvmTokenDefinition) => {
+              console.log(token);
+            }} disabled={false}/>
+        </div>
+      )}
       {tokenAmountMap &&
         poolAmounts &&
         pool.tokens.map((token, index: number) => (

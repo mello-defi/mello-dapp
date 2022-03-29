@@ -1,5 +1,6 @@
 import { ApolloClient, DefaultOptions, gql, InMemoryCache } from '@apollo/client';
 import { pick } from 'lodash';
+import { defaultAbiCoder, Interface } from '@ethersproject/abi';
 
 import {
   Amounts,
@@ -26,7 +27,11 @@ import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 import { getTokenByAddress } from '_utils/index';
 import { MarketDataResult } from '_services/marketDataService';
 import { GenericTokenSet } from '_enums/tokens';
+import type {
+  BalancerHelpers
+} from '@balancer-labs/typechain';
 import {
+  BalancerHelpers__factory,
   InvestmentPool__factory,
   LiquidityBootstrappingPool__factory,
   MetaStablePool__factory,
@@ -42,13 +47,15 @@ import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract
 import { WalletTokenBalances } from '_redux/types/walletTypes';
 import { multicall } from '_services/walletService';
 import { formatUnits, getAddress, parseUnits } from 'ethers/lib/utils';
+import { exitExactBptInForTokenOut } from '@georgeroman/balancer-v2-pools/dist/src/utils/test/pools/query';
+import { _calcTokenOutGivenExactBptIn } from '@georgeroman/balancer-v2-pools/dist/src/pools/stable/math';
 
 const liquidityMiningStartTime = Date.UTC(2020, 5, 1, 0, 0);
 const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 
 const GET_USER_POOLS = gql`
   query getUserPools($userAddress: String!) {
-    poolShares(where: { userAddress: $userAddress, balance_gt: 0 }) {
+    poolShares(where: { userAddress: $userAddress, balance_gt: 0 }, orderBy: balance, orderDirection: desc) {
       id
       poolId {
         id
@@ -344,6 +351,7 @@ export async function joinPool(
   gasPrice?: BigNumber
 ): Promise<TransactionResponse> {
   const vault: Contract = getWriteVaultContract(signer);
+  console.log('vault', vault.functions);
   const options: TransactionRequest = {};
   if (gasPrice) {
     options.gasPrice = gasPrice.toString();
@@ -357,6 +365,7 @@ export async function joinPool(
       assets: pool.tokens.map((t: PoolToken) => t.address),
       maxAmountsIn: amountsIn,
       fromInternalBalance: false,
+      // TODO change to dynamic encoder based on poolm type
       userData: StablePoolEncoder.joinExactTokensInForBPTOut(amountsIn, BigNumber.from('0'))
     },
     options
@@ -785,17 +794,17 @@ function scaleOutput(
 ): BigNumber {
   if (priceRate === null) priceRate = '1';
 
-  console.log('amount', amount);
-  console.log('decimals', decimals);
-  console.log('priceRate', priceRate);
-  console.log('rounding', rounding);
+  // console.log('amount', amount);
+  // console.log('decimals', decimals);
+  // console.log('priceRate', priceRate);
+  // console.log('rounding', rounding);
   const amountAfterPriceRate = bnum(amount).div(priceRate).toString();
 
-  console.log('amountAfterPriceRate', amountAfterPriceRate);
+  // console.log('amountAfterPriceRate', amountAfterPriceRate);
   const normalizedAmount = bnum(amountAfterPriceRate)
     .div(parseUnits('1', 18).toString())
     .toFixed(decimals, rounding);
-  console.log('normalizedAmount', normalizedAmount);
+  // console.log('normalizedAmount', normalizedAmount);
   const scaledAmount = parseUnits(normalizedAmount, decimals);
 
   return BigNumber.from(scaledAmount.toString());
@@ -821,22 +830,28 @@ function getScaledBalances(balances: string[], pookTokens: PoolToken[]): Advance
     // console.log(balance, pookTokens[i].decimals);
     const normalizedBalance = formatUnits(balance, pookTokens[i].decimals);
     const scaledBalance = scaleInput(normalizedBalance, pookTokens[i].priceRate);
-    return scaledBalance;
+    return bnum(scaledBalance.toString());
   });
+}
+function getScaledTotalSupply(poolTotalSupply: string, poolDecimals: number): AdvancedBigNumber {
+  // const normalizedSupply = formatUnits(
+  //   poolTotalSupply,
+  //   poolDecimals
+  // );
+  const scaledSupply = parseUnits(poolTotalSupply, 18);
+  return bnum(scaledSupply.toString());
+
 }
 function stableExactBPTInForTokenOut(
   bptAmount: string,
   tokenIndex: number,
   balances: string[],
-  weights: string[],
   poolTokens: PoolToken[],
-  poolDecimals: number,
   onchain: OnchainPoolData,
-  poolTotalSupply: string,
-  poolSwapFee: string
+  provider: ethers.providers.Web3Provider,
 ): BigNumber {
+
   if (bnum(bptAmount).eq(0)) {
-    console.log(poolTokens[tokenIndex]);
     return scaleOutput(
       '0',
       poolTokens[tokenIndex].decimals,
@@ -845,38 +860,86 @@ function stableExactBPTInForTokenOut(
     );
   }
 
+  console.log('*************************************************************\n\n')
+  // console.log(tokenIndex);
+  // console.log('ON CHAIN', onchain);
   const amp = bnum(onchain.amp?.toString() || '0');
   const ampAdjusted = adjustAmp(amp);
-  const normalizedAmountIn = formatUnits(bptAmount, poolDecimals);
+  const normalizedAmountIn = formatUnits(bptAmount, onchain.decimals);
   const bptAmountIn = scaleInput(normalizedAmountIn);
-  const scaledbalance = getScaledBalances(balances, poolTokens);
-  console.log(
-    'scaledbalance',
-    scaledbalance.map((b) => b.toString())
-  );
-  // const totalsupplynum = bnum(poolTotalSupply);
-  const normalizedSupply = formatUnits(poolTotalSupply, poolDecimals);
-  const scaledSupply = parseUnits(normalizedSupply, 18);
-  const sclaedTotalSupply = bnum(scaledSupply.toString());
+  // const scaledBalances = getScaledBalances(balances, poolTokens);
+  const scaledBalances = balances.map((b, i)=> bnum(parseUnits(b, poolTokens[i].decimals)));
+  const scaledPoolTotalSupply = getScaledTotalSupply(onchain.totalSupply, onchain.decimals);
+  const poolSwapFee = bnum(parseUnits(onchain.swapFee, 18).toString());
+  // console.log('ampAdjusted', ampAdjusted.toString());
+  // console.log('scaledBalances', scaledBalances[tokenIndex].toString());
+  // console.log('scaledBalances', scaledBalances.map(b => b.toString()));
+  // console.log('tokenIndex', tokenIndex);
+  // console.log('bptAmountIn', bptAmountIn.toString());
+  // console.log('bptamount', bptAmount);
+  // console.log('scaledPoolTotalSupply', scaledPoolTotalSupply.toString());
+  // console.log('poolSwapFee', poolSwapFee.toString());
+  // const tokenAmountOut = SDK.StableMath._calcTokenOutGivenExactBptIn(
+  //   bnum(600 * 1000), // ampAdjusted
+  //   scaledBalances,
+  //   tokenIndex, // tokenIndex
+  //   bptAmountIn, // bptAmountIn
+  //   bnum(scaledPoolTotalSupply.toString()), // scaledPoolTotalSupply
+  //   bnum('100000000000000') // poolSwapFee
+  // );
+  // console.log('tokenAmountOut', tokenAmountOut.toString());
+  const contract = new Contract('0x239e55F427D44C3cc793f49bFB507ebe76638a2b', BalancerHelpers__factory.abi, provider);
+  // provider.getCode('0x5aDDCCa35b7A0D07C74063c48700C8590E87864E').then(code => {
+  //   console.log('code', code);
+  // });
+  // const contract = new Contract('0x239e55F427D44C3cc793f49bFB507ebe76638a2b', BalancerHelperAbi, provider);
+  // console.log('contract', contract.functions);
+  // contract.vault().then((res: any ) => {
+  //   console.log('vault', res);
+  // }).catch((err: any) => {
+  //   console.log('err', err);
+  // });
+  type queryExit = {
+    amountsOut: BigNumber[];
+    bptIn: BigNumber;
+  }
+  contract.queryExit(
+    '0x0d34e5dd4d8f043557145598e4e2dc286b35fd4f000000000000000000000068',
+    getAddress('0x4bbc19d4ff3917f14a62c27bf870e22728891d21'),
+    getAddress('0x4bbc19d4ff3917f14a62c27bf870e22728891d21'),
+    {
+      assets: [
+        '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        '0x2e1ad108ff1d8c782fcbbb89aad783ac49586756',
+        '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
+        '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      ].map(getAddress).sort(),
+      minAmountsOut: [0,0,0,0],
+      // userData: StablePoolEncoder.exitExactBPTInForTokensOut(bptAmountIn.toString()),
+      userData: StablePoolEncoder.exitExactBPTInForOneTokenOut(bptAmountIn.toString(), tokenIndex),
+      // userData: '0x',
+      toInternalBalance: false,
+    },
+  ).then((result: queryExit) => {
+    console.log('result', tokenIndex, result.amountsOut[tokenIndex].toString());
+  }).catch((error: any) => {
+    console.log('error', error);
+  });
 
-  const swapfreenum = bnum(parseUnits(poolSwapFee, 18));
-  console.log('scaledbalance', scaledbalance[tokenIndex].toString());
-  const tokenAmountOut = SDK.StableMath._calcTokenOutGivenExactBptIn(
-    ampAdjusted,
-    scaledbalance,
-    tokenIndex,
-    bptAmountIn,
-    sclaedTotalSupply,
-    swapfreenum
-  );
-  console.log('tokenAmountOut', tokenAmountOut.toString());
 
-  return scaleOutput(
-    tokenAmountOut.toString(),
-    poolTokens[tokenIndex].decimals,
-    poolTokens[tokenIndex].priceRate,
-    AdvancedBigNumber.ROUND_DOWN // If OUT given IN, round down
-  );
+
+
+  // contract.queryExit(poolId, sender, recipient, request).then((rsult:any) => {
+  //   console.log('rsult', rsult);
+  // });
+
+  // return scaleOutput(
+  //   tokenAmountOut.toString(),
+  //   poolTokens[tokenIndex].decimals,
+  //   poolTokens[tokenIndex].priceRate,
+  //   AdvancedBigNumber.ROUND_DOWN // If OUT given IN, round down
+  // );
+  return BigNumber.from('0');
 }
 
 export function absMaxBpt(pool: Pool, onchain: OnchainPoolData, bptBalance: string): string {
@@ -899,19 +962,17 @@ export function exactBPTInForTokenOut(
   poolDecimals: number,
   onchain: OnchainPoolData,
   poolTotalSupply: string,
-  poolSwapFee: string
+  poolSwapFee: string,
+  provider: ethers.providers.Web3Provider
 ): BigNumber {
   if (isStableLike(poolType)) {
     return stableExactBPTInForTokenOut(
       bptAmount,
       tokenIndex,
       balances,
-      weights,
       poolTokens,
-      poolDecimals,
       onchain,
-      poolTotalSupply,
-      poolSwapFee
+      provider,
     );
   }
   return weightedExactBPTInForTokenOut(
@@ -937,13 +998,13 @@ export function propAmountsgiven(
 
   const types = ['send', 'receive'];
   const fixedTokenAddress = tokenOf(action, type, index, onchain, poolAddress.toLowerCase());
-  console.log(`fixedTokenAddress: ${fixedTokenAddress}`);
+  // console.log(`fixedTokenAddress: ${fixedTokenAddress}`);
   const fixedToken = tokenInfoMap[fixedTokenAddress.toLowerCase()];
   // console.log(`fixedToken:`, fixedToken);
   const fixedDenormAmount = parseUnits(fixedAmount, fixedToken.decimals);
-  console.log(`fixedDenormAmount: ${fixedDenormAmount}`);
+  // console.log(`fixedDenormAmount: ${fixedDenormAmount}`);
   const fixedRatio = ratioOf(action, type, index, onchain);
-  console.log(`native amount of token in pool: ${fixedRatio}`);
+  // console.log(`native amount of token in pool: ${fixedRatio}`);
   const amounts = {
     send: sendTokens(action, onchain, poolAddress.toLowerCase()).map(() => ''),
     receive: receiveTokens(action, onchain, poolAddress.toLowerCase()).map(() => ''),

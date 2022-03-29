@@ -1,5 +1,5 @@
 import { EvmTokenDefinition } from '_enums/tokens';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DefaultTransition } from '_components/core/Transition';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
@@ -8,14 +8,27 @@ import { Check, ExpandLess, ExpandMore } from '@mui/icons-material';
 export default function TokenSelectDropdown({
   selectedToken,
   onSelectToken,
-  disabled
+  disabled,
+  tokenFilter,
 }: {
   selectedToken?: EvmTokenDefinition;
   onSelectToken: (token: EvmTokenDefinition) => void;
   disabled: boolean;
+  tokenFilter?: (token: EvmTokenDefinition) => boolean;
 }) {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [tokenList, setTokenList] = useState<EvmTokenDefinition[]>();
+  useEffect(() => {
+    if (tokenSet) {
+      const list = Object.values(tokenSet);
+      if (tokenFilter) {
+        setTokenList(list.filter(tokenFilter));
+      } else {
+        setTokenList(list);
+      }
+    }
+  }, [tokenSet, tokenFilter]);
   return (
     <div className="w-full my-2 sm:my-1">
       <div className="mt-1 relative">
@@ -55,7 +68,7 @@ export default function TokenSelectDropdown({
               aria-activedescendant="listbox-item-3"
               className="max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
             >
-              {Object.values(tokenSet).map((token: EvmTokenDefinition) => {
+              {tokenList && tokenList.map((token: EvmTokenDefinition) => {
                 return (
                   <li
                     key={token.symbol}
