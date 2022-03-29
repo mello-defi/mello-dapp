@@ -130,7 +130,11 @@ export default function MultiCryptoAmountInput({
               </span>
             )}
             {userBalance && (
-              <MaxAmountButton onClick={() => amountChanged(ethers.utils.formatUnits(userBalance, token?.decimals))} />
+              <MaxAmountButton
+                onClick={() =>
+                  amountChanged(ethers.utils.formatUnits(userBalance, token?.decimals))
+                }
+              />
             )}
           </div>
         )}

@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import React from 'react';
 
-export default function MaxAmountButton({onClick}: {onClick: () => void}) {
+export default function MaxAmountButton({ onClick }: { onClick: () => void }) {
   return (
     <div
       onClick={onClick}
@@ -11,5 +11,5 @@ export default function MaxAmountButton({onClick}: {onClick: () => void}) {
     >
       Max
     </div>
-  )
+  );
 }

@@ -31,7 +31,7 @@ function MtPellerin() {
         bdc: 'jEUR',
         addr: address,
         code,
-        hash: properHash,
+        hash: properHash
       });
     }
   };

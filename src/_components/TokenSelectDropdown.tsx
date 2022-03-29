@@ -9,7 +9,7 @@ export default function TokenSelectDropdown({
   selectedToken,
   onSelectToken,
   disabled,
-  tokenFilter,
+  tokenFilter
 }: {
   selectedToken?: EvmTokenDefinition;
   onSelectToken: (token: EvmTokenDefinition) => void;
@@ -68,36 +68,39 @@ export default function TokenSelectDropdown({
               aria-activedescendant="listbox-item-3"
               className="max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
             >
-              {tokenList && tokenList.map((token: EvmTokenDefinition) => {
-                return (
-                  <li
-                    key={token.symbol}
-                    onClick={() => {
-                      onSelectToken(token);
-                      setDropdownOpen(false);
-                    }}
-                    role="option"
-                    className="text-gray-900 cursor-pointer hover:bg-gray-300 hover:text-white select-none relative py-3 pl-3 pr-4"
-                  >
-                    <div className="flex flex-col">
-                      <div className={'flex-row-center justify-between w-full'}>
-                        <div className={'flex-row-center'}>
-                          <img
-                            src={token.image}
-                            alt={token.name}
-                            className="flex-shrink-0 h-8 w-8 rounded-full"
-                          />
-                          <div className={'flex flex-col ml-3 block font-normal truncate'}>
-                            <span className="">{token.symbol}</span>
-                            <span className={'text-color-light text-xs'}>{token.name}</span>
+              {tokenList &&
+                tokenList.map((token: EvmTokenDefinition) => {
+                  return (
+                    <li
+                      key={token.symbol}
+                      onClick={() => {
+                        onSelectToken(token);
+                        setDropdownOpen(false);
+                      }}
+                      role="option"
+                      className="text-gray-900 cursor-pointer hover:bg-gray-300 hover:text-white select-none relative py-3 pl-3 pr-4"
+                    >
+                      <div className="flex flex-col">
+                        <div className={'flex-row-center justify-between w-full'}>
+                          <div className={'flex-row-center'}>
+                            <img
+                              src={token.image}
+                              alt={token.name}
+                              className="flex-shrink-0 h-8 w-8 rounded-full"
+                            />
+                            <div className={'flex flex-col ml-3 block font-normal truncate'}>
+                              <span className="">{token.symbol}</span>
+                              <span className={'text-color-light text-xs'}>{token.name}</span>
+                            </div>
                           </div>
+                          {token.address === selectedToken?.address && (
+                            <Check className="h-5 w-5" />
+                          )}
                         </div>
-                        {token.address === selectedToken?.address && <Check className="h-5 w-5" />}
                       </div>
-                    </div>
-                  </li>
-                );
-              })}
+                    </li>
+                  );
+                })}
             </ul>
           </div>
         </DefaultTransition>

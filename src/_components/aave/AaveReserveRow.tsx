@@ -402,193 +402,193 @@ export default function AaveReserveRow({
               {/*    ))*/}
               {/*  )}*/}
               {/*</TabHeaderContainer>*/}
-                {marketPriceForToken && reserve && token && (
-                  <div className={'flex flex-col md:flex-row justify-between space-x-0 sm:space-x-2'}>
-                    <div className={'flex flex-col w-full'}>
-                      {aaveFunction === AaveFunction.Deposit && (
-                        <AaveFunctionContent
-                          healthFactorImpact={HealthFactorImpact.Increase}
-                          healthFactorResource={HealthFactorResource.Collateral}
-                          reserveTitle={'Wallet'}
-                          reserve={reserve}
-                          summaryTitle={'Amount to Deposit'}
-                          userBalance={userBalance}
-                          tokenPrice={marketPriceForToken}
-                          amount={depositAmount}
-                          setAmount={(amount: string) => setAmount(amount, setDepositAmount)}
-                          token={token}
-                          buttonOnClick={handleDeposit}
-                          buttonDisabled={
-                            !userBalance ||
-                            userBalance.isZero() ||
-                            !depositAmount ||
-                            parseFloat(depositAmount) === 0 ||
-                            transactionInProgress ||
-                            (depositAmount
-                              ? userBalance.lt(ethers.utils.parseUnits(depositAmount, token.decimals))
-                              : true)
-                          }
-                        >
+              {marketPriceForToken && reserve && token && (
+                <div className={'flex flex-col md:flex-row justify-between space-x-0 sm:space-x-2'}>
+                  <div className={'flex flex-col w-full'}>
+                    {aaveFunction === AaveFunction.Deposit && (
+                      <AaveFunctionContent
+                        healthFactorImpact={HealthFactorImpact.Increase}
+                        healthFactorResource={HealthFactorResource.Collateral}
+                        reserveTitle={'Wallet'}
+                        reserve={reserve}
+                        summaryTitle={'Amount to Deposit'}
+                        userBalance={userBalance}
+                        tokenPrice={marketPriceForToken}
+                        amount={depositAmount}
+                        setAmount={(amount: string) => setAmount(amount, setDepositAmount)}
+                        token={token}
+                        buttonOnClick={handleDeposit}
+                        buttonDisabled={
+                          !userBalance ||
+                          userBalance.isZero() ||
+                          !depositAmount ||
+                          parseFloat(depositAmount) === 0 ||
+                          transactionInProgress ||
+                          (depositAmount
+                            ? userBalance.lt(ethers.utils.parseUnits(depositAmount, token.decimals))
+                            : true)
+                        }
+                      >
                         <span>
                           {depositSubmitting
                             ? 'Submitting...'
                             : (depositAmount &&
-                              userBalance &&
-                              userBalance.lt(
-                                ethers.utils.parseUnits(depositAmount, token.decimals)
-                              )) ||
-                            false
-                              ? 'Insufficient balance'
-                              : 'Deposit'}
+                                userBalance &&
+                                userBalance.lt(
+                                  ethers.utils.parseUnits(depositAmount, token.decimals)
+                                )) ||
+                              false
+                            ? 'Insufficient balance'
+                            : 'Deposit'}
                         </span>
-                        </AaveFunctionContent>
-                      )}
-                      {aaveFunction === AaveFunction.Withdraw && (
-                        <AaveFunctionContent
-                          healthFactorImpact={HealthFactorImpact.Decrease}
-                          healthFactorResource={HealthFactorResource.Collateral}
-                          reserveTitle={'Max withdraw'}
-                          summaryTitle={'Amount to withdraw'}
-                          reserve={reserve}
-                          userBalance={
-                            userReserve && userSummary
-                              ? calculateMaxWithdrawAmount(userSummary, userReserve, reserve)
-                              : BigNumber.from('0')
-                          }
-                          tokenPrice={marketPriceForToken}
-                          amount={withdrawAmount}
-                          setAmount={(amount: string) => setAmount(amount, setWithdrawAmount)}
-                          token={token}
-                          buttonOnClick={handleWithdraw}
-                          buttonDisabled={
-                            transactionInProgress ||
-                            !userReserve ||
-                            !userSummary ||
-                            !withdrawAmount ||
-                            parseFloat(withdrawAmount) === 0 ||
-                            parseFloat(userReserve.underlyingBalance) === 0 ||
-                            (withdrawAmount && userReserve?.underlyingBalance
-                              ? parseFloat(withdrawAmount) >
-                              parseFloat(userReserve.underlyingBalance) ||
+                      </AaveFunctionContent>
+                    )}
+                    {aaveFunction === AaveFunction.Withdraw && (
+                      <AaveFunctionContent
+                        healthFactorImpact={HealthFactorImpact.Decrease}
+                        healthFactorResource={HealthFactorResource.Collateral}
+                        reserveTitle={'Max withdraw'}
+                        summaryTitle={'Amount to withdraw'}
+                        reserve={reserve}
+                        userBalance={
+                          userReserve && userSummary
+                            ? calculateMaxWithdrawAmount(userSummary, userReserve, reserve)
+                            : BigNumber.from('0')
+                        }
+                        tokenPrice={marketPriceForToken}
+                        amount={withdrawAmount}
+                        setAmount={(amount: string) => setAmount(amount, setWithdrawAmount)}
+                        token={token}
+                        buttonOnClick={handleWithdraw}
+                        buttonDisabled={
+                          transactionInProgress ||
+                          !userReserve ||
+                          !userSummary ||
+                          !withdrawAmount ||
+                          parseFloat(withdrawAmount) === 0 ||
+                          parseFloat(userReserve.underlyingBalance) === 0 ||
+                          (withdrawAmount && userReserve?.underlyingBalance
+                            ? parseFloat(withdrawAmount) >
+                                parseFloat(userReserve.underlyingBalance) ||
                               (withdrawAmount !== '' &&
                                 calculateMaxWithdrawAmount(userSummary, userReserve, reserve).lt(
                                   ethers.utils.parseUnits(withdrawAmount, reserve.decimals)
                                 ))
-                              : false)
-                          }
-                        >
+                            : false)
+                        }
+                      >
                         <span className={'ml-2'}>
                           {withdrawSubmitting
                             ? 'Submitting...'
                             : (withdrawAmount &&
-                              userReserve?.underlyingBalance &&
-                              parseFloat(withdrawAmount) >
-                              parseFloat(userReserve.underlyingBalance)) ||
-                            false
-                              ? 'Insufficient funds'
-                              : userSummary &&
+                                userReserve?.underlyingBalance &&
+                                parseFloat(withdrawAmount) >
+                                  parseFloat(userReserve.underlyingBalance)) ||
+                              false
+                            ? 'Insufficient funds'
+                            : userSummary &&
                               userReserve &&
                               withdrawAmount !== '' &&
                               calculateMaxWithdrawAmount(userSummary, userReserve, reserve).lt(
                                 ethers.utils.parseUnits(withdrawAmount, reserve.decimals)
                               )
-                                ? 'Liquidation risk too high'
-                                : 'Withdraw'}
+                            ? 'Liquidation risk too high'
+                            : 'Withdraw'}
                         </span>
-                        </AaveFunctionContent>
-                      )}
-                      {aaveFunction === AaveFunction.Borrow && (
-                        <AaveFunctionContent
-                          reserveTitle={'Borrowing power'}
-                          healthFactorResource={HealthFactorResource.Borrows}
-                          healthFactorImpact={HealthFactorImpact.Decrease}
-                          summaryTitle={'Amount to Borrow'}
-                          reserve={reserve}
-                          userBalance={
-                            maxBorrowAmount
-                              ? ethers.utils.parseUnits(maxBorrowAmount, token.decimals)
-                              : BigNumber.from('0')
-                          }
-                          tokenPrice={marketPriceForToken}
-                          amount={borrowAmount}
-                          setAmount={(amount: string) => setAmount(amount, setBorrowAmount)}
-                          token={token}
-                          buttonOnClick={handleBorrow}
-                          buttonDisabled={
-                            transactionInProgress ||
-                            !borrowAmount ||
-                            parseFloat(borrowAmount) === 0 ||
-                            !borrowAmount ||
-                            (maxBorrowAmount !== '' &&
-                              ethers.utils
-                                .parseUnits(maxBorrowAmount, token.decimals)
-                                .lt(ethers.utils.parseUnits(borrowAmount, token.decimals)))
-                          }
-                        >
+                      </AaveFunctionContent>
+                    )}
+                    {aaveFunction === AaveFunction.Borrow && (
+                      <AaveFunctionContent
+                        reserveTitle={'Borrowing power'}
+                        healthFactorResource={HealthFactorResource.Borrows}
+                        healthFactorImpact={HealthFactorImpact.Decrease}
+                        summaryTitle={'Amount to Borrow'}
+                        reserve={reserve}
+                        userBalance={
+                          maxBorrowAmount
+                            ? ethers.utils.parseUnits(maxBorrowAmount, token.decimals)
+                            : BigNumber.from('0')
+                        }
+                        tokenPrice={marketPriceForToken}
+                        amount={borrowAmount}
+                        setAmount={(amount: string) => setAmount(amount, setBorrowAmount)}
+                        token={token}
+                        buttonOnClick={handleBorrow}
+                        buttonDisabled={
+                          transactionInProgress ||
+                          !borrowAmount ||
+                          parseFloat(borrowAmount) === 0 ||
+                          !borrowAmount ||
+                          (maxBorrowAmount !== '' &&
+                            ethers.utils
+                              .parseUnits(maxBorrowAmount, token.decimals)
+                              .lt(ethers.utils.parseUnits(borrowAmount, token.decimals)))
+                        }
+                      >
                         <span className={'ml-2'}>
                           {borrowSubmitting
                             ? 'Submitting...'
                             : (maxBorrowAmount !== '' &&
-                              ethers.utils
-                                .parseUnits(maxBorrowAmount, token.decimals)
-                                .lt(ethers.utils.parseUnits(borrowAmount, token.decimals))) ||
-                            false
-                              ? 'Insufficient collateral'
-                              : 'Borrow'}
+                                ethers.utils
+                                  .parseUnits(maxBorrowAmount, token.decimals)
+                                  .lt(ethers.utils.parseUnits(borrowAmount, token.decimals))) ||
+                              false
+                            ? 'Insufficient collateral'
+                            : 'Borrow'}
                         </span>
-                        </AaveFunctionContent>
-                      )}
-                      {aaveFunction === AaveFunction.Repay && (
-                        <AaveFunctionContent
-                          reserveTitle={'Borrowed'}
-                          healthFactorImpact={HealthFactorImpact.Increase}
-                          healthFactorResource={HealthFactorResource.Borrows}
-                          summaryTitle={'Amount to repay'}
-                          userBalance={
-                            userReserve
-                              ? ethers.utils.parseUnits(userReserve.variableBorrows, token.decimals)
-                              : BigNumber.from('0')
-                          }
-                          tokenPrice={marketPriceForToken}
-                          amount={repayAmount}
-                          reserve={reserve}
-                          setAmount={(amount: string) => setAmount(amount, setRepayAmount)}
-                          token={token}
-                          buttonOnClick={handleRepay}
-                          buttonDisabled={
-                            transactionInProgress ||
-                            !userReserve ||
-                            !repayAmount ||
-                            parseFloat(repayAmount) === 0 ||
-                            parseFloat(userReserve?.variableBorrows) === 0 ||
-                            (repayAmount && userReserve?.variableBorrows
-                              ? parseFloat(repayAmount) > parseFloat(userReserve?.variableBorrows)
-                              : false) ||
-                            (repayAmount &&
-                              userBalance &&
-                              userBalance.lt(
-                                ethers.utils.parseUnits(repayAmount, reserve.decimals)
-                              )) ||
-                            false
-                          }
-                        >
+                      </AaveFunctionContent>
+                    )}
+                    {aaveFunction === AaveFunction.Repay && (
+                      <AaveFunctionContent
+                        reserveTitle={'Borrowed'}
+                        healthFactorImpact={HealthFactorImpact.Increase}
+                        healthFactorResource={HealthFactorResource.Borrows}
+                        summaryTitle={'Amount to repay'}
+                        userBalance={
+                          userReserve
+                            ? ethers.utils.parseUnits(userReserve.variableBorrows, token.decimals)
+                            : BigNumber.from('0')
+                        }
+                        tokenPrice={marketPriceForToken}
+                        amount={repayAmount}
+                        reserve={reserve}
+                        setAmount={(amount: string) => setAmount(amount, setRepayAmount)}
+                        token={token}
+                        buttonOnClick={handleRepay}
+                        buttonDisabled={
+                          transactionInProgress ||
+                          !userReserve ||
+                          !repayAmount ||
+                          parseFloat(repayAmount) === 0 ||
+                          parseFloat(userReserve?.variableBorrows) === 0 ||
+                          (repayAmount && userReserve?.variableBorrows
+                            ? parseFloat(repayAmount) > parseFloat(userReserve?.variableBorrows)
+                            : false) ||
+                          (repayAmount &&
+                            userBalance &&
+                            userBalance.lt(
+                              ethers.utils.parseUnits(repayAmount, reserve.decimals)
+                            )) ||
+                          false
+                        }
+                      >
                         <span className={'ml-2'}>
                           {repaySubmitting
                             ? 'Submitting...'
                             : (repayAmount &&
-                              userBalance &&
-                              userBalance.lt(
-                                ethers.utils.parseUnits(repayAmount, reserve.decimals)
-                              )) ||
-                            false
-                              ? 'Insufficient balance'
-                              : 'Repay'}
+                                userBalance &&
+                                userBalance.lt(
+                                  ethers.utils.parseUnits(repayAmount, reserve.decimals)
+                                )) ||
+                              false
+                            ? 'Insufficient balance'
+                            : 'Repay'}
                         </span>
-                        </AaveFunctionContent>
-                      )}
-                    </div>
+                      </AaveFunctionContent>
+                    )}
                   </div>
-                )}
+                </div>
+              )}
               {(transactionInProgress || transactionConfirmed) && (
                 <div className={'my-2'}>
                   <TransactionStep

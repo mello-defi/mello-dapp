@@ -18,14 +18,14 @@ export default function Invest() {
   const pools = useBalancerPools(prices);
   return (
     <div>
-      <UserPools/>
+      <UserPools />
       <HorizontalLineBreak />
       <span className={'text-body'}>Investment pools</span>
       {!pools && (
         <div>
-          <PoolSkeleton numberOfSymbols={3}/>
-          <PoolSkeleton numberOfSymbols={2}/>
-          <PoolSkeleton numberOfSymbols={4}/>
+          <PoolSkeleton numberOfSymbols={3} />
+          <PoolSkeleton numberOfSymbols={2} />
+          <PoolSkeleton numberOfSymbols={4} />
         </div>
       )}
       {pools?.map((p: Pool) => {

@@ -17,21 +17,19 @@ const useUserBalancerPools = () => {
     }
   }, [userAddress, userPoolsStale]);
 
-
   useEffect(() => {
     if (userPools && userPools.length) {
       const totalInvestedAmount = userPools
-        .map(userPool => calculateUserSharesInFiat(userPool.poolId, userPool))
+        .map((userPool) => calculateUserSharesInFiat(userPool.poolId, userPool))
         .reduce((totalShares, shares) => totalShares.plus(shares), new AdvancedBigNumber(0))
         .toNumber();
       dispatch(setTotalInvestedAmount(totalInvestedAmount));
     }
   }, [userPools]);
 
-
   return {
     userPools,
-    totalInvestedAmount,
+    totalInvestedAmount
   };
 };
 

@@ -27,9 +27,7 @@ import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 import { getTokenByAddress } from '_utils/index';
 import { MarketDataResult } from '_services/marketDataService';
 import { GenericTokenSet } from '_enums/tokens';
-import type {
-  BalancerHelpers
-} from '@balancer-labs/typechain';
+import type { BalancerHelpers } from '@balancer-labs/typechain';
 import {
   BalancerHelpers__factory,
   InvestmentPool__factory,
@@ -41,21 +39,25 @@ import {
 } from '@balancer-labs/typechain';
 import { ERC20Abi, ProtocolFeeCollectorAbi } from '_abis';
 import { toUtcTime, twentyFourHoursInSecs } from '_utils/time';
-import { StablePoolEncoder, toNormalizedWeights } from '@balancer-labs/sdk';
+import { StablePoolEncoder, toNormalizedWeights, WeightedPoolEncoder } from '@balancer-labs/sdk';
 import { MaxUint256 } from '_utils/maths';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
 import { WalletTokenBalances } from '_redux/types/walletTypes';
 import { multicall } from '_services/walletService';
 import { formatUnits, getAddress, parseUnits } from 'ethers/lib/utils';
-import { exitExactBptInForTokenOut } from '@georgeroman/balancer-v2-pools/dist/src/utils/test/pools/query';
-import { _calcTokenOutGivenExactBptIn } from '@georgeroman/balancer-v2-pools/dist/src/pools/stable/math';
+// import { exitExactBptInForTokenOut } from '@georgeroman/balancer-v2-pools/dist/src/utils/test/pools/query';
+// import { _calcTokenOutGivenExactBptIn } from '@georgeroman/balancer-v2-pools/dist/src/pools/stable/math';
 
 const liquidityMiningStartTime = Date.UTC(2020, 5, 1, 0, 0);
 const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 
 const GET_USER_POOLS = gql`
   query getUserPools($userAddress: String!) {
-    poolShares(where: { userAddress: $userAddress, balance_gt: 0 }, orderBy: balance, orderDirection: desc) {
+    poolShares(
+      where: { userAddress: $userAddress, balance_gt: 0 }
+      orderBy: balance
+      orderDirection: desc
+    ) {
       id
       poolId {
         id
@@ -757,33 +759,56 @@ function tokenOf(
   }
 }
 
-function weightedExactBPTInForTokenOut(
+async function weightedExactBPTInForTokenOut(
   bptAmount: string,
   tokenIndex: number,
   balances: string[],
   weights: string[],
   poolTotalSupply: string,
-  poolSwapFee: string
-) {
-  const tokenBalance = bnum(balances[tokenIndex].toString());
-  const tokenNormalizedWeight = bnum(weights[tokenIndex].toString());
-
-  console.log('bptAmount', bptAmount);
-  console.log('tokenBalance', tokenBalance.toString());
-  console.log('tokenNormalizedWeight', tokenNormalizedWeight.toString());
-  console.log('poolTotalSupply', poolTotalSupply);
-  console.log('poolSwapFee', poolSwapFee);
-  return BigNumber.from(
-    new AdvancedBigNumber(
-      SDK.WeightedMath._calcTokenOutGivenExactBptIn(
-        tokenBalance,
-        tokenNormalizedWeight,
-        bnum(bptAmount),
-        bnum(poolTotalSupply.toString()),
-        bnum(poolSwapFee.toString())
-      )
-    ).toString()
+  poolSwapFee: string,
+  provider: ethers.providers.Web3Provider,
+  poolTokens: PoolToken[],
+  poolId: string,
+  userAddress: string,
+): Promise<BigNumber> {
+  // const tokenBalance = bnum(balances[tokenIndex].toString());
+  // const tokenNormalizedWeight = bnum(weights[tokenIndex].toString());
+  //
+  // console.log('bptAmount', bptAmount);
+  // console.log('tokenBalance', tokenBalance.toString());
+  // console.log('tokenNormalizedWeight', tokenNormalizedWeight.toString());
+  // console.log('poolTotalSupply', poolTotalSupply);
+  // console.log('poolSwapFee', poolSwapFee);
+  // return BigNumber.from(
+  //   new AdvancedBigNumber(
+  //     SDK.WeightedMath._calcTokenOutGivenExactBptIn(
+  //       tokenBalance,
+  //       tokenNormalizedWeight,
+  //       bnum(bptAmount),
+  //       bnum(poolTotalSupply.toString()),
+  //       bnum(poolSwapFee.toString())
+  //     )
+  //   ).toString()
+  // );
+  if (bnum(bptAmount).eq(0)) {
+    BigNumber.from(0);
+  }
+  const contract = new Contract(
+    '0x239e55F427D44C3cc793f49bFB507ebe76638a2b',
+    BalancerHelpers__factory.abi,
+    provider
   );
+  type QueryExitResponse = {
+    amountsOut: BigNumber[];
+    bptIn: BigNumber;
+  };
+  const response: QueryExitResponse = await contract.queryExit(poolId, userAddress, userAddress, {
+    assets: poolTokens.map((t) => t.address),
+    minAmountsOut: [0, 0, 0, 0],
+    userData: WeightedPoolEncoder.exitExactBPTInForOneTokenOut(bptAmount.toString(), tokenIndex),
+    toInternalBalance: false
+  });
+  return response.amountsOut[tokenIndex];
 }
 
 function scaleOutput(
@@ -840,106 +865,35 @@ function getScaledTotalSupply(poolTotalSupply: string, poolDecimals: number): Ad
   // );
   const scaledSupply = parseUnits(poolTotalSupply, 18);
   return bnum(scaledSupply.toString());
-
 }
-function stableExactBPTInForTokenOut(
+async function stableExactBPTInForTokenOut(
+  poolId: string,
+  userAddress: string,
   bptAmount: string,
   tokenIndex: number,
   balances: string[],
   poolTokens: PoolToken[],
-  onchain: OnchainPoolData,
-  provider: ethers.providers.Web3Provider,
-): BigNumber {
-
+  provider: ethers.providers.Web3Provider
+): Promise<BigNumber> {
   if (bnum(bptAmount).eq(0)) {
-    return scaleOutput(
-      '0',
-      poolTokens[tokenIndex].decimals,
-      poolTokens[tokenIndex].priceRate,
-      AdvancedBigNumber.ROUND_DOWN // If OUT given IN, round down
-    );
+    BigNumber.from(0);
   }
-
-  console.log('*************************************************************\n\n')
-  // console.log(tokenIndex);
-  // console.log('ON CHAIN', onchain);
-  const amp = bnum(onchain.amp?.toString() || '0');
-  const ampAdjusted = adjustAmp(amp);
-  const normalizedAmountIn = formatUnits(bptAmount, onchain.decimals);
-  const bptAmountIn = scaleInput(normalizedAmountIn);
-  // const scaledBalances = getScaledBalances(balances, poolTokens);
-  const scaledBalances = balances.map((b, i)=> bnum(parseUnits(b, poolTokens[i].decimals)));
-  const scaledPoolTotalSupply = getScaledTotalSupply(onchain.totalSupply, onchain.decimals);
-  const poolSwapFee = bnum(parseUnits(onchain.swapFee, 18).toString());
-  // console.log('ampAdjusted', ampAdjusted.toString());
-  // console.log('scaledBalances', scaledBalances[tokenIndex].toString());
-  // console.log('scaledBalances', scaledBalances.map(b => b.toString()));
-  // console.log('tokenIndex', tokenIndex);
-  // console.log('bptAmountIn', bptAmountIn.toString());
-  // console.log('bptamount', bptAmount);
-  // console.log('scaledPoolTotalSupply', scaledPoolTotalSupply.toString());
-  // console.log('poolSwapFee', poolSwapFee.toString());
-  // const tokenAmountOut = SDK.StableMath._calcTokenOutGivenExactBptIn(
-  //   bnum(600 * 1000), // ampAdjusted
-  //   scaledBalances,
-  //   tokenIndex, // tokenIndex
-  //   bptAmountIn, // bptAmountIn
-  //   bnum(scaledPoolTotalSupply.toString()), // scaledPoolTotalSupply
-  //   bnum('100000000000000') // poolSwapFee
-  // );
-  // console.log('tokenAmountOut', tokenAmountOut.toString());
-  const contract = new Contract('0x239e55F427D44C3cc793f49bFB507ebe76638a2b', BalancerHelpers__factory.abi, provider);
-  // provider.getCode('0x5aDDCCa35b7A0D07C74063c48700C8590E87864E').then(code => {
-  //   console.log('code', code);
-  // });
-  // const contract = new Contract('0x239e55F427D44C3cc793f49bFB507ebe76638a2b', BalancerHelperAbi, provider);
-  // console.log('contract', contract.functions);
-  // contract.vault().then((res: any ) => {
-  //   console.log('vault', res);
-  // }).catch((err: any) => {
-  //   console.log('err', err);
-  // });
-  type queryExit = {
+  const contract = new Contract(
+    '0x239e55F427D44C3cc793f49bFB507ebe76638a2b',
+    BalancerHelpers__factory.abi,
+    provider
+  );
+  type QueryExitResponse = {
     amountsOut: BigNumber[];
     bptIn: BigNumber;
-  }
-  contract.queryExit(
-    '0x0d34e5dd4d8f043557145598e4e2dc286b35fd4f000000000000000000000068',
-    getAddress('0x4bbc19d4ff3917f14a62c27bf870e22728891d21'),
-    getAddress('0x4bbc19d4ff3917f14a62c27bf870e22728891d21'),
-    {
-      assets: [
-        '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-        '0x2e1ad108ff1d8c782fcbbb89aad783ac49586756',
-        '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
-        '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-      ].map(getAddress).sort(),
-      minAmountsOut: [0,0,0,0],
-      // userData: StablePoolEncoder.exitExactBPTInForTokensOut(bptAmountIn.toString()),
-      userData: StablePoolEncoder.exitExactBPTInForOneTokenOut(bptAmountIn.toString(), tokenIndex),
-      // userData: '0x',
-      toInternalBalance: false,
-    },
-  ).then((result: queryExit) => {
-    console.log('result', tokenIndex, result.amountsOut[tokenIndex].toString());
-  }).catch((error: any) => {
-    console.log('error', error);
+  };
+  const response: QueryExitResponse = await contract.queryExit(poolId, userAddress, userAddress, {
+    assets: poolTokens.map((t) => t.address),
+    minAmountsOut: [0, 0, 0, 0],
+    userData: StablePoolEncoder.exitExactBPTInForOneTokenOut(bptAmount.toString(), tokenIndex),
+    toInternalBalance: false
   });
-
-
-
-
-  // contract.queryExit(poolId, sender, recipient, request).then((rsult:any) => {
-  //   console.log('rsult', rsult);
-  // });
-
-  // return scaleOutput(
-  //   tokenAmountOut.toString(),
-  //   poolTokens[tokenIndex].decimals,
-  //   poolTokens[tokenIndex].priceRate,
-  //   AdvancedBigNumber.ROUND_DOWN // If OUT given IN, round down
-  // );
-  return BigNumber.from('0');
+  return response.amountsOut[tokenIndex];
 }
 
 export function absMaxBpt(pool: Pool, onchain: OnchainPoolData, bptBalance: string): string {
@@ -952,7 +906,7 @@ export function absMaxBpt(pool: Pool, onchain: OnchainPoolData, bptBalance: stri
   // weighted pools we need to return the poolMax bpt value.
   return AdvancedBigNumber.min(bptBalance, poolMax).toString();
 }
-export function exactBPTInForTokenOut(
+export async function exactBPTInForTokenOut(
   bptAmount: string,
   tokenIndex: number,
   poolType: PoolType,
@@ -963,16 +917,19 @@ export function exactBPTInForTokenOut(
   onchain: OnchainPoolData,
   poolTotalSupply: string,
   poolSwapFee: string,
-  provider: ethers.providers.Web3Provider
-): BigNumber {
+  provider: ethers.providers.Web3Provider,
+  poolId: string,
+  userAddress: string
+): Promise<BigNumber> {
   if (isStableLike(poolType)) {
     return stableExactBPTInForTokenOut(
+      poolId,
+      userAddress,
       bptAmount,
       tokenIndex,
       balances,
       poolTokens,
-      onchain,
-      provider,
+      provider
     );
   }
   return weightedExactBPTInForTokenOut(
@@ -981,7 +938,11 @@ export function exactBPTInForTokenOut(
     balances,
     weights,
     poolTotalSupply,
-    poolSwapFee
+    poolSwapFee,
+    provider,
+    poolTokens,
+    poolId,
+    userAddress,
   );
 }
 
@@ -1036,9 +997,9 @@ export function propAmountsgiven(
   // SDK.StableMath.
 }
 
-export function calculateUserSharesInFiat (pool: Pool, userPool: UserPool): string {
+export function calculateUserSharesInFiat(pool: Pool, userPool: UserPool): string {
   return new AdvancedBigNumber(pool.totalLiquidity)
     .div(pool.totalShares)
     .times(userPool.balance)
-    .toString()
+    .toString();
 }

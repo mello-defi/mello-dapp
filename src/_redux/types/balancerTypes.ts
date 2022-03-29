@@ -12,7 +12,7 @@ export interface BalancerState {
   userPoolsStale: boolean;
   pools?: Pool[];
   aprsSet: boolean;
-  totalInvestedAmount?: number
+  totalInvestedAmount?: number;
 }
 interface ToggleUserPoolDataStale extends AnyAction {
   type: typeof TOGGLE_USER_POOL_DATA_STALE;

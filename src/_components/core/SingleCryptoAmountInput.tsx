@@ -86,7 +86,9 @@ export default function SingleCryptoAmountInput({
         {balance && (
           <div className={'flex-row-center'}>
             <div>{ethers.utils.formatUnits(balance, token.decimals)}</div>
-            <MaxAmountButton onClick={() => amountChanged(ethers.utils.formatUnits(balance, token?.decimals))} />
+            <MaxAmountButton
+              onClick={() => amountChanged(ethers.utils.formatUnits(balance, token?.decimals))}
+            />
           </div>
         )}
       </div>

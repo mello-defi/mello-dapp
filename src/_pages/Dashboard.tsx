@@ -20,9 +20,7 @@ import UserPools from '_components/balancer/UserPools';
 
 function DashboardLink({ text, navTab }: { text: string; navTab: NavTab }) {
   return (
-    <div
-      className={'flex-row-center hover:text-gray-400'}
-    >
+    <div className={'flex-row-center hover:text-gray-400'}>
       <span className={'text-body'}>{text}</span>
     </div>
   );
@@ -75,7 +73,7 @@ export default function Dashboard() {
       if (totalInvestedAmount && totalInvestedAmount > 0) {
         totalWalletBalances += totalInvestedAmount;
       }
-      setTotalAssets(totalAaveDeposits + totalWalletBalances );
+      setTotalAssets(totalAaveDeposits + totalWalletBalances);
       setTotalDebts(totalAaveDebts);
     }
     if (!healthFactor && userSummary) {
@@ -91,13 +89,34 @@ export default function Dashboard() {
       <HorizontalLineBreak />
       <div className={'flex-row-center justify-evenly flex-wrap'}>
         <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>
-          Net worth: <span className={'font-mono'}>${(totalAssets - totalDebts).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+          Net worth:{' '}
+          <span className={'font-mono'}>
+            $
+            {(totalAssets - totalDebts).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}
+          </span>
         </div>
         <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>
-          Total assets: <span className={'font-mono'}>${totalAssets.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>{' '}
+          Total assets:{' '}
+          <span className={'font-mono'}>
+            $
+            {totalAssets.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}
+          </span>{' '}
         </div>
         <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>
-          Total debts: <span className={'font-mono'}>${totalDebts.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+          Total debts:{' '}
+          <span className={'font-mono'}>
+            $
+            {totalDebts.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}
+          </span>
         </div>
         <div className={'bg-gray-100 w-1/2 md:w-1/4 rounded-2xl p-2'}>
           Health factor{' '}

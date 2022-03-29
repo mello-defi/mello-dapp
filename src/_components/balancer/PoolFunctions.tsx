@@ -88,21 +88,56 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
 
   useEffect(() => {
     // if (!singleAssetMaxes || singleAssetMaxes.length === 0) {
-    const maxes = getSingleAssetMaxes();
-    setSingleAssetMaxes(maxes);
+    async function doStuff() {
+      const maxes = await getSingleAssetMaxes();
+      console.log(maxes);
+      setSingleAssetMaxes(maxes);
+    }
+    doStuff();
     // }
   }, [userPools, onChainData, poolAmounts]);
-  const getSingleAssetMaxes = (): string[] => {
+  const getSingleAssetMaxes = async (): Promise<string[]> => {
     const btpBalance = userPools?.find(
       (userPool) => userPool.poolId.address.toLowerCase() === pool.address.toLowerCase()
     )?.balance;
-    if (poolAmounts && onChainData && btpBalance && provider) {
+    if (poolAmounts && onChainData && btpBalance && provider && userAddress) {
       try {
-        return pool.tokens.map((token, tokenIndex) => {
-          return formatUnits(
-            exactBPTInForTokenOut(
-              parseUnits(btpBalance, onChainData.decimals).toString(),
-              tokenIndex,
+        const amounts = [];
+        for (let i = 0; i < pool.tokens.length; i++) {
+          const token = pool.tokens[i];
+          // console.log(exactBPTInForTokenOut);
+          const amount = await exactBPTInForTokenOut(
+            parseUnits(btpBalance, onChainData.decimals).toString(),
+            i,
+            pool.poolType,
+            poolAmounts.receive,
+            Object.values(onChainData.tokens).map((t) => t.weight.toString()),
+            pool.tokens,
+            onChainData.decimals,
+            onChainData,
+            parseUnits(onChainData.totalSupply, onChainData.decimals).toString(),
+            onChainData.swapFee,
+            provider,
+            pool.id,
+            userAddress
+          );
+          amounts.push(formatUnits(amount.toString(), token.decimals));
+        }
+        return amounts;
+      } catch (error) {
+        console.error(error);
+        if ((error as Error).message.includes('MIN_BPT_IN_FOR_TOKEN_OUT')) {
+          const amounts = [];
+          // setError(WithdrawalError.SINGLE_ASSET_WITHDRAWAL_MIN_BPT_LIMIT);
+          for (let i = 0; i < pool.tokens.length; i++) {
+            const token = pool.tokens[i];
+            // console.log(exactBPTInForTokenOut);
+            const amount = await exactBPTInForTokenOut(
+              parseUnits(
+                absMaxBpt(pool, onChainData, btpBalance),
+                onChainData.decimals
+              ).toString(),
+              i,
               pool.poolType,
               poolAmounts.receive,
               Object.values(onChainData.tokens).map((t) => t.weight.toString()),
@@ -112,36 +147,12 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
               parseUnits(onChainData.totalSupply, onChainData.decimals).toString(),
               onChainData.swapFee,
               provider,
-            )
-              .toString(),
-            token.decimals
-          );
-        });
-      } catch (error) {
-        console.error(error);
-        if ((error as Error).message.includes('MIN_BPT_IN_FOR_TOKEN_OUT')) {
-          // setError(WithdrawalError.SINGLE_ASSET_WITHDRAWAL_MIN_BPT_LIMIT);
-          return pool.tokens.map((token, tokenIndex) => {
-            return formatUnits(
-              exactBPTInForTokenOut(
-                parseUnits(
-                  absMaxBpt(pool, onChainData, btpBalance),
-                  onChainData.decimals
-                ).toString(),
-                tokenIndex,
-                pool.poolType,
-                poolAmounts?.receive,
-                pool.tokens.map((t) => t.weight),
-                pool.tokens,
-                onChainData.decimals,
-                onChainData,
-                parseUnits(onChainData?.totalSupply, onChainData.decimals).toString(),
-                onChainData?.swapFee,
-                provider,
-              ).toString(),
-              token.decimals
+              pool.id,
+              userAddress
             );
-          });
+            amounts.push(formatUnits(amount.toString(), token.decimals));
+          }
+          return amounts;
         }
       }
     }
@@ -328,10 +339,16 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
       {onChainData && (
         <div className={'px-2'}>
           <TokenSelectDropdown
-            tokenFilter={(t) => Object.keys(onChainData.tokens).map((address: string) => address.toLowerCase()).includes(t.address.toLowerCase())}
+            tokenFilter={(t) =>
+              Object.keys(onChainData.tokens)
+                .map((address: string) => address.toLowerCase())
+                .includes(t.address.toLowerCase())
+            }
             onSelectToken={(token: EvmTokenDefinition) => {
               console.log(token);
-            }} disabled={false}/>
+            }}
+            disabled={false}
+          />
         </div>
       )}
       {tokenAmountMap &&
@@ -518,10 +535,12 @@ function PoolInvest({ pool }: { pool: Pool }) {
     for (let i = 0; i < newTokenAmounts.length; i++) {
       const token = pool.tokens[i];
       const balance = getUserBalanceForPoolToken(token);
-      newTokenAmounts[i] = balance ? ethers.utils.formatUnits(balance.toString(), token.decimals) : '0';
+      newTokenAmounts[i] = balance
+        ? ethers.utils.formatUnits(balance.toString(), token.decimals)
+        : '0';
     }
     setTokenAmounts(newTokenAmounts);
-  }
+  };
   return (
     <div className={'flex flex-col'}>
       {tokenAmounts &&
@@ -597,7 +616,8 @@ export default function PoolFunctions({ pool }: { pool: Pool }) {
             title={functionType}
             key={index}
             isActive={balancerFunction === functionType}
-            onClick={() => setBalancerFunction(functionType)}/>
+            onClick={() => setBalancerFunction(functionType)}
+          />
         ))}
       </TabHeaderContainer>
       <DefaultTransition isOpen={balancerFunction === BalancerFunction.Invest}>

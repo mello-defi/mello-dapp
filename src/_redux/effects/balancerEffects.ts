@@ -3,7 +3,8 @@ import { BalancerActionTypes } from '_redux/types/balancerTypes';
 import {
   setPoolsAction,
   getUserPoolDataAction,
-  toggleUserPoolDataStaleAction, setTotalInvestedAmountAction
+  toggleUserPoolDataStaleAction,
+  setTotalInvestedAmountAction
 } from '_redux/actions/balancerActions';
 import {
   getMiningLiquidityApr,

@@ -11,7 +11,7 @@ module.exports = {
   variants: {
     extend: {
       borderRadius: ['first', 'last']
-    },
+    }
   },
   theme: {
     fontFamily: fontFamily, // <-- this is where the override is happening
