@@ -2,7 +2,7 @@ import { Dispatch } from 'redux';
 import { BalancerActionTypes } from '_redux/types/balancerTypes';
 import {
   setPoolsAction,
-  getUserPoolDataAction,
+  setUserPoolsAction,
   toggleUserPoolDataStaleAction,
   setTotalInvestedAmountAction
 } from '_redux/actions/balancerActions';
@@ -14,7 +14,7 @@ import {
 } from '_services/balancerService';
 import { EvmTokenDefinition, GenericTokenSet } from '_enums/tokens';
 import { MarketDataResult } from '_services/marketDataService';
-import { Pool } from '_interfaces/balancer';
+import { Pool, UserPool } from '_interfaces/balancer';
 import { ethers } from 'ethers';
 
 export const toggleUserPoolDataStale = (userDataStale: boolean) => {
@@ -28,10 +28,28 @@ export const setTotalInvestedAmount = (totalAmountInvested: number) => {
     dispatch(setTotalInvestedAmountAction(totalAmountInvested));
   };
 };
+
+export const getUserPoolsAprs = (
+  userPools: UserPool[],
+  tokenSet: GenericTokenSet,
+  prices: MarketDataResult[],
+  provider: ethers.providers.Web3Provider,
+  signer: ethers.Signer
+) => {
+  return async function (dispatch: Dispatch<BalancerActionTypes>) {
+    const updatedUserPools: UserPool[] = [...userPools];
+    for (const p of updatedUserPools.map(up => up.poolId)) {
+      p.liquidityMiningApr = await getMiningLiquidityApr(tokenSet, p, prices);
+      p.swapApr = await getSwapApr(p, provider, signer);
+      p.totalApr = (p.liquidityMiningApr + p.swapApr).toFixed(2);
+    }
+    dispatch(setUserPoolsAction(updatedUserPools, true));
+  };
+};
 export const getUserBalancerPools = (userAddress: string) => {
   return async function (dispatch: Dispatch<BalancerActionTypes>) {
     const results = await getUserPools(userAddress);
-    dispatch(getUserPoolDataAction(results));
+    dispatch(setUserPoolsAction(results));
   };
 };
 

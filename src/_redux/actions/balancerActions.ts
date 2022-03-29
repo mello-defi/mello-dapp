@@ -1,7 +1,7 @@
 import {
   BalancerActionTypes,
   SET_POOL_DATA,
-  GET_USER_POOL_DATA,
+  SET_USER_POOL_DATA,
   TOGGLE_USER_POOL_DATA_STALE,
   SET_TOTAL_INVESTED_AMOUNT
 } from '_redux/types/balancerTypes';
@@ -16,24 +16,28 @@ export const toggleUserPoolDataStaleAction = (userPoolsStale: boolean): Balancer
   };
 };
 
-export const getUserPoolDataAction = (userPools: UserPool[]): BalancerActionTypes => {
+export const setUserPoolsAction = (
+  userPools: UserPool[],
+  userPoolsAprsSet?: boolean | undefined,
+): BalancerActionTypes => {
   return {
-    type: GET_USER_POOL_DATA,
+    type: SET_USER_POOL_DATA,
     payload: {
-      userPools
+      userPools,
+      userPoolsAprsSet
     }
   };
 };
 
 export const setPoolsAction = (
   pools: Pool[],
-  aprsSet?: boolean | undefined
+  poolsAprsSet?: boolean | undefined
 ): BalancerActionTypes => {
   return {
     type: SET_POOL_DATA,
     payload: {
       pools,
-      aprsSet
+      poolsAprsSet
     }
   };
 };

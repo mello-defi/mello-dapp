@@ -5,7 +5,7 @@ import { getBalancerPoolAprs, getBalancerPools } from '_redux/effects/balancerEf
 import { MarketDataResult } from '_services/marketDataService';
 
 const useBalancerPools = (prices: MarketDataResult[]) => {
-  const aprsSet = useSelector((state: AppState) => state.balancer.aprsSet);
+  const aprsSet = useSelector((state: AppState) => state.balancer.poolsAprSet);
   const pools = useSelector((state: AppState) => state.balancer.pools);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const signer = useSelector((state: AppState) => state.web3.signer);

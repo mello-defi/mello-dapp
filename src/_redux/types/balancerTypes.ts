@@ -2,16 +2,16 @@ import { AnyAction } from 'redux';
 import { Pool, UserPool } from '_interfaces/balancer';
 
 export const TOGGLE_USER_POOL_DATA_STALE = 'TOGGLE_USER_POOL_DATA_STALE';
-export const TOGGLE_APRS_SET = 'TOGGLE_APRS_SET';
-export const GET_USER_POOL_DATA = 'GET_USER_POOL_DATA';
+export const SET_USER_POOL_DATA = 'SET_USER_POOL_DATA';
 export const SET_POOL_DATA = 'GET_POOL_DATA';
 export const SET_TOTAL_INVESTED_AMOUNT = 'SET_TOTAL_INVESTED_AMOUNT';
 
 export interface BalancerState {
   userPools?: UserPool[];
+  userPoolsAprsSet?: boolean;
   userPoolsStale: boolean;
   pools?: Pool[];
-  aprsSet: boolean;
+  poolsAprSet: boolean;
   totalInvestedAmount?: number;
 }
 interface ToggleUserPoolDataStale extends AnyAction {
@@ -20,17 +20,12 @@ interface ToggleUserPoolDataStale extends AnyAction {
     userPoolsStale: boolean;
   };
 }
-interface ToggleAprsSet extends AnyAction {
-  type: typeof TOGGLE_APRS_SET;
-  payload: {
-    aprsSet: boolean;
-  };
-}
 
-interface GetUserPoolDataAction extends AnyAction {
-  type: typeof GET_USER_POOL_DATA;
+interface SetUserPoolDataAction extends AnyAction {
+  type: typeof SET_USER_POOL_DATA;
   payload: {
     userPools: UserPool[];
+    userPoolsAprsSet?: boolean | undefined;
   };
 }
 
@@ -38,7 +33,7 @@ interface SetPoolDataAction extends AnyAction {
   type: typeof SET_POOL_DATA;
   payload: {
     pools: Pool[];
-    aprsSet?: boolean | undefined;
+    poolsAprsSet?: boolean | undefined;
   };
 }
 
@@ -50,8 +45,7 @@ interface SetTotalInvestedAmountAction extends AnyAction {
 }
 
 export type BalancerActionTypes =
-  | GetUserPoolDataAction
+  | SetUserPoolDataAction
   | SetPoolDataAction
   | ToggleUserPoolDataStale
-  | ToggleAprsSet
   | SetTotalInvestedAmountAction;

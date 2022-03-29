@@ -11,16 +11,8 @@ import PoweredByLink from '_components/core/PoweredByLink';
 import { balLogo } from '_assets/images';
 
 export default function UserPools() {
-  const prices = useMarketPrices();
-  const pools = useBalancerPools(prices);
   const { userPools, totalInvestedAmount } = useUserBalancerPools();
 
-  // const [totalInvested, setTotalInvested] = useState('');
-
-  const getPool = (poolId: string): Pool => {
-    // @ts-ignore
-    return pools?.find((pool) => pool.id === poolId);
-  };
   return (
     <>
       {!userPools && (
@@ -29,7 +21,7 @@ export default function UserPools() {
           <PoolSkeleton numberOfSymbols={2} />
         </div>
       )}
-      {userPools && userPools?.length > 0 && pools && pools.length > 0 && (
+      {userPools && userPools?.length > 0 && (
         <div>
           <div className={'flex-row-center justify-between px-2 mb-2'}>
             <span className={'text-body'}>Investments</span>
@@ -49,7 +41,7 @@ export default function UserPools() {
           </div>
           {userPools?.map((userPool: UserPool) => (
             <PoolRow
-              pool={getPool(userPool.poolId.id)}
+              pool={userPool.poolId}
               key={userPool.id}
               userBalance={calculateUserSharesInFiat(userPool.poolId, userPool)}
             />

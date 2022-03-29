@@ -1,7 +1,7 @@
 import {
   BalancerActionTypes,
   BalancerState,
-  GET_USER_POOL_DATA,
+  SET_USER_POOL_DATA,
   SET_POOL_DATA,
   SET_TOTAL_INVESTED_AMOUNT,
   TOGGLE_USER_POOL_DATA_STALE
@@ -10,8 +10,9 @@ import {
 const initialState: BalancerState = {
   pools: undefined,
   userPools: undefined,
+  userPoolsAprsSet: false,
   userPoolsStale: true,
-  aprsSet: false,
+  poolsAprSet: false,
   totalInvestedAmount: undefined
 };
 
@@ -30,17 +31,18 @@ export const getBalancerReducer = (
         ...state,
         totalInvestedAmount: action.payload.totalInvestedAmount
       };
-    case GET_USER_POOL_DATA:
+    case SET_USER_POOL_DATA:
       return {
         ...state,
         userPools: action.payload.userPools,
-        userPoolsStale: false
+        userPoolsStale: false,
+        userPoolsAprsSet: action.payload.userPoolsAprsSet,
       };
     case SET_POOL_DATA:
       return {
         ...state,
         pools: action.payload.pools,
-        aprsSet: !!action.payload.aprsSet
+        poolsAprSet: !!action.payload.poolsAprsSet
       };
     default:
       return state;
