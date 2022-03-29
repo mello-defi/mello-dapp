@@ -143,9 +143,8 @@ function RenBridge() {
             console.log('TX HASH', txHash);
             logTransactionHash(txHash, network.chainId);
             setTransactionHash(txHash);
-            const gasPrice = await getGasPrice(network.gasStationUrl);
             const tx = await provider.getTransaction(txHash);
-            await tx.wait(gasPrice?.blockTime || 3);
+            await tx.wait(3);
             setTokensMinted(true);
           })
           .catch((e) => {

@@ -155,7 +155,7 @@ export default function AaveReserveRow({
       const tx = await provider.getTransaction(approvalHash);
       logTransactionHash(approvalHash, network.chainId);
       setApprovalTransactionHash(approvalHash);
-      await tx.wait(approvalGas?.blockTime || 3);
+      await tx.wait(3);
     }
     setTokenApproved(true);
     const actionGas = await getGasPrice(gasStationUrl);
@@ -164,7 +164,7 @@ export default function AaveReserveRow({
     setActionTransactionHash(actionHash);
     if (actionHash) {
       const tx = await provider.getTransaction(actionHash);
-      await tx.wait(actionGas?.blockTime || 3);
+      await tx.wait(3);
     }
     setTransactionConfirmed(true);
 

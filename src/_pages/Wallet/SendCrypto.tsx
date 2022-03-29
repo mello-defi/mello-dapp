@@ -80,40 +80,43 @@ export default function SendCrypto() {
         const amountInUnits = ethers.utils.parseUnits(amountToSend, token.decimals);
         setTransactionSubmitting(true);
 
-        const allowance: BigNumber = await getTokenAllowance(
-          token.address,
-          token.abi,
-          provider,
-          userAddress
-        );
-        console.log(amountInUnits.toString());
-        console.log(allowance.toString());
-        if (allowance.lt(amountInUnits)) {
-          const gasPriceResult = await getGasPrice(network.gasStationUrl);
-          const tx: TransactionResponse = await approveToken(
+        if (!token.isGasToken) {
+          const allowance: BigNumber = await getTokenAllowance(
             token.address,
             token.abi,
-            signer,
-            userAddress,
-            amountInUnits,
-            gasPriceResult?.fastest
+            provider,
+            userAddress
           );
-          setApproveTransactionHash(tx.hash);
-          await tx.wait(gasPriceResult?.blockTime || 3);
+          console.log(amountInUnits.toString());
+          console.log(allowance.toString());
+          if (allowance.lt(amountInUnits)) {
+            const gasPriceResult = await getGasPrice(network.gasStationUrl);
+            const tx: TransactionResponse = await approveToken(
+              token.address,
+              token.abi,
+              signer,
+              userAddress,
+              amountInUnits,
+              gasPriceResult?.fastest
+            );
+            setApproveTransactionHash(tx.hash);
+            await tx.wait(3);
+          }
         }
         setTokenApproved(true);
         const gasPriceResult = await getGasPrice(network.gasStationUrl);
+        const amountMinusGas = amountInUnits.sub(gasPriceResult?.fastest || 0);
         const txResponse: TransactionResponse = await sendErc20Token(
           token,
           signer,
           userAddress,
           destinationAddress,
-          ethers.utils.parseUnits(amountToSend, token.decimals),
+          amountMinusGas,
           gasPriceResult?.fastest
         );
         logTransactionHash(txResponse.hash, network.chainId);
         setSendTransactionHash(txResponse.hash);
-        await txResponse.wait(gasPriceResult?.blockTime || 3);
+        await txResponse.wait(3);
         setTransactionCompleted(true);
         dispatch(toggleBalancesAreStale(true));
       } catch (e: any) {

@@ -75,10 +75,9 @@ export default function EthereumToPolygonBridge() {
     console.log('FUNDS TRANSFERRED', data);
     setPolygonTransactionHash(data.exitHash);
     if (provider) {
-      const gasPrice = await getGasPrice(network.gasStationUrl);
       const tx = await provider.getTransaction(data.exitHash);
       logTransactionHash(tx.hash, network.chainId);
-      await tx.wait(gasPrice?.blockTime || 3);
+      await tx.wait(3);
       setPolygonTransferComplete(true);
     }
   };
@@ -116,7 +115,7 @@ export default function EthereumToPolygonBridge() {
             transferAmount
           );
           const gasPrice = await getGasPrice(network.gasStationUrl);
-          await approveTx.wait(gasPrice?.blockTime || 3);
+          await approveTx.wait(3);
         } else if (preTransferStatus.code === RESPONSE_CODES.UNSUPPORTED_NETWORK) {
           setTransactionError('Target chain is not supported yet');
         } else if (preTransferStatus.code === RESPONSE_CODES.NO_LIQUIDITY) {
@@ -146,7 +145,7 @@ export default function EthereumToPolygonBridge() {
         });
         setEthereumTransactionHash(depositTx.hash);
         const gasPrice = await getGasPrice(network.gasStationUrl);
-        await depositTx.wait(gasPrice?.blockTime || 3);
+        await depositTx.wait(3);
         setEthereumTransactionComplete(true);
       } catch (e: any) {
         console.error(e);

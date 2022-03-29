@@ -17,7 +17,10 @@ function MtPellerin() {
   const openWidget = async () => {
     if (signer) {
       const code = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
-      const hash = await signer.signMessage(`MtPelerin-${code}`);
+      const message = `MtPelerin-${code}`;
+      const signingHash = await signer.signMessage(message);
+      const properHash = Buffer.from(signingHash.replace('0x', ''), 'hex').toString('base64');
+
       window.showMtpModal({
         lang: 'en',
         tab: 'buy',
@@ -26,9 +29,9 @@ function MtPellerin() {
         net: 'matic_mainnet',
         bsc: 'EUR',
         bdc: 'jEUR',
-        address,
+        addr: address,
         code,
-        hash
+        hash: properHash,
       });
     }
   };

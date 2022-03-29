@@ -465,7 +465,7 @@ function PoolInvest({ pool }: { pool: Pool }) {
 
         const tx = await joinPool(pool, userAddress, signer, amountsIn, gasResult?.fastest);
         setTransactionHash(tx.hash);
-        await tx.wait(gasResult?.blockTime || 3);
+        await tx.wait(3);
         setTransactionComplete(true);
         dispatch(toggleBalancesAreStale(true));
         dispatch(toggleUserPoolDataStale(true));
