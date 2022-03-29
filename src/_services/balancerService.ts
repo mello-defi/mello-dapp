@@ -44,8 +44,10 @@ import { InvestmentPoolEncoder } from '@balancer-labs/balancer-js';
 // import { _calcTokenOutGivenExactBptIn } from '@georgeroman/balancer-v2-pools/dist/src/pools/stable/math';
 
 const liquidityMiningStartTime = Date.UTC(2020, 5, 1, 0, 0);
+// TODO store in some network config
 const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 const polygonHelperAddress = '0x239e55F427D44C3cc793f49bFB507ebe76638a2b';
+const MINIMUM_LIQUIDITY = '1000000';
 
 const GET_USER_POOLS = gql`
   query getUserPools($userAddress: String!) {
@@ -120,14 +122,16 @@ const GET_PAST_POOL_FOR_ID = gql`
   }
 `;
 const GET_ALL_POOLS = gql`
-  query GetPools {
+  query GetPools($addresses: [Bytes!], $minimumLiquidity: String!) {
     pools(
-    first: 20, 
+    first: 25, 
     skip: 0, 
     orderBy: totalLiquidity,
     orderDirection: desc,
-    where:{ poolType_in: ["Weighted", "Stable"]}
-    ) {
+    where: { 
+      poolType_in: ["Weighted", "Stable"],
+      totalLiquidity_gte: $minimumLiquidity,
+    }) {
       id
       address
       poolType
@@ -138,7 +142,9 @@ const GET_ALL_POOLS = gql`
       totalShares
       symbol
       amp
-      tokens {
+      tokens(where:{
+        address_in:$addresses
+      }) {
         id
         symbol
         name
@@ -168,7 +174,7 @@ const defaultOptions: DefaultOptions = {
   }
 };
 const client = new ApolloClient({
-  // TODOmake network specific
+  // TODO make network specific
   uri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-v2',
   cache: new InMemoryCache({ resultCaching: false }),
   defaultOptions
@@ -332,20 +338,15 @@ export function getVaultAddress(chainId: number): string {
 }
 
 export async function getPools(addresses: string[]): Promise<Pool[]> {
+  console.log(addresses.map(a => a.toLowerCase()));
   const poolResults = await client.query({
-    query: GET_ALL_POOLS
-  });
-  const allowedPools: Pool[] = [];
-  const lowercaseAddresses = addresses.map((address) => address.toLowerCase());
-  for (const pool of poolResults.data.pools) {
-    const matchingTokens = pool.tokens.filter((t: PoolToken) =>
-      lowercaseAddresses.includes(t.address.toLowerCase())
-    );
-    if (matchingTokens.length === pool.tokens.length) {
-      allowedPools.push(pool as Pool);
+    query: GET_ALL_POOLS,
+    variables: {
+      addresses: addresses.map(a => a.toLowerCase()),
+      minimumLiquidity: MINIMUM_LIQUIDITY,
     }
-  }
-  return allowedPools;
+  });
+  return poolResults.data ? poolResults.data.pools : [];
 }
 
 export async function joinPool(

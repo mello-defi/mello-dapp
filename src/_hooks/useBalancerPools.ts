@@ -14,7 +14,7 @@ const useBalancerPools = (prices: MarketDataResult[]) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if ((!pools || !pools.length) && prices.length > 0 && provider && signer && userAddress) {
+    if (!pools && prices.length > 0 && provider && signer && userAddress) {
       const addresses = Object.values(tokenSet).map((token) => token.address.toLowerCase());
       dispatch(getBalancerPools(addresses));
     }

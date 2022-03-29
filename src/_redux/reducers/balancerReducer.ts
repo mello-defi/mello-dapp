@@ -8,8 +8,8 @@ import {
 } from '_redux/types/balancerTypes';
 
 const initialState: BalancerState = {
-  pools: [],
-  userPools: [],
+  pools: undefined,
+  userPools: undefined,
   userPoolsStale: true,
   aprsSet: false,
   totalInvestedAmount: undefined
