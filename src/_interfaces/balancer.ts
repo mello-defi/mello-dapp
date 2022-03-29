@@ -171,3 +171,7 @@ export interface Amounts {
   receive: string[];
   fixedToken: number;
 }
+export interface QueryExitResponse {
+  amountsOut: BigNumber[];
+  bptIn: BigNumber;
+}

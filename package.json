@@ -12,7 +12,6 @@
     "@biconomy/hyphen": "^0.0.20",
     "@craco/craco": "^6.4.3",
     "@emotion/styled": "^11.8.1",
-    "@georgeroman/balancer-v2-pools": "^0.0.14",
     "@headlessui/react": "^1.4.3",
     "@mui/icons-material": "^5.4.4",
     "@ramp-network/ramp-instant-sdk": "^3.0.0",

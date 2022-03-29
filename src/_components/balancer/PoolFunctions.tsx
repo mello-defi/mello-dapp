@@ -21,7 +21,6 @@ import {
   getPoolOnChainData,
   getUserPools,
   getVaultAddress,
-  isStablePhantom,
   joinPool,
   propAmountsgiven
 } from '_services/balancerService';
@@ -51,14 +50,10 @@ import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { EthereumTransactionError } from '_interfaces/errors';
-import { toggleUserPoolDataStaleAction } from '_redux/actions/balancerActions';
 import { toggleUserPoolDataStale } from '_redux/effects/balancerEffects';
 import MaxAmountButton from '_components/core/MaxAmountButton';
 import { TabHeader, TabHeaderContainer } from '_components/core/Tabs';
 import TokenSelectDropdown from '_components/TokenSelectDropdown';
-// import { initFromOnchain } from '@georgeroman/balancer-v2-pools/dist/src/initializers/stable';
-// import { StablePool } from '@georgeroman/balancer-v2-pools';
-// import { initFromOnchain } from "@georgeroman/balancer-v2-pools/dist/src/initializers/stable";
 
 export enum BalancerFunction {
   Invest = 'Invest',
@@ -110,13 +105,7 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
             parseUnits(btpBalance, onChainData.decimals).toString(),
             i,
             pool.poolType,
-            poolAmounts.receive,
-            Object.values(onChainData.tokens).map((t) => t.weight.toString()),
             pool.tokens,
-            onChainData.decimals,
-            onChainData,
-            parseUnits(onChainData.totalSupply, onChainData.decimals).toString(),
-            onChainData.swapFee,
             provider,
             pool.id,
             userAddress
@@ -139,13 +128,7 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
               ).toString(),
               i,
               pool.poolType,
-              poolAmounts.receive,
-              Object.values(onChainData.tokens).map((t) => t.weight.toString()),
               pool.tokens,
-              onChainData.decimals,
-              onChainData,
-              parseUnits(onChainData.totalSupply, onChainData.decimals).toString(),
-              onChainData.swapFee,
               provider,
               pool.id,
               userAddress
