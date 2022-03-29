@@ -398,7 +398,7 @@ function PoolInvest({ pool }: { pool: Pool }) {
   const checkAndApproveAllowance = useCheckAndApproveTokenBalance();
   const [approvalHash, setApprovalHash] = useState<string>('');
   const [tokenAmounts, setTokenAmounts] = useState<string[]>([]);
-  const [investmentTotal, setInvestmentTotal] = useState<string | null>(null);
+  const [sumOfAmountsInFiat, setSumOfAmountsInFiat] = useState<string | null>(null);
   // const [tokenAmountMap, setTokenAmountMap] = useState<TokenAmountMap | undefined>(undefined);
 
   const initTokenAmounts = () => {
@@ -434,7 +434,7 @@ function PoolInvest({ pool }: { pool: Pool }) {
 
   useEffect(() => {
     if (!tokenAmounts.length) {
-      setInvestmentTotal('0.0');
+      setSumOfAmountsInFiat('0.0');
     }
     let total = 0;
     for (let i = 0; i < tokenAmounts.length; i++) {
@@ -447,7 +447,7 @@ function PoolInvest({ pool }: { pool: Pool }) {
         total += price * parseFloat(amount);
       }
     }
-    setInvestmentTotal(isNaN(total) ? null : total.toFixed(2));
+    setSumOfAmountsInFiat(isNaN(total) ? null : total.toFixed(2));
   }, [tokenAmounts]);
 
   const join = async () => {
@@ -515,7 +515,7 @@ function PoolInvest({ pool }: { pool: Pool }) {
     if (nonZeroAmounts === 0) {
       return false;
     }
-    if (investmentTotal === null) {
+    if (sumOfAmountsInFiat === null) {
       return false;
     }
     return true;
@@ -563,7 +563,7 @@ function PoolInvest({ pool }: { pool: Pool }) {
         <div className={'flex-row-center mb-2 justify-between text-body'}>
           <div>Total:</div>
           <div className={'flex-row-center'}>
-            <div className={'font-mono'}>{investmentTotal ? `$${investmentTotal}` : '-'}</div>
+            <div className={'font-mono'}>{sumOfAmountsInFiat ? `$${sumOfAmountsInFiat}` : '-'}</div>
             <MaxAmountButton onClick={handleMaxAmountPressed} />
           </div>
         </div>

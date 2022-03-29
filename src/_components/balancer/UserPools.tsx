@@ -31,21 +31,21 @@ export default function UserPools() {
       )}
       {userPools && userPools?.length > 0 && pools && pools.length > 0 && (
         <div>
-          <div className={'flex-row-center justify-between px-2 mb-1'}>
+          <div className={'flex-row-center justify-between px-2 mb-2'}>
             <span className={'text-body'}>Investments</span>
-            {totalInvestedAmount && (
-              <span>
-                Total invested:{' '}
-                <span className={'font-mono'}>
-                  $
-                  {totalInvestedAmount.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                  })}
-                </span>
-              </span>
-            )}
-            {/*<PoweredByLink url={'https://balancer.fi/#/'} logo={balLogo}/>*/}
+            {/*{totalInvestedAmount && (*/}
+            {/*  <span>*/}
+            {/*    Total invested:{' '}*/}
+            {/*    <span className={'font-mono'}>*/}
+            {/*      $*/}
+            {/*      {totalInvestedAmount.toLocaleString(undefined, {*/}
+            {/*        minimumFractionDigits: 2,*/}
+            {/*        maximumFractionDigits: 2*/}
+            {/*      })}*/}
+            {/*    </span>*/}
+            {/*  </span>*/}
+            {/*)}*/}
+            <PoweredByLink url={'https://balancer.fi/#/'} logo={balLogo}/>
           </div>
           {userPools?.map((userPool: UserPool) => (
             <PoolRow

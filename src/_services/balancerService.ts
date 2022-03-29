@@ -30,7 +30,7 @@ import { GenericTokenSet } from '_enums/tokens';
 import type { BalancerHelpers } from '@balancer-labs/typechain';
 import {
   BalancerHelpers__factory,
-  InvestmentPool__factory,
+  InvestmentPool__factory, InvestmentPoolFactory,
   LiquidityBootstrappingPool__factory,
   MetaStablePool__factory,
   StablePool__factory,
@@ -45,6 +45,7 @@ import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract
 import { WalletTokenBalances } from '_redux/types/walletTypes';
 import { multicall } from '_services/walletService';
 import { formatUnits, getAddress, parseUnits } from 'ethers/lib/utils';
+import { InvestmentPoolEncoder } from '@balancer-labs/balancer-js';
 // import { exitExactBptInForTokenOut } from '@georgeroman/balancer-v2-pools/dist/src/utils/test/pools/query';
 // import { _calcTokenOutGivenExactBptIn } from '@georgeroman/balancer-v2-pools/dist/src/pools/stable/math';
 
@@ -56,7 +57,8 @@ const GET_USER_POOLS = gql`
     poolShares(
       where: { userAddress: $userAddress, balance_gt: 0 }
       orderBy: balance
-      orderDirection: desc
+      orderDirection: desc,
+      where:{ poolType_in: ["Weighted", "Stable"]}
     ) {
       id
       poolId {
@@ -124,7 +126,13 @@ const GET_PAST_POOL_FOR_ID = gql`
 `;
 const GET_ALL_POOLS = gql`
   query GetPools {
-    pools(first: 5, skip: 0, orderBy: totalLiquidity, orderDirection: desc) {
+    pools(
+    first: 20, 
+    skip: 0, 
+    orderBy: totalLiquidity,
+    orderDirection: desc,
+    where:{ poolType_in: ["Weighted", "Stable"]}
+    ) {
       id
       address
       poolType
@@ -345,6 +353,17 @@ export async function getPools(addresses: string[]): Promise<Pool[]> {
   return allowedPools;
 }
 
+function getEncoderForPoolType (poolType: PoolType): StablePoolEncoder | WeightedPoolEncoder {
+  switch (poolType) {
+    case PoolType.Stable:
+      return StablePoolEncoder;
+    case PoolType.Weighted:
+      return WeightedPoolEncoder;
+    default:
+      throw new Error(`Unsupported pool type: ${poolType}`);
+  }
+}
+
 export async function joinPool(
   pool: Pool,
   userAddress: string,
@@ -353,7 +372,6 @@ export async function joinPool(
   gasPrice?: BigNumber
 ): Promise<TransactionResponse> {
   const vault: Contract = getWriteVaultContract(signer);
-  console.log('vault', vault.functions);
   const options: TransactionRequest = {};
   if (gasPrice) {
     options.gasPrice = gasPrice.toString();
