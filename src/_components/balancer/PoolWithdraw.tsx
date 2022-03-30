@@ -99,11 +99,12 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
     if (
       withdrawMode === WithdrawMode.SingleToken &&
       singleAssetMaxes &&
-      singleExitTokenIndex
+      singleExitTokenIndex !== undefined
     ) {
+      console.log('setting single asset maxes');
       setAmountsToWithdraw([
         ...amountsToWithdraw.map((amount, index) =>
-          index === singleExitTokenIndex ? singleAssetMaxes[singleExitTokenIndex] : amount
+          index === singleExitTokenIndex ? singleAssetMaxes[singleExitTokenIndex] : '0'
         )
       ]);
     } else if (amountsInPool) {
@@ -117,6 +118,7 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
     ) {
       const doStuff = async () => {
         const maxes = await getSingleAssetMaxes();
+        console.log('maxes', maxes);
         setSingleAssetMaxes(maxes);
       };
       doStuff();
@@ -411,16 +413,24 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
   };
 
   const handleMaxAmountPressed = () => {
-    const newTokenAmounts = [...amountsToWithdraw];
-    for (let i = 0; i < newTokenAmounts.length; i++) {
-      const balance = amountsInPool[i];
-      if (amountIsValidNumberGtZero(balance)) {
-        newTokenAmounts[i] = balance;
-      } else {
-        newTokenAmounts[i] = '0';
+    if (withdrawMode === WithdrawMode.AllTokens) {
+      const newTokenAmounts = [...amountsToWithdraw];
+      for (let i = 0; i < newTokenAmounts.length; i++) {
+        const balance = amountsInPool[i];
+        if (amountIsValidNumberGtZero(balance)) {
+          newTokenAmounts[i] = balance;
+        } else {
+          newTokenAmounts[i] = '0';
+        }
       }
+      setAmountsToWithdraw(newTokenAmounts);
+    } else if (withdrawMode === WithdrawMode.SingleToken && singleExitTokenIndex !== undefined) {
+      setAmountsToWithdraw([
+        ...amountsToWithdraw.map((amount, index) =>
+          index === singleExitTokenIndex ? singleAssetMaxes[singleExitTokenIndex] : '0'
+        )
+      ]);
     }
-    setAmountsToWithdraw(newTokenAmounts);
   };
 
   return (
