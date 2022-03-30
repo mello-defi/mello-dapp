@@ -199,6 +199,7 @@ export default function AaveReserveRow({
         setTransactionInProgress(false);
         dispatch(toggleUserSummaryStale(true));
         dispatch(toggleBalancesAreStale(true));
+        // TODO decouple from component
         if (nextStep) {
           dispatch(setStep(nextStep));
         }
