@@ -61,8 +61,7 @@ export default function Dashboard() {
               : 0;
           const decimals = tokenSet[symbol]?.decimals || 0;
           if (data && balance && decimals) {
-            totalWalletBalances +=
-              parseFloat(formatUnits(balance, decimals)) * data.current_price;
+            totalWalletBalances += parseFloat(formatUnits(balance, decimals)) * data.current_price;
           }
         } catch (error: any) {
           console.error(error);

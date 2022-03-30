@@ -13,9 +13,7 @@ import useMarketPrices from '_hooks/useMarketPrices';
 const useUserBalancerPools = () => {
   const userPools = useSelector((state: AppState) => state.balancer.userPools);
   const userPoolsAprsSet = useSelector((state: AppState) => state.balancer.userPoolsAprsSet);
-  const signer = useSelector((state: AppState) => state.web3.signer);
-  const provider = useSelector((state: AppState) => state.web3.provider);
-  const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
+  const { provider, signer, tokenSet } = useSelector((state: AppState) => state.web3);
   const totalInvestedAmount = useSelector((state: AppState) => state.balancer.totalInvestedAmount);
   const prices = useMarketPrices();
   const userPoolsStale = useSelector((state: AppState) => state.balancer.userPoolsStale);

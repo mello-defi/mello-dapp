@@ -65,7 +65,7 @@ export async function exitPool(
       assets: pool.tokens.map((t: PoolToken) => t.address),
       minAmountsOut: amountsOut,
       fromInternalBalance: false,
-      userData,
+      userData
     },
     options
   );

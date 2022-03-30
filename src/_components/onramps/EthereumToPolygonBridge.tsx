@@ -45,9 +45,9 @@ interface BiconomyFundsTransferedResponse {
 }
 
 export default function EthereumToPolygonBridge() {
-  const provider = useSelector((state: AppState) => state.web3.provider);
+  const { provider, network } = useSelector((state: AppState) => state.web3);
+
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const network = useSelector((state: AppState) => state.web3.network);
   const ethereumTokenDefinition = ethereumTokens.eth;
   const [transferAmount, setTransferAmount] = useState<string>('0.0');
   const [depositAddress, setDepositAddress] = useState<string | undefined>(undefined);

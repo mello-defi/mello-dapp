@@ -94,9 +94,7 @@ export default function SingleCryptoAmountInput({
         {balance && BigNumber.from(balance).gt(0) && (
           <div className={'flex-row-center'}>
             <div>{formatUnits(balance, token.decimals)}</div>
-            <MaxAmountButton
-              onClick={() => amountChanged(formatUnits(balance, token?.decimals))}
-            />
+            <MaxAmountButton onClick={() => amountChanged(formatUnits(balance, token?.decimals))} />
           </div>
         )}
       </div>

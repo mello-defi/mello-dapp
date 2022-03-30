@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export default function SingleCryptoAmountInputSkeleton() {
@@ -11,11 +10,7 @@ export default function SingleCryptoAmountInputSkeleton() {
               <div className="w-24 bg-white h-10 rounded-md" />
               <div className="w-10 bg-white h-6 rounded-md" />
             </div>
-            <div
-              className={
-                'flex flex-col justify-end items-end space-y-2'
-              }
-            >
+            <div className={'flex flex-col justify-end items-end space-y-2'}>
               <div className="w-20 bg-white h-10 rounded-md " />
               <div className="w-8 bg-white h-6 rounded-md " />
             </div>

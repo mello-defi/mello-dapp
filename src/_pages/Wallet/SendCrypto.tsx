@@ -23,10 +23,9 @@ import { parseUnits } from 'ethers/lib/utils';
 export default function SendCrypto() {
   const marketPrices = useMarketPrices();
   const [token, setToken] = useState<EvmTokenDefinition | undefined>();
-  const signer = useSelector((state: AppState) => state.web3.signer);
-  const provider = useSelector((state: AppState) => state.web3.provider);
+  const { provider, network, signer } = useSelector((state: AppState) => state.web3);
+
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const network = useSelector((state: AppState) => state.web3.network);
   // const walletBalance = useWalletBalances(token);
   const [amountToSend, setAmountToSend] = useState<string>('0.0');
   const [amountInFiat, setAmountInFiat] = useState<number>(0);
@@ -177,8 +176,7 @@ export default function SendCrypto() {
           parseFloat(amountToSend) === 0 ||
           (walletBalance &&
             (parseUnits(amountToSend, token.decimals).gt(walletBalance) ||
-              (token.isGasToken &&
-                parseUnits(amountToSend, token.decimals).eq(walletBalance))))
+              (token.isGasToken && parseUnits(amountToSend, token.decimals).eq(walletBalance))))
         }
         size={ButtonSize.LARGE}
         onClick={sendCrypto}

@@ -13,10 +13,9 @@ import CopyableText from '_components/core/CopyableText';
 import { logTransactionHash } from '_services/dbService';
 
 function RenBridge() {
-  const provider = useSelector((state: AppState) => state.web3.provider);
-  const signer = useSelector((state: AppState) => state.web3.signer);
+  const { provider, network, signer } = useSelector((state: AppState) => state.web3);
+
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const network = useSelector((state: AppState) => state.web3.network);
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
   const [message, setMessage] = useState('');
   const [gatewayAddress, setGatewayAddress] = useState('');

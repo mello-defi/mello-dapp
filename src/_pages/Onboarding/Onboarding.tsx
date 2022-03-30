@@ -13,10 +13,10 @@ import { BigNumber } from 'ethers';
 export default function Onboarding() {
   const dispatch = useDispatch();
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
-  const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
+  const { provider, tokenSet } = useSelector((state: AppState) => state.web3);
   const gasToken = Object.values(tokenSet).find((token) => token.isGasToken);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const provider = useSelector((state: AppState) => state.web3.provider);
+
   const [onboardingInitiated, setOnboardingInitiated] = useState(false);
   const [userBalance, setUserBalance] = useState<BigNumber | undefined>();
   const walletBalances = useWalletBalances();

@@ -40,13 +40,11 @@ export default function Swap({
 }) {
   const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const provider = useSelector((state: AppState) => state.web3.provider);
-  const signer = useSelector((state: AppState) => state.web3.signer);
-  const network = useSelector((state: AppState) => state.web3.network);
-  const tokens = useSelector((state: AppState) => state.web3.tokenSet);
+  const { provider, network, signer, tokenSet } = useSelector((state: AppState) => state.web3);
+
   const [fetchingPriceError, setFetchingPriceError] = useState('');
   const [sourceToken, setSourceToken] = useState<EvmTokenDefinition>(
-    (initialSourceTokenSymbol && tokens[initialSourceTokenSymbol]) || Object.values(tokens)[0]
+    (initialSourceTokenSymbol && tokenSet[initialSourceTokenSymbol]) || Object.values(tokenSet)[0]
   );
   const [sourceTokenBalance, setSourceTokenBalance] = useState<BigNumber | undefined>();
   const walletBalances = useWalletBalances();
@@ -57,8 +55,8 @@ export default function Swap({
     }
   }, [walletBalances, initialSourceTokenSymbol]);
   const [destinationToken, setDestinationToken] = useState<EvmTokenDefinition>(
-    (initialDestinationTokenSymbol && tokens[initialDestinationTokenSymbol]) ||
-      Object.values(tokens)[1]
+    (initialDestinationTokenSymbol && tokenSet[initialDestinationTokenSymbol]) ||
+      Object.values(tokenSet)[1]
   );
   const [sourceTokenDisabled, setSourceTokenDisabled] = useState<boolean>(false);
   const [destinationTokenDisabled, setDestinationTokenDisabled] = useState<boolean>(false);
@@ -149,10 +147,7 @@ export default function Swap({
       userAddress,
       transferProxy
     );
-    const amount: BigNumber = parseUnits(
-      sourceAmount.toString(),
-      sourceToken.decimals
-    );
+    const amount: BigNumber = parseUnits(sourceAmount.toString(), sourceToken.decimals);
     if (amount.gt(allowance)) {
       const approvalGasResult = await getGasPrice(network.gasStationUrl);
       const approvalTxHash = await approveToken(

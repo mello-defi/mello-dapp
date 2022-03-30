@@ -10,8 +10,8 @@ const useWalletBalances = (token?: EvmTokenDefinition) => {
   const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const balancesAreStale = useSelector((state: AppState) => state.wallet.balancesAreStale);
-  const provider = useSelector((state: AppState) => state.web3.provider);
-  const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
+  const { provider, tokenSet } = useSelector((state: AppState) => state.web3);
+
   const walletBalances = useSelector((state: AppState) => state.wallet.balances);
 
   useEffect(() => {

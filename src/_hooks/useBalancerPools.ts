@@ -7,10 +7,8 @@ import { MarketDataResult } from '_services/marketDataService';
 const useBalancerPools = (prices: MarketDataResult[]) => {
   const aprsSet = useSelector((state: AppState) => state.balancer.poolsAprSet);
   const pools = useSelector((state: AppState) => state.balancer.pools);
-  const provider = useSelector((state: AppState) => state.web3.provider);
-  const signer = useSelector((state: AppState) => state.web3.signer);
+  const { provider, signer, tokenSet } = useSelector((state: AppState) => state.web3);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const dispatch = useDispatch();
 
   useEffect(() => {

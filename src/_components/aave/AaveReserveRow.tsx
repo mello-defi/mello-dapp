@@ -50,12 +50,11 @@ export default function AaveReserveRow({
   const dispatch = useDispatch();
   const aaveReserves = useAaveReserves();
   const userSummary = useAaveUserSummary();
-  const provider = useSelector((state: AppState) => state.web3.provider);
+  const { provider, network, tokenSet } = useSelector((state: AppState) => state.web3);
+
   // const userSummaryStale = useSelector((state: AppState) => state.aave.userSummaryStale);
   // const userAddress = useSelector((state: AppState) => state.Wallet.ad);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
-  const network = useSelector((state: AppState) => state.web3.network);
   // TODO- centralise this
   const gasStationUrl = useSelector((state: AppState) => state.web3.network.gasStationUrl);
   const marketPrices = useMarketPrices();
@@ -434,9 +433,7 @@ export default function AaveReserveRow({
                             ? 'Submitting...'
                             : (depositAmount &&
                                 userBalance &&
-                                userBalance.lt(
-                                  parseUnits(depositAmount, token.decimals)
-                                )) ||
+                                userBalance.lt(parseUnits(depositAmount, token.decimals))) ||
                               false
                             ? 'Insufficient balance'
                             : 'Deposit'}
@@ -530,8 +527,8 @@ export default function AaveReserveRow({
                           {borrowSubmitting
                             ? 'Submitting...'
                             : (maxBorrowAmount !== '' &&
-                              borrowAmount !== '' &&
-                              ethers.utils
+                                borrowAmount !== '' &&
+                                ethers.utils
                                   .parseUnits(maxBorrowAmount, token.decimals)
                                   .lt(parseUnits(borrowAmount, token.decimals))) ||
                               false
@@ -561,7 +558,7 @@ export default function AaveReserveRow({
                           transactionInProgress ||
                           !userReserve ||
                           !repayAmount ||
-                          repayAmount=== '' ||
+                          repayAmount === '' ||
                           parseFloat(repayAmount) === 0 ||
                           parseFloat(userReserve?.variableBorrows) === 0 ||
                           (repayAmount && userReserve?.variableBorrows
@@ -569,9 +566,7 @@ export default function AaveReserveRow({
                             : false) ||
                           (repayAmount &&
                             userBalance &&
-                            userBalance.lt(
-                              parseUnits(repayAmount, reserve.decimals)
-                            )) ||
+                            userBalance.lt(parseUnits(repayAmount, reserve.decimals))) ||
                           false
                         }
                       >
@@ -580,9 +575,7 @@ export default function AaveReserveRow({
                             ? 'Submitting...'
                             : (repayAmount &&
                                 userBalance &&
-                                userBalance.lt(
-                                  parseUnits(repayAmount, reserve.decimals)
-                                )) ||
+                                userBalance.lt(parseUnits(repayAmount, reserve.decimals))) ||
                               false
                             ? 'Insufficient balance'
                             : 'Repay'}

@@ -20,8 +20,8 @@ function DesktopNavLinks() {
 }
 
 export default function Header() {
-  const provider = useSelector((state: AppState) => state.web3.provider);
-  const signer = useSelector((state: AppState) => state.web3.signer);
+  const { provider, signer } = useSelector((state: AppState) => state.web3);
+
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   useEffect(() => {

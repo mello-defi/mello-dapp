@@ -8,9 +8,7 @@ import { MaxUint256 } from '_utils/maths';
 import { logTransactionHash } from '_services/dbService';
 
 const useCheckAndApproveTokenBalance = () => {
-  const provider = useSelector((state: AppState) => state.web3.provider);
-  const signer = useSelector((state: AppState) => state.web3.signer);
-  const network = useSelector((state: AppState) => state.web3.network);
+  const { provider, signer, network } = useSelector((state: AppState) => state.web3);
   const checkAndApproveAllowance = async (
     tokenAddress: string,
     userAddress: string,

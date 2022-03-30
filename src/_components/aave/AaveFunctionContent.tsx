@@ -49,7 +49,8 @@ export default function AaveFunctionContent({
             amount={amount}
             balance={userBalance}
             amountChanged={setAmount}
-            token={token}/>
+            token={token}
+          />
         )}
         {/*{userBalance && (*/}
         {/*  <UserReserveBalance*/}

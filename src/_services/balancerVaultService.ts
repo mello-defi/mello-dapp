@@ -141,9 +141,7 @@ function formatPoolData(
   }
 
   if (rawData.tokenRates) {
-    poolData.tokenRates = rawData.tokenRates.map((rate) =>
-      formatUnits(rate.toString(), 18)
-    );
+    poolData.tokenRates = rawData.tokenRates.map((rate) => formatUnits(rate.toString(), 18));
   }
 
   poolData.totalSupply = formatUnits(rawData.totalSupply, rawData.decimals);

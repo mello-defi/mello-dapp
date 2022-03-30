@@ -12,8 +12,8 @@ import { setStep } from '_redux/effects/onboardingEffects';
 import { EthereumTransactionError } from '_interfaces/errors';
 
 export default function useHandleAaveFunction() {
-  const network = useSelector((state: AppState) => state.web3.network);
-  const provider = useSelector((state: AppState) => state.web3.provider);
+  const { provider, network } = useSelector((state: AppState) => state.web3);
+
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const [approvalTransactionHash, setApprovalTransactionHash] = useState<string | undefined>(
     undefined

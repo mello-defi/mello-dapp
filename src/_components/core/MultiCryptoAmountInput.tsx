@@ -55,11 +55,7 @@ export default function MultiCryptoAmountInput({
       if (token && value && !decimalPlacesAreValid(value, token?.decimals)) {
         value = value.substring(0, value.length - 1);
       }
-      if (
-        value &&
-        /^[0-9.]*$/.test(value) &&
-        userBalance.lt(parseUnits(value, token?.decimals))
-      ) {
+      if (value && /^[0-9.]*$/.test(value) && userBalance.lt(parseUnits(value, token?.decimals))) {
         value = formatUnits(userBalance, token?.decimals);
       }
       if (parseFloat(value) < 0) {
@@ -122,9 +118,7 @@ export default function MultiCryptoAmountInput({
           <div className={'text-right px-0 sm:px-1 flex-row-center'}>
             Balance:{' '}
             {userBalance ? (
-              <div className={'font-mono ml-1'}>
-                {formatUnits(userBalance, token?.decimals)}
-              </div>
+              <div className={'font-mono ml-1'}>{formatUnits(userBalance, token?.decimals)}</div>
             ) : (
               <span className={'ml-1'}>
                 {token && <Spinner show={true} size={SpinnerSize.SMALL} />}
@@ -132,9 +126,7 @@ export default function MultiCryptoAmountInput({
             )}
             {userBalance && (
               <MaxAmountButton
-                onClick={() =>
-                  amountChanged(formatUnits(userBalance, token?.decimals))
-                }
+                onClick={() => amountChanged(formatUnits(userBalance, token?.decimals))}
               />
             )}
           </div>
