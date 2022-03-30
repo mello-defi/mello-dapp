@@ -8,16 +8,7 @@ import {
 
 const initialState: UIState = {
   sidebarOpen: false,
-  activeTab: NavTab.INVEST,
-  navLinks: [
-    { tab: NavTab.DASHBOARD, title: 'Dashboard' },
-    { tab: NavTab.INVEST, title: 'Invest' },
-    { tab: NavTab.DEPOSIT, title: 'Deposit' },
-    { tab: NavTab.BORROW, title: 'Borrow' },
-    { tab: NavTab.SWAP, title: 'Swap' },
-    { tab: NavTab.FUND, title: 'Fund' },
-    { tab: NavTab.ONBOARDING, title: 'Onboarding' }
-  ]
+  activeTab: NavTab.INVEST
 };
 
 export const getUIReducer = (state: UIState = initialState, action: UIActionTypes): UIState => {

@@ -24,6 +24,7 @@ const useCheckAndApproveTokenBalance = () => {
         userAddress,
         spenderAddress
       );
+      console.log('allowance', allowance.toString());
       if (allowance.eq(0)) {
         const approvalGasResult = await getGasPrice(network.gasStationUrl);
         const approvalTxHash = await approveToken(

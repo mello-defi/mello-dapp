@@ -28,7 +28,7 @@ import { getMarketDataForSymbol } from '_services/marketDataService';
 import { BigNumber } from 'ethers';
 import { MaxUint256 } from '_utils/maths';
 import { getGasPrice } from '_services/gasService';
-import { exitPool } from '_services/balancerPoolService';
+import { exitPoolAllTokensOut, exitPoolOneTokenOut } from '_services/balancerPoolService';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { toggleUserPoolDataStale } from '_redux/effects/balancerEffects';
 import { EthereumTransactionError } from '_interfaces/errors';
@@ -43,11 +43,10 @@ import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
 import { BalancerFunction } from '_components/balancer/PoolFunctions';
 import MaxAmountButton from '_components/core/MaxAmountButton';
+import { TransactionResponse } from '@ethersproject/abstract-provider';
+import { StablePoolExitKind, WeightedPoolExitKind } from '@balancer-labs/sdk';
+import { WithdrawMode } from '_enums/balancer';
 
-export enum WithdrawMode {
-  AllTokens = 'All Tokens',
-  SingleToken = 'Single Token'
-}
 export default function PoolWithdraw({ pool }: { pool: Pool }) {
   // const walletBalances = useWalletBalances();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -59,7 +58,7 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
   const checkAndApproveAllowance = useCheckAndApproveTokenBalance();
   const [approvalHash, setApprovalHash] = useState<string>();
   const [totalPoolBAlance, setTotalPoolBalance] = useState<string | null>(null);
-  const [withdrawMode, setWithdrawMode] = useState<WithdrawMode>(WithdrawMode.SingleToken);
+  const [withdrawMode, setWithdrawMode] = useState<WithdrawMode>(WithdrawMode.OneToken);
   const [singleExitToken, setSingleExitToken] = useState<EvmTokenDefinition | undefined>(undefined);
   const [singleExitTokenIndex, setSingleExitTokenIndex] = useState<number | undefined>();
   const [transactionInProgress, setTransactionInProgress] = useState(false);
@@ -97,11 +96,10 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
 
   useEffect(() => {
     if (
-      withdrawMode === WithdrawMode.SingleToken &&
+      withdrawMode === WithdrawMode.OneToken &&
       singleAssetMaxes &&
       singleExitTokenIndex !== undefined
     ) {
-      console.log('setting single asset maxes');
       setAmountsToWithdraw([
         ...amountsToWithdraw.map((amount, index) =>
           index === singleExitTokenIndex ? singleAssetMaxes[singleExitTokenIndex] : '0'
@@ -285,7 +283,7 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
       setSumOfAmountsInFiat('0.0');
     }
     let total = 0;
-    if (withdrawMode === WithdrawMode.SingleToken && singleExitTokenIndex) {
+    if (withdrawMode === WithdrawMode.OneToken && singleExitTokenIndex) {
       const withdrawTokenIndex = pool.tokens.findIndex(
         (t) => t.address.toLowerCase() === pool.tokens[singleExitTokenIndex].address.toLowerCase()
       );
@@ -322,10 +320,8 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
         setTransactionInProgress(true);
         for (let i = 0; i < addressesSorted.length; i++) {
           const address = addressesSorted[i];
-          const decimals = pool.tokens.find((t) => t.address === address)?.decimals;
-          const amount = parseUnits(amountsToWithdraw[i], decimals);
+          const amount = parseUnits(amountsToWithdraw[i], pool.tokens[i].decimals);
           amountsOut.push(amount.toString());
-          console.log('AMOUNTS OUT', amountsOut);
           if (amount.gt(0)) {
             await checkAndApproveAllowance(
               address,
@@ -336,9 +332,44 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
             );
           }
         }
+        // await checkAndApproveAllowance(
+        //   pool.address,
+        //   userAddress,
+        //   setApprovalHash,
+        //   MaxUint256,
+        //   vaultAddress
+        // );
         setTokensApproved(true);
         const gasResult = await getGasPrice(network.gasStationUrl);
-        const tx = await exitPool(pool, userAddress, signer, amountsOut, gasResult?.fastest);
+        let tx: TransactionResponse;
+        if (withdrawMode === WithdrawMode.OneToken) {
+          if (singleExitTokenIndex === undefined) {
+            throw new Error('No token selected');
+          }
+          const poolBalance = userPools?.find(
+            (userPool) => userPool.poolId.address.toLowerCase() === pool.address.toLowerCase()
+          )?.balance;
+          if (!poolBalance) {
+            throw new Error('Could not get balance');
+          }
+          tx = await exitPoolOneTokenOut(
+            pool,
+            userAddress,
+            signer,
+            amountsOut,
+            parseUnits(poolBalance, 18).toString(),
+            singleExitTokenIndex,
+            gasResult?.fastest
+          );
+        } else {
+          tx = await exitPoolAllTokensOut(
+            pool,
+            userAddress,
+            signer,
+            amountsOut,
+            gasResult?.fastest
+          );
+        }
         setTransactionHash(tx.hash);
         await tx.wait(3);
         setTransactionComplete(true);
@@ -374,7 +405,7 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
         }
       }
     } else if (
-      withdrawMode === WithdrawMode.SingleToken &&
+      withdrawMode === WithdrawMode.OneToken &&
       singleExitTokenIndex !== undefined &&
       singleExitTokenIndex >= 0 &&
       singleAssetMaxes &&
@@ -424,7 +455,7 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
         }
       }
       setAmountsToWithdraw(newTokenAmounts);
-    } else if (withdrawMode === WithdrawMode.SingleToken && singleExitTokenIndex !== undefined) {
+    } else if (withdrawMode === WithdrawMode.OneToken && singleExitTokenIndex !== undefined) {
       setAmountsToWithdraw([
         ...amountsToWithdraw.map((amount, index) =>
           index === singleExitTokenIndex ? singleAssetMaxes[singleExitTokenIndex] : '0'
@@ -439,25 +470,25 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
         <div className={'flex-row-center text-color-dark my-2 px-4 justify-end'}>
           <Switch.Label className="mr-4">Withdraw to single token</Switch.Label>
           <Switch
-            checked={withdrawMode === WithdrawMode.SingleToken}
+            checked={withdrawMode === WithdrawMode.OneToken}
             onChange={(checked) =>
-              setWithdrawMode(checked ? WithdrawMode.SingleToken : WithdrawMode.AllTokens)
+              setWithdrawMode(checked ? WithdrawMode.OneToken : WithdrawMode.AllTokens)
             }
             className={`${
-              withdrawMode === WithdrawMode.SingleToken ? 'bg-gray-700' : 'bg-gray-200'
+              withdrawMode === WithdrawMode.OneToken ? 'bg-gray-700' : 'bg-gray-200'
             } relative inline-flex transition items-center h-6 rounded-full w-11`}
           >
             <span className="sr-only">Enable notifications</span>
             <span
               className={`${
-                withdrawMode === WithdrawMode.SingleToken ? 'translate-x-6' : 'translate-x-1'
+                withdrawMode === WithdrawMode.OneToken ? 'translate-x-6' : 'translate-x-1'
               } inline-block w-4 h-4 transform bg-white rounded-full`}
             />
           </Switch>
         </div>
       </Switch.Group>
 
-      {onChainData && withdrawMode === WithdrawMode.SingleToken && (
+      {onChainData && withdrawMode === WithdrawMode.OneToken && (
         <div className={'px-2'}>
           <TokenSelectDropdown
             tokenFilter={(t) =>
@@ -477,10 +508,12 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
             tokenSet &&
             singleAssetMaxes &&
             singleAssetMaxes.length > 0 &&
-            singleExitTokenIndex !== undefined
-              ? (
+            singleExitTokenIndex !== undefined ? (
               <SingleCryptoAmountInput
-                disabled={parseUnits(singleAssetMaxes[singleExitTokenIndex] || '0', pool.tokens[singleExitTokenIndex].decimals).eq(0)}
+                disabled={parseUnits(
+                  singleAssetMaxes[singleExitTokenIndex] || '0',
+                  pool.tokens[singleExitTokenIndex].decimals
+                ).eq(0)}
                 tokenPrice={getMarketPricesForPoolToken(pool.tokens[singleExitTokenIndex])}
                 amount={amountsToWithdraw[singleExitTokenIndex]}
                 balance={parseUnits(

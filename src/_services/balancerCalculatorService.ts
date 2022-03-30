@@ -5,7 +5,6 @@ import {
   OnchainPoolData,
   Pool,
   PoolToken,
-  PoolType,
   QueryExitResponse,
   TokenInfoMap,
   UserPool
@@ -24,6 +23,7 @@ import { StablePoolEncoder, WeightedPoolEncoder } from '@balancer-labs/sdk';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { getPastPools } from '_services/balancerSubgraphClient';
 import { getReadVaultContract } from '_services/balancerVaultService';
+import { PoolType } from '_enums/balancer';
 
 const liquidityMiningStartTime = Date.UTC(2020, 5, 1, 0, 0);
 const polygonHelperAddress = '0x239e55F427D44C3cc793f49bFB507ebe76638a2b';

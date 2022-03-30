@@ -7,10 +7,10 @@ import { melloLogoFace } from '_assets/images';
 import { NavLinkDefinition } from '_redux/types/uiTypes';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { Close } from '@mui/icons-material';
+import { navLinks } from '../App';
 
 export default function Sidebar() {
   const isOpen = useSelector((state: AppState) => state.ui.sidebarOpen);
-  const navLinks = useSelector((state: AppState) => state.ui.navLinks);
   const dispatch = useDispatch();
   return (
     <aside

@@ -3,7 +3,6 @@ import {
   OnchainPoolData,
   OnchainTokenDataMap,
   Pool,
-  PoolType,
   RawLinearPoolData,
   RawLinearPoolDataMap,
   RawOnchainPoolData,
@@ -21,6 +20,7 @@ import {
   Vault__factory,
   WeightedPool__factory
 } from '@balancer-labs/typechain';
+import { PoolType } from '_enums/balancer';
 
 const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 

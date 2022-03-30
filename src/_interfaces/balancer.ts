@@ -1,4 +1,5 @@
 import { BigNumber } from 'ethers';
+import { PoolType } from '_enums/balancer';
 
 export interface LiquidityMiningTokenReward {
   tokenAddress: string;
@@ -18,11 +19,6 @@ export interface UserPool {
   id: string;
   poolId: Pool;
   balance: string;
-}
-
-export enum PoolType {
-  Weighted = 'Weighted',
-  Stable = 'Stable'
 }
 
 export interface PoolToken {

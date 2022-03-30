@@ -8,7 +8,7 @@ import Footer from '_components/Footer';
 import Header from '_components/header/Header';
 import Swap from '_pages/Swap/Swap';
 import Borrow from '_pages/Borrow/Borrow';
-import { NavTab } from '_redux/types/uiTypes';
+import { NavLinkDefinition, NavTab } from '_redux/types/uiTypes';
 import { AppState } from '_redux/store';
 import Wallet from '_pages/Wallet/Wallet';
 import { EVMChainIdNumerical, EvmNetworkDefinition, evmNetworks } from '_enums/networks';
@@ -93,6 +93,15 @@ interface TabContentDefinition {
   hideOnEthereumMainnet?: boolean;
   requiresLogin: boolean;
 }
+export const navLinks: NavLinkDefinition[] = [
+  { tab: NavTab.DASHBOARD, title: NavTab.DASHBOARD },
+  { tab: NavTab.INVEST, title: NavTab.INVEST },
+  { tab: NavTab.DEPOSIT, title: NavTab.DEPOSIT },
+  { tab: NavTab.BORROW, title: NavTab.BORROW },
+  { tab: NavTab.SWAP, title: NavTab.SWAP },
+  { tab: NavTab.FUND, title: NavTab.FUND },
+  { tab: NavTab.ONBOARDING, title: NavTab.ONBOARDING }
+];
 const tabsContent: TabContentDefinition[] = [
   {
     tab: NavTab.DASHBOARD,

@@ -7,9 +7,10 @@ import WalletDropdown from '_components/header/WalletDropdown';
 import MobileHamburgerMenu from '_components/header/MobileHamburgerMenu';
 import Web3Login from '_components/Web3Login';
 import NavLink from '_components/NavLink';
+import { navLinks } from '../../App';
 
 function DesktopNavLinks() {
-  const navLinks = useSelector((state: AppState) => state.ui.navLinks);
+  // const navLinks = useSelector((state: AppState) => state.ui.navLinks);
   return (
     <div className={'flex-row justify-evenly hidden sm:flex'}>
       {navLinks.map((link: NavLinkDefinition) => (
