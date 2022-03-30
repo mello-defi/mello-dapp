@@ -8,7 +8,7 @@ import {
 
 const initialState: UIState = {
   sidebarOpen: false,
-  activeTab: NavTab.INVEST
+  activeTab: NavTab.DASHBOARD
 };
 
 export const getUIReducer = (state: UIState = initialState, action: UIActionTypes): UIState => {

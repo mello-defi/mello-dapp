@@ -188,6 +188,7 @@ function ratioOf(action: string, type: string, index: number, onchain: OnchainPo
 }
 
 function tokenAddresses(onchain: OnchainPoolData): string[] {
+  // TODO consider native assets
   // if (this.useNativeAsset.value) {
   //   return this.pool.value.tokenAddresses.map(address => {
   //     if (address === this.config.network.addresses.weth)

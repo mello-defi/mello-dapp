@@ -62,6 +62,8 @@ function OnboardingGuard() {
 }
 
 // TODO general
+// add native assets to aave balancer
+// make aave chevron dropdown
 // retry failed requests with expontential backoff
 // standardise viewing/granting token allowances
 // constants for URLs (aave etc)
@@ -93,6 +95,7 @@ interface TabContentDefinition {
   hideOnEthereumMainnet?: boolean;
   requiresLogin: boolean;
 }
+// TODO move somewhere else
 export const navLinks: NavLinkDefinition[] = [
   { tab: NavTab.DASHBOARD, title: NavTab.DASHBOARD },
   { tab: NavTab.INVEST, title: NavTab.INVEST },
