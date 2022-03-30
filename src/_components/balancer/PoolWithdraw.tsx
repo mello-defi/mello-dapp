@@ -47,6 +47,8 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { StablePoolExitKind, WeightedPoolExitKind } from '@balancer-labs/sdk';
 import { WithdrawMode } from '_enums/balancer';
 
+// TODO copy shared code between this and poolinvest
+// TODO fix trace amoutns bug
 export default function PoolWithdraw({ pool }: { pool: Pool }) {
   // const walletBalances = useWalletBalances();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
