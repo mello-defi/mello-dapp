@@ -1,12 +1,10 @@
 {
   "extends": "./tsconfig.paths.json",
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ES2019",
     "lib": [
-      "es2016",
       "dom",
-      "dom.iterable",
-      "esnext"
+      "es2018.promise"
     ],
     "allowJs": true,
     "skipLibCheck": true,

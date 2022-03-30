@@ -14,13 +14,13 @@ import { pick } from 'lodash';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { multicall } from '_services/walletService';
 import { isStable, isWeighted } from '_services/balancerCalculatorService';
-import { toNormalizedWeights } from '@balancer-labs/sdk';
 import {
   StablePool__factory,
   Vault__factory,
   WeightedPool__factory
 } from '@balancer-labs/typechain';
 import { PoolType } from '_enums/balancer';
+import { Zero, WeiPerEther as ONE } from '@ethersproject/constants';
 
 const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 
@@ -33,6 +33,37 @@ export function getWriteVaultContract(signer: ethers.Signer): Contract {
 export function getReadVaultContract(provider: ethers.providers.Web3Provider): Contract {
   return new Contract(polygonVaultAddress, Vault__factory.abi, provider);
 }
+const MaxWeightedTokens = 100;
+
+/**
+ * Normalize an array of token weights to ensure they sum to `1e18`
+ * @param weights - an array of token weights to be normalized
+ * @returns an equivalent set of normalized weights
+ */
+export function toNormalizedWeights(weights: BigNumber[]): BigNumber[] {
+  // When the number is exactly equal to the max, normalizing with common inputs
+  // leads to a value < 0.01, which reverts. In this case fill in the weights exactly.
+  if (weights.length == MaxWeightedTokens) {
+    return Array(MaxWeightedTokens).fill(ONE.div(MaxWeightedTokens));
+  }
+
+  const sum = weights.reduce((total, weight) => total.add(weight), Zero);
+  if (sum.eq(ONE)) return weights;
+
+  const normalizedWeights = [];
+  let normalizedSum = Zero;
+  for (let index = 0; index < weights.length; index++) {
+    if (index < weights.length - 1) {
+      normalizedWeights[index] = weights[index].mul(ONE).div(sum);
+      normalizedSum = normalizedSum.add(normalizedWeights[index]);
+    } else {
+      normalizedWeights[index] = ONE.sub(normalizedSum);
+    }
+  }
+
+  return normalizedWeights;
+}
+
 
 function normalizeWeights(weights: BigNumber[], type: PoolType, tokens: TokenInfoMap): number[] {
   if (isWeighted(type)) {
