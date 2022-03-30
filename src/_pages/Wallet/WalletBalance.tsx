@@ -6,6 +6,7 @@ import { getMarketDataForSymbol, MarketDataResult } from '_services/marketDataSe
 import { formatTokenValueInFiat } from '_services/priceService';
 import { BigNumber, ethers } from 'ethers';
 import CryptoAmountWithTooltip from '_components/core/CryptoAmountTooltip';
+import { formatUnits } from 'ethers/lib/utils';
 
 export default function WalletBalance({
   token,
@@ -59,7 +60,7 @@ export default function WalletBalance({
             <span>
               {formatTokenValueInFiat(
                 marketData.current_price,
-                ethers.utils.formatUnits(userBalance, token.decimals)
+                formatUnits(userBalance, token.decimals)
               )}
             </span>
           </div>

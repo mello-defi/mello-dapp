@@ -29,6 +29,7 @@ import { CryptoCurrencySymbol } from '_enums/currency';
 import { logTransactionHash } from '_services/dbService';
 import { stepPerformSwap } from '_pages/Onboarding/OnboardingSteps';
 import { EthereumTransactionError } from '_interfaces/errors';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
 
 export default function Swap({
   initialSourceTokenSymbol,
@@ -117,13 +118,13 @@ export default function Swap({
         setDestinationTokenDisabled(true);
         setSourceTokenDisabled(true);
         setFetchingPrices(true);
-        const srcAmount: BigNumber = ethers.utils.parseUnits(amount, srcToken.decimals);
+        const srcAmount: BigNumber = parseUnits(amount, srcToken.decimals);
         const rate = await getExchangeRate(srcToken, destToken, srcAmount.toString());
         console.log('rate', rate);
         setPriceRoute(rate);
         setSourceFiatAmount(parseFloat(rate.srcUSD));
         setDestinationFiatAmount(parseFloat(rate.destUSD));
-        setDestinationAmount(ethers.utils.formatUnits(rate.destAmount, destToken.decimals));
+        setDestinationAmount(formatUnits(rate.destAmount, destToken.decimals));
         setSwapConfirmed(false);
       } catch (e: any) {
         console.error(e);
@@ -148,7 +149,7 @@ export default function Swap({
       userAddress,
       transferProxy
     );
-    const amount: BigNumber = ethers.utils.parseUnits(
+    const amount: BigNumber = parseUnits(
       sourceAmount.toString(),
       sourceToken.decimals
     );
@@ -299,7 +300,7 @@ export default function Swap({
           (sourceTokenBalance &&
             sourceToken.isGasToken &&
             sourceAmount !== '' &&
-            ethers.utils.parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance))
+            parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance))
         }
         onClick={handleSwap}
         className={'w-full mt-2 flex-row-center justify-center'}
@@ -312,7 +313,7 @@ export default function Swap({
           ? sourceTokenBalance &&
             sourceToken &&
             sourceToken.isGasToken &&
-            ethers.utils.parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance)
+            parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance)
             ? 'You cannot Swap all of your gas token'
             : 'Swap'
           : ''}

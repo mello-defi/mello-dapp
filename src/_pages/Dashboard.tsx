@@ -14,6 +14,7 @@ import UserBorrowSummary from '_pages/Borrow/UserBorrowSummary';
 import UserDepositSummary from '_pages/Deposit/UserDepositSummary';
 import { getMarketDataForSymbol } from '_services/marketDataService';
 import UserPools from '_components/balancer/UserPools';
+import { formatUnits } from 'ethers/lib/utils';
 
 function DashboardLink({ text, navTab }: { text: string; navTab: NavTab }) {
   return (
@@ -61,7 +62,7 @@ export default function Dashboard() {
           const decimals = tokenSet[symbol]?.decimals || 0;
           if (data && balance && decimals) {
             totalWalletBalances +=
-              parseFloat(ethers.utils.formatUnits(balance, decimals)) * data.current_price;
+              parseFloat(formatUnits(balance, decimals)) * data.current_price;
           }
         } catch (error: any) {
           console.error(error);

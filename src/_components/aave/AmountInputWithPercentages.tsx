@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { ethers } from 'ethers';
 import { decimalPlacesAreValid } from '_utils/index';
+import { formatUnits } from 'ethers/lib/utils';
 
 function PercentageButton({
   setAmountAsPercentage,
@@ -45,7 +46,7 @@ export default function AmountInputWithPercentages({
           .parseUnits(maxAmount, tokenDecimals)
           .div(100)
           .mul(percentage);
-        setInputAmount(ethers.utils.formatUnits(percentageAsBigNumber, tokenDecimals));
+        setInputAmount(formatUnits(percentageAsBigNumber, tokenDecimals));
       }
     }
   };

@@ -19,6 +19,7 @@ import { MarketDataResult } from '_services/marketDataService';
 import { formatTokenValueInFiat } from '_services/priceService';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import { HealthFactorImpact, HealthFactorResource } from '_enums/aave';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
 
 export async function runAaveApprovalTransaction(
   txs: EthereumTransactionTypeExtended[],
@@ -133,7 +134,7 @@ export function calculateMaxWithdrawAmount(
   // console.log(AdvancedBigNumber.max(maxUserAmountToWithdraw, 0).toString());
   maxUserAmountToWithdraw = AdvancedBigNumber.max(maxUserAmountToWithdraw, 0).toString();
   maxUserAmountToWithdraw = (+maxUserAmountToWithdraw).toFixed(reserve.decimals).toString();
-  return ethers.utils.parseUnits(maxUserAmountToWithdraw, reserve.decimals);
+  return parseUnits(maxUserAmountToWithdraw, reserve.decimals);
 }
 
 export function calculateNewHealthFactor(
@@ -150,9 +151,9 @@ export function calculateNewHealthFactor(
     .div(reserveData.price.oracle.usdPriceEth.toString());
   try {
     amount = (+amount).toFixed(10).toString();
-    const amountInUsd = valueToBigNumber(ethers.utils.parseUnits(amount, 10).toString())
+    const amountInUsd = valueToBigNumber(parseUnits(amount, 10).toString())
       .multipliedBy(reserveData.price.priceInEth)
-      .multipliedBy(ethers.utils.formatUnits(formattedUsdPriceEth, 18));
+      .multipliedBy(formatUnits(formattedUsdPriceEth, 18));
 
     if (healthFactorResource === HealthFactorResource.Borrows) {
       const newBorrowBalance =

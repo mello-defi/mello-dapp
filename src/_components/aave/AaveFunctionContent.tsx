@@ -54,7 +54,7 @@ export default function AaveFunctionContent({
         {/*{userBalance && (*/}
         {/*  <UserReserveBalance*/}
         {/*    title={reserveTitle}*/}
-        {/*    formattedUserAmount={ethers.utils.formatUnits(userBalance, token.decimals)}*/}
+        {/*    formattedUserAmount={formatUnits(userBalance, token.decimals)}*/}
         {/*    tokenPrice={tokenPrice}*/}
         {/*  />*/}
         {/*)}*/}
@@ -63,7 +63,7 @@ export default function AaveFunctionContent({
         {/*    inputAmount={amount}*/}
         {/*    tokenDecimals={token.decimals}*/}
         {/*    setInputAmount={setAmount}*/}
-        {/*    maxAmount={ethers.utils.formatUnits(userBalance?.toString(), token.decimals)}*/}
+        {/*    maxAmount={formatUnits(userBalance?.toString(), token.decimals)}*/}
         {/*  />*/}
         {/*)}*/}
       </div>

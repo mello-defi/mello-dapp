@@ -1,6 +1,7 @@
 import React from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
 import { ethers } from 'ethers';
+import { formatUnits } from 'ethers/lib/utils';
 
 export default function TokenConversion({
   sourceToken,
@@ -14,8 +15,8 @@ export default function TokenConversion({
   destinationAmount: string;
 }) {
   const getDestinationTokenPriceComparison = (): string => {
-    const srcGwei = ethers.utils.formatUnits(sourceAmount, sourceToken.decimals);
-    const destGwei = ethers.utils.formatUnits(destinationAmount, destinationToken.decimals);
+    const srcGwei = formatUnits(sourceAmount, sourceToken.decimals);
+    const destGwei = formatUnits(destinationAmount, destinationToken.decimals);
     return (parseFloat(srcGwei) / parseFloat(destGwei)).toPrecision(6);
   };
   return (

@@ -5,6 +5,7 @@ import { TokenDefinition } from '_enums/tokens';
 import { BigNumber, ethers } from 'ethers';
 import { DefaultTransition } from '_components/core/Transition';
 import MaxAmountButton from '_components/core/MaxAmountButton';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
 
 export default function SingleCryptoAmountInput({
   disabled,
@@ -38,8 +39,10 @@ export default function SingleCryptoAmountInput({
   useEffect(() => {
     if (maxAmount) {
       if (amountIsValidNumberGtZero(amount)) {
-        const amountBn = ethers.utils.parseUnits(amount, token.decimals);
+        const amountBn = parseUnits(amount, token.decimals);
         setAmountGreaterThanMax(maxAmount !== undefined && maxAmount.lt(amountBn));
+      } else {
+        setAmountGreaterThanMax(false);
       }
     }
   }, [amount, maxAmount]);
@@ -88,17 +91,17 @@ export default function SingleCryptoAmountInput({
             <span>&nbsp;</span>
           )}
         </div>
-        {balance && (
+        {balance && BigNumber.from(balance).gt(0) && (
           <div className={'flex-row-center'}>
-            <div>{ethers.utils.formatUnits(balance, token.decimals)}</div>
+            <div>{formatUnits(balance, token.decimals)}</div>
             <MaxAmountButton
-              onClick={() => amountChanged(ethers.utils.formatUnits(balance, token?.decimals))}
+              onClick={() => amountChanged(formatUnits(balance, token?.decimals))}
             />
           </div>
         )}
       </div>
       <DefaultTransition isOpen={amountGreaterThanMax}>
-        <div className={'flex-row-center text-body-smaller justify-end'}>
+        <div className={'flex-row-center text-body-smaller justify-end px-2'}>
           <span className={'text-red-400'}>Insufficient balance</span>
         </div>
       </DefaultTransition>

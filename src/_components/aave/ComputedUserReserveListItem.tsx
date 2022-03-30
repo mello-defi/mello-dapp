@@ -6,6 +6,7 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import { getTokenByAddress } from '_utils/index';
 import CryptoAmountWithTooltip from '_components/core/CryptoAmountTooltip';
 import { ethers } from 'ethers';
+import { parseUnits } from 'ethers/lib/utils';
 
 export default function ComputedUserReserveListItem({
   reserveName,
@@ -40,7 +41,7 @@ export default function ComputedUserReserveListItem({
             <CryptoAmountWithTooltip
               showSymbol={false}
               token={token}
-              amount={ethers.utils.parseUnits(reserveAmount, token.decimals).toString()}
+              amount={parseUnits(reserveAmount, token.decimals).toString()}
             />
             <span className={'ml-1 text-color-light'}>
               ({getFiatValueForUserReserve(marketPrices, reserveAmount, reserveSymbol)})

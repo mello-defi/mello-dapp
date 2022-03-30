@@ -18,6 +18,7 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import { getGasPrice } from '_services/gasService';
 import { logTransactionHash } from '_services/dbService';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
+import { formatUnits } from 'ethers/lib/utils';
 
 interface BiconomyPreTransferStatus {
   code: number;
@@ -132,7 +133,7 @@ export default function EthereumToPolygonBridge() {
     if (provider) {
       setIsTransferring(true);
       const etherVal = ethers.utils.parseEther(transferAmount.toString());
-      const weiAmount = ethers.utils.formatUnits(etherVal, 'wei');
+      const weiAmount = formatUnits(etherVal, 'wei');
       try {
         const depositTx: BiconomyDepositResponse = await hyphen.deposit({
           sender: userAddress,

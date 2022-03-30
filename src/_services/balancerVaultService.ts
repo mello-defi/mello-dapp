@@ -36,7 +36,7 @@ export function getReadVaultContract(provider: ethers.providers.Web3Provider): C
 
 function normalizeWeights(weights: BigNumber[], type: PoolType, tokens: TokenInfoMap): number[] {
   if (isWeighted(type)) {
-    return toNormalizedWeights(weights).map((w) => Number(ethers.utils.formatUnits(w, 18)));
+    return toNormalizedWeights(weights).map((w) => Number(formatUnits(w, 18)));
   } else if (isStable(type)) {
     const tokensList = Object.values(tokens);
     return tokensList.map(() => 1 / tokensList.length);
@@ -142,13 +142,13 @@ function formatPoolData(
 
   if (rawData.tokenRates) {
     poolData.tokenRates = rawData.tokenRates.map((rate) =>
-      ethers.utils.formatUnits(rate.toString(), 18)
+      formatUnits(rate.toString(), 18)
     );
   }
 
-  poolData.totalSupply = ethers.utils.formatUnits(rawData.totalSupply, rawData.decimals);
+  poolData.totalSupply = formatUnits(rawData.totalSupply, rawData.decimals);
   poolData.decimals = rawData.decimals;
-  poolData.swapFee = ethers.utils.formatUnits(rawData.swapFee, 18);
+  poolData.swapFee = formatUnits(rawData.swapFee, 18);
 
   return poolData;
 }

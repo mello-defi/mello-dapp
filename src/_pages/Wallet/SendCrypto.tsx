@@ -18,6 +18,7 @@ import { approveToken, getTokenAllowance, sendErc20Token } from '_services/walle
 import { getGasPrice } from '_services/gasService';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { logTransactionHash } from '_services/dbService';
+import { parseUnits } from 'ethers/lib/utils';
 
 export default function SendCrypto() {
   const marketPrices = useMarketPrices();
@@ -77,7 +78,7 @@ export default function SendCrypto() {
     if (signer && token && userAddress && provider) {
       try {
         // TODO- is approval needed here?
-        const amountInUnits = ethers.utils.parseUnits(amountToSend, token.decimals);
+        const amountInUnits = parseUnits(amountToSend, token.decimals);
         setTransactionSubmitting(true);
 
         if (!token.isGasToken) {
@@ -175,9 +176,9 @@ export default function SendCrypto() {
           !amountToSend ||
           parseFloat(amountToSend) === 0 ||
           (walletBalance &&
-            (ethers.utils.parseUnits(amountToSend, token.decimals).gt(walletBalance) ||
+            (parseUnits(amountToSend, token.decimals).gt(walletBalance) ||
               (token.isGasToken &&
-                ethers.utils.parseUnits(amountToSend, token.decimals).eq(walletBalance))))
+                parseUnits(amountToSend, token.decimals).eq(walletBalance))))
         }
         size={ButtonSize.LARGE}
         onClick={sendCrypto}
@@ -187,7 +188,7 @@ export default function SendCrypto() {
           : token &&
             walletBalance &&
             token.isGasToken &&
-            ethers.utils.parseUnits(amountToSend, token.decimals).eq(walletBalance)
+            parseUnits(amountToSend, token.decimals).eq(walletBalance)
           ? 'You cannot send all of your gas token'
           : 'Send'}
       </Button>

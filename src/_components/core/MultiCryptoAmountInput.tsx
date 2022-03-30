@@ -8,6 +8,7 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import { BigNumber, ethers } from 'ethers';
 import { decimalPlacesAreValid } from '_utils/index';
 import MaxAmountButton from '_components/core/MaxAmountButton';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
 
 export default function MultiCryptoAmountInput({
   token,
@@ -57,9 +58,9 @@ export default function MultiCryptoAmountInput({
       if (
         value &&
         /^[0-9.]*$/.test(value) &&
-        userBalance.lt(ethers.utils.parseUnits(value, token?.decimals))
+        userBalance.lt(parseUnits(value, token?.decimals))
       ) {
-        value = ethers.utils.formatUnits(userBalance, token?.decimals);
+        value = formatUnits(userBalance, token?.decimals);
       }
       if (parseFloat(value) < 0) {
         value = '0.0';
@@ -122,7 +123,7 @@ export default function MultiCryptoAmountInput({
             Balance:{' '}
             {userBalance ? (
               <div className={'font-mono ml-1'}>
-                {ethers.utils.formatUnits(userBalance, token?.decimals)}
+                {formatUnits(userBalance, token?.decimals)}
               </div>
             ) : (
               <span className={'ml-1'}>
@@ -132,7 +133,7 @@ export default function MultiCryptoAmountInput({
             {userBalance && (
               <MaxAmountButton
                 onClick={() =>
-                  amountChanged(ethers.utils.formatUnits(userBalance, token?.decimals))
+                  amountChanged(formatUnits(userBalance, token?.decimals))
                 }
               />
             )}

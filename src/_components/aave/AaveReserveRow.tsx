@@ -37,6 +37,7 @@ import { logTransactionHash } from '_services/dbService';
 import { stepBorrowAave, stepDepositAave } from '_pages/Onboarding/OnboardingSteps';
 import { ExpandMore } from '@mui/icons-material';
 import AaveFunctionButton from '_components/aave/AaveFunctionButton';
+import { parseUnits } from 'ethers/lib/utils';
 
 // TODOhuge refactor needed, too big
 export default function AaveReserveRow({
@@ -424,7 +425,7 @@ export default function AaveReserveRow({
                           parseFloat(depositAmount) === 0 ||
                           transactionInProgress ||
                           (depositAmount
-                            ? userBalance.lt(ethers.utils.parseUnits(depositAmount, token.decimals))
+                            ? userBalance.lt(parseUnits(depositAmount, token.decimals))
                             : true)
                         }
                       >
@@ -434,7 +435,7 @@ export default function AaveReserveRow({
                             : (depositAmount &&
                                 userBalance &&
                                 userBalance.lt(
-                                  ethers.utils.parseUnits(depositAmount, token.decimals)
+                                  parseUnits(depositAmount, token.decimals)
                                 )) ||
                               false
                             ? 'Insufficient balance'
@@ -471,7 +472,7 @@ export default function AaveReserveRow({
                                 parseFloat(userReserve.underlyingBalance) ||
                               (withdrawAmount !== '' &&
                                 calculateMaxWithdrawAmount(userSummary, userReserve, reserve).lt(
-                                  ethers.utils.parseUnits(withdrawAmount, reserve.decimals)
+                                  parseUnits(withdrawAmount, reserve.decimals)
                                 ))
                             : false)
                         }
@@ -489,7 +490,7 @@ export default function AaveReserveRow({
                               userReserve &&
                               withdrawAmount !== '' &&
                               calculateMaxWithdrawAmount(userSummary, userReserve, reserve).lt(
-                                ethers.utils.parseUnits(withdrawAmount, reserve.decimals)
+                                parseUnits(withdrawAmount, reserve.decimals)
                               )
                             ? 'Liquidation risk too high'
                             : 'Withdraw'}
@@ -505,7 +506,7 @@ export default function AaveReserveRow({
                         reserve={reserve}
                         userBalance={
                           maxBorrowAmount
-                            ? ethers.utils.parseUnits(maxBorrowAmount, token.decimals)
+                            ? parseUnits(maxBorrowAmount, token.decimals)
                             : BigNumber.from('0')
                         }
                         tokenPrice={marketPriceForToken}
@@ -522,7 +523,7 @@ export default function AaveReserveRow({
                           (maxBorrowAmount !== '' &&
                             ethers.utils
                               .parseUnits(maxBorrowAmount, token.decimals)
-                              .lt(ethers.utils.parseUnits(borrowAmount, token.decimals)))
+                              .lt(parseUnits(borrowAmount, token.decimals)))
                         }
                       >
                         <span className={'ml-2'}>
@@ -532,7 +533,7 @@ export default function AaveReserveRow({
                               borrowAmount !== '' &&
                               ethers.utils
                                   .parseUnits(maxBorrowAmount, token.decimals)
-                                  .lt(ethers.utils.parseUnits(borrowAmount, token.decimals))) ||
+                                  .lt(parseUnits(borrowAmount, token.decimals))) ||
                               false
                             ? 'Insufficient collateral'
                             : 'Borrow'}
@@ -547,7 +548,7 @@ export default function AaveReserveRow({
                         summaryTitle={'Amount to repay'}
                         userBalance={
                           userReserve
-                            ? ethers.utils.parseUnits(userReserve.variableBorrows, token.decimals)
+                            ? parseUnits(userReserve.variableBorrows, token.decimals)
                             : BigNumber.from('0')
                         }
                         tokenPrice={marketPriceForToken}
@@ -569,7 +570,7 @@ export default function AaveReserveRow({
                           (repayAmount &&
                             userBalance &&
                             userBalance.lt(
-                              ethers.utils.parseUnits(repayAmount, reserve.decimals)
+                              parseUnits(repayAmount, reserve.decimals)
                             )) ||
                           false
                         }
@@ -580,7 +581,7 @@ export default function AaveReserveRow({
                             : (repayAmount &&
                                 userBalance &&
                                 userBalance.lt(
-                                  ethers.utils.parseUnits(repayAmount, reserve.decimals)
+                                  parseUnits(repayAmount, reserve.decimals)
                                 )) ||
                               false
                             ? 'Insufficient balance'

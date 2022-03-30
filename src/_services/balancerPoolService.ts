@@ -50,6 +50,13 @@ export async function exitPool(
   if (gasPrice) {
     options.gasPrice = gasPrice.toString();
   }
+  let userData: string;
+  if (isStable(pool.poolType)) {
+    userData = StablePoolEncoder.exitBPTInForExactTokensOut(amountsOut, MaxUint256);
+  } else {
+    userData = WeightedPoolEncoder.exitBPTInForExactTokensOut(amountsOut, BigNumber.from('0'));
+  }
+
   return await vault.exitPool(
     pool.id,
     userAddress,
@@ -58,7 +65,7 @@ export async function exitPool(
       assets: pool.tokens.map((t: PoolToken) => t.address),
       minAmountsOut: amountsOut,
       fromInternalBalance: false,
-      userData: StablePoolEncoder.exitBPTInForExactTokensOut(amountsOut, MaxUint256)
+      userData,
     },
     options
   );
