@@ -5,7 +5,6 @@ import { StablePoolEncoder, WeightedPoolEncoder } from '@balancer-labs/sdk';
 import { MaxUint256 } from '_utils/maths';
 import { isStable } from '_services/balancerCalculatorService';
 import { getWriteVaultContract } from '_services/balancerVaultService';
-import { StablePoolExitKind, WeightedPoolExitKind } from '@balancer-labs/balancer-js';
 
 export async function joinPool(
   pool: Pool,

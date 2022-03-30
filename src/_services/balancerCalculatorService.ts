@@ -16,7 +16,6 @@ import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 import { getTokenByAddress } from '_utils/index';
 import { MarketDataResult } from '_services/marketDataService';
 import { GenericTokenSet } from '_enums/tokens';
-import { BalancerHelpers__factory } from '@balancer-labs/typechain';
 import { ProtocolFeeCollectorAbi } from '_abis';
 import { toUtcTime } from '_utils/time';
 import { StablePoolEncoder, WeightedPoolEncoder } from '@balancer-labs/sdk';
@@ -24,6 +23,7 @@ import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { getPastPools } from '_services/balancerSubgraphClient';
 import { getReadVaultContract } from '_services/balancerVaultService';
 import { PoolType } from '_enums/balancer';
+import { BalancerHelpers__factory } from '@balancer-labs/typechain';
 
 const liquidityMiningStartTime = Date.UTC(2020, 5, 1, 0, 0);
 const polygonHelperAddress = '0x239e55F427D44C3cc793f49bFB507ebe76638a2b';

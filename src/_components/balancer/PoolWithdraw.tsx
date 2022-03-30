@@ -44,7 +44,6 @@ import TransactionError from '_components/transactions/TransactionError';
 import { BalancerFunction } from '_components/balancer/PoolFunctions';
 import MaxAmountButton from '_components/core/MaxAmountButton';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { StablePoolExitKind, WeightedPoolExitKind } from '@balancer-labs/sdk';
 import { WithdrawMode } from '_enums/balancer';
 
 // TODO copy shared code between this and poolinvest
