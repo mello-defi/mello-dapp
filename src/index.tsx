@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import * as Sentry from '@sentry/react';
 // import { } from '_redux/store';
 import { BrowserTracing } from '@sentry/tracing';
-import { store, persistor } from '_redux/store';
+import { persistor, store } from '_redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
 
 Sentry.init({

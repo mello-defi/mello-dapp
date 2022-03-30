@@ -4,10 +4,8 @@ import { Web3ActionTypes } from '_redux/types/web3Types';
 import { connectAction, disconnectAction, setNetworkAction } from '_redux/actions/web3Actions';
 import { EVMChainIdNumerical, EvmNetworkDefinition, findEvmNetworkById } from '_enums/networks';
 import Web3Modal, { IProviderOptions } from 'web3modal';
-import WalletConnectProvider from '@walletconnect/web3-provider';
 import Torus from '@toruslabs/torus-embed';
 import { socialsLogo } from '_assets/images';
-import * as Net from 'net';
 
 const polygonRpcUrl = process.env.REACT_APP_POLYGON_RPC_URL;
 // TODOmove these to env vars, remove hardcoded network values

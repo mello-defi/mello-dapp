@@ -1,4 +1,3 @@
-import { OnboardingStepDescription } from '_redux/types/onboardingTypes';
 import AaveReserveRow from '_components/aave/AaveReserveRow';
 import { AaveSection } from '_enums/aave';
 import { CryptoCurrencySymbol } from '_enums/currency';

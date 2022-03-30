@@ -1,13 +1,8 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { useEffect } from 'react';
-import {
-  getBalancerPoolAprs,
-  getUserBalancerPools,
-  getUserPoolsAprs,
-  setTotalInvestedAmount
-} from '_redux/effects/balancerEffects';
-import { calculateUserSharesInFiat } from '_services/balancerService';
+import { getUserBalancerPools, getUserPoolsAprs, setTotalInvestedAmount } from '_redux/effects/balancerEffects';
+import { calculateUserSharesInFiat } from '_services/balancerCalculatorService';
 import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 import useMarketPrices from '_hooks/useMarketPrices';
 

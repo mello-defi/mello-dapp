@@ -10,8 +10,6 @@ import SendCrypto from '_pages/Wallet/SendCrypto';
 import { MoveToInbox, Send } from '@mui/icons-material';
 import useWalletBalances from '_hooks/useWalletBalances';
 import { WalletTokenBalances } from '_redux/types/walletTypes';
-import { CryptoCurrencySymbol } from '_enums/currency';
-import { BigNumber } from 'ethers';
 
 export enum WalletPageTab {
   RECEIVE = 'Receive',

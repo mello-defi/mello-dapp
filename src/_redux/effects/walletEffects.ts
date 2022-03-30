@@ -1,12 +1,6 @@
 import { Dispatch } from 'redux';
-import { ethers } from 'ethers';
-import {
-  setTokenBalancesAction,
-  setAddressAction,
-  toggleBalancesAreStaleAction
-} from '_redux/actions/walletActions';
+import { setAddressAction, setTokenBalancesAction, toggleBalancesAreStaleAction } from '_redux/actions/walletActions';
 import { WalletActionTypes, WalletTokenBalances } from '_redux/types/walletTypes';
-import { EvmTokenDefinition } from '_enums/tokens';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { CacheRecord } from '_interfaces/cache';
 

@@ -1,10 +1,4 @@
-import {
-  CONNECT,
-  DISCONNECT,
-  SET_NETWORK,
-  Web3ActionTypes,
-  Web3State
-} from '_redux/types/web3Types';
+import { CONNECT, DISCONNECT, SET_NETWORK, Web3ActionTypes, Web3State } from '_redux/types/web3Types';
 import { evmNetworks } from '_enums/networks';
 import { polygonMainnetTokens } from '_enums/tokens';
 

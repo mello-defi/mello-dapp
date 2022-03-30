@@ -1,6 +1,6 @@
 import {
-  SET_TOKEN_BALANCES,
   SET_ADDRESS,
+  SET_TOKEN_BALANCES,
   TOGGLE_BALANCES_ARE_STALE,
   WalletActionTypes,
   WalletState

@@ -3,7 +3,6 @@ import { AppState } from '_redux/store';
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, ExpandLess, ExpandMore, Info } from '@mui/icons-material';
 import { DefaultTransition } from '_components/core/Transition';
-import OnboardingStepDescription from '_pages/Onboarding/OnboardingStepDescription';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { OnboardingStep } from '_pages/Onboarding/OnboardingSteps';
 import { Button, ButtonSize } from '_components/core/Buttons';

@@ -1,5 +1,4 @@
-import { FunctionComponent } from 'react';
-import { Action, AnyAction } from 'redux';
+import { AnyAction } from 'redux';
 
 export const SET_STEP = 'SET_STEP';
 export const SET_IS_COMPLETE = 'SET_IS_COMPLETE';

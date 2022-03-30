@@ -1,4 +1,3 @@
-import { TokenDefinition } from '_enums/tokens';
 import { PoolToken } from '_interfaces/balancer';
 import { getTokenByAddress } from '_utils/index';
 import { AppState } from '_redux/store';

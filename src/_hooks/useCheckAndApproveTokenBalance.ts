@@ -1,7 +1,5 @@
-import { getMarketPrices } from '_redux/effects/marketEffects';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import { useEffect } from 'react';
 import { ethers } from 'ethers';
 import { approveToken, getTokenAllowance } from '_services/walletService';
 import { ERC20Abi } from '../_abis';

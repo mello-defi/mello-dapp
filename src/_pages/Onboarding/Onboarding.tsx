@@ -7,12 +7,7 @@ import { getTransactionCount } from '_services/walletService';
 import { Button } from '_components/core/Buttons';
 import OnboardingStepRow from '_pages/Onboarding/OnboardingStepRow';
 import { DefaultTransition } from '_components/core/Transition';
-import {
-  stepAddGasToWallet,
-  stepPerformSwap,
-  steps,
-  stepSignMessage
-} from '_pages/Onboarding/OnboardingSteps';
+import { stepAddGasToWallet, stepPerformSwap, steps } from '_pages/Onboarding/OnboardingSteps';
 import { BigNumber } from 'ethers';
 
 export default function Onboarding() {

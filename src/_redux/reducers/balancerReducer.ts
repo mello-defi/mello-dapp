@@ -1,9 +1,9 @@
 import {
   BalancerActionTypes,
   BalancerState,
-  SET_USER_POOL_DATA,
   SET_POOL_DATA,
   SET_TOTAL_INVESTED_AMOUNT,
+  SET_USER_POOL_DATA,
   TOGGLE_USER_POOL_DATA_STALE
 } from '_redux/types/balancerTypes';
 

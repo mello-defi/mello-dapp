@@ -1,13 +1,9 @@
 import { Dispatch } from 'redux';
 import { AaveActionTypes } from '_redux/types/aaveTypes';
-import { getReserves, getUserSummaryData } from '_services/aaveService';
 import { ReserveData, v2 } from '@aave/protocol-js';
-import {
-  getAaveReservesAction,
-  getUserSummaryAction,
-  toggleUserSummaryStaleAction
-} from '_redux/actions/aaveActions';
+import { getAaveReservesAction, getUserSummaryAction, toggleUserSummaryStaleAction } from '_redux/actions/aaveActions';
 import { GenericTokenSet } from '_enums/tokens';
+import { getReserves, getUserSummaryData } from '_services/aaveSubgraphClient';
 
 export const toggleUserSummaryStale = (userSummaryStale: boolean) => {
   return function (dispatch: Dispatch<AaveActionTypes>) {

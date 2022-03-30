@@ -1,10 +1,9 @@
 import { BigNumber, Contract, ethers } from 'ethers';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
-import { EvmTokenDefinition, GenericTokenSet, TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition, GenericTokenSet } from '_enums/tokens';
 import { Interface } from '@ethersproject/abi';
 import { ERC20Abi } from '../_abis';
 import { WalletTokenBalances } from '_redux/types/walletTypes';
-import { getTokenByAddress } from '_utils/index';
 import set from 'lodash/set';
 
 export async function getTransactionCount(

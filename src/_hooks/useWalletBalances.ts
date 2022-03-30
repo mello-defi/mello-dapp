@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
 import { getAllErc20TokenBalances } from '_services/walletService';
 import { setTokenBalances } from '_redux/effects/walletEffects';

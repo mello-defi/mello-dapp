@@ -1,11 +1,10 @@
 import {
-  SET_TOKEN_BALANCES,
   SET_ADDRESS,
+  SET_TOKEN_BALANCES,
   TOGGLE_BALANCES_ARE_STALE,
   WalletActionTypes,
   WalletTokenBalances
 } from '_redux/types/walletTypes';
-import { CryptoCurrencySymbol } from '_enums/currency';
 
 export const setTokenBalancesAction = (balances: WalletTokenBalances): WalletActionTypes => {
   return {

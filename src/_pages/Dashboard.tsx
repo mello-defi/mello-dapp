@@ -2,11 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { EvmTokenDefinition } from '_enums/tokens';
 import WalletBalance from '_pages/Wallet/WalletBalance';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { NavTab } from '_redux/types/uiTypes';
-import { setActiveTab } from '_redux/effects/uiEffects';
-import { ArrowForward } from '@mui/icons-material';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import HealthFactorNumber from '_components/aave/HealthFactorNumber';
 import useMarketPrices from '_hooks/useMarketPrices';
@@ -15,7 +13,6 @@ import { CryptoCurrencySymbol } from '_enums/currency';
 import UserBorrowSummary from '_pages/Borrow/UserBorrowSummary';
 import UserDepositSummary from '_pages/Deposit/UserDepositSummary';
 import { getMarketDataForSymbol } from '_services/marketDataService';
-import PoolSkeleton from '_components/balancer/PoolSkeleton';
 import UserPools from '_components/balancer/UserPools';
 
 function DashboardLink({ text, navTab }: { text: string; navTab: NavTab }) {

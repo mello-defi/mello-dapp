@@ -10,7 +10,6 @@ import TransactionError from '_components/transactions/TransactionError';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { renLogo } from '_assets/images';
 import CopyableText from '_components/core/CopyableText';
-import { getGasPrice } from '_services/gasService';
 import { logTransactionHash } from '_services/dbService';
 
 function RenBridge() {

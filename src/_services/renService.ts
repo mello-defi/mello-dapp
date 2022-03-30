@@ -1,3 +1,3 @@
 import RenJS from '@renproject/ren';
 
-export const renJS: RenJS = new RenJS('testnet', { useV2TransactionFormat: true });
+export const renJS: RenJS = new RenJS('mainnet', { useV2TransactionFormat: true });

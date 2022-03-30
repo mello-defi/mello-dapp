@@ -2,20 +2,16 @@ import { Dispatch } from 'redux';
 import { BalancerActionTypes } from '_redux/types/balancerTypes';
 import {
   setPoolsAction,
+  setTotalInvestedAmountAction,
   setUserPoolsAction,
-  toggleUserPoolDataStaleAction,
-  setTotalInvestedAmountAction
+  toggleUserPoolDataStaleAction
 } from '_redux/actions/balancerActions';
-import {
-  getMiningLiquidityApr,
-  getPools,
-  getSwapApr,
-  getUserPools
-} from '_services/balancerService';
-import { EvmTokenDefinition, GenericTokenSet } from '_enums/tokens';
+import { getMiningLiquidityApr, getSwapApr } from '_services/balancerCalculatorService';
+import { GenericTokenSet } from '_enums/tokens';
 import { MarketDataResult } from '_services/marketDataService';
 import { Pool, UserPool } from '_interfaces/balancer';
 import { ethers } from 'ethers';
+import { getPools, getUserPools } from '_services/balancerSubgraphClient';
 
 export const toggleUserPoolDataStale = (userDataStale: boolean) => {
   return function (dispatch: Dispatch<BalancerActionTypes>) {

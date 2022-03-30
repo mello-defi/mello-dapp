@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { autoConnect, connect } from '_redux/effects/web3Effects';
+import { connect } from '_redux/effects/web3Effects';
 import { AppState } from '_redux/store';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { setAddress } from '_redux/effects/walletEffects';

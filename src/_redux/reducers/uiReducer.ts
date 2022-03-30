@@ -1,10 +1,4 @@
-import {
-  NavTab,
-  SET_ACTIVE_TAB,
-  TOGGLE_SIDEBAR,
-  UIActionTypes,
-  UIState
-} from '_redux/types/uiTypes';
+import { NavTab, SET_ACTIVE_TAB, TOGGLE_SIDEBAR, UIActionTypes, UIState } from '_redux/types/uiTypes';
 
 const initialState: UIState = {
   sidebarOpen: false,

@@ -36,7 +36,6 @@ import { getMarketDataForSymbol } from '_services/marketDataService';
 import { logTransactionHash } from '_services/dbService';
 import { stepBorrowAave, stepDepositAave } from '_pages/Onboarding/OnboardingSteps';
 import { ExpandMore } from '@mui/icons-material';
-import { TabHeader, TabHeaderContainer } from '_components/core/Tabs';
 import AaveFunctionButton from '_components/aave/AaveFunctionButton';
 
 // TODOhuge refactor needed, too big

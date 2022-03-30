@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
-import { BigNumber, ethers } from 'ethers';
-import useWalletBalances from '_hooks/useWalletBalances';
+import { useState } from 'react';
+import { ethers } from 'ethers';
 import { ComputedReserveData, EthereumTransactionTypeExtended } from '@aave/protocol-js';
 import { getGasPrice } from '_services/gasService';
 import { runAaveActionTransaction, runAaveApprovalTransaction } from '_services/aaveService';

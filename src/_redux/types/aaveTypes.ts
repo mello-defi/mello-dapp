@@ -1,5 +1,5 @@
 import { ComputedReserveData, ReserveData, UserSummaryData } from '@aave/protocol-js';
-import { Action, AnyAction } from 'redux';
+import { AnyAction } from 'redux';
 
 export const TOGGLE_USER_SUMMARY_STALE = 'TOGGLE_USER_SUMMARY_STALE';
 export const GET_USER_SUMMARY = 'GET_USER_RESERVES';

@@ -1,43 +1,24 @@
-import {
-  Amounts,
-  OnchainPoolData,
-  Pool,
-  PoolToken,
-  TokenInfoMap,
-  UserPool
-} from '_interfaces/balancer';
+import { Amounts, OnchainPoolData, Pool, PoolToken, TokenInfoMap, UserPool } from '_interfaces/balancer';
 import { BigNumber, ethers } from 'ethers';
 import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 
-import { approveToken, getErc20TokenInfo, getTokenAllowance } from '_services/walletService';
-import { ERC20Abi } from '../../_abis';
+import { getErc20TokenInfo } from '_services/walletService';
 import { getGasPrice } from '_services/gasService';
 import { MaxUint256 } from '_utils/maths';
-import { logTransactionHash } from '_services/dbService';
 import {
   absMaxBpt,
   exactBPTInForTokenOut,
-  exitPool,
-  getPoolOnChainData,
-  getUserPools,
-  getVaultAddress,
-  joinPool,
   propAmountsgiven
-} from '_services/balancerService';
+} from '_services/balancerCalculatorService';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import React, { useEffect, useState } from 'react';
 import useWalletBalances from '_hooks/useWalletBalances';
-import { CryptoCurrencyName, CryptoCurrencySymbol } from '_enums/currency';
+import { CryptoCurrencySymbol } from '_enums/currency';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import useMarketPrices from '_hooks/useMarketPrices';
-import { EvmTokenDefinition, PolygonMainnetTokenContracts, TokenDefinition } from '_enums/tokens';
-import {
-  amountIsValidNumberGtZero,
-  decimalPlacesAreValid,
-  fixDecimalPlaces,
-  getTokenByAddress
-} from '_utils/index';
+import { EvmTokenDefinition } from '_enums/tokens';
+import { amountIsValidNumberGtZero, decimalPlacesAreValid, fixDecimalPlaces, getTokenByAddress } from '_utils/index';
 import { getMarketDataForSymbol } from '_services/marketDataService';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { Button } from '_components/core/Buttons';
@@ -54,6 +35,9 @@ import { toggleUserPoolDataStale } from '_redux/effects/balancerEffects';
 import MaxAmountButton from '_components/core/MaxAmountButton';
 import { TabHeader, TabHeaderContainer } from '_components/core/Tabs';
 import TokenSelectDropdown from '_components/TokenSelectDropdown';
+import { getUserPools } from '_services/balancerSubgraphClient';
+import { getPoolOnChainData, getVaultAddress } from '_services/balancerVaultService';
+import { exitPool, joinPool } from '_services/balancerPoolService';
 
 export enum BalancerFunction {
   Invest = 'Invest',
@@ -194,8 +178,6 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
       const aaa = async () => {
         const onchain = await getPoolOnChainData(pool, provider);
         setOnchain(onchain);
-        // console.log('CAN IVST AMOUNT', canInvestAmount())
-        // console.log(poolData);
         const tokens: TokenInfoMap = {};
         for (const token of pool.tokens) {
           tokens[token.address.toLowerCase()] = {

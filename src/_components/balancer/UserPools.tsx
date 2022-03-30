@@ -1,12 +1,9 @@
-import { Pool, UserPool } from '_interfaces/balancer';
+import { UserPool } from '_interfaces/balancer';
 import PoolRow from '_components/balancer/PoolRow';
-import { calculateUserSharesInFiat } from '_services/balancerService';
-import React, { useEffect, useState } from 'react';
+import { calculateUserSharesInFiat } from '_services/balancerCalculatorService';
+import React from 'react';
 import PoolSkeleton from '_components/balancer/PoolSkeleton';
 import useUserBalancerPools from '_hooks/useUserBalancerPools';
-import useBalancerPools from '_hooks/useBalancerPools';
-import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
-import useMarketPrices from '_hooks/useMarketPrices';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { balLogo } from '_assets/images';
 
