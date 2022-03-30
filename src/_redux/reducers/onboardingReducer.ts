@@ -5,6 +5,7 @@ import {
   SET_IS_ONGOING,
   SET_STEP
 } from '_redux/types/onboardingTypes';
+import { stepMintNft } from '_pages/Onboarding/OnboardingSteps';
 
 const initialState: OnboardingState = {
   complete: false,
@@ -20,7 +21,9 @@ export const getOnboardingReducer = (
     case SET_STEP:
       return {
         ...state,
-        currentStep: action.payload.step
+        currentStep: action.payload.step,
+        complete: action.payload.step === stepMintNft.number,
+        // ongoing: action.payload.step !== stepMintNft.number
       };
     case SET_IS_COMPLETE:
       return {

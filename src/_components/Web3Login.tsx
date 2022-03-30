@@ -18,6 +18,7 @@ function App() {
       signer.getAddress().then((address) => {
         dispatch(setAddress(address));
       });
+      // TODO decouple
       dispatch(setStep(stepSignMessage.number));
     }
   }, [isConnected, network, dispatch]);

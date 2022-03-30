@@ -2,27 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import useWalletBalance from '_hooks/useWalletBalance';
-import { setStep } from '_redux/effects/onboardingEffects';
+import { setOnboardingOngoing, setStep } from '_redux/effects/onboardingEffects';
 import { getTransactionCount } from '_services/walletService';
 import { Button } from '_components/core/Buttons';
 import OnboardingStepRow from '_pages/Onboarding/OnboardingStepRow';
 import { DefaultTransition } from '_components/core/Transition';
-import {
-  stepAddGasToWallet,
-  stepPerformSwap,
-  steps,
-  stepSignMessage
-} from '_pages/Onboarding/OnboardingSteps';
+import { stepAddGasToWallet, stepPerformSwap, steps } from '_pages/Onboarding/OnboardingSteps';
+import { setActiveTab } from '_redux/effects/uiEffects';
+import { NavTab } from '_redux/types/uiTypes';
 
 export default function Onboarding() {
   const dispatch = useDispatch();
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
+  const onboardingComplete = useSelector((state: AppState) => state.onboarding.complete);
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const gasToken = Object.values(tokenSet).find((token) => token.isGasToken);
   const walletBalance = useWalletBalance(gasToken);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const provider = useSelector((state: AppState) => state.web3.provider);
   const [onboardingInitiated, setOnboardingInitiated] = useState(false);
+  useEffect(() => {
+    if (onboardingComplete) {
+      dispatch(setActiveTab(NavTab.DASHBOARD));
+      dispatch(setOnboardingOngoing(false))
+    }
+  }, [onboardingComplete])
   useEffect(() => {
     async function getTransactionCountAndAdvance() {
       if (

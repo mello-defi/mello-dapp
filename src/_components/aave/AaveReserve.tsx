@@ -29,7 +29,7 @@ import AaveFunctionContent from '_components/aave/AaveFunctionContent';
 import { EthereumTransactionError } from '_interfaces/errors';
 import { toggleUserSummaryStale } from '_redux/effects/aaveEffects';
 import { findTokenByAddress } from '_utils/index';
-import { setStep } from '_redux/effects/onboardingEffects';
+import { setOnboardingComplete, setStep } from '_redux/effects/onboardingEffects';
 import useAaveReserves from '_hooks/useAaveReserves';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import { CryptoCurrencySymbol } from '_enums/currency';
@@ -37,7 +37,7 @@ import { convertCryptoAmounts } from '_services/priceService';
 import { getGasPrice } from '_services/gasService';
 import { getMarketDataForSymbol } from '_services/marketDataService';
 import { logTransactionHash } from '_services/dbService';
-import { OnboardingStep, stepBorrowAave, stepDepositAave } from '_pages/Onboarding/OnboardingSteps';
+import { OnboardingStep, stepBorrowAave, stepDepositAave, stepMintNft } from '_pages/Onboarding/OnboardingSteps';
 
 // REVIEW huge refactor needed, too big
 export default function AaveReserve({
@@ -193,6 +193,7 @@ export default function AaveReserve({
         dispatch(
           toggleBalanceIsStale(findTokenByAddress(tokenSet, reserve.underlyingAsset).symbol, true)
         );
+        // TODO decouple from component
         if (nextStep) {
           dispatch(setStep(nextStep));
         }
