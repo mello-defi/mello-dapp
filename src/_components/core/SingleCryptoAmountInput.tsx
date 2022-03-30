@@ -37,7 +37,6 @@ export default function SingleCryptoAmountInput({
 
   useEffect(() => {
     if (maxAmount) {
-      // const amountIsValid = amount !== '' && !isNaN(parseFloat(amount)) && parseFloat(amount) > 0;
       if (amountIsValidNumberGtZero(amount)) {
         const amountBn = ethers.utils.parseUnits(amount, token.decimals);
         setAmountGreaterThanMax(maxAmount !== undefined && maxAmount.lt(amountBn));
@@ -57,6 +56,12 @@ export default function SingleCryptoAmountInput({
       >
         <input
           disabled={disabled}
+          onFocus={() => {
+            if (amountIsValidNumberGtZero(amount)) {
+              return;
+            }
+            amountChanged('');
+          }}
           onWheel={(e) => e.currentTarget.blur()}
           type={'number'}
           min={'0'}

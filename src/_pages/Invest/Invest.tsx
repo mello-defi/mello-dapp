@@ -10,7 +10,7 @@ import UserPools from '_components/balancer/UserPools';
 export default function Invest() {
   const prices = useMarketPrices();
   const pools = useBalancerPools(prices);
-  // TODO - check for chain ID and display balancer of in chain [137, arbitrum] etc
+  // TODO - check for chain ID and display balancer in chain [137, arbitrum] etc
   return (
     <div>
       <UserPools />

@@ -1,4 +1,9 @@
-import { GET_MARKET_PRICES, MarketActionTypes, MarketState, TOGGLE_IS_FETCHING_PRICES } from '_redux/types/marketTypes';
+import {
+  GET_MARKET_PRICES,
+  MarketActionTypes,
+  MarketState,
+  TOGGLE_IS_FETCHING_PRICES
+} from '_redux/types/marketTypes';
 
 const initialState: MarketState = {
   prices: [],

@@ -18,7 +18,7 @@ export const toggleUserPoolDataStaleAction = (userPoolsStale: boolean): Balancer
 
 export const setUserPoolsAction = (
   userPools: UserPool[],
-  userPoolsAprsSet?: boolean | undefined,
+  userPoolsAprsSet?: boolean | undefined
 ): BalancerActionTypes => {
   return {
     type: SET_USER_POOL_DATA,

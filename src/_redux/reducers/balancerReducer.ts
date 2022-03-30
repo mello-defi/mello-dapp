@@ -36,7 +36,7 @@ export const getBalancerReducer = (
         ...state,
         userPools: action.payload.userPools,
         userPoolsStale: false,
-        userPoolsAprsSet: action.payload.userPoolsAprsSet,
+        userPoolsAprsSet: action.payload.userPoolsAprsSet
       };
     case SET_POOL_DATA:
       return {

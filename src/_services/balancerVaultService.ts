@@ -1,7 +1,12 @@
 import {
-  LinearPoolDataMap, OnchainPoolData,
-  OnchainTokenDataMap, Pool, PoolType, RawLinearPoolData,
-  RawLinearPoolDataMap, RawOnchainPoolData,
+  LinearPoolDataMap,
+  OnchainPoolData,
+  OnchainTokenDataMap,
+  Pool,
+  PoolType,
+  RawLinearPoolData,
+  RawLinearPoolDataMap,
+  RawOnchainPoolData,
   RawPoolTokens,
   TokenInfoMap
 } from '_interfaces/balancer';
@@ -11,7 +16,11 @@ import { BigNumber, Contract, ethers } from 'ethers';
 import { multicall } from '_services/walletService';
 import { isStable, isWeighted } from '_services/balancerCalculatorService';
 import { toNormalizedWeights } from '@balancer-labs/sdk';
-import { StablePool__factory, Vault__factory, WeightedPool__factory } from '@balancer-labs/typechain';
+import {
+  StablePool__factory,
+  Vault__factory,
+  WeightedPool__factory
+} from '@balancer-labs/typechain';
 
 const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 
@@ -183,7 +192,6 @@ export async function getPoolOnChainData(
     calls,
     getAbiForPoolType(pool.poolType)
   );
-  // const onChainData: OnchainPoolData = {};
   paths = [];
   calls = [];
   if (isStable(pool.poolType) && result.linearPools) {

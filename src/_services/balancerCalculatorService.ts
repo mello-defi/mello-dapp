@@ -17,19 +17,13 @@ import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 import { getTokenByAddress } from '_utils/index';
 import { MarketDataResult } from '_services/marketDataService';
 import { GenericTokenSet } from '_enums/tokens';
-import {
-  BalancerHelpers__factory,
-  Vault__factory,
-} from '@balancer-labs/typechain';
+import { BalancerHelpers__factory } from '@balancer-labs/typechain';
 import { ProtocolFeeCollectorAbi } from '_abis';
 import { toUtcTime } from '_utils/time';
-import { StablePoolEncoder, toNormalizedWeights, WeightedPoolEncoder } from '@balancer-labs/sdk';
-import { MaxUint256 } from '_utils/maths';
-import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
-import { multicall } from '_services/walletService';
-import { formatUnits, getAddress, parseUnits } from 'ethers/lib/utils';
+import { StablePoolEncoder, WeightedPoolEncoder } from '@balancer-labs/sdk';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { getPastPools } from '_services/balancerSubgraphClient';
-import { getReadVaultContract, getWriteVaultContract } from '_services/balancerVaultService';
+import { getReadVaultContract } from '_services/balancerVaultService';
 
 const liquidityMiningStartTime = Date.UTC(2020, 5, 1, 0, 0);
 const polygonHelperAddress = '0x239e55F427D44C3cc793f49bFB507ebe76638a2b';
@@ -144,7 +138,6 @@ export async function getMiningLiquidityApr(
     ? !!liquidityMiningRewards.length
     : false;
   if (hasLiquidityMiningRewards) {
-    console.log(pool.id);
     liquidityMiningAPR = computeTotalAPRForPool(
       liquidityMiningRewards,
       miningTotalLiquidity,
@@ -251,11 +244,7 @@ export async function exactBPTInForTokenOut(
   if (bnum(bptAmount).eq(0)) {
     BigNumber.from(0);
   }
-  const contract = new Contract(
-    polygonHelperAddress,
-    BalancerHelpers__factory.abi,
-    provider
-  );
+  const contract = new Contract(polygonHelperAddress, BalancerHelpers__factory.abi, provider);
   let userData: string;
   if (isStable(poolType)) {
     userData = StablePoolEncoder.exitExactBPTInForOneTokenOut(bptAmount, tokenIndex);
@@ -271,7 +260,7 @@ export async function exactBPTInForTokenOut(
   return response.amountsOut[tokenIndex];
 }
 
-export function propAmountsgiven(
+export function calculatePoolInvestedAmounts(
   poolAddress: string,
   onchain: OnchainPoolData,
   tokenInfoMap: TokenInfoMap,

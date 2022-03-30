@@ -10,8 +10,8 @@ const GET_USER_POOLS = gql`
     poolShares(
       where: { userAddress: $userAddress, balance_gt: 0 }
       orderBy: balance
-      orderDirection: desc,
-      where:{ poolType_in: ["Weighted", "Stable"]}
+      orderDirection: desc
+      where: { poolType_in: ["Weighted", "Stable"] }
     ) {
       id
       poolId {
@@ -80,14 +80,12 @@ const GET_PAST_POOL_FOR_ID = gql`
 const GET_ALL_POOLS = gql`
   query GetPools($minimumLiquidity: String!) {
     pools(
-    first: 1000, 
-    skip: 0, 
-    orderBy: totalLiquidity,
-    orderDirection: desc,
-    where: { 
-      poolType_in: ["Weighted", "Stable"],
-      totalLiquidity_gte: $minimumLiquidity,
-    }) {
+      first: 1000
+      skip: 0
+      orderBy: totalLiquidity
+      orderDirection: desc
+      where: { poolType_in: ["Weighted", "Stable"], totalLiquidity_gte: $minimumLiquidity }
+    ) {
       id
       address
       poolType
@@ -98,7 +96,7 @@ const GET_ALL_POOLS = gql`
       totalShares
       symbol
       amp
-      tokens{
+      tokens {
         id
         symbol
         name
@@ -160,11 +158,11 @@ export async function getUserPools(userAddress: string): Promise<UserPool[]> {
   return userPools.data ? userPools.data.poolShares : [];
 }
 export async function getPools(addresses: string[]): Promise<Pool[]> {
-  const addressesLowercase = addresses.map(address => address.toLowerCase());
+  const addressesLowercase = addresses.map((address) => address.toLowerCase());
   const poolResults = await client.query({
     query: GET_ALL_POOLS,
     variables: {
-      minimumLiquidity: MINIMUM_LIQUIDITY,
+      minimumLiquidity: MINIMUM_LIQUIDITY
     }
   });
   if (!poolResults.data) {
@@ -173,6 +171,9 @@ export async function getPools(addresses: string[]): Promise<Pool[]> {
 
   return poolResults.data.pools.filter((pool: Pool) => {
     const tokenAddresses = pool.tokens.map((token: PoolToken) => token.address.toLowerCase());
-    return tokenAddresses.filter(address => addressesLowercase.includes(address)).length === tokenAddresses.length;
+    return (
+      tokenAddresses.filter((address) => addressesLowercase.includes(address)).length ===
+      tokenAddresses.length
+    );
   });
 }

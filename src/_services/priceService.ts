@@ -30,10 +30,13 @@ export function getTokenValueInFiat(
 }
 
 export function formatTokenValueInFiat(
-  price: number | string,
+  price: number | string | undefined,
   amount: number | string,
   currency: CurrencyDefinition = currencies.usd
 ): string {
+  if (!price) {
+    return '-';
+  }
   const total = getTokenValueInFiat(price, amount, currency);
   return `${currency.symbol}${total.toFixed(2)}`;
 }

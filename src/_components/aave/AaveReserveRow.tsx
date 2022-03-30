@@ -518,6 +518,7 @@ export default function AaveReserveRow({
                           !borrowAmount ||
                           parseFloat(borrowAmount) === 0 ||
                           !borrowAmount ||
+                          borrowAmount === '' ||
                           (maxBorrowAmount !== '' &&
                             ethers.utils
                               .parseUnits(maxBorrowAmount, token.decimals)
@@ -528,7 +529,8 @@ export default function AaveReserveRow({
                           {borrowSubmitting
                             ? 'Submitting...'
                             : (maxBorrowAmount !== '' &&
-                                ethers.utils
+                              borrowAmount !== '' &&
+                              ethers.utils
                                   .parseUnits(maxBorrowAmount, token.decimals)
                                   .lt(ethers.utils.parseUnits(borrowAmount, token.decimals))) ||
                               false
@@ -558,6 +560,7 @@ export default function AaveReserveRow({
                           transactionInProgress ||
                           !userReserve ||
                           !repayAmount ||
+                          repayAmount=== '' ||
                           parseFloat(repayAmount) === 0 ||
                           parseFloat(userReserve?.variableBorrows) === 0 ||
                           (repayAmount && userReserve?.variableBorrows

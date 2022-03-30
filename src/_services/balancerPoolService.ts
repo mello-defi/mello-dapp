@@ -20,9 +20,9 @@ export async function joinPool(
   }
   let userData: string;
   if (isStable(pool.poolType)) {
-    userData = StablePoolEncoder.joinExactTokensInForBPTOut(amountsIn, BigNumber.from('0'))
+    userData = StablePoolEncoder.joinExactTokensInForBPTOut(amountsIn, BigNumber.from('0'));
   } else {
-    userData = WeightedPoolEncoder.joinExactTokensInForBPTOut(amountsIn, BigNumber.from('0'))
+    userData = WeightedPoolEncoder.joinExactTokensInForBPTOut(amountsIn, BigNumber.from('0'));
   }
   return await vault.joinPool(
     pool.id,
@@ -32,7 +32,7 @@ export async function joinPool(
       assets: pool.tokens.map((t: PoolToken) => t.address),
       maxAmountsIn: amountsIn,
       fromInternalBalance: false,
-      userData,
+      userData
     },
     options
   );
@@ -63,4 +63,3 @@ export async function exitPool(
     options
   );
 }
-

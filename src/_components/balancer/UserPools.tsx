@@ -34,7 +34,7 @@ export default function UserPools() {
             {/*    </span>*/}
             {/*  </span>*/}
             {/*)}*/}
-            <PoweredByLink url={'https://balancer.fi/#/'} logo={balLogo}/>
+            <PoweredByLink url={'https://balancer.fi/#/'} logo={balLogo} />
           </div>
           {userPools?.map((userPool: UserPool) => (
             <PoolRow

@@ -34,7 +34,7 @@ export const getUserPoolsAprs = (
 ) => {
   return async function (dispatch: Dispatch<BalancerActionTypes>) {
     const updatedUserPools: UserPool[] = [...userPools];
-    for (const p of updatedUserPools.map(up => up.poolId)) {
+    for (const p of updatedUserPools.map((up) => up.poolId)) {
       p.liquidityMiningApr = await getMiningLiquidityApr(tokenSet, p, prices);
       p.swapApr = await getSwapApr(p, provider, signer);
       p.totalApr = (p.liquidityMiningApr + p.swapApr).toFixed(2);

@@ -1,4 +1,11 @@
-import { Amounts, OnchainPoolData, Pool, PoolToken, TokenInfoMap, UserPool } from '_interfaces/balancer';
+import {
+  Amounts,
+  OnchainPoolData,
+  Pool,
+  PoolToken,
+  TokenInfoMap,
+  UserPool
+} from '_interfaces/balancer';
 import { BigNumber, ethers } from 'ethers';
 import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 
@@ -8,7 +15,7 @@ import { MaxUint256 } from '_utils/maths';
 import {
   absMaxBpt,
   exactBPTInForTokenOut,
-  propAmountsgiven
+  calculatePoolInvestedAmounts
 } from '_services/balancerCalculatorService';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
@@ -18,12 +25,17 @@ import { CryptoCurrencySymbol } from '_enums/currency';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { EvmTokenDefinition } from '_enums/tokens';
-import { amountIsValidNumberGtZero, decimalPlacesAreValid, fixDecimalPlaces, getTokenByAddress } from '_utils/index';
+import {
+  amountIsValidNumberGtZero,
+  decimalPlacesAreValid,
+  fixDecimalPlaces,
+  getTokenByAddress
+} from '_utils/index';
 import { getMarketDataForSymbol } from '_services/marketDataService';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { Button } from '_components/core/Buttons';
 import useCheckAndApproveTokenBalance from '_hooks/useCheckAndApproveTokenBalance';
-import { getTokenValueInFiat } from '_services/priceService';
+import { formatTokenValueInFiat, getTokenValueInFiat } from '_services/priceService';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { DefaultTransition } from '_components/core/Transition';
 import { TransactionStep } from '_components/transactions/TransactionStep';
@@ -38,6 +50,8 @@ import TokenSelectDropdown from '_components/TokenSelectDropdown';
 import { getUserPools } from '_services/balancerSubgraphClient';
 import { getPoolOnChainData, getVaultAddress } from '_services/balancerVaultService';
 import { exitPool, joinPool } from '_services/balancerPoolService';
+import CryptoAmountWithTooltip from '_components/core/CryptoAmountTooltip';
+import { Switch } from '@headlessui/react';
 
 export enum BalancerFunction {
   Invest = 'Invest',
@@ -48,6 +62,10 @@ interface TokenAmountMap {
   [address: string]: string;
 }
 
+export enum WithdrawMode {
+  AllTokens = 'All Tokens',
+  SingleToken = 'Single Token'
+}
 function PoolWithdraw({ pool }: { pool: Pool }) {
   const walletBalances = useWalletBalances();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -59,32 +77,56 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
   const checkAndApproveAllowance = useCheckAndApproveTokenBalance();
   const [approvalHash, setApprovalHash] = useState<string | null>(null);
   const [totalPoolBAlance, setTotalPoolBalance] = useState<string | null>(null);
-  const [tokenAmountMap, setTokenAmountMap] = useState<TokenAmountMap | undefined>(undefined);
+  const [withdrawMode, setWithdrawMode] = useState<WithdrawMode>(WithdrawMode.SingleToken);
+  const [singleExitToken, setSingleExitToken] = useState<EvmTokenDefinition | undefined>(undefined);
   const [onChainData, setOnchain] = useState<OnchainPoolData | undefined>(undefined);
+  const [sumOfAmountsInFiat, setSumOfAmountsInFiat] = useState<string | null>(null);
   const [userPools, setUserPools] = useState<UserPool[] | undefined>(undefined);
-  const [poolAmounts, setPoolAmounts] = useState<Amounts | undefined>();
-  const [singleAssetMaxes, setSingleAssetMaxes] = useState<string[] | undefined>();
+  const [tokenAmounts, setTokenAmounts] = useState<string[]>([]);
+  const [poolAmounts, setPoolAmounts] = useState<string[]>([]);
+  const [singleAssetMaxes, setSingleAssetMaxes] = useState<string[]>([]);
 
   useEffect(() => {
-    // if (!singleAssetMaxes || singleAssetMaxes.length === 0) {
-    async function doStuff() {
-      const maxes = await getSingleAssetMaxes();
-      console.log(maxes);
-      setSingleAssetMaxes(maxes);
+    if (!singleExitToken) {
+      setSingleExitToken(getTokenByAddress(tokenSet, pool.tokens[0].address));
     }
-    doStuff();
-    // }
-  }, [userPools, onChainData, poolAmounts]);
+  }, [singleExitToken])
+
+  const initTokenAmounts = () => {
+    setTokenAmounts(Array(pool.tokens.length).fill('0.0'));
+  };
+  useEffect(() => {
+    if (!tokenAmounts.length) {
+      initTokenAmounts();
+    }
+  }, [pool, tokenAmounts]);
+
+  useEffect(() => {
+    if (withdrawMode === WithdrawMode.SingleToken && singleExitToken && singleAssetMaxes) {
+      const tokenIndex = pool.tokens.findIndex(token => token.address.toLowerCase() === singleExitToken.address.toLowerCase());
+      setTokenAmounts([...tokenAmounts.map((amount, index) => index === tokenIndex ? singleAssetMaxes[tokenIndex] : amount)]);
+    } else if (poolAmounts) {
+      setTokenAmounts(poolAmounts);
+    }
+  }, [withdrawMode, singleExitToken, singleAssetMaxes, poolAmounts])
+  useEffect(() => {
+    if (!singleAssetMaxes || singleAssetMaxes.length === 0 && tokenAmounts && onChainData && provider && userAddress) {
+      const doStuff = async () => {
+        const maxes = await getSingleAssetMaxes();
+        setSingleAssetMaxes(maxes);
+      };
+      doStuff();
+    }
+  }, [userPools, onChainData, tokenAmounts, userAddress, provider]);
   const getSingleAssetMaxes = async (): Promise<string[]> => {
     const btpBalance = userPools?.find(
       (userPool) => userPool.poolId.address.toLowerCase() === pool.address.toLowerCase()
     )?.balance;
-    if (poolAmounts && onChainData && btpBalance && provider && userAddress) {
+    if (tokenAmounts && onChainData && btpBalance && provider && userAddress) {
       try {
         const amounts = [];
         for (let i = 0; i < pool.tokens.length; i++) {
           const token = pool.tokens[i];
-          // console.log(exactBPTInForTokenOut);
           const amount = await exactBPTInForTokenOut(
             parseUnits(btpBalance, onChainData.decimals).toString(),
             i,
@@ -106,10 +148,7 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
             const token = pool.tokens[i];
             // console.log(exactBPTInForTokenOut);
             const amount = await exactBPTInForTokenOut(
-              parseUnits(
-                absMaxBpt(pool, onChainData, btpBalance),
-                onChainData.decimals
-              ).toString(),
+              parseUnits(absMaxBpt(pool, onChainData, btpBalance), onChainData.decimals).toString(),
               i,
               pool.poolType,
               pool.tokens,
@@ -127,13 +166,6 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
   };
 
   useEffect(() => {
-    if (!tokenAmountMap) {
-      const freshTokenMap: TokenAmountMap = {};
-      for (const token of pool.tokens) {
-        freshTokenMap[token.address] = '0.0';
-      }
-      setTokenAmountMap(freshTokenMap);
-    }
     if (userAddress && !userPools && provider) {
       const initUserPools = async () => {
         const results = await getUserPools(userAddress);
@@ -194,8 +226,7 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
         const btpBalance = userPools?.find(
           (userPool) => userPool.poolId.address.toLowerCase() === pool.address.toLowerCase()
         )?.balance;
-        console.log('BTP BALANCE', btpBalance?.toString());
-        const amounts = propAmountsgiven(
+        const amounts = calculatePoolInvestedAmounts(
           pool.address,
           onchain,
           tokens,
@@ -205,7 +236,7 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
           'exit'
         );
         console.log(amounts);
-        setPoolAmounts(amounts);
+        setPoolAmounts(amounts.receive);
         setTotalPoolBalance(btpBalance?.toString() || '0');
       };
       aaa();
@@ -246,41 +277,58 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
     return ethers.utils.parseUnits(userPool.balance, decimals);
   };
 
-  const handleTokenAmountChange = (token: PoolToken, amount: string) => {
-    const newTokenAmountMap = { ...tokenAmountMap };
-    newTokenAmountMap[token.address] = amount;
-    setTokenAmountMap(newTokenAmountMap);
+  const handleTokenAmountChange = (tokenIndex: number, amount: string) => {
+    const newTokenAmountMap = [...tokenAmounts];
+    newTokenAmountMap[tokenIndex] = amount;
+    setTokenAmounts(newTokenAmountMap);
   };
 
-  const calculateInvestTotal = (): number | string => {
-    if (!tokenAmountMap) {
-      return '0.0';
+  useEffect(() => {
+    if (!tokenAmounts.length) {
+      setSumOfAmountsInFiat('0.0');
     }
     let total = 0;
-    for (const token of pool.tokens) {
-      const amount = tokenAmountMap[token.address];
-      const tokenData = getTokenByAddress(tokenSet, token.address);
-      const data = getMarketDataForSymbol(marketPrices, tokenData.symbol);
+    if (withdrawMode === WithdrawMode.SingleToken && singleExitToken) {
+      const withdrawTokenIndex = pool.tokens.findIndex(
+        (t) => t.address.toLowerCase() === singleExitToken?.address.toLowerCase()
+      );
+      const amount = tokenAmounts[withdrawTokenIndex]
+      const data = getMarketDataForSymbol(marketPrices, singleExitToken?.symbol);
       if (data) {
         const price = data && data.current_price;
         total += price * parseFloat(amount);
       }
+    } else {
+      for (let i = 0; i < tokenAmounts.length; i++) {
+        const amount = tokenAmounts[i];
+        console.log(amount);
+        if (!isNaN(parseFloat(amount))) {
+          const token = pool.tokens[i];
+          const tokenData = getTokenByAddress(tokenSet, token.address);
+          const data = getMarketDataForSymbol(marketPrices, tokenData.symbol);
+          if (data) {
+            const price = data && data.current_price;
+            total += price * parseFloat(amount);
+          }
+        }
+      }
     }
-    return total;
-  };
+    setSumOfAmountsInFiat(isNaN(total) ? null : total.toFixed(2));
+  }, [tokenAmounts, withdrawMode, singleExitToken]);
 
   const exit = async () => {
-    if (userAddress && signer && tokenAmountMap && provider && network) {
+    if (userAddress && signer && tokenAmounts && provider && network) {
       try {
         const addressesSorted = pool.tokens.map((t) => t.address).sort();
         const amountsIn: string[] = [];
         const vaultAddress = getVaultAddress(network.chainId);
-        for (const address of addressesSorted) {
+        for (let i = 0; i < addressesSorted.length; i++) {
+          const address = addressesSorted[i];
           const decimals = pool.tokens.find((t) => t.address === address)?.decimals;
-          const amount = ethers.utils.parseUnits(tokenAmountMap[address], decimals).toString();
+          const amount = ethers.utils.parseUnits(tokenAmounts[i], decimals).toString();
           amountsIn.push(amount);
           if (amount !== '0') {
-            if (tokenAmountMap[address] && parseFloat(tokenAmountMap[address]) > 0) {
+            if (tokenAmounts[i] && parseFloat(tokenAmounts[i]) > 0) {
               await checkAndApproveAllowance(
                 address,
                 userAddress,
@@ -301,7 +349,27 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
 
   return (
     <div className={'flex flex-col'}>
-      {onChainData && (
+      <Switch.Group>
+        <div className={'flex-row-center text-color-dark my-2 px-4 justify-end'}>
+          <Switch.Label className="mr-4">Withdraw to single token</Switch.Label>
+          <Switch
+            checked={withdrawMode === WithdrawMode.SingleToken}
+            onChange={(checked) => setWithdrawMode(checked ? WithdrawMode.SingleToken : WithdrawMode.AllTokens)}
+            className={`${
+              withdrawMode === WithdrawMode.SingleToken ? 'bg-gray-700' : 'bg-gray-200'
+            } relative inline-flex transition items-center h-6 rounded-full w-11`}
+          >
+            <span className="sr-only">Enable notifications</span>
+            <span
+              className={`${
+                withdrawMode === WithdrawMode.SingleToken ? 'translate-x-6' : 'translate-x-1'
+              } inline-block w-4 h-4 transform bg-white rounded-full`}
+            />
+          </Switch>
+        </div>
+      </Switch.Group>
+
+      {onChainData && withdrawMode === WithdrawMode.SingleToken && (
         <div className={'px-2'}>
           <TokenSelectDropdown
             tokenFilter={(t) =>
@@ -309,25 +377,41 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
                 .map((address: string) => address.toLowerCase())
                 .includes(t.address.toLowerCase())
             }
+            selectedToken={singleExitToken}
             onSelectToken={(token: EvmTokenDefinition) => {
-              console.log(token);
+              setSingleExitToken(token);
             }}
             disabled={false}
           />
         </div>
       )}
-      {tokenAmountMap &&
-        poolAmounts &&
-        pool.tokens.map((token, index: number) => (
+      {tokenAmounts &&
+        singleAssetMaxes.length > 0 &&
+        pool.tokens.map((token: PoolToken, index: number) => (
           <div key={token.symbol} className={'px-2'}>
-            <SingleCryptoAmountInput
-              disabled={false}
-              tokenPrice={getMarketPricesForPoolToken(token)}
-              amount={tokenAmountMap[token.address]}
-              balance={ethers.utils.parseUnits(poolAmounts?.receive[index], token.decimals)}
-              amountChanged={(amount: string) => handleTokenAmountChange(token, amount)}
-              token={getTokenByAddress(tokenSet, token.address)}
-            />
+            {withdrawMode === WithdrawMode.AllTokens ? (
+              <SingleCryptoAmountInput
+                disabled={true}
+                tokenPrice={getMarketPricesForPoolToken(token)}
+                amount={tokenAmounts[index]}
+                amountChanged={(amount: string) => handleTokenAmountChange(index, amount)}
+                token={getTokenByAddress(tokenSet, token.address)}
+              />
+            ) : (
+              <div>
+                {singleExitToken &&
+                  singleExitToken.address.toLowerCase() === token.address.toLowerCase() && (
+                    <SingleCryptoAmountInput
+                      disabled={false}
+                      tokenPrice={getMarketPricesForPoolToken(token)}
+                      amount={tokenAmounts[index]}
+                      balance={ethers.utils.parseUnits(singleAssetMaxes[index], token.decimals)}
+                      amountChanged={(amount: string) => handleTokenAmountChange(index, amount)}
+                      token={getTokenByAddress(tokenSet, token.address)}
+                    />
+                  )}
+              </div>
+            )}
           </div>
         ))}
 
@@ -335,7 +419,7 @@ function PoolWithdraw({ pool }: { pool: Pool }) {
         <HorizontalLineBreak />
         <div className={'flex-row-center justify-between text-body'}>
           <div>Total:</div>
-          <div className={'font-mono'}>${calculateInvestTotal()}</div>
+          <div className={'font-mono'}>${sumOfAmountsInFiat}</div>
         </div>
         <div>
           <Button className={'w-full'} onClick={exit}>
@@ -404,12 +488,15 @@ function PoolInvest({ pool }: { pool: Pool }) {
     let total = 0;
     for (let i = 0; i < tokenAmounts.length; i++) {
       const amount = tokenAmounts[i];
-      const token = pool.tokens[i];
-      const tokenData = getTokenByAddress(tokenSet, token.address);
-      const data = getMarketDataForSymbol(marketPrices, tokenData.symbol);
-      if (data) {
-        const price = data && data.current_price;
-        total += price * parseFloat(amount);
+      console.log(amount);
+      if (!isNaN(parseFloat(amount))) {
+        const token = pool.tokens[i];
+        const tokenData = getTokenByAddress(tokenSet, token.address);
+        const data = getMarketDataForSymbol(marketPrices, tokenData.symbol);
+        if (data) {
+          const price = data && data.current_price;
+          total += price * parseFloat(amount);
+        }
       }
     }
     setSumOfAmountsInFiat(isNaN(total) ? null : total.toFixed(2));
@@ -509,6 +596,7 @@ function PoolInvest({ pool }: { pool: Pool }) {
   return (
     <div className={'flex flex-col'}>
       {tokenAmounts &&
+        tokenAmounts.length > 0 &&
         pool.tokens.map((token, tokenIndex: number) => (
           <div key={token.symbol} className={'px-2'}>
             <SingleCryptoAmountInput
@@ -595,9 +683,6 @@ export default function PoolFunctions({ pool }: { pool: Pool }) {
           <PoolWithdraw pool={pool} />
         </div>
       </DefaultTransition>
-      {/*{balancerFunction === BalancerFunction.Invest && <PoolInvest pool={pool} />}*/}
-      {/*{balancerFunction === BalancerFunction.Withdraw && <PoolWithdraw pool={pool} />}*/}
-      {/*<PoolInvest pool={pool}/>*/}
     </div>
   );
 }

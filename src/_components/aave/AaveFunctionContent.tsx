@@ -8,6 +8,7 @@ import { BigNumber, ethers } from 'ethers';
 import { ComputedReserveData } from '@aave/protocol-js';
 import NextHealthFactor from '_components/aave/NextHealthFactor';
 import { HealthFactorImpact, HealthFactorResource } from '_enums/aave';
+import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 
 export default function AaveFunctionContent({
   reserveTitle,
@@ -39,33 +40,42 @@ export default function AaveFunctionContent({
   healthFactorResource: HealthFactorResource;
 }) {
   return (
-    <div className={'flex flex-col md:flex-row justify-between space-x-0 md:space-x-2'}>
-      <div className={'w-full md:w-1/2'}>
+    <div className={'flex flex-col justify-between space-x-0 md:space-x-2'}>
+      <div className={'w-full'}>
         {userBalance && (
-          <UserReserveBalance
-            title={reserveTitle}
-            formattedUserAmount={ethers.utils.formatUnits(userBalance, token.decimals)}
+          <SingleCryptoAmountInput
+            disabled={false}
             tokenPrice={tokenPrice}
-          />
+            amount={amount}
+            balance={userBalance}
+            amountChanged={setAmount}
+            token={token}/>
         )}
-        {userBalance && (
-          <AmountInputWithPercentages
-            inputAmount={amount}
-            tokenDecimals={token.decimals}
-            setInputAmount={setAmount}
-            maxAmount={ethers.utils.formatUnits(userBalance?.toString(), token.decimals)}
-          />
-        )}
+        {/*{userBalance && (*/}
+        {/*  <UserReserveBalance*/}
+        {/*    title={reserveTitle}*/}
+        {/*    formattedUserAmount={ethers.utils.formatUnits(userBalance, token.decimals)}*/}
+        {/*    tokenPrice={tokenPrice}*/}
+        {/*  />*/}
+        {/*)}*/}
+        {/*{userBalance && (*/}
+        {/*  <AmountInputWithPercentages*/}
+        {/*    inputAmount={amount}*/}
+        {/*    tokenDecimals={token.decimals}*/}
+        {/*    setInputAmount={setAmount}*/}
+        {/*    maxAmount={ethers.utils.formatUnits(userBalance?.toString(), token.decimals)}*/}
+        {/*  />*/}
+        {/*)}*/}
       </div>
 
-      <div className={'w-full md:w-1/2 flex flex-col my-2 md:my-0'}>
+      <div className={'w-full flex flex-col my-2 md:my-0'}>
         <NextHealthFactor
           reserve={reserve}
           amount={amount}
           healthFactorImpact={healthFactorImpact}
           healthFactorResource={healthFactorResource}
         />
-        <TransactionAmountSummary tokenPrice={tokenPrice} title={summaryTitle} amount={amount} />
+        {/*<TransactionAmountSummary tokenPrice={tokenPrice} title={summaryTitle} amount={amount} />*/}
         {token && (
           <Button
             onClick={buttonOnClick}

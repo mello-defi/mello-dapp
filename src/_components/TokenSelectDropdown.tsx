@@ -31,7 +31,7 @@ export default function TokenSelectDropdown({
   }, [tokenSet, tokenFilter]);
   return (
     <div className="w-full my-2 sm:my-1">
-      <div className="mt-1 relative">
+      <div className="mt-1 relative text-color-dark">
         <button
           type="button"
           onClick={() => {

@@ -20,7 +20,6 @@ import { formatTokenValueInFiat } from '_services/priceService';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import { HealthFactorImpact, HealthFactorResource } from '_enums/aave';
 
-
 export async function runAaveApprovalTransaction(
   txs: EthereumTransactionTypeExtended[],
   provider: ethers.providers.Web3Provider,
@@ -251,4 +250,3 @@ export async function getRepayTransactions(
     interestRateMode: InterestRate.Variable
   });
 }
-
