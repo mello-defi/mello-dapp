@@ -34,7 +34,7 @@ export function getMarketData(
 ): Promise<MarketDataResult[]> {
   const params: CoinGeckoParams = {
     vs_currency: currency.toLocaleLowerCase(),
-    // TODOuse contract acddresses https://api.coingecko.com/api/v3/simple/token_price/polygon-pos?contract_addresses=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&vs_currencies=usd
+    // TODO use contract acddresses https://api.coingecko.com/api/v3/simple/token_price/polygon-pos?contract_addresses=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&vs_currencies=usd
     // ids: tokenIds.join(',').toLocaleLowerCase(),
     ids: [
       'bitcoin',

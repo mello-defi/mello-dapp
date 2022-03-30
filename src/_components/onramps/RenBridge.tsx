@@ -28,7 +28,7 @@ function RenBridge() {
   const [transactionStatus, setTransactionStatus] = useState('');
   const [transactionHash, setTransactionHash] = useState('');
 
-  // TODOneeds huge cleanup
+  // TODO needs huge cleanup
   const deposit = async () => {
     // @ts-ignore
     // console.log('userAddress', userAddress);

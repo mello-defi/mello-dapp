@@ -61,7 +61,7 @@ function OnboardingGuard() {
   );
 }
 
-// TODOgeneral
+// TODO general
 // retry failed requests with expontential backoff
 // standardise viewing/granting token allowances
 // constants for URLs (aave etc)

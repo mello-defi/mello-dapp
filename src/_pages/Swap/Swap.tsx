@@ -71,7 +71,7 @@ export default function Swap({
   const [transactionError, setTransactionError] = useState<string>('');
   const [priceRoute, setPriceRoute] = useState<OptimalRate>();
   const [isApproving, setIsApproving] = useState<boolean>(false);
-  // TODO-- redux?
+  // TODO -- redux?
   if (provider) {
     initialiseParaSwap(provider, network.chainId);
   }
@@ -161,7 +161,7 @@ export default function Swap({
       );
       logTransactionHash(approvalTxHash.hash, network.chainId);
       setApprovalTransactionHAsh(approvalTxHash.hash);
-      await approvalTxHash.wait(approvalGasResult?.blockTime || 3);
+      await approvalTxHash.wait(3);
     }
   };
 
@@ -186,7 +186,7 @@ export default function Swap({
         const swapTxHash = await executeEthTransaction(tx, provider);
         logTransactionHash(swapTxHash.hash, network.chainId);
         setSwapTransactionHash(swapTxHash.hash);
-        await swapTxHash.wait(actionGasResult?.blockTime || 3);
+        await swapTxHash.wait(3);
         setSwapConfirmed(true);
         resetState();
         dispatch(toggleBalancesAreStale(true));

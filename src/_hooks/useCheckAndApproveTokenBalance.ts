@@ -38,7 +38,7 @@ const useCheckAndApproveTokenBalance = () => {
         );
         logTransactionHash(approvalTxHash.hash, network.chainId);
         setTransactionHash(approvalTxHash.hash);
-        await approvalTxHash.wait(approvalGasResult?.blockTime || 3);
+        await approvalTxHash.wait(3);
       }
     }
   };

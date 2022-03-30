@@ -39,7 +39,7 @@ import { ExpandMore } from '@mui/icons-material';
 import AaveFunctionButton from '_components/aave/AaveFunctionButton';
 import { parseUnits } from 'ethers/lib/utils';
 
-// TODOhuge refactor needed, too big
+// TODO huge refactor needed, too big
 export default function AaveReserveRow({
   reserveSymbol,
   aaveSection
@@ -213,7 +213,7 @@ export default function AaveReserveRow({
     }
   };
 
-  // TODOall methods almost identical
+  // TODO all methods almost identical
   const handleBorrow = async () => {
     if (borrowAmount && provider && userAddress) {
       await handleAaveFunction(

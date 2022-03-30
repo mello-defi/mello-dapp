@@ -8,7 +8,7 @@ import Torus from '@toruslabs/torus-embed';
 import { socialsLogo } from '_assets/images';
 
 const polygonRpcUrl = process.env.REACT_APP_POLYGON_RPC_URL;
-// TODOmove these to env vars, remove hardcoded network values
+// TODO move these to env vars, remove hardcoded network values
 const providerOptions: IProviderOptions = {
   // walletconnect: {
   //   package: WalletConnectProvider, // required

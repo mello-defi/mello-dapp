@@ -105,13 +105,13 @@ export default function SendCrypto() {
         }
         setTokenApproved(true);
         const gasPriceResult = await getGasPrice(network.gasStationUrl);
-        const amountMinusGas = amountInUnits.sub(gasPriceResult?.fastest || 0);
+        const finalAmount = token.isGasToken ? amountInUnits.sub(gasPriceResult?.fastest || 0) : amountInUnits;
         const txResponse: TransactionResponse = await sendErc20Token(
           token,
           signer,
           userAddress,
           destinationAddress,
-          amountMinusGas,
+          finalAmount,
           gasPriceResult?.fastest
         );
         logTransactionHash(txResponse.hash, network.chainId);
