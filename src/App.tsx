@@ -66,6 +66,8 @@ function OnboardingGuard() {
 // FIx onboarding
 // (if time) fix aave chevrom
 // add native assets to aave balancer
+// Fix native asset send option
+// add secondary debounces to swap inputs
 // retry failed requests with expontential backoff
 // standardise viewing/granting token allowances
 // constants for URLs (aave etc)
