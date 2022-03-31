@@ -6,6 +6,7 @@ import PoolSkeleton from '_components/balancer/PoolSkeleton';
 import useUserBalancerPools from '_hooks/useUserBalancerPools';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { balLogo } from '_assets/images';
+import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 
 export default function UserPools() {
   const { userPools, totalInvestedAmount } = useUserBalancerPools();
@@ -21,20 +22,19 @@ export default function UserPools() {
       {userPools && userPools?.length > 0 && (
         <div>
           <div className={'flex-row-center justify-between px-2 mb-2'}>
-            <span className={'text-body'}>Investments</span>
-            {/*{totalInvestedAmount && (*/}
-            {/*  <span>*/}
-            {/*    Total invested:{' '}*/}
-            {/*    <span className={'font-mono'}>*/}
-            {/*      $*/}
-            {/*      {totalInvestedAmount.toLocaleString(undefined, {*/}
-            {/*        minimumFractionDigits: 2,*/}
-            {/*        maximumFractionDigits: 2*/}
-            {/*      })}*/}
-            {/*    </span>*/}
-            {/*  </span>*/}
-            {/*)}*/}
-            <PoweredByLink url={'https://balancer.fi/#/'} logo={balLogo} />
+            <span className={'text-body'}>My investments</span>
+            {totalInvestedAmount && (
+              <span>
+                Total invested:{' '}
+                <span className={'font-mono'}>
+                  $
+                  {totalInvestedAmount.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}
+                </span>
+              </span>
+            )}
           </div>
           {userPools.map((userPool: UserPool) => (
             <PoolRow
@@ -43,6 +43,7 @@ export default function UserPools() {
               userBalance={calculateUserSharesInFiat(userPool.poolId, userPool)}
             />
           ))}
+          <HorizontalLineBreak />
         </div>
       )}
     </>
