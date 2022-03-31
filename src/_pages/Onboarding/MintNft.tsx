@@ -22,7 +22,6 @@ export default function MintNft () {
   //   }
   // }
 
-  const signer = useSelector((state: AppState) => state.web3.signer);
   const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
   const dispatch = useDispatch();
   const signMessage = async () => {
@@ -30,11 +29,9 @@ export default function MintNft () {
   };
   return (
     <div className={'flex justify-center mb-2'}>
-      {signer && (
-        <Button className={'w-full md:w-1/2'} onClick={signMessage}>
-          Mint NFT
-        </Button>
-      )}
+      <Button className={'w-full md:w-1/2'} onClick={signMessage}>
+        Mint NFT
+      </Button>
     </div>
   );
 }

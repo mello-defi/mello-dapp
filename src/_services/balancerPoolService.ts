@@ -17,7 +17,7 @@ export async function joinPool(
   const options: TransactionRequest = {};
   if (gasPrice) {
     options.gasPrice = gasPrice.toString();
-    options.gasLimit
+    options.gasLimit = '300000';
   }
   let userData: string;
   if (isStable(pool.poolType)) {
@@ -51,6 +51,7 @@ async function exitPool(
   const options: TransactionRequest = {};
   if (gasPrice) {
     options.gasPrice = gasPrice.toString();
+    options.gasLimit = '300000';
   }
   return await vault.exitPool(
     pool.id,
