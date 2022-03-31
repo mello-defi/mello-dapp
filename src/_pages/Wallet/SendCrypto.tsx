@@ -173,6 +173,7 @@ export default function SendCrypto() {
           !ethers.utils.isAddress(destinationAddress) ||
           !token ||
           !amountToSend ||
+          amountToSend !== '' &&
           parseFloat(amountToSend) === 0 ||
           (walletBalance &&
             (parseUnits(amountToSend, token.decimals).gt(walletBalance) ||
@@ -185,6 +186,7 @@ export default function SendCrypto() {
           ? 'Invalid address'
           : token &&
             walletBalance &&
+            amountToSend !== '' &&
             token.isGasToken &&
             parseUnits(amountToSend, token.decimals).eq(walletBalance)
           ? 'You cannot send all of your gas token'
