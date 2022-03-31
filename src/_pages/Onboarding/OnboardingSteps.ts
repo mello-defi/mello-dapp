@@ -14,6 +14,7 @@ import StepDepositAave from '_pages/Onboarding/StepDescriptions/StepDepositAave'
 import StepBorrowAave from '_pages/Onboarding/StepDescriptions/StepBorrowAave';
 import StepMintNft from '_pages/Onboarding/StepDescriptions/StepMintNft';
 import StepTermsAndConditions from '_pages/Onboarding/StepDescriptions/StepTermsAndConditions';
+import MintNft from '_pages/Onboarding/MintNft';
 
 export interface OnboardingStep {
   number: number;
@@ -28,6 +29,7 @@ export const stepMintNft: OnboardingStep = {
   number: 8,
   title: 'Mint mello NFT',
   nextStep: null,
+  actionComponent: MintNft,
   descriptionComponent: StepMintNft
 };
 export const stepBorrowAave: OnboardingStep = {
