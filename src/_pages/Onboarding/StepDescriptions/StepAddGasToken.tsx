@@ -19,7 +19,7 @@ export default function StepAddGasToken() {
       </a>
     </>
   );
-  const notes = <>We recommend Mt Pellerin for EU customers and Ramp for all non-EU customers</>;
+  const notes = <>We recommend Mt Pelerin for EU customers and Ramp for all non-EU customers</>;
 
   return (
     <OnboardingStepDescription
