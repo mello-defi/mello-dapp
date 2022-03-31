@@ -3,7 +3,7 @@ import { Dispatch } from 'redux';
 import {
   setCurrentStepAction,
   setOnboardingCompleteAction,
-  setOnboardingOngoingAction
+  setOnboardingOngoingAction, setWaitingToAdvanceAction
 } from '_redux/actions/onboardingActions';
 
 export const setStep = (step: number) => {
@@ -12,6 +12,11 @@ export const setStep = (step: number) => {
   };
 };
 
+export const setWaitingToAdvance = (waiting: boolean) => {
+  return function (dispatch: Dispatch<OnboardingActionTypes>) {
+    dispatch(setWaitingToAdvanceAction(waiting));
+  };
+};
 export const setOnboardingComplete = (complete: boolean) => {
   return function (dispatch: Dispatch<OnboardingActionTypes>) {
     dispatch(setOnboardingCompleteAction(complete));

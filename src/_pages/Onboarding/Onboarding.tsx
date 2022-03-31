@@ -14,8 +14,7 @@ import { NavTab } from '_redux/types/uiTypes';
 
 export default function Onboarding() {
   const dispatch = useDispatch();
-  const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
-  const onboardingComplete = useSelector((state: AppState) => state.onboarding.complete);
+  const { complete: onboardingComplete, waitingToAdvance, currentStep } = useSelector((state: AppState) => state.onboarding);
   const { tokenSet, provider } = useSelector((state: AppState) => state.web3);
   const gasToken = Object.values(tokenSet).find((token) => token.isGasToken);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
