@@ -100,9 +100,9 @@ interface TabContentDefinition {
 // TODO move somewhere else
 export const navLinks: NavLinkDefinition[] = [
   { tab: NavTab.DASHBOARD, title: NavTab.DASHBOARD },
-  { tab: NavTab.INVEST, title: NavTab.INVEST },
   { tab: NavTab.DEPOSIT, title: NavTab.DEPOSIT },
   { tab: NavTab.BORROW, title: NavTab.BORROW },
+  { tab: NavTab.INVEST, title: NavTab.INVEST },
   { tab: NavTab.SWAP, title: NavTab.SWAP },
   { tab: NavTab.FUND, title: NavTab.FUND },
   { tab: NavTab.ONBOARDING, title: NavTab.ONBOARDING }
