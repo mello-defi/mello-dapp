@@ -62,8 +62,10 @@ function OnboardingGuard() {
 }
 
 // TODO general
+// NFT minting
+// FIx onboarding
+// (if time) fix aave chevrom
 // add native assets to aave balancer
-// make aave chevron dropdown
 // retry failed requests with expontential backoff
 // standardise viewing/granting token allowances
 // constants for URLs (aave etc)
