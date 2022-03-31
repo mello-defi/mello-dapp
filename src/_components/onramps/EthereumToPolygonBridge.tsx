@@ -157,62 +157,68 @@ export default function EthereumToPolygonBridge() {
 
   return (
     <div>
-      {depositAddress && (
-        <div className={'flex flex-col'}>
-          <div className={'flex-row-center justify-between'}>
-            <span className={'text-body'}>Bridge ETH</span>
-            <PoweredByLink url={'https://hyphen.biconomy.io/'} logo={hyphenLogo} isRound={false} />
+      {network.chainId !== EVMChainIdNumerical.ETHEREUM_MAINNET ? (
+        <span className={'text-header'}>Please switch to Ethereum mainnet and refresh the page</span>
+      ): (
+        <>
+        {depositAddress && (
+          <div className={'flex flex-col'}>
+            <div className={'flex-row-center justify-between'}>
+              <span className={'text-body'}>Bridge ETH</span>
+              <PoweredByLink url={'https://hyphen.biconomy.io/'} logo={hyphenLogo} isRound={false} />
+            </div>
+            {ethereumPrice && (
+              <SingleCryptoAmountInput
+                disabled={isTransferring}
+                tokenPrice={ethereumPrice?.current_price}
+                amount={transferAmount}
+                amountChanged={setTransferAmount}
+                token={ethereumTokenDefinition}
+              />
+            )}
+            <Button className={'mt-4'} onClick={deposit} disabled={isTransferring}>
+              Deposit
+            </Button>
+            {(isTransferring || polygonTransferComplete) && (
+              <>
+                <TransactionStep
+                  show={true}
+                  transactionError={transactionError}
+                  stepComplete={depositAddress !== ''}
+                >
+                  Deposit address generated
+                </TransactionStep>
+                <TransactionStep
+                  show={depositAddress !== ''}
+                  requiresUserInput={true}
+                  transactionError={transactionError}
+                  stepComplete={!!transferAmount && parseFloat(transferAmount) > 0}
+                >
+                  Transfer amount set
+                </TransactionStep>
+                <TransactionStep
+                  show={isTransferring}
+                  transactionError={transactionError}
+                  stepComplete={ethereumTransactionComplete}
+                >
+                  Ethereum transaction complete
+                  <BlockExplorerLink transactionHash={ethereumTransactionHash} />
+                </TransactionStep>
+                <TransactionStep
+                  showTransition={false}
+                  show={ethereumTransactionComplete}
+                  transactionError={transactionError}
+                  stepComplete={polygonTransferComplete}
+                >
+                  Polygon transaction complete
+                  <BlockExplorerLink transactionHash={polygonTransactionHash} />
+                </TransactionStep>
+                <TransactionError transactionError={transactionError} />
+              </>
+            )}
           </div>
-          {ethereumPrice && (
-            <SingleCryptoAmountInput
-              disabled={isTransferring}
-              tokenPrice={ethereumPrice?.current_price}
-              amount={transferAmount}
-              amountChanged={setTransferAmount}
-              token={ethereumTokenDefinition}
-            />
-          )}
-          <Button className={'mt-4'} onClick={deposit} disabled={isTransferring}>
-            Deposit
-          </Button>
-          {(isTransferring || polygonTransferComplete) && (
-            <>
-              <TransactionStep
-                show={true}
-                transactionError={transactionError}
-                stepComplete={depositAddress !== ''}
-              >
-                Deposit address generated
-              </TransactionStep>
-              <TransactionStep
-                show={depositAddress !== ''}
-                requiresUserInput={true}
-                transactionError={transactionError}
-                stepComplete={!!transferAmount && parseFloat(transferAmount) > 0}
-              >
-                Transfer amount set
-              </TransactionStep>
-              <TransactionStep
-                show={isTransferring}
-                transactionError={transactionError}
-                stepComplete={ethereumTransactionComplete}
-              >
-                Ethereum transaction complete
-                <BlockExplorerLink transactionHash={ethereumTransactionHash} />
-              </TransactionStep>
-              <TransactionStep
-                showTransition={false}
-                show={ethereumTransactionComplete}
-                transactionError={transactionError}
-                stepComplete={polygonTransferComplete}
-              >
-                Polygon transaction complete
-                <BlockExplorerLink transactionHash={polygonTransactionHash} />
-              </TransactionStep>
-              <TransactionError transactionError={transactionError} />
-            </>
-          )}
-        </div>
+        )}
+        </>
       )}
     </div>
   );
