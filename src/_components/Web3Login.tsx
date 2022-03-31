@@ -9,6 +9,8 @@ import { stepSignMessage } from '_pages/Onboarding/OnboardingSteps';
 
 function App() {
   const dispatch = useDispatch();
+  const { complete, ongoing } = useSelector((state: AppState) => state.onboarding);
+
   const network = useSelector((state: AppState) => state.web3.network);
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
   const address = useSelector((state: AppState) => state.wallet.address);
@@ -19,7 +21,10 @@ function App() {
         dispatch(setAddress(address));
       });
       // TODO decouple
-      dispatch(setStep(stepSignMessage.number));
+      // TODO change to incrementStep() no number
+      if (!complete && ongoing) {
+        dispatch(setStep(stepSignMessage.number));
+      }
     }
   }, [isConnected, network, dispatch]);
 

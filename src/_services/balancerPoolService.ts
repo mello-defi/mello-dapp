@@ -1,10 +1,10 @@
 import { Pool, PoolToken } from '_interfaces/balancer';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
-import { StablePoolEncoder, WeightedPoolEncoder } from '@balancer-labs/sdk';
 import { MaxUint256 } from '_utils/maths';
 import { isStable } from '_services/balancerCalculatorService';
 import { getWriteVaultContract } from '_services/balancerVaultService';
+import { StablePoolEncoder, WeightedPoolEncoder } from '_enums/balancer';
 
 export async function joinPool(
   pool: Pool,

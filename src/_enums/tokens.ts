@@ -120,6 +120,7 @@ export interface EthereumTokens {
   weth: EvmTokenDefinition;
 }
 
+// TODO move token definitions to separate file
 export const ethereumTokens: EthereumTokens = {
   eth: {
     symbol: CryptoCurrencySymbol.ETH,

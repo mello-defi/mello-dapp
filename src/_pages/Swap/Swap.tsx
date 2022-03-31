@@ -49,15 +49,18 @@ export default function Swap({
   const [sourceTokenBalance, setSourceTokenBalance] = useState<BigNumber | undefined>();
   const walletBalances = useWalletBalances();
 
-  useEffect(() => {
-    if (initialSourceTokenSymbol) {
-      setSourceTokenBalance(walletBalances[initialSourceTokenSymbol]?.balance);
-    }
-  }, [walletBalances, initialSourceTokenSymbol]);
   const [destinationToken, setDestinationToken] = useState<EvmTokenDefinition>(
     (initialDestinationTokenSymbol && tokenSet[initialDestinationTokenSymbol]) ||
       Object.values(tokenSet)[1]
   );
+  useEffect(() => {
+    if (sourceToken) {
+      setSourceTokenBalance(walletBalances[sourceToken.symbol]?.balance);
+    }
+  }, [sourceToken, walletBalances])
+  const { complete, ongoing } = useSelector((state: AppState) => state.onboarding);
+
+  console.log('sourceTokenBalance', sourceTokenBalance)
   const [sourceTokenDisabled, setSourceTokenDisabled] = useState<boolean>(false);
   const [destinationTokenDisabled, setDestinationTokenDisabled] = useState<boolean>(false);
   const [sourceAmount, setSourceAmount] = useState<string>('0.0');
@@ -190,7 +193,9 @@ export default function Swap({
         setSwapConfirmed(true);
         resetState();
         dispatch(toggleBalancesAreStale(true));
-        dispatch(setStep(stepPerformSwap.number + 1));
+        if (ongoing && !complete) {
+          dispatch(setStep(stepPerformSwap.number + 1));
+        }
       } catch (e: any) {
         console.error(e);
         const errorParsed = typeof e === 'string' ? (JSON.parse(e) as EthereumTransactionError) : e;
@@ -246,7 +251,7 @@ export default function Swap({
         amount={sourceAmount}
         amountChanged={sourceAmountChanged}
         disabled={isSwapping || sourceTokenDisabled}
-        // source={SwapSide.SELL}
+        allowAmountOverMax={false}
       />
       <div
         className={
@@ -270,7 +275,6 @@ export default function Swap({
         amount={destinationAmount}
         amountChanged={setDestinationAmount}
         disabled={isSwapping || destinationTokenDisabled}
-        // source={SwapSide.BUY}
       />
       <TransactionError transactionError={fetchingPriceError} />
       <SwapPriceInformation
@@ -282,6 +286,7 @@ export default function Swap({
         slippagePercentage={slippagePercentage}
       />
       <Button
+        // TODO fix duplicate conditions
         disabled={
           isSwapping ||
           isApproving ||
@@ -296,6 +301,7 @@ export default function Swap({
             sourceToken.isGasToken &&
             sourceAmount !== '' &&
             parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance))
+          || (sourceTokenBalance && sourceAmount !== '' && parseUnits(sourceAmount, sourceToken.decimals).gt(sourceTokenBalance))
         }
         onClick={handleSwap}
         className={'w-full mt-2 flex-row-center justify-center'}
@@ -307,10 +313,11 @@ export default function Swap({
         {!isSwapping && !isApproving
           ? sourceTokenBalance &&
             sourceToken &&
+            sourceAmount !== '' &&
             sourceToken.isGasToken &&
             parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance)
             ? 'You cannot Swap all of your gas token'
-            : 'Swap'
+            : sourceToken && sourceTokenBalance && sourceAmount !== '' && parseUnits(sourceAmount, sourceToken.decimals).gt(sourceTokenBalance) ? 'Insufficient funds' : 'Swap'
           : ''}
       </Button>
       <div className={'text-body px-2 my-2'}>

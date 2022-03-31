@@ -6,9 +6,11 @@ import { Spinner, SpinnerSize } from '_components/core/Animations';
 import useWalletBalances from '_hooks/useWalletBalances';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { BigNumber, ethers } from 'ethers';
-import { decimalPlacesAreValid } from '_utils/index';
+import { amountIsValidNumberGtZero, decimalPlacesAreValid } from '_utils/index';
 import MaxAmountButton from '_components/core/MaxAmountButton';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import BaseCryptoInput from '_components/core/BaseCryptoInput';
+import { DefaultTransition } from '_components/core/Transition';
 
 export default function MultiCryptoAmountInput({
   token,
@@ -16,7 +18,8 @@ export default function MultiCryptoAmountInput({
   amount,
   amountChanged,
   disabled,
-  amountInFiat
+  amountInFiat,
+  allowAmountOverMax = true,
 }: {
   token?: EvmTokenDefinition;
   tokenChanged: (token: EvmTokenDefinition) => void;
@@ -24,15 +27,28 @@ export default function MultiCryptoAmountInput({
   amountChanged: (amount: string) => void;
   disabled: boolean;
   amountInFiat: number;
+  allowAmountOverMax?: boolean;
 }) {
-  const marketPrices = useMarketPrices();
 
-  const [userBalance, setUserBalance] = useState<BigNumber | undefined>();
+  const [amountGreaterThanUserBalance, setAmountGreaterThanUserBalance] = React.useState(false);
+  const [userTokenBalance, setUserTokenBalance] = useState<BigNumber | undefined>();
+  const marketPrices = useMarketPrices();
   const walletBalances = useWalletBalances();
 
   useEffect(() => {
+    if (!allowAmountOverMax && userTokenBalance && token) {
+      if (amountIsValidNumberGtZero(amount)) {
+        const amountBn = parseUnits(amount, token.decimals);
+        setAmountGreaterThanUserBalance(userTokenBalance.lt(amountBn));
+      } else {
+        setAmountGreaterThanUserBalance(false);
+      }
+    }
+  }, [amount, userTokenBalance, token]);
+
+  useEffect(() => {
     if (token) {
-      setUserBalance(walletBalances[token.symbol]?.balance);
+      setUserTokenBalance(walletBalances[token.symbol]?.balance);
     }
   }, [walletBalances, token]);
   const [tokenPrice, setTokenPrice] = useState<number>();
@@ -49,26 +65,10 @@ export default function MultiCryptoAmountInput({
     }
   }, [token, marketPrices]);
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (userBalance) {
-      let value = e.target.value;
-      if (token && value && !decimalPlacesAreValid(value, token?.decimals)) {
-        value = value.substring(0, value.length - 1);
-      }
-      if (value && /^[0-9.]*$/.test(value) && userBalance.lt(parseUnits(value, token?.decimals))) {
-        value = formatUnits(userBalance, token?.decimals);
-      }
-      if (parseFloat(value) < 0) {
-        value = '0.0';
-      }
-      amountChanged(value);
-    }
-  };
-
   return (
     <div
       className={
-        'rounded-2xl text-body-smaller transition border border-gray-50 bg-gray-100 px-2 sm:px-4 flex flex-col items-center justify-between hover:border-gray-200 transition mt-2'
+        'rounded-2xl text-body-smaller transition border border-gray-50 bg-gray-100 px-2 sm:px-4 flex flex-col items-end justify-between hover:border-gray-200 transition mt-2'
       }
     >
       <div
@@ -77,20 +77,9 @@ export default function MultiCryptoAmountInput({
         }`}
       >
         <div className={'mr-2 w-full md:w-2/3'}>
-          <input
-            step={'0.01'}
-            onWheel={(e) => e.currentTarget.blur()}
-            type={'number'}
-            disabled={disabled}
-            // style={{fontFamily: 'monospace'}}
-            className={`text-2xl font-mono sm:text-3xl bg-gray-100 focus:outline-none px-2 sm:px-0 mt-2 sm:mt-0 py-1 sm:py-0 ${
-              parseFloat(amount) === 0 ? 'text-gray-400' : 'text-gray-700'
-            }`}
-            // value={Number(amount).toString() === '0' ? '0.0' : Number(amount).toString()}
-            // value={Number(amount).toString()}
-            value={amount}
-            onChange={handleInputChange}
-          />
+          {token && (
+            <BaseCryptoInput amount={amount} amountChanged={amountChanged} disabled={disabled} tokenDecimals={token.decimals}/>
+          )}
         </div>
         <div className={'w-full md:w-1/3'}>
           <div className={'flex flex-col'}>
@@ -117,21 +106,26 @@ export default function MultiCryptoAmountInput({
         {token && (
           <div className={'text-right px-0 sm:px-1 flex-row-center'}>
             Balance:{' '}
-            {userBalance ? (
-              <div className={'font-mono ml-1'}>{formatUnits(userBalance, token?.decimals)}</div>
+            {userTokenBalance ? (
+              <div className={'font-mono ml-1'}>{formatUnits(userTokenBalance, token?.decimals)}</div>
             ) : (
               <span className={'ml-1'}>
                 {token && <Spinner show={true} size={SpinnerSize.SMALL} />}
               </span>
             )}
-            {userBalance && (
+            {userTokenBalance && (
               <MaxAmountButton
-                onClick={() => amountChanged(formatUnits(userBalance, token?.decimals))}
+                onClick={() => amountChanged(formatUnits(userTokenBalance, token?.decimals))}
               />
             )}
           </div>
         )}
       </div>
+      <DefaultTransition isOpen={amountGreaterThanUserBalance && !allowAmountOverMax}>
+        <div className={'flex-row-center text-body-smaller justify-end px-2 pb-2'}>
+          <span className={'text-red-400'}>Insufficient balance</span>
+        </div>
+      </DefaultTransition>
     </div>
   );
 }

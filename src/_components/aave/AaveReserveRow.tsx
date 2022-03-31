@@ -50,6 +50,7 @@ export default function AaveReserveRow({
   const dispatch = useDispatch();
   const aaveReserves = useAaveReserves();
   const userSummary = useAaveUserSummary();
+  const { complete, ongoing } = useSelector((state: AppState) => state.onboarding);
   const { provider, network, tokenSet } = useSelector((state: AppState) => state.web3);
 
   // const userSummaryStale = useSelector((state: AppState) => state.aave.userSummaryStale);
@@ -200,7 +201,7 @@ export default function AaveReserveRow({
         dispatch(toggleUserSummaryStale(true));
         dispatch(toggleBalancesAreStale(true));
         // TODO decouple from component
-        if (nextStep) {
+        if (nextStep && ongoing && !complete) {
           dispatch(setStep(nextStep));
         }
       } catch (e: any) {

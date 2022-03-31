@@ -62,8 +62,10 @@ function OnboardingGuard() {
 }
 
 // TODO general
+// NFT minting
+// FIx onboarding
+// (if time) fix aave chevrom
 // add native assets to aave balancer
-// make aave chevron dropdown
 // retry failed requests with expontential backoff
 // standardise viewing/granting token allowances
 // constants for URLs (aave etc)
@@ -98,9 +100,9 @@ interface TabContentDefinition {
 // TODO move somewhere else
 export const navLinks: NavLinkDefinition[] = [
   { tab: NavTab.DASHBOARD, title: NavTab.DASHBOARD },
-  { tab: NavTab.INVEST, title: NavTab.INVEST },
   { tab: NavTab.DEPOSIT, title: NavTab.DEPOSIT },
   { tab: NavTab.BORROW, title: NavTab.BORROW },
+  { tab: NavTab.INVEST, title: NavTab.INVEST },
   { tab: NavTab.SWAP, title: NavTab.SWAP },
   { tab: NavTab.FUND, title: NavTab.FUND },
   { tab: NavTab.ONBOARDING, title: NavTab.ONBOARDING }

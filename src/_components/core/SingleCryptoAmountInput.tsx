@@ -6,6 +6,7 @@ import { BigNumber, ethers } from 'ethers';
 import { DefaultTransition } from '_components/core/Transition';
 import MaxAmountButton from '_components/core/MaxAmountButton';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import BaseCryptoInput from '_components/core/BaseCryptoInput';
 
 export default function SingleCryptoAmountInput({
   disabled,
@@ -25,16 +26,6 @@ export default function SingleCryptoAmountInput({
   maxAmount?: BigNumber;
 }) {
   const [amountGreaterThanMax, setAmountGreaterThanMax] = React.useState(false);
-  const handleAmountChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let value = event.target.value;
-    if (token && value && !decimalPlacesAreValid(value, token.decimals)) {
-      value = value.substring(0, value.length - 1);
-    }
-    if (parseFloat(value) < 0) {
-      value = '0.0';
-    }
-    amountChanged(value);
-  };
 
   useEffect(() => {
     if (maxAmount) {
@@ -57,23 +48,7 @@ export default function SingleCryptoAmountInput({
                 ${disabled ? 'text-gray-400 cursor-default' : ''}
       `}
       >
-        <input
-          disabled={disabled}
-          onFocus={() => {
-            if (amountIsValidNumberGtZero(amount)) {
-              return;
-            }
-            amountChanged('');
-          }}
-          onWheel={(e) => e.currentTarget.blur()}
-          type={'number'}
-          min={'0'}
-          className={`text-2xl w-3/5 font-mono sm:text-3xl bg-gray-100 focus:outline-none px-2 sm:px-0 sm:mt-0 py-1 sm:py-0 ${
-            disabled ? 'text-gray-400' : 'text-color-dark'
-          }`}
-          value={amount}
-          onChange={handleAmountChanged}
-        />
+        <BaseCryptoInput amount={amount} amountChanged={amountChanged} disabled={disabled} tokenDecimals={token.decimals}/>
         <span className="flex-row-center max-w-2/5 items-center rounded-2xl bg-white px-4 py-2 justify-center">
           <img src={token.image} alt="person" className="flex-shrink-0 h-6 w-6 rounded-full" />
           <span className="ml-2 block truncate">{token.symbol}</span>
