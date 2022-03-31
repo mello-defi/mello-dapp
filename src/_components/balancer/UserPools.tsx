@@ -38,7 +38,7 @@ export default function UserPools() {
           </div>
           {userPools.map((userPool: UserPool) => (
             <PoolRow
-              pool={userPool.poolId}
+              poolId={userPool.poolId.id}
               key={userPool.id}
               userBalance={calculateUserSharesInFiat(userPool.poolId, userPool)}
             />

@@ -15,6 +15,10 @@ import StepBorrowAave from '_pages/Onboarding/StepDescriptions/StepBorrowAave';
 import StepMintNft from '_pages/Onboarding/StepDescriptions/StepMintNft';
 import StepTermsAndConditions from '_pages/Onboarding/StepDescriptions/StepTermsAndConditions';
 import MintNft from '_pages/Onboarding/MintNft';
+import PoolRow from '_components/balancer/PoolRow';
+import StepInvestBalancer from '_pages/Onboarding/StepDescriptions/StepInvestBalancer';
+import StepComplete from '_pages/Onboarding/StepDescriptions/StepComplete';
+import CompleteOnboarding from '_pages/Onboarding/CompleteOnboarding';
 
 export interface OnboardingStep {
   number: number;
@@ -24,18 +28,34 @@ export interface OnboardingStep {
   actionComponentProps?: any;
   descriptionComponent: FunctionComponent<any>;
 }
-
-export const stepMintNft: OnboardingStep = {
-  number: 8,
-  title: 'Mint mello NFT',
+export const stepCompleteOnboarding: OnboardingStep = {
+  number: 10,
+  title: 'Complete',
   nextStep: null,
+  actionComponent: CompleteOnboarding,
+  descriptionComponent: StepComplete
+};
+export const stepMintNft: OnboardingStep = {
+  number: 9,
+  title: 'Mint mello NFT',
+  nextStep: stepCompleteOnboarding,
   actionComponent: MintNft,
   descriptionComponent: StepMintNft
+};
+export const stepInvestBalancer: OnboardingStep = {
+  number: 8,
+  title: 'Invest $USDC',
+  nextStep: stepMintNft,
+  actionComponent: PoolRow,
+  actionComponentProps: {
+    poolId: '0x06df3b2bbb68adc8b0e302443692037ed9f91b42000000000000000000000012',
+  },
+  descriptionComponent: StepInvestBalancer
 };
 export const stepBorrowAave: OnboardingStep = {
   number: 7,
   title: 'Borrow $USDC from Aave',
-  nextStep: stepMintNft,
+  nextStep: stepInvestBalancer,
   actionComponent: AaveReserveRow,
   actionComponentProps: {
     aaveSection: AaveSection.Borrow,
@@ -103,5 +123,7 @@ export const steps: OnboardingStep[] = [
   stepPerformSwap,
   stepDepositAave,
   stepBorrowAave,
-  stepMintNft
+  stepInvestBalancer,
+  stepMintNft,
+  stepCompleteOnboarding
 ];

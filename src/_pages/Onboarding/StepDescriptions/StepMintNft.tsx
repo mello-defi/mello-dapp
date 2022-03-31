@@ -8,7 +8,7 @@ export default function StepMintNft() {
       future.
       <br />
       <br />
-      View the NFT here
+      <i>Note: this feature is coming soon!</i>
     </>
   );
   return (

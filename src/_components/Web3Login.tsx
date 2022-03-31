@@ -21,6 +21,7 @@ function App() {
         dispatch(setAddress(address));
       });
       // TODO decouple
+      // TODO change to incrementStep() no number
       if (!complete && ongoing) {
         dispatch(setStep(stepSignMessage.number));
       }

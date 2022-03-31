@@ -10,8 +10,7 @@ import PoweredByLink from '_components/core/PoweredByLink';
 import { balLogo } from '_assets/images';
 
 export default function Invest() {
-  const prices = useMarketPrices();
-  const pools = useBalancerPools(prices);
+  const pools = useBalancerPools();
   // TODO - check for chain ID and display balancer in chain [137, arbitrum] etc
   return (
     <div>
@@ -30,7 +29,7 @@ export default function Invest() {
         </div>
       )}
       {pools?.map((p: Pool) => {
-        return <PoolRow key={p.id} pool={p} />;
+        return <PoolRow key={p.id} poolId={p.id} />;
       })}
     </div>
   );
