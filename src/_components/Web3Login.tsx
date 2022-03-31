@@ -54,7 +54,7 @@ function App() {
         variant={ButtonVariant.PRIMARY}
         onClick={() => login()}
       >
-        Connect Wallet
+        Connect
       </Button>
     </div>
   );
