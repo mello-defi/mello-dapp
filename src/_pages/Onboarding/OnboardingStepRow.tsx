@@ -71,7 +71,7 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
                 </div>
               </DefaultTransition>
             </div>
-            {step.number === currentStep && step.actionComponent !== undefined &&
+            {(step.number === currentStep || waitingToAdvance) && step.actionComponent !== undefined &&
             ((currentStep - 1 === step.number && waitingToAdvance) || !waitingToAdvance || (waitingToAdvance && currentStep === step.number + 1)) && (
               <>
                 <HorizontalLineBreak />
