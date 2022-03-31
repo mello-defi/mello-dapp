@@ -6,6 +6,8 @@ import { isStable } from '_services/balancerCalculatorService';
 import { getWriteVaultContract } from '_services/balancerVaultService';
 import { StablePoolEncoder, WeightedPoolEncoder } from '_enums/balancer';
 
+const GAS_LIMIT_BUFFER = 0.1;
+
 export async function joinPool(
   pool: Pool,
   userAddress: string,
@@ -17,7 +19,6 @@ export async function joinPool(
   const options: TransactionRequest = {};
   if (gasPrice) {
     options.gasPrice = gasPrice.toString();
-    options.gasLimit = '300000';
   }
   let userData: string;
   if (isStable(pool.poolType)) {
@@ -25,7 +26,7 @@ export async function joinPool(
   } else {
     userData = WeightedPoolEncoder.joinExactTokensInForBPTOut(amountsIn, BigNumber.from('0'));
   }
-  return await vault.joinPool(
+  const params = [
     pool.id,
     userAddress,
     userAddress,
@@ -35,10 +36,35 @@ export async function joinPool(
       fromInternalBalance: false,
       userData
     },
+  ]
+  return executeBalancerTransaction(
+    vault,
+    'joinPool',
+    params,
     options
   );
 }
 
+async function executeBalancerTransaction(
+  contract: Contract,
+  method: string,
+  params: any[],
+  options: TransactionRequest,
+): Promise<TransactionResponse> {
+  const gasLimitNumber = await contract.estimateGas[method](
+    ...params,
+    options
+  );
+  const gasLimit = Math.floor(gasLimitNumber.toNumber() * (1 + GAS_LIMIT_BUFFER));
+  options.gasLimit = gasLimit.toString();
+  return await contract[method](
+    ...params,
+    {
+      ...options,
+      gasLimit
+    }
+  )
+}
 async function exitPool(
   pool: Pool,
   userAddress: string,
@@ -51,9 +77,8 @@ async function exitPool(
   const options: TransactionRequest = {};
   if (gasPrice) {
     options.gasPrice = gasPrice.toString();
-    options.gasLimit = '300000';
   }
-  return await vault.exitPool(
+  const params = [
     pool.id,
     userAddress,
     userAddress,
@@ -63,11 +88,16 @@ async function exitPool(
       fromInternalBalance: false,
       userData
     },
+  ]
+  return executeBalancerTransaction(
+    vault,
+    'exitPool',
+    params,
     options
   );
 }
 
-export async function exitPoolOneTokenOut(
+export async function exitPoolForOneTokenOut(
   pool: Pool,
   userAddress: string,
   signer: ethers.Signer,
@@ -84,7 +114,7 @@ export async function exitPoolOneTokenOut(
   }
   return await exitPool(pool, userAddress, signer, amountsOut, userData, gasPrice);
 }
-export async function exitPoolAllTokensOut(
+export async function exitPoolForExactTokensOut(
   pool: Pool,
   userAddress: string,
   signer: ethers.Signer,
