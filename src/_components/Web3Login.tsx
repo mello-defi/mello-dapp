@@ -5,11 +5,11 @@ import { AppState } from '_redux/store';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { setAddress } from '_redux/effects/walletEffects';
 import { setStep } from '_redux/effects/onboardingEffects';
-import { stepSignMessage } from '_pages/Onboarding/OnboardingSteps';
+import { stepConnectWallet, stepSignMessage } from '_pages/Onboarding/OnboardingSteps';
 
 function App() {
   const dispatch = useDispatch();
-  const { complete, ongoing } = useSelector((state: AppState) => state.onboarding);
+  const { complete, ongoing, currentStep } = useSelector((state: AppState) => state.onboarding);
 
   const network = useSelector((state: AppState) => state.web3.network);
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
@@ -22,7 +22,7 @@ function App() {
       });
       // TODO decouple
       // TODO change to incrementStep() no number
-      if (!complete && ongoing) {
+      if (!complete && ongoing && currentStep === stepConnectWallet.number) {
         dispatch(setStep(stepSignMessage.number));
       }
     }
