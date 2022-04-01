@@ -125,26 +125,32 @@ export default function Dashboard() {
       <HorizontalLineBreak />
       <UserPools />
       <HorizontalLineBreak />
-      <div>
-        <DashboardLink text={'Wallet'} navTab={NavTab.WALLET} />
-        {Object.values(tokenSet).map((token: EvmTokenDefinition) => (
-          <WalletBalance key={token.symbol} token={token} hideZeroBalance={true} />
-        ))}
-      </div>
-      <HorizontalLineBreak />
-      <div>
-        <DashboardLink text={'Borrows'} navTab={NavTab.BORROW} />
-        <div className={'mt-2'}>
-          <UserBorrowSummary />
-        </div>
-      </div>
-      <HorizontalLineBreak />
+
       <div>
         <DashboardLink text={'Deposits'} navTab={NavTab.DEPOSIT} />
         <div className={'mt-2'}>
           <UserDepositSummary />
         </div>
       </div>
+
+      <HorizontalLineBreak />
+
+      <div>
+        <DashboardLink text={'Borrows'} navTab={NavTab.BORROW} />
+        <div className={'mt-2'}>
+          <UserBorrowSummary />
+        </div>
+      </div>
+
+      <div>
+        <DashboardLink text={'Wallet'} navTab={NavTab.WALLET} />
+        {Object.values(tokenSet).map((token: EvmTokenDefinition) => (
+          <WalletBalance key={token.symbol} token={token} hideZeroBalance={true} />
+        ))}
+      </div>
+      
+      <HorizontalLineBreak />
+    
     </div>
   );
 }
