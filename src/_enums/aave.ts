@@ -4,7 +4,7 @@ export enum AaveSection {
 }
 
 export enum AaveFunction {
-  Deposit = 'Deposit',
+  Deposit = 'Supply',
   Withdraw = 'Withdraw',
   Borrow = 'Borrow',
   Repay = 'Repay'
