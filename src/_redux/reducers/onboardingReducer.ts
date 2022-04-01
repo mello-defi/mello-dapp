@@ -4,7 +4,8 @@ import {
   SET_IS_COMPLETE,
   SET_IS_ONGOING,
   SET_STEP,
-  SET_WAITING_TO_ADVANCE
+  SET_WAITING_TO_ADVANCE,
+  RESET
 } from '_redux/types/onboardingTypes';
 
 const initialState: OnboardingState = {
@@ -40,6 +41,10 @@ export const getOnboardingReducer = (
         ...state,
         ongoing: action.payload.ongoing
       };
+      case RESET:
+        return {
+          ...initialState
+        };
     default:
       return state;
   }
