@@ -127,7 +127,14 @@ export default function Dashboard() {
       <HorizontalLineBreak />
 
       <div>
-        <DashboardLink text={'Deposits'} navTab={NavTab.DEPOSIT} />
+        <DashboardLink text={'Borrowed'} navTab={NavTab.BORROW} />
+        <div className={'mt-2'}>
+          <UserBorrowSummary />
+        </div>
+      </div>
+
+      <div>
+        <DashboardLink text={'Supplied'} navTab={NavTab.DEPOSIT} />
         <div className={'mt-2'}>
           <UserDepositSummary />
         </div>
@@ -136,19 +143,12 @@ export default function Dashboard() {
       <HorizontalLineBreak />
 
       <div>
-        <DashboardLink text={'Borrows'} navTab={NavTab.BORROW} />
+        <DashboardLink text={'Deposits'} navTab={NavTab.DEPOSIT} />
         <div className={'mt-2'}>
-          <UserBorrowSummary />
+          <UserDepositSummary />
         </div>
       </div>
 
-      <div>
-        <DashboardLink text={'Wallet'} navTab={NavTab.WALLET} />
-        {Object.values(tokenSet).map((token: EvmTokenDefinition) => (
-          <WalletBalance key={token.symbol} token={token} hideZeroBalance={true} />
-        ))}
-      </div>
-      
       <HorizontalLineBreak />
     
     </div>

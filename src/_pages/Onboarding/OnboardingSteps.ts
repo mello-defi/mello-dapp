@@ -66,7 +66,7 @@ export const stepBorrowAave: OnboardingStep = {
 
 export const stepDepositAave: OnboardingStep = {
   number: 6,
-  title: 'Deposit $WBTC into Aave',
+  title: 'Supply $WBTC to Aave',
   nextStep: stepBorrowAave,
   actionComponent: AaveReserveRow,
   actionComponentProps: {

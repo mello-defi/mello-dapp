@@ -4,7 +4,7 @@ export default function StepBorrowAave() {
   const whatIsRequired = <>Borrow $USDC from Aave</>;
   const whyIsRequired = (
     <>
-      Now that you have deposited $WBTC as collateral, you can now borrow against it.
+      Now that you have supplied $WBTC as collateral, you can now borrow against it.
       <br />
       <br />
       Learn more about Aave{' '}
