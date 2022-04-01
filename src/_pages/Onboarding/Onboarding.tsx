@@ -7,15 +7,14 @@ import { getTransactionCount } from '_services/walletService';
 import { Button } from '_components/core/Buttons';
 import OnboardingStepRow from '_pages/Onboarding/OnboardingStepRow';
 import { DefaultTransition } from '_components/core/Transition';
-import { stepAddGasToWallet, stepPerformSwap, steps } from '_pages/Onboarding/OnboardingSteps';
+import { stepAddGasToWallet, stepConnectWallet, stepPerformSwap, steps } from '_pages/Onboarding/OnboardingSteps';
 import { BigNumber } from 'ethers';
 import { setActiveTab } from '_redux/effects/uiEffects';
 import { NavTab } from '_redux/types/uiTypes';
 
 export default function Onboarding() {
   const dispatch = useDispatch();
-  const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
-  const onboardingComplete = useSelector((state: AppState) => state.onboarding.complete);
+  const { complete: onboardingComplete, waitingToAdvance, currentStep } = useSelector((state: AppState) => state.onboarding);
   const { tokenSet, provider } = useSelector((state: AppState) => state.web3);
   const gasToken = Object.values(tokenSet).find((token) => token.isGasToken);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -54,6 +53,9 @@ export default function Onboarding() {
       }
     }
     getTransactionCountAndAdvance();
+    if (currentStep === stepConnectWallet.number && userAddress) {
+      dispatch(setStep(stepConnectWallet.number + 1));
+    }
   }, [userAddress, userBalance, currentStep]);
 
   return (

@@ -15,6 +15,7 @@ import {
   Link,
   LogoutOutlined
 } from '@mui/icons-material';
+import { setOnboardingComplete, setOnboardingOngoing } from '_redux/effects/onboardingEffects';
 
 function WalletDropdownListItem({ children }: { children: React.ReactNode }) {
   return <div className={'py-2 cursor-pointer'}>{children}</div>;
@@ -31,6 +32,12 @@ export default function WalletDropdown() {
       setCopied(false);
     }
   };
+  const startOnboarding = () => {
+    setDropdownOpen(false);
+    dispatch(setOnboardingOngoing(true));
+    dispatch(setOnboardingComplete(false));
+    dispatch(setActiveTab(NavTab.ONBOARDING))
+  }
   const navigateToWallet = () => {
     dispatch(setActiveTab(NavTab.WALLET));
     setDropdownOpen(false);
@@ -101,6 +108,13 @@ export default function WalletDropdown() {
                   <WalletDropdownListItem>
                     <div onClick={navigateToWallet} className={'flex-row-center justify-between'}>
                       <span>Balance</span>
+                      <ChevronRightOutlined className={'ml-2 h-5 text-color-light'} />
+                    </div>
+                  </WalletDropdownListItem>
+                  <HorizontalLineBreak />
+                  <WalletDropdownListItem>
+                    <div onClick={startOnboarding} className={'flex-row-center justify-between'}>
+                      <span>Onboarding</span>
                       <ChevronRightOutlined className={'ml-2 h-5 text-color-light'} />
                     </div>
                   </WalletDropdownListItem>

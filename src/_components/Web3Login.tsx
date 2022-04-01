@@ -23,7 +23,7 @@ function App() {
       // TODO decouple
       // TODO change to incrementStep() no number
       if (!complete && ongoing && currentStep === stepConnectWallet.number) {
-        dispatch(setStep(stepSignMessage.number));
+        dispatch(setStep(stepConnectWallet.number + 1));
       }
     }
   }, [isConnected, network, dispatch]);

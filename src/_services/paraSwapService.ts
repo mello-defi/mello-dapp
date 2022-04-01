@@ -3,7 +3,7 @@ import { EvmGasTokenBurnAddress, EvmTokenDefinition } from '_enums/tokens';
 import { BigNumber, ethers } from 'ethers';
 import { OptimalRate } from 'paraswap-core';
 import { Transaction } from 'paraswap/build/types';
-import { BigNumberZD } from '@aave/protocol-js';
+import { BigNumberZD as AdvancedBigNumber } from '@aave/protocol-js';
 import { EVMChainIdNumerical } from '_enums/networks';
 
 let paraSwap: ParaSwap;
@@ -62,7 +62,7 @@ export async function buildSwapTransaction(
   slippagePercentage: number,
   gasPrice: BigNumber | undefined
 ): Promise<Transaction> {
-  const destinationAmountWithSlippage = new BigNumberZD(route.destAmount)
+  const destinationAmountWithSlippage = new AdvancedBigNumber(route.destAmount)
     .multipliedBy(100 - slippagePercentage)
     .dividedBy(100)
     .toFixed(0);

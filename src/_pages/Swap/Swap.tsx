@@ -216,7 +216,19 @@ export default function Swap({
     setIsApproving(false);
   };
 
-  const debouncedSave = useCallback(
+  // const debounceDestinationTokenChanged = useCallback(
+  //   debounce(
+  //     (amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue),
+  //     750
+  //   ),
+  //   [] // will be created only once initially
+  // );
+
+  // const destinationTokenChanged = (token: EvmTokenDefinition) => {
+  //   setDestinationToken(token);
+  //   debounceDestinationTokenChanged(destinationAmount, sourceToken, token);
+  // };
+  const debounceSourceAmountChanged = useCallback(
     debounce(
       (nextValue, srcToken, destToken) => updateExchangeRate(nextValue, srcToken, destToken),
       750
@@ -226,7 +238,7 @@ export default function Swap({
 
   const sourceAmountChanged = (amount: string) => {
     setSourceAmount(amount);
-    debouncedSave(amount, sourceToken, destinationToken);
+    debounceSourceAmountChanged(amount, sourceToken, destinationToken);
   };
 
   const swapSourceDestination = () => {
@@ -272,6 +284,7 @@ export default function Swap({
         amountInFiat={destinationFiatAmount}
         token={destinationToken}
         tokenChanged={setDestinationToken}
+        // tokenChanged={destinationTokenChanged}
         amount={destinationAmount}
         amountChanged={setDestinationAmount}
         disabled={isSwapping || destinationTokenDisabled}

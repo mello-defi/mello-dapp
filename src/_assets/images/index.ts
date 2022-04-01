@@ -1,7 +1,7 @@
 import daiLogo from '_assets/images/logos/tokens/dai.png';
 import aaveLogo from '_assets/images/logos/services/aave.svg';
 import renLogo from '_assets/images/logos/services/ren.png';
-import mtPellerinLogo from '_assets/images/logos/services/mt_pellerin.svg';
+import mtPelerinLogo from '_assets/images/logos/services/mt_pellerin.svg';
 import paraswapLogo from '_assets/images/logos/services/paraswap.png';
 import rampNetworkLogo from '_assets/images/logos/services/ramp_network.svg';
 import polygonLogo from '_assets/images/logos/tokens/polygon.png';
@@ -31,7 +31,7 @@ export {
   usdtLogo,
   mimaticLogo,
   balLogo,
-  mtPellerinLogo,
+  mtPelerinLogo,
   qiLogo,
   paraswapLogo,
   rampNetworkLogo,
