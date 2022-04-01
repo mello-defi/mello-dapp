@@ -17,7 +17,7 @@ export default function Deposit() {
   return (
     <div className={'space-y-2'}>
       <div className={'flex-row-center justify-between mb-2'}>
-        <span className={'text-header'}>My deposits</span>
+        <span className={'text-header'}>Supplied</span>
         <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
       </div>
       <UserDepositSummary />

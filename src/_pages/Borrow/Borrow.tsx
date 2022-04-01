@@ -33,7 +33,7 @@ export default function Borrow() {
   return (
     <div className={'space-y-2'}>
       <div className={'flex-row-center justify-between'}>
-        <span className={'text-header'}>My borrows</span>
+        <span className={'text-header'}>Borrowed</span>
         <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
       </div>
       <div>

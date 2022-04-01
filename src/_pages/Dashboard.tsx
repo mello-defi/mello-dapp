@@ -133,14 +133,14 @@ export default function Dashboard() {
       </div>
       <HorizontalLineBreak />
       <div>
-        <DashboardLink text={'Borrows'} navTab={NavTab.BORROW} />
+        <DashboardLink text={'Borrowed'} navTab={NavTab.BORROW} />
         <div className={'mt-2'}>
           <UserBorrowSummary />
         </div>
       </div>
       <HorizontalLineBreak />
       <div>
-        <DashboardLink text={'Deposits'} navTab={NavTab.DEPOSIT} />
+        <DashboardLink text={'Supplied'} navTab={NavTab.DEPOSIT} />
         <div className={'mt-2'}>
           <UserDepositSummary />
         </div>
