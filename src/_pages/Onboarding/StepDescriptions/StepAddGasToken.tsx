@@ -1,12 +1,14 @@
 import OnboardingStepDescription from '_pages/Onboarding/OnboardingStepDescription';
 
 export default function StepAddGasToken() {
-  const whatIsRequired = <>Deposit some $MATIC into your wallet</>;
+  const whatIsRequired = <>Deposit or buy Matic for your wallet</>;
   const whyIsRequired = (
     <>
-      Gas is required to perform transactions on the Polygon network. These fees are minuscule
-      (~$.001) but without them, you can&apos;t authorise transactions. mello recommends keeping $5
-      worth of $MATIC in your wallet at all times.
+      A gas token is required to perform transactions on a blockchain. These fees are minuscule
+      (~$.001) but without them, you can&apos;t authorise transactions. 
+      <br />
+      <br />
+      We reccomend you buy €5/$5 to start.
       <br />
       <br />
       Learn more about gas tokens{' '}
@@ -19,7 +21,7 @@ export default function StepAddGasToken() {
       </a>
     </>
   );
-  const notes = <>We recommend Mt Pelerin for EU customers and Ramp for all non-EU customers</>;
+  const notes = <>We recommend Mt Pelerin for EU 🇪🇺 customers and Ramp for all non-EU customers</>;
 
   return (
     <OnboardingStepDescription
