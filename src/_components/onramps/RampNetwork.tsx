@@ -12,10 +12,10 @@ function RampNetwork() {
   const openWidget = async () => {
     new RampInstantSDK({
       hostAppName: 'mello',
-      hostLogoUrl: melloLogoFace,
+      hostLogoUrl: "https://storageapi2.fleek.co/12c7096b-d75e-4ca8-be93-7ddf73131ef3-bucket/full icon + name slim-dark.svg",
       fiatCurrency: 'EUR',
       defaultAsset: 'MATIC',
-      fiatValue: '10',
+      fiatValue: '6.25',
       userAddress: userAddress
       // url: 'https://ri-widget-staging.firebaseapp.com',
       // webhookStatusUrl: 'https://ea14-80-233-33-216.ngrok.io/'
