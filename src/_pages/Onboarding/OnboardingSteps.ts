@@ -44,7 +44,7 @@ export const stepMintNft: OnboardingStep = {
 };
 export const stepInvestBalancer: OnboardingStep = {
   number: 8,
-  title: 'Invest $USDC',
+  title: 'Invest USDC',
   nextStep: stepMintNft,
   actionComponent: PoolRow,
   actionComponentProps: {
@@ -54,7 +54,7 @@ export const stepInvestBalancer: OnboardingStep = {
 };
 export const stepBorrowAave: OnboardingStep = {
   number: 7,
-  title: 'Borrow $USDC from Aave',
+  title: 'Borrow USDC from Aave',
   nextStep: stepInvestBalancer,
   actionComponent: AaveReserveRow,
   actionComponentProps: {
@@ -66,7 +66,7 @@ export const stepBorrowAave: OnboardingStep = {
 
 export const stepDepositAave: OnboardingStep = {
   number: 6,
-  title: 'Supply $WBTC to Aave',
+  title: 'Supply WBTC to Aave',
   nextStep: stepBorrowAave,
   actionComponent: AaveReserveRow,
   actionComponentProps: {
@@ -78,7 +78,7 @@ export const stepDepositAave: OnboardingStep = {
 
 export const stepPerformSwap: OnboardingStep = {
   number: 5,
-  title: 'Swap gas token for $WBTC',
+  title: 'Swap gas token for WBTC',
   nextStep: stepDepositAave,
   actionComponent: Swap,
   actionComponentProps: {
@@ -89,7 +89,7 @@ export const stepPerformSwap: OnboardingStep = {
 };
 export const stepAddGasToWallet: OnboardingStep = {
   number: 4,
-  title: 'Add gas token to Wallet',
+  title: 'Add gas token to fuel wallet',
   nextStep: stepPerformSwap,
   actionComponent: FiatOnboarding,
   descriptionComponent: StepAddGasToken
@@ -103,7 +103,7 @@ export const stepSignMessage: OnboardingStep = {
 };
 export const stepConnectWallet: OnboardingStep = {
   number: 2,
-  title: 'Connect Wallet',
+  title: 'Connect wallet',
   nextStep: stepSignMessage,
   descriptionComponent: StepConnectWallet
 };
