@@ -49,7 +49,6 @@ function RenBridge() {
     }
   }, [marketPrices]);
 
-
   // TODO needs huge cleanup
   const deposit = async () => {
     // @ts-ignore
@@ -77,19 +76,19 @@ function RenBridge() {
             {
               name: '_token',
               type: 'address',
-              value: PolygonMainnetTokenContracts.RENBTC,
+              value: PolygonMainnetTokenContracts.RENBTC
             },
             {
               name: '_slippage',
               type: 'uint256',
               // Max slippage is unused param since we're not swapping.
-              value: 0,
+              value: 0
             },
             {
               name: '_to',
               type: 'address',
-              value: userAddress,
-            },
+              value: userAddress
+            }
           ]
         })
       });

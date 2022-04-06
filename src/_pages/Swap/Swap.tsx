@@ -30,6 +30,7 @@ import { logTransactionHash } from '_services/dbService';
 import { stepPerformSwap } from '_pages/Onboarding/OnboardingSteps';
 import { EthereumTransactionError } from '_interfaces/errors';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 
 export default function Swap({
   initialSourceTokenSymbol,
@@ -57,10 +58,10 @@ export default function Swap({
     if (sourceToken) {
       setSourceTokenBalance(walletBalances[sourceToken.symbol]?.balance);
     }
-  }, [sourceToken, walletBalances])
+  }, [sourceToken, walletBalances]);
   const { complete, ongoing } = useSelector((state: AppState) => state.onboarding);
 
-  console.log('sourceTokenBalance', sourceTokenBalance)
+  console.log('sourceTokenBalance', sourceTokenBalance);
   const [sourceTokenDisabled, setSourceTokenDisabled] = useState<boolean>(false);
   const [destinationTokenDisabled, setDestinationTokenDisabled] = useState<boolean>(false);
   const [sourceAmount, setSourceAmount] = useState<string>('0.0');
@@ -244,15 +245,27 @@ export default function Swap({
         <span className={'text-header'}>Swap</span>
         <PoweredByLink url={'https://paraswap.io'} logo={paraswapLogo} />
       </div>
-      <MultiCryptoAmountInput
-        amountInFiat={sourceFiatAmount}
-        token={sourceToken}
-        tokenChanged={setSourceToken}
-        amount={sourceAmount}
-        amountChanged={sourceAmountChanged}
-        disabled={isSwapping || sourceTokenDisabled}
-        allowAmountOverMax={false}
-      />
+      {initialSourceTokenSymbol ? (
+        <SingleCryptoAmountInput
+          showMaxButton={false}
+          balance={sourceTokenBalance}
+          disabled={isSwapping || sourceTokenDisabled}
+          tokenPrice={sourceFiatAmount}
+          amount={sourceAmount}
+          amountChanged={sourceAmountChanged}
+          token={sourceToken}
+        />
+      ) : (
+        <MultiCryptoAmountInput
+          amountInFiat={sourceFiatAmount}
+          token={sourceToken}
+          tokenChanged={setSourceToken}
+          amount={sourceAmount}
+          amountChanged={sourceAmountChanged}
+          disabled={isSwapping || sourceTokenDisabled}
+          allowAmountOverMax={false}
+        />
+      )}
       <div
         className={
           'flex flex-row mx-auto items-center w-20 justify-center rounded-2xl -my-6 py-2 z-50'
@@ -300,8 +313,10 @@ export default function Swap({
           (sourceTokenBalance &&
             sourceToken.isGasToken &&
             sourceAmount !== '' &&
-            parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance))
-          || (sourceTokenBalance && sourceAmount !== '' && parseUnits(sourceAmount, sourceToken.decimals).gt(sourceTokenBalance))
+            parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance)) ||
+          (sourceTokenBalance &&
+            sourceAmount !== '' &&
+            parseUnits(sourceAmount, sourceToken.decimals).gt(sourceTokenBalance))
         }
         onClick={handleSwap}
         className={'w-full mt-2 flex-row-center justify-center'}
@@ -317,7 +332,12 @@ export default function Swap({
             sourceToken.isGasToken &&
             parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance)
             ? 'You cannot Swap all of your gas token'
-            : sourceToken && sourceTokenBalance && sourceAmount !== '' && parseUnits(sourceAmount, sourceToken.decimals).gt(sourceTokenBalance) ? 'Insufficient funds' : 'Swap'
+            : sourceToken &&
+              sourceTokenBalance &&
+              sourceAmount !== '' &&
+              parseUnits(sourceAmount, sourceToken.decimals).gt(sourceTokenBalance)
+            ? 'Insufficient funds'
+            : 'Swap'
           : ''}
       </Button>
       <div className={'text-body px-2 my-2'}>

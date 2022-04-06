@@ -23,7 +23,8 @@ export default function AaveFunctionContent({
   buttonDisabled,
   children,
   healthFactorImpact,
-  healthFactorResource
+  healthFactorResource,
+  showMaxButton = true
 }: {
   reserveTitle: string;
   reserve: ComputedReserveData;
@@ -38,6 +39,7 @@ export default function AaveFunctionContent({
   children: React.ReactNode;
   healthFactorImpact: HealthFactorImpact;
   healthFactorResource: HealthFactorResource;
+  showMaxButton?: boolean;
 }) {
   return (
     <div className={'flex flex-col justify-between space-x-0 md:space-x-2'}>
@@ -50,6 +52,7 @@ export default function AaveFunctionContent({
             balance={userBalance}
             amountChanged={setAmount}
             token={token}
+            showMaxButton={showMaxButton}
           />
         )}
         {/*{userBalance && (*/}

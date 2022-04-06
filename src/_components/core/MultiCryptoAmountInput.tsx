@@ -19,7 +19,7 @@ export default function MultiCryptoAmountInput({
   amountChanged,
   disabled,
   amountInFiat,
-  allowAmountOverMax = true,
+  allowAmountOverMax = true
 }: {
   token?: EvmTokenDefinition;
   tokenChanged: (token: EvmTokenDefinition) => void;
@@ -29,7 +29,6 @@ export default function MultiCryptoAmountInput({
   amountInFiat: number;
   allowAmountOverMax?: boolean;
 }) {
-
   const [amountGreaterThanUserBalance, setAmountGreaterThanUserBalance] = React.useState(false);
   const [userTokenBalance, setUserTokenBalance] = useState<BigNumber | undefined>();
   const marketPrices = useMarketPrices();
@@ -78,7 +77,12 @@ export default function MultiCryptoAmountInput({
       >
         <div className={'mr-2 w-full md:w-2/3'}>
           {token && (
-            <BaseCryptoInput amount={amount} amountChanged={amountChanged} disabled={disabled} tokenDecimals={token.decimals}/>
+            <BaseCryptoInput
+              amount={amount}
+              amountChanged={amountChanged}
+              disabled={disabled}
+              tokenDecimals={token.decimals}
+            />
           )}
         </div>
         <div className={'w-full md:w-1/3'}>
@@ -107,7 +111,9 @@ export default function MultiCryptoAmountInput({
           <div className={'text-right px-0 sm:px-1 flex-row-center'}>
             Balance:{' '}
             {userTokenBalance ? (
-              <div className={'font-mono ml-1'}>{formatUnits(userTokenBalance, token?.decimals)}</div>
+              <div className={'font-mono ml-1'}>
+                {formatUnits(userTokenBalance, token?.decimals)}
+              </div>
             ) : (
               <span className={'ml-1'}>
                 {token && <Spinner show={true} size={SpinnerSize.SMALL} />}

@@ -64,7 +64,6 @@ export function toNormalizedWeights(weights: BigNumber[]): BigNumber[] {
   return normalizedWeights;
 }
 
-
 function normalizeWeights(weights: BigNumber[], type: PoolType, tokens: TokenInfoMap): number[] {
   if (isWeighted(type)) {
     return toNormalizedWeights(weights).map((w) => Number(formatUnits(w, 18)));

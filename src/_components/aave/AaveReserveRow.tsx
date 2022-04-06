@@ -513,6 +513,7 @@ export default function AaveReserveRow({
                         setAmount={(amount: string) => setAmount(amount, setBorrowAmount)}
                         token={token}
                         buttonOnClick={handleBorrow}
+                        showMaxButton={false}
                         buttonDisabled={
                           transactionInProgress ||
                           !borrowAmount ||

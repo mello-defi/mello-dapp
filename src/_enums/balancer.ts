@@ -4,30 +4,29 @@ export enum WeightedPoolJoinKind {
   INIT = 0,
   EXACT_TOKENS_IN_FOR_BPT_OUT,
   TOKEN_IN_FOR_EXACT_BPT_OUT,
-  ALL_TOKENS_IN_FOR_EXACT_BPT_OUT,
+  ALL_TOKENS_IN_FOR_EXACT_BPT_OUT
 }
 export enum StablePoolJoinKind {
   INIT = 0,
   EXACT_TOKENS_IN_FOR_BPT_OUT,
-  TOKEN_IN_FOR_EXACT_BPT_OUT,
+  TOKEN_IN_FOR_EXACT_BPT_OUT
 }
 
 export enum StablePhantomPoolJoinKind {
   INIT = 0,
-  COLLECT_PROTOCOL_FEES,
+  COLLECT_PROTOCOL_FEES
 }
-
 
 export enum StablePoolExitKind {
   EXACT_BPT_IN_FOR_ONE_TOKEN_OUT = 0,
   EXACT_BPT_IN_FOR_TOKENS_OUT,
-  BPT_IN_FOR_EXACT_TOKENS_OUT,
+  BPT_IN_FOR_EXACT_TOKENS_OUT
 }
 export enum WeightedPoolExitKind {
   EXACT_BPT_IN_FOR_ONE_TOKEN_OUT = 0,
   EXACT_BPT_IN_FOR_TOKENS_OUT,
   BPT_IN_FOR_EXACT_TOKENS_OUT,
-  MANAGEMENT_FEE_TOKENS_OUT,
+  MANAGEMENT_FEE_TOKENS_OUT
 }
 
 export enum PoolType {
@@ -54,10 +53,7 @@ export class WeightedPoolEncoder {
    * @param initialBalances - the amounts of tokens to send to the pool to form the initial balances
    */
   static joinInit = (amountsIn: BigNumberish[]): string =>
-    defaultAbiCoder.encode(
-      ['uint256', 'uint256[]'],
-      [WeightedPoolJoinKind.INIT, amountsIn]
-    );
+    defaultAbiCoder.encode(['uint256', 'uint256[]'], [WeightedPoolJoinKind.INIT, amountsIn]);
 
   /**
    * Encodes the userData parameter for joining a WeightedPool with exact token inputs
@@ -70,11 +66,7 @@ export class WeightedPoolEncoder {
   ): string =>
     defaultAbiCoder.encode(
       ['uint256', 'uint256[]', 'uint256'],
-      [
-        WeightedPoolJoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT,
-        amountsIn,
-        minimumBPT,
-      ]
+      [WeightedPoolJoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT, amountsIn, minimumBPT]
     );
 
   /**
@@ -88,20 +80,14 @@ export class WeightedPoolEncoder {
   ): string =>
     defaultAbiCoder.encode(
       ['uint256', 'uint256', 'uint256'],
-      [
-        WeightedPoolJoinKind.TOKEN_IN_FOR_EXACT_BPT_OUT,
-        bptAmountOut,
-        enterTokenIndex,
-      ]
+      [WeightedPoolJoinKind.TOKEN_IN_FOR_EXACT_BPT_OUT, bptAmountOut, enterTokenIndex]
     );
 
   /**
    * Encodes the userData parameter for joining a WeightedPool proportionally to receive an exact amount of BPT
    * @param bptAmountOut - the amount of BPT to be minted
    */
-  static joinAllTokensInForExactBPTOut = (
-    bptAmountOut: BigNumberish
-  ): string =>
+  static joinAllTokensInForExactBPTOut = (bptAmountOut: BigNumberish): string =>
     defaultAbiCoder.encode(
       ['uint256', 'uint256'],
       [WeightedPoolJoinKind.ALL_TOKENS_IN_FOR_EXACT_BPT_OUT, bptAmountOut]
@@ -118,11 +104,7 @@ export class WeightedPoolEncoder {
   ): string =>
     defaultAbiCoder.encode(
       ['uint256', 'uint256', 'uint256'],
-      [
-        WeightedPoolExitKind.EXACT_BPT_IN_FOR_ONE_TOKEN_OUT,
-        bptAmountIn,
-        exitTokenIndex,
-      ]
+      [WeightedPoolExitKind.EXACT_BPT_IN_FOR_ONE_TOKEN_OUT, bptAmountIn, exitTokenIndex]
     );
 
   /**
@@ -146,11 +128,7 @@ export class WeightedPoolEncoder {
   ): string =>
     defaultAbiCoder.encode(
       ['uint256', 'uint256[]', 'uint256'],
-      [
-        WeightedPoolExitKind.BPT_IN_FOR_EXACT_TOKENS_OUT,
-        amountsOut,
-        maxBPTAmountIn,
-      ]
+      [WeightedPoolExitKind.BPT_IN_FOR_EXACT_TOKENS_OUT, amountsOut, maxBPTAmountIn]
     );
 }
 
@@ -167,10 +145,7 @@ export class ManagedPoolEncoder {
    * This can only be done by the pool owner.
    */
   static exitForManagementFees = (): string =>
-    defaultAbiCoder.encode(
-      ['uint256'],
-      [WeightedPoolExitKind.MANAGEMENT_FEE_TOKENS_OUT]
-    );
+    defaultAbiCoder.encode(['uint256'], [WeightedPoolExitKind.MANAGEMENT_FEE_TOKENS_OUT]);
 }
 export class StablePoolEncoder {
   /**
@@ -185,19 +160,13 @@ export class StablePoolEncoder {
    * @param initialBalances - the amounts of tokens to send to the pool to form the initial balances
    */
   static joinInit = (amountsIn: BigNumberish[]): string =>
-    defaultAbiCoder.encode(
-      ['uint256', 'uint256[]'],
-      [StablePoolJoinKind.INIT, amountsIn]
-    );
+    defaultAbiCoder.encode(['uint256', 'uint256[]'], [StablePoolJoinKind.INIT, amountsIn]);
 
   /**
    * Encodes the userData parameter for collecting protocol fees for StablePhantomPool
    */
   static joinCollectProtocolFees = (): string =>
-    defaultAbiCoder.encode(
-      ['uint256'],
-      [StablePhantomPoolJoinKind.COLLECT_PROTOCOL_FEES]
-    );
+    defaultAbiCoder.encode(['uint256'], [StablePhantomPoolJoinKind.COLLECT_PROTOCOL_FEES]);
 
   /**
    * Encodes the userData parameter for joining a StablePool with exact token inputs
@@ -210,11 +179,7 @@ export class StablePoolEncoder {
   ): string =>
     defaultAbiCoder.encode(
       ['uint256', 'uint256[]', 'uint256'],
-      [
-        StablePoolJoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT,
-        amountsIn,
-        minimumBPT,
-      ]
+      [StablePoolJoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT, amountsIn, minimumBPT]
     );
 
   /**
@@ -228,11 +193,7 @@ export class StablePoolEncoder {
   ): string =>
     defaultAbiCoder.encode(
       ['uint256', 'uint256', 'uint256'],
-      [
-        StablePoolJoinKind.TOKEN_IN_FOR_EXACT_BPT_OUT,
-        bptAmountOut,
-        enterTokenIndex,
-      ]
+      [StablePoolJoinKind.TOKEN_IN_FOR_EXACT_BPT_OUT, bptAmountOut, enterTokenIndex]
     );
 
   /**
@@ -246,11 +207,7 @@ export class StablePoolEncoder {
   ): string =>
     defaultAbiCoder.encode(
       ['uint256', 'uint256', 'uint256'],
-      [
-        StablePoolExitKind.EXACT_BPT_IN_FOR_ONE_TOKEN_OUT,
-        bptAmountIn,
-        exitTokenIndex,
-      ]
+      [StablePoolExitKind.EXACT_BPT_IN_FOR_ONE_TOKEN_OUT, bptAmountIn, exitTokenIndex]
     );
 
   /**
@@ -274,10 +231,6 @@ export class StablePoolEncoder {
   ): string =>
     defaultAbiCoder.encode(
       ['uint256', 'uint256[]', 'uint256'],
-      [
-        StablePoolExitKind.BPT_IN_FOR_EXACT_TOKENS_OUT,
-        amountsOut,
-        maxBPTAmountIn,
-      ]
+      [StablePoolExitKind.BPT_IN_FOR_EXACT_TOKENS_OUT, amountsOut, maxBPTAmountIn]
     );
 }

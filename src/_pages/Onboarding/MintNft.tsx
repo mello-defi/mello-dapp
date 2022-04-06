@@ -1,11 +1,10 @@
-
 // import { useSelector } from 'react-redux';
 // import { AppState } from '_redux/store';
 import { Button } from '_components/core/Buttons';
 // import { useState } from 'react';
 // import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 
-export default function MintNft () {
+export default function MintNft() {
   // const signer = useSelector((state: AppState) => state.web3.provider);
   // const userAddress = useSelector((state: AppState) => state.wallet.address);
   // const doStuff = async () => {
@@ -24,5 +23,5 @@ export default function MintNft () {
       <h1>Invest</h1>
       {/*<Button onClick={doStuff}>press me</Button>*/}
     </div>
-  )
+  );
 }

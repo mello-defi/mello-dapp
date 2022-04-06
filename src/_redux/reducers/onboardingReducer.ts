@@ -23,7 +23,7 @@ export const getOnboardingReducer = (
         ...state,
         currentStep: action.payload.step,
         // TEMP
-        complete: action.payload.step === stepMintNft.number,
+        complete: action.payload.step === stepMintNft.number
       };
     case SET_IS_COMPLETE:
       return {

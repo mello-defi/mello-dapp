@@ -15,7 +15,8 @@ export default function SingleCryptoAmountInput({
   amountChanged,
   balance,
   token,
-  maxAmount
+  maxAmount,
+  showMaxButton = true
 }: {
   disabled: boolean;
   tokenPrice: number;
@@ -24,6 +25,7 @@ export default function SingleCryptoAmountInput({
   amountChanged: (amount: string) => void;
   token: TokenDefinition;
   maxAmount?: BigNumber;
+  showMaxButton?: boolean;
 }) {
   const [amountGreaterThanMax, setAmountGreaterThanMax] = React.useState(false);
 
@@ -48,7 +50,12 @@ export default function SingleCryptoAmountInput({
                 ${disabled ? 'text-gray-400 cursor-default' : ''}
       `}
       >
-        <BaseCryptoInput amount={amount} amountChanged={amountChanged} disabled={disabled} tokenDecimals={token.decimals}/>
+        <BaseCryptoInput
+          amount={amount}
+          amountChanged={amountChanged}
+          disabled={disabled}
+          tokenDecimals={token.decimals}
+        />
         <span className="flex-row-center max-w-2/5 items-center rounded-2xl bg-white px-4 py-2 justify-center">
           <img src={token.image} alt="person" className="flex-shrink-0 h-6 w-6 rounded-full" />
           <span className="ml-2 block truncate">{token.symbol}</span>
@@ -69,7 +76,11 @@ export default function SingleCryptoAmountInput({
         {balance && BigNumber.from(balance).gt(0) && (
           <div className={'flex-row-center'}>
             <div>{formatUnits(balance, token.decimals)}</div>
-            <MaxAmountButton onClick={() => amountChanged(formatUnits(balance, token?.decimals))} />
+            {showMaxButton && (
+              <MaxAmountButton
+                onClick={() => amountChanged(formatUnits(balance, token?.decimals))}
+              />
+            )}
           </div>
         )}
       </div>

@@ -33,9 +33,9 @@ export default function Onboarding() {
   useEffect(() => {
     if (onboardingComplete) {
       dispatch(setActiveTab(NavTab.DASHBOARD));
-      dispatch(setOnboardingOngoing(false))
+      dispatch(setOnboardingOngoing(false));
     }
-  }, [onboardingComplete])
+  }, [onboardingComplete]);
   useEffect(() => {
     async function getTransactionCountAndAdvance() {
       if (

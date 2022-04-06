@@ -17,7 +17,7 @@ export async function joinPool(
   const options: TransactionRequest = {};
   if (gasPrice) {
     options.gasPrice = gasPrice.toString();
-    options.gasLimit
+    options.gasLimit;
   }
   let userData: string;
   if (isStable(pool.poolType)) {
