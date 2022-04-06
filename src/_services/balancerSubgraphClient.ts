@@ -4,7 +4,7 @@ import { Pool, PoolToken, UserPool } from '_interfaces/balancer';
 import { twentyFourHoursInSecs } from '_utils/time';
 
 const MINIMUM_LIQUIDITY = '1000000';
-
+// TODO reuse data props like this https://sourcegraph.com/github.com/georgeroman/balancer-v2-pools/-/blob/src/subgraph/index.ts?L9
 const GET_USER_POOLS = gql`
   query getUserPools($userAddress: String!) {
     poolShares(

@@ -28,7 +28,7 @@ export const getWalletReducer = (
     case SET_ADDRESS:
       return {
         ...state,
-        address: action.payload.address
+        address: action.payload.address.toLowerCase()
       };
     case TOGGLE_BALANCES_ARE_STALE:
       return {
