@@ -28,7 +28,7 @@ import { getMarketDataForSymbol } from '_services/marketDataService';
 import { BigNumber } from 'ethers';
 import { MaxUint256 } from '_utils/maths';
 import { getGasPrice } from '_services/gasService';
-import { exitPoolAllTokensOut, exitPoolOneTokenOut } from '_services/balancerPoolService';
+import { exitPoolForExactTokensOut, exitPoolForOneTokenOut } from '_services/balancerPoolService';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { toggleUserPoolDataStale } from '_redux/effects/balancerEffects';
 import { EthereumTransactionError } from '_interfaces/errors';
@@ -339,23 +339,27 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
           if (singleExitTokenIndex === undefined) {
             throw new Error('No token selected');
           }
-          const poolBalance = userPools?.find(
-            (userPool) => userPool.poolId.address.toLowerCase() === pool.address.toLowerCase()
-          )?.balance;
-          if (!poolBalance) {
-            throw new Error('Could not get balance');
-          }
-          tx = await exitPoolOneTokenOut(
+          // const poolBalance = userPools?.find(
+          //   (userPool) => userPool.poolId.address.toLowerCase() === pool.address.toLowerCase()
+          // )?.balance;
+          // if (!poolBalance) {
+          //   throw new Error('Could not get balance');
+          // }
+          // console.log('amountsOut[singleExitTokenIndex]', parseUnits(amountsOut[singleExitTokenIndex], 18).toString());
+          // console.log('poolBalance', poolBalance);
+          // TODO move to exitPoolForOneTokenOut
+          tx = await exitPoolForExactTokensOut(
             pool,
             userAddress,
             signer,
             amountsOut,
-            parseUnits(poolBalance, 18).toString(),
-            singleExitTokenIndex,
             gasResult?.fastest
+            // parseUnits(poolBalance, 18).toString(),
+            // singleExitTokenIndex,
+            // gasResult?.fastest
           );
         } else {
-          tx = await exitPoolAllTokensOut(
+          tx = await exitPoolForExactTokensOut(
             pool,
             userAddress,
             signer,
@@ -366,8 +370,8 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
         setTransactionHash(tx.hash);
         await tx.wait(3);
         setTransactionComplete(true);
-        dispatch(toggleBalancesAreStale(true));
         dispatch(toggleUserPoolDataStale(true));
+        dispatch(toggleBalancesAreStale(true));
         initTokenAmounts();
       } catch (e: any) {
         console.error(e);
@@ -501,7 +505,8 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
             tokenSet &&
             singleAssetMaxes &&
             singleAssetMaxes.length > 0 &&
-            singleExitTokenIndex !== undefined ? (
+            singleExitTokenIndex !== undefined &&
+            amountsToWithdraw[singleExitTokenIndex] ? (
               <SingleCryptoAmountInput
                 disabled={parseUnits(
                   singleAssetMaxes[singleExitTokenIndex] || '0',

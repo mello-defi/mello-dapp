@@ -1,7 +1,7 @@
 import React from 'react';
 import OnRampCard from '_components/onramps/OnRampCard';
 import { FiatCurrencyName } from '_enums/currency';
-import { mtPellerinLogo } from '_assets/images';
+import { mtPelerinLogo } from '_assets/images';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 
@@ -10,7 +10,7 @@ declare global {
     showMtpModal: any;
   }
 }
-function MtPellerin() {
+function MtPelerin() {
   const address = useSelector((state: AppState) => state.wallet.address);
   const signer = useSelector((state: AppState) => state.web3.signer);
 
@@ -39,7 +39,7 @@ function MtPellerin() {
   return (
     <OnRampCard
       transferMethods={'Bank transfer, credit/debit card'}
-      imageUrl={mtPellerinLogo}
+      imageUrl={mtPelerinLogo}
       fees={'0%-1.3%'}
       limits={'100,000 EUR per year'}
       currencies={[FiatCurrencyName.EUR, FiatCurrencyName.GBP, FiatCurrencyName.USD]}
@@ -48,4 +48,4 @@ function MtPellerin() {
   );
 }
 
-export default MtPellerin;
+export default MtPelerin;

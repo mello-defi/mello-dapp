@@ -30,6 +30,8 @@ module.exports = {
       }
     }
   ],
+  devtool: true,
+
   // webpack: {
   // configure: (webpackConfig, {paths}) => {
   //   const {hasFoundAny, matches} = getLoaders(

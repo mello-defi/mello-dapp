@@ -1,5 +1,5 @@
 import MultiCryptoAmountInput from '_components/core/MultiCryptoAmountInput';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { CryptoCurrencySymbol } from '_enums/currency';
@@ -19,6 +19,7 @@ import { getGasPrice } from '_services/gasService';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { logTransactionHash } from '_services/dbService';
 import { parseUnits } from 'ethers/lib/utils';
+import { decimalPlacesAreValid } from '_utils/index';
 
 export default function SendCrypto() {
   const marketPrices = useMarketPrices();
@@ -108,6 +109,12 @@ export default function SendCrypto() {
         const finalAmount = token.isGasToken
           ? amountInUnits.sub(gasPriceResult?.fastest || 0)
           : amountInUnits;
+        // @ts-ignore
+        // console.log(amountInUnits.toString());
+        // console.log(gasPriceResult?.fastest.toString());
+        // const finalAmount = token.isGasToken ? amountInUnits.sub(gasPriceResult?.fastest || 0) : amountInUnits;
+        // console.log('finalAmount', finalAmount.toString());
+
         const txResponse: TransactionResponse = await sendErc20Token(
           token,
           signer,
@@ -146,6 +153,19 @@ export default function SendCrypto() {
       setSendTransactionHash('');
     }
   };
+  // TODO duplicate
+  // const handleAmountChanged = (value: string) => {
+  //   if (token) {
+  //     if (value && !decimalPlacesAreValid(value, token.decimals)) {
+  //       value = value.substring(0, value.length - 1);
+  //     }
+  //     if (parseFloat(value) < 0) {
+  //       value = '0.0';
+  //     }
+  //     setAmountToSend(value);
+  //   }
+  // };
+
   return (
     <div className={'flex flex-col'}>
       <MultiCryptoAmountInput
@@ -174,6 +194,7 @@ export default function SendCrypto() {
           !ethers.utils.isAddress(destinationAddress) ||
           !token ||
           !amountToSend ||
+          amountToSend !== '' &&
           parseFloat(amountToSend) === 0 ||
           (walletBalance &&
             (parseUnits(amountToSend, token.decimals).gt(walletBalance) ||
@@ -186,6 +207,7 @@ export default function SendCrypto() {
           ? 'Invalid address'
           : token &&
             walletBalance &&
+            amountToSend !== '' &&
             token.isGasToken &&
             parseUnits(amountToSend, token.decimals).eq(walletBalance)
           ? 'You cannot send all of your gas token'

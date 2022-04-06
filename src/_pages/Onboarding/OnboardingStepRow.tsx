@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, ExpandLess, ExpandMore, Info } from '@mui/icons-material';
@@ -6,21 +6,22 @@ import { DefaultTransition } from '_components/core/Transition';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { OnboardingStep } from '_pages/Onboarding/OnboardingSteps';
 import { Button, ButtonSize } from '_components/core/Buttons';
+import { setWaitingToAdvance } from '_redux/effects/onboardingEffects';
 
 export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
-  const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
+  const { currentStep, waitingToAdvance } = useSelector((state: AppState) => state.onboarding);
   const stepIsCurrentStep = (currentStep && currentStep === step.number) || false;
   const stepIsAhead = (currentStep && currentStep < step.number) || false;
   const [isExpanded, setIsExpanded] = useState(false);
-  const [waitingToAdvance, setWaitingToAdvance] = useState(false);
+  const dispatch = useDispatch();
 
   const advanceToNextStep = () => {
-    setWaitingToAdvance(false);
+    dispatch(setWaitingToAdvance(false));
   };
 
   useEffect(() => {
     if (currentStep === step.number + 1) {
-      setWaitingToAdvance(true);
+      dispatch(setWaitingToAdvance(true));
     }
   }, [currentStep]);
   return (
@@ -55,20 +56,29 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
                 )}
               </div>
             </div>
+            {/*<span>Current step {currentStep}</span>*/}
+            {/*<br/>*/}
+            {/*<span>Waiting to advance {waitingToAdvance ? 'yes' : 'no'}</span>*/}
+            {/*<br/>*/}
+            {/*<span>THIS STEP {step.number}</span>*/}
+            {/*<br/>*/}
             <div className={'flex-row-center w-full text-body-smaller'}>
-              <DefaultTransition isOpen={isExpanded || stepIsCurrentStep || waitingToAdvance}>
+              <DefaultTransition isOpen={isExpanded ||
+                (currentStep - 1 === step.number && waitingToAdvance) || (currentStep === step.number && !waitingToAdvance)
+              }>
                 <div className={'my-2'}>
                   <>{React.createElement(step.descriptionComponent)}</>
                 </div>
               </DefaultTransition>
             </div>
-            {step.number === currentStep && step.actionComponent !== undefined && (
+            {(step.number === currentStep || waitingToAdvance) && step.actionComponent !== undefined &&
+            ((currentStep - 1 === step.number && waitingToAdvance) || !waitingToAdvance || (waitingToAdvance && currentStep === step.number + 1)) && (
               <>
                 <HorizontalLineBreak />
                 <>{React.createElement(step.actionComponent, step.actionComponentProps)}</>
               </>
             )}
-            <DefaultTransition isOpen={waitingToAdvance}>
+            <DefaultTransition isOpen={waitingToAdvance && currentStep === step.number + 1}>
               <div>
                 <HorizontalLineBreak />
                 <div className={'flex-row-center w-full justify-between text-body px-2 mb-2'}>

@@ -1,13 +1,14 @@
+
 // import { useSelector } from 'react-redux';
 // import { AppState } from '_redux/store';
 import { Button } from '_components/core/Buttons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import { setStep } from '_redux/effects/onboardingEffects';
+import { setOnboardingComplete, setStep } from '_redux/effects/onboardingEffects';
 // import { useState } from 'react';
 // import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 
-export default function MintNft() {
+export default function CompleteOnboarding () {
   // const signer = useSelector((state: AppState) => state.web3.provider);
   // const userAddress = useSelector((state: AppState) => state.wallet.address);
   // const doStuff = async () => {
@@ -21,15 +22,14 @@ export default function MintNft() {
   //   }
   // }
 
-  const currentStep = useSelector((state: AppState) => state.onboarding.currentStep);
   const dispatch = useDispatch();
   const signMessage = async () => {
-    dispatch(setStep(currentStep + 1));
+    dispatch(setOnboardingComplete(true));
   };
   return (
     <div className={'flex justify-center mb-2'}>
       <Button className={'w-full md:w-1/2'} onClick={signMessage}>
-        Mint NFT
+        Unlock mello
       </Button>
     </div>
   );

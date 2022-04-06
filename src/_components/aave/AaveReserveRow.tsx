@@ -403,7 +403,7 @@ export default function AaveReserveRow({
                         healthFactorResource={HealthFactorResource.Collateral}
                         reserveTitle={'Wallet'}
                         reserve={reserve}
-                        summaryTitle={'Amount to Deposit'}
+                        summaryTitle={'Amount to supply'}
                         userBalance={userBalance}
                         amount={depositAmount}
                         setAmount={(amount: string) => setAmount(amount, setDepositAmount)}
@@ -428,7 +428,7 @@ export default function AaveReserveRow({
                                 userBalance.lt(parseUnits(depositAmount, token.decimals))) ||
                               false
                             ? 'Insufficient balance'
-                            : 'Deposit'}
+                            : 'Supply'}
                         </span>
                       </AaveFunctionContent>
                     )}

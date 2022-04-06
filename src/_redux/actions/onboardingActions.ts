@@ -2,7 +2,9 @@ import {
   OnboardingActionTypes,
   SET_IS_COMPLETE,
   SET_IS_ONGOING,
-  SET_STEP
+  SET_STEP,
+  SET_WAITING_TO_ADVANCE,
+  RESET
 } from '_redux/types/onboardingTypes';
 
 export const setCurrentStepAction = (step: number): OnboardingActionTypes => {
@@ -14,6 +16,14 @@ export const setCurrentStepAction = (step: number): OnboardingActionTypes => {
   };
 };
 
+export const setWaitingToAdvanceAction = (waitingToAdvance: boolean): OnboardingActionTypes => {
+  return {
+    type: SET_WAITING_TO_ADVANCE,
+    payload: {
+      waitingToAdvance,
+    }
+  };
+};
 export const setOnboardingCompleteAction = (complete: boolean): OnboardingActionTypes => {
   return {
     type: SET_IS_COMPLETE,
@@ -31,3 +41,10 @@ export const setOnboardingOngoingAction = (ongoing: boolean): OnboardingActionTy
     }
   };
 };
+
+export const resetOnboarding = (): OnboardingActionTypes => {
+  return {
+    type: RESET
+  };
+};
+

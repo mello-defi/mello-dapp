@@ -25,12 +25,15 @@ import { TransactionStep } from '_components/transactions/TransactionStep';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
 import { BalancerFunction } from '_components/balancer/PoolFunctions';
+import { setStep } from '_redux/effects/onboardingEffects';
+import { stepInvestBalancer } from '_pages/Onboarding/OnboardingSteps';
 
 export default function PoolInvest({ pool }: { pool: Pool }) {
   const walletBalances = useWalletBalances();
   const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const { provider, network, signer, tokenSet } = useSelector((state: AppState) => state.web3);
+  const { complete, ongoing, currentStep } = useSelector((state: AppState) => state.onboarding);
 
   const marketPrices = useMarketPrices();
   const [transactionInProgress, setTransactionInProgress] = useState(false);
@@ -129,6 +132,9 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
         dispatch(toggleBalancesAreStale(true));
         dispatch(toggleUserPoolDataStale(true));
         initTokenAmounts();
+        if (ongoing && !complete) {
+          dispatch(setStep(currentStep + 1))
+        }
       } catch (e: any) {
         console.error(e);
         // TODO move to hook

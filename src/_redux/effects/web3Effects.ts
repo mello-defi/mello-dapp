@@ -4,23 +4,21 @@ import { Web3ActionTypes } from '_redux/types/web3Types';
 import { connectAction, disconnectAction, setNetworkAction } from '_redux/actions/web3Actions';
 import { EVMChainIdNumerical, EvmNetworkDefinition, findEvmNetworkById } from '_enums/networks';
 import Web3Modal, { IProviderOptions } from 'web3modal';
+import WalletConnectProvider from "@walletconnect/web3-provider";
 import Torus from '@toruslabs/torus-embed';
 import { socialsLogo } from '_assets/images';
 
 const polygonRpcUrl = process.env.REACT_APP_POLYGON_RPC_URL;
 // TODO move these to env vars, remove hardcoded network values
 const providerOptions: IProviderOptions = {
-  // walletconnect: {
-  //   package: WalletConnectProvider, // required
-  //   options: {
-  //     rpc: {
-  //       137: polygonRpcUrl
-  //     },
-  //     chainId: EVMChainIdNumerical.POLYGON_MAINNET,
-  //     networkId: 'matic',
-  //     rpcUrl: polygonRpcUrl
-  //   }
-  // },
+  walletconnect: {
+    package: WalletConnectProvider, // required
+    options: {
+      rpc: {
+        137: polygonRpcUrl
+      }
+    }
+  },
   torus: {
     display: {
       logo: socialsLogo,
