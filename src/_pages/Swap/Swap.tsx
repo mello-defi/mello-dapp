@@ -66,8 +66,6 @@ export default function Swap({
   const [destinationTokenDisabled, setDestinationTokenDisabled] = useState<boolean>(false);
   const [sourceAmount, setSourceAmount] = useState<string>('0.0');
   const [destinationAmount, setDestinationAmount] = useState<string>('0.0');
-  const [sourceFiatAmount, setSourceFiatAmount] = useState<number>(0.0);
-  const [destinationFiatAmount, setDestinationFiatAmount] = useState<number>(0.0);
   const [fetchingPrices, setFetchingPrices] = useState<boolean>(false);
   const [approvalTransactionHash, setApprovalTransactionHAsh] = useState<string>('');
   const [swapTransactionHash, setSwapTransactionHash] = useState<string>('');
@@ -124,8 +122,6 @@ export default function Swap({
         const rate = await getExchangeRate(srcToken, destToken, srcAmount.toString());
         console.log('rate', rate);
         setPriceRoute(rate);
-        setSourceFiatAmount(parseFloat(rate.srcUSD));
-        setDestinationFiatAmount(parseFloat(rate.destUSD));
         setDestinationAmount(formatUnits(rate.destAmount, destToken.decimals));
         setSwapConfirmed(false);
       } catch (e: any) {
@@ -210,8 +206,8 @@ export default function Swap({
   const resetState = () => {
     setSourceAmount('0.0');
     setDestinationAmount('0.0');
-    setSourceFiatAmount(0);
-    setDestinationFiatAmount(0);
+    // setSourceFiatAmount(0);
+    // setDestinationFiatAmount(0);
     setTransactionError('');
     setIsSwapping(false);
     setIsApproving(false);
@@ -257,16 +253,16 @@ export default function Swap({
         <span className={'text-header'}>Swap</span>
         <PoweredByLink url={'https://paraswap.io'} logo={paraswapLogo} />
       </div>
-      {/*{initialSourceTokenSymbol ? (*/}
-      {/*  <SingleCryptoAmountInput*/}
-      {/*    showMaxButton={false}*/}
-      {/*    balance={sourceTokenBalance}*/}
-      {/*    disabled={isSwapping || sourceTokenDisabled}*/}
-      {/*    amount={sourceAmount}*/}
-      {/*    amountChanged={sourceAmountChanged}*/}
-      {/*    token={sourceToken}*/}
-      {/*  />*/}
-      {/*) : (*/}
+      {initialSourceTokenSymbol ? (
+        <SingleCryptoAmountInput
+          showMaxButton={false}
+          balance={sourceTokenBalance}
+          disabled={isSwapping || sourceTokenDisabled}
+          amount={sourceAmount}
+          amountChanged={sourceAmountChanged}
+          token={sourceToken}
+        />
+      ) : (
         <MultiCryptoAmountInput
           token={sourceToken}
           tokenChanged={setSourceToken}
@@ -275,7 +271,7 @@ export default function Swap({
           disabled={isSwapping || sourceTokenDisabled}
           allowAmountOverMax={false}
         />
-      {/*)}*/}
+      )}
       <div
         className={
           'flex flex-row mx-auto items-center w-20 justify-center rounded-2xl -my-6 py-2 z-50'
@@ -291,14 +287,23 @@ export default function Swap({
           </Button>
         </div>
       </div>
-      <MultiCryptoAmountInput
-        token={destinationToken}
-        tokenChanged={setDestinationToken}
-        // tokenChanged={destinationTokenChanged}
-        amount={destinationAmount}
-        amountChanged={setDestinationAmount}
-        disabled={isSwapping || destinationTokenDisabled}
-      />
+      {initialDestinationTokenSymbol ? (
+        <SingleCryptoAmountInput
+          showMaxButton={false}
+          disabled={isSwapping || destinationTokenDisabled}
+          amount={destinationAmount}
+          amountChanged={setDestinationAmount}
+          token={destinationToken}
+        />
+      ) : (
+        <MultiCryptoAmountInput
+          token={destinationToken}
+          tokenChanged={setDestinationToken}
+          amount={destinationAmount}
+          amountChanged={setDestinationAmount}
+          disabled={isSwapping || destinationTokenDisabled}
+        />
+      )}
       <TransactionError transactionError={fetchingPriceError} />
       <SwapPriceInformation
         setSlippagePercentage={setSlippagePercentage}

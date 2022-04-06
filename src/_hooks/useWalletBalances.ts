@@ -22,7 +22,7 @@ const useWalletBalances = (token?: EvmTokenDefinition) => {
       }
     };
     getAllBalances();
-  }, [walletBalances, token, userAddress, balancesAreStale]);
+  }, [walletBalances, token, userAddress, balancesAreStale, provider]);
 
   return walletBalances;
 };

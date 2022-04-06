@@ -1,4 +1,4 @@
-import { formatTokenValueInFiat } from '_services/priceService';
+import { formatTokenValueInFiat, getTokenValueInFiat } from '_services/priceService';
 import React, { useEffect, useState } from 'react';
 import { amountIsValidNumberGtZero, decimalPlacesAreValid } from '_utils/index';
 import { TokenDefinition } from '_enums/tokens';
@@ -82,7 +82,7 @@ export default function SingleCryptoAmountInput({
         <div>
           {tokenPrice ? (
             <div className={'text-left font-mono'}>
-              {formatTokenValueInFiat(tokenPrice, amount)}
+              ${getTokenValueInFiat(tokenPrice, amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6})}
             </div>
           ) : (
             <span>&nbsp;</span>
