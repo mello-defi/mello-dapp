@@ -12,7 +12,7 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 
-export default function PoolRow({ poolId, userBalance }: { poolId: string; userBalance?: string }) {
+export default function PoolRow({ poolId, userBalance, allowFunctions = true }: { poolId: string; userBalance?: string, allowFunctions?: boolean }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const pools = useBalancerPools();
   const [pool, setPool] = useState<Pool |undefined>(undefined);
@@ -49,13 +49,15 @@ export default function PoolRow({ poolId, userBalance }: { poolId: string; userB
                 </div>
                 {pool.totalApr ? <div>{pool.totalApr}% APR</div> : <Spinner show={true} />}
               </div>
-              <div className={'text-3xl'}>
-                <ExpandMore
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  fontSize={'inherit'}
-                  className={'cursor-pointer text-color-light hover:text-black transition ml-2 mb-1'}
-                />
-              </div>
+              {allowFunctions && (
+                <div className={'text-3xl'}>
+                  <ExpandMore
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    fontSize={'inherit'}
+                    className={'cursor-pointer text-color-light hover:text-black transition ml-2 mb-1'}
+                  />
+                </div>
+              )}
             </div>
           </div>
           <DefaultTransition isOpen={isExpanded}>

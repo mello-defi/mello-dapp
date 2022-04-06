@@ -40,6 +40,7 @@ export default function UserPools() {
             <PoolRow
               poolId={userPool.poolId.id}
               key={userPool.id}
+              allowFunctions={false}
               userBalance={calculateUserSharesInFiat(userPool.poolId, userPool)}
             />
           ))}

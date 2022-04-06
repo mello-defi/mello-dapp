@@ -66,7 +66,7 @@ export default function Onboarding() {
           <p>
             Upon completion, you will have learned the basics of DeFi and how to use the mello
             platform. Need help?{' '}
-            <a className={'text-orange'} href={'https://discord.gg/fP39CfXN'}>
+            <a className={'text-orange'} href={'https://discord.gg/kGzrUrvTh3'}>
               Join our Discord!
             </a>{' '}
           </p>

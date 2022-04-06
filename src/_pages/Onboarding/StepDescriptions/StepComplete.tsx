@@ -9,7 +9,7 @@ export default function StepComplete() {
         <br/>
         <br/>
         Have a question or provide feedback?{' '}
-        <a className={'text-orange'} href={'https://discord.gg/fP39CfXN'}>
+        <a className={'text-orange'} href={'https://discord.gg/kGzrUrvTh3'}>
         Join our Discord</a>{' '}
         <br/>
         <br/>
