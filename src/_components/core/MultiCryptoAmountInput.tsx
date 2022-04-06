@@ -11,6 +11,7 @@ import MaxAmountButton from '_components/core/MaxAmountButton';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import BaseCryptoInput from '_components/core/BaseCryptoInput';
 import { DefaultTransition } from '_components/core/Transition';
+import { formatTokenValueInFiat, getTokenValueInFiat } from '_services/priceService';
 
 export default function MultiCryptoAmountInput({
   token,
@@ -18,7 +19,6 @@ export default function MultiCryptoAmountInput({
   amount,
   amountChanged,
   disabled,
-  amountInFiat,
   allowAmountOverMax = true
 }: {
   token?: EvmTokenDefinition;
@@ -26,11 +26,11 @@ export default function MultiCryptoAmountInput({
   amount: string;
   amountChanged: (amount: string) => void;
   disabled: boolean;
-  amountInFiat: number;
   allowAmountOverMax?: boolean;
 }) {
   const [amountGreaterThanUserBalance, setAmountGreaterThanUserBalance] = React.useState(false);
   const [userTokenBalance, setUserTokenBalance] = useState<BigNumber | undefined>();
+  const [tokenPrice, setTokenPrice] = useState<number>();
   const marketPrices = useMarketPrices();
   const walletBalances = useWalletBalances();
 
@@ -50,7 +50,6 @@ export default function MultiCryptoAmountInput({
       setUserTokenBalance(walletBalances[token.symbol]?.balance);
     }
   }, [walletBalances, token]);
-  const [tokenPrice, setTokenPrice] = useState<number>();
 
   useEffect(() => {
     if (token && marketPrices) {
@@ -102,7 +101,7 @@ export default function MultiCryptoAmountInput({
       >
         {tokenPrice ? (
           <div className={'text-left font-mono'}>
-            ${amountInFiat.toLocaleString(undefined, { maximumFractionDigits: 6 })}
+            ${getTokenValueInFiat(tokenPrice, amount).toLocaleString(undefined, { maximumFractionDigits: 6 })}
           </div>
         ) : (
           <span>&nbsp;</span>

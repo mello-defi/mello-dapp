@@ -224,15 +224,12 @@ function RenBridge() {
         <div className={'flex flex-row items-center justify-end'}>
           <PoweredByLink url={'https://bridge.renproject.io/'} logo={renLogo} />
         </div>
-        {btcPrice && (
-          <SingleCryptoAmountInput
-            disabled={isTransferring}
-            tokenPrice={btcPrice.current_price}
-            amount={transferAmount}
-            amountChanged={setTransferAmount}
-            token={nativeBitcoin}
-          />
-        )}
+        <SingleCryptoAmountInput
+          disabled={isTransferring}
+          amount={transferAmount}
+          amountChanged={setTransferAmount}
+          token={nativeBitcoin}
+        />
 
         {gatewayAddress && (
           <span className={'text-body-smaller'}>

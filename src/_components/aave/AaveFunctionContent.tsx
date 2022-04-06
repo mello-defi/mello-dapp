@@ -15,7 +15,6 @@ export default function AaveFunctionContent({
   summaryTitle,
   userBalance,
   reserve,
-  tokenPrice,
   amount,
   setAmount,
   token,
@@ -30,7 +29,6 @@ export default function AaveFunctionContent({
   reserve: ComputedReserveData;
   summaryTitle: string;
   userBalance: BigNumber | undefined;
-  tokenPrice: number;
   amount: string;
   setAmount: (amount: string) => void;
   token: EvmTokenDefinition;
@@ -47,7 +45,6 @@ export default function AaveFunctionContent({
         {userBalance && (
           <SingleCryptoAmountInput
             disabled={false}
-            tokenPrice={tokenPrice}
             amount={amount}
             balance={userBalance}
             amountChanged={setAmount}

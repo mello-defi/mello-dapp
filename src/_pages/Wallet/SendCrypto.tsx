@@ -154,7 +154,6 @@ export default function SendCrypto() {
         amount={amountToSend}
         amountChanged={(amount: string) => setAmountToSend(amount)}
         disabled={false}
-        amountInFiat={amountInFiat}
       />
       <div className="my-2">
         <label htmlFor="large-input" className={'mb-2 text-body-smaller my-2 px-1'}>

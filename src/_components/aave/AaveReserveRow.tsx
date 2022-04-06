@@ -61,7 +61,6 @@ export default function AaveReserveRow({
   const marketPrices = useMarketPrices();
   const [reserve, setReserve] = useState<ComputedReserveData | undefined>();
   const [userReserve, setUserReserve] = useState<ComputedUserReserve | undefined>();
-  const [marketPriceForToken, setMarketPriceForToken] = useState<number | undefined>(undefined);
   const [depositAmount, setDepositAmount] = useState<string>('0.0');
   const [borrowAmount, setBorrowAmount] = useState<string>('0.0');
   const [repayAmount, setRepayAmount] = useState<string>('0.0');
@@ -130,14 +129,6 @@ export default function AaveReserveRow({
       }
     }
   }, [userSummary, reserve, marketPrices]);
-  useEffect(() => {
-    if (token && marketPrices) {
-      const marketPrice = getMarketDataForSymbol(marketPrices, token.symbol);
-      if (marketPrice) {
-        setMarketPriceForToken(marketPrice.current_price);
-      }
-    }
-  }, [token, marketPrices]);
 
   // TODO- move to hook
   const runAaveTransactions = async (
@@ -403,7 +394,7 @@ export default function AaveReserveRow({
               {/*    ))*/}
               {/*  )}*/}
               {/*</TabHeaderContainer>*/}
-              {marketPriceForToken && reserve && token && (
+              {reserve && token && (
                 <div className={'flex flex-col md:flex-row justify-between space-x-0 sm:space-x-2'}>
                   <div className={'flex flex-col w-full'}>
                     {aaveFunction === AaveFunction.Deposit && (
@@ -414,7 +405,6 @@ export default function AaveReserveRow({
                         reserve={reserve}
                         summaryTitle={'Amount to Deposit'}
                         userBalance={userBalance}
-                        tokenPrice={marketPriceForToken}
                         amount={depositAmount}
                         setAmount={(amount: string) => setAmount(amount, setDepositAmount)}
                         token={token}
@@ -454,7 +444,6 @@ export default function AaveReserveRow({
                             ? calculateMaxWithdrawAmount(userSummary, userReserve, reserve)
                             : BigNumber.from('0')
                         }
-                        tokenPrice={marketPriceForToken}
                         amount={withdrawAmount}
                         setAmount={(amount: string) => setAmount(amount, setWithdrawAmount)}
                         token={token}
@@ -508,7 +497,6 @@ export default function AaveReserveRow({
                             ? parseUnits(maxBorrowAmount, token.decimals)
                             : BigNumber.from('0')
                         }
-                        tokenPrice={marketPriceForToken}
                         amount={borrowAmount}
                         setAmount={(amount: string) => setAmount(amount, setBorrowAmount)}
                         token={token}
@@ -551,7 +539,6 @@ export default function AaveReserveRow({
                             ? parseUnits(userReserve.variableBorrows, token.decimals)
                             : BigNumber.from('0')
                         }
-                        tokenPrice={marketPriceForToken}
                         amount={repayAmount}
                         reserve={reserve}
                         setAmount={(amount: string) => setAmount(amount, setRepayAmount)}

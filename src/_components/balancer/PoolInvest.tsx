@@ -192,7 +192,6 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
           <div key={token.symbol} className={'px-2'}>
             <SingleCryptoAmountInput
               disabled={!walletBalanceGreaterThanZero(token)}
-              tokenPrice={getMarketPricesForPoolToken(token)}
               maxAmount={getUserBalanceForPoolToken(token)}
               amount={amountsToInvest[tokenIndex]}
               balance={getUserBalanceForPoolToken(token)}

@@ -1,5 +1,5 @@
 import { formatTokenValueInFiat } from '_services/priceService';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { amountIsValidNumberGtZero, decimalPlacesAreValid } from '_utils/index';
 import { TokenDefinition } from '_enums/tokens';
 import { BigNumber, ethers } from 'ethers';
@@ -7,10 +7,11 @@ import { DefaultTransition } from '_components/core/Transition';
 import MaxAmountButton from '_components/core/MaxAmountButton';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import BaseCryptoInput from '_components/core/BaseCryptoInput';
+import { MarketDataResult } from '_services/marketDataService';
+import useMarketPrices from '_hooks/useMarketPrices';
 
 export default function SingleCryptoAmountInput({
   disabled,
-  tokenPrice,
   amount,
   amountChanged,
   balance,
@@ -19,7 +20,6 @@ export default function SingleCryptoAmountInput({
   showMaxButton = true
 }: {
   disabled: boolean;
-  tokenPrice: number;
   amount: string;
   balance?: BigNumber;
   amountChanged: (amount: string) => void;
@@ -28,6 +28,21 @@ export default function SingleCryptoAmountInput({
   showMaxButton?: boolean;
 }) {
   const [amountGreaterThanMax, setAmountGreaterThanMax] = React.useState(false);
+  const [tokenPrice, setTokenPrice] = useState<number>();
+  const marketPrices = useMarketPrices();
+
+  useEffect(() => {
+    if (token && marketPrices) {
+      const marketPrice = marketPrices.find(
+        (item: MarketDataResult) =>
+          item.symbol.toLocaleLowerCase() === token.symbol.toLocaleLowerCase()
+      );
+      if (marketPrice) {
+        setTokenPrice(marketPrice.current_price);
+      }
+    }
+  }, [token, marketPrices]);
+
 
   useEffect(() => {
     if (maxAmount) {

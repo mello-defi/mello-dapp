@@ -173,15 +173,12 @@ export default function EthereumToPolygonBridge() {
                   isRound={false}
                 />
               </div>
-              {ethereumPrice && (
-                <SingleCryptoAmountInput
-                  disabled={isTransferring}
-                  tokenPrice={ethereumPrice?.current_price}
-                  amount={transferAmount}
-                  amountChanged={setTransferAmount}
-                  token={ethereumTokenDefinition}
-                />
-              )}
+              <SingleCryptoAmountInput
+                disabled={isTransferring}
+                amount={transferAmount}
+                amountChanged={setTransferAmount}
+                token={ethereumTokenDefinition}
+              />
               <Button className={'mt-4'} onClick={deposit} disabled={isTransferring}>
                 Deposit
               </Button>

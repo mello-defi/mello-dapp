@@ -245,19 +245,17 @@ export default function Swap({
         <span className={'text-header'}>Swap</span>
         <PoweredByLink url={'https://paraswap.io'} logo={paraswapLogo} />
       </div>
-      {initialSourceTokenSymbol ? (
-        <SingleCryptoAmountInput
-          showMaxButton={false}
-          balance={sourceTokenBalance}
-          disabled={isSwapping || sourceTokenDisabled}
-          tokenPrice={sourceFiatAmount}
-          amount={sourceAmount}
-          amountChanged={sourceAmountChanged}
-          token={sourceToken}
-        />
-      ) : (
+      {/*{initialSourceTokenSymbol ? (*/}
+      {/*  <SingleCryptoAmountInput*/}
+      {/*    showMaxButton={false}*/}
+      {/*    balance={sourceTokenBalance}*/}
+      {/*    disabled={isSwapping || sourceTokenDisabled}*/}
+      {/*    amount={sourceAmount}*/}
+      {/*    amountChanged={sourceAmountChanged}*/}
+      {/*    token={sourceToken}*/}
+      {/*  />*/}
+      {/*) : (*/}
         <MultiCryptoAmountInput
-          amountInFiat={sourceFiatAmount}
           token={sourceToken}
           tokenChanged={setSourceToken}
           amount={sourceAmount}
@@ -265,7 +263,7 @@ export default function Swap({
           disabled={isSwapping || sourceTokenDisabled}
           allowAmountOverMax={false}
         />
-      )}
+      {/*)}*/}
       <div
         className={
           'flex flex-row mx-auto items-center w-20 justify-center rounded-2xl -my-6 py-2 z-50'
@@ -282,7 +280,6 @@ export default function Swap({
         </div>
       </div>
       <MultiCryptoAmountInput
-        amountInFiat={destinationFiatAmount}
         token={destinationToken}
         tokenChanged={setDestinationToken}
         amount={destinationAmount}

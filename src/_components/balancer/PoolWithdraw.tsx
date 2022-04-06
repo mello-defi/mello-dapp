@@ -241,14 +241,6 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
   //   const bal = walletBalances[token.symbol as CryptoCurrencySymbol];
   //   return !bal || (bal && bal.balance.gt(0));
   // };
-  const getMarketPricesForPoolToken = (token: PoolToken): number => {
-    const tokenDetail = getTokenByAddress(tokenSet, token.address);
-    const data = getMarketDataForSymbol(marketPrices, tokenDetail.symbol);
-    if (data) {
-      return data.current_price;
-    }
-    return 0;
-  };
 
   // const getUserPoolBalance = (token: PoolToken): BigNumber | undefined => {
   //   if (!userPools) {
@@ -515,7 +507,6 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
                   singleAssetMaxes[singleExitTokenIndex] || '0',
                   pool.tokens[singleExitTokenIndex].decimals
                 ).eq(0)}
-                tokenPrice={getMarketPricesForPoolToken(pool.tokens[singleExitTokenIndex])}
                 amount={amountsToWithdraw[singleExitTokenIndex]}
                 balance={parseUnits(
                   singleAssetMaxes[singleExitTokenIndex] || '0',
@@ -543,7 +534,6 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
           <div key={token.symbol} className={'px-2'}>
             <SingleCryptoAmountInput
               disabled={amountsInPool[index] === '0'}
-              tokenPrice={getMarketPricesForPoolToken(token)}
               amount={amountsToWithdraw[index]}
               balance={parseUnits(amountsInPool[index], token.decimals)}
               maxAmount={parseUnits(amountsInPool[index], token.decimals)}
