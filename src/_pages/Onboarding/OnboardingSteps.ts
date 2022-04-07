@@ -19,6 +19,8 @@ import PoolRow from '_components/balancer/PoolRow';
 import StepInvestBalancer from '_pages/Onboarding/StepDescriptions/StepInvestBalancer';
 import StepComplete from '_pages/Onboarding/StepDescriptions/StepComplete';
 import CompleteOnboarding from '_pages/Onboarding/CompleteOnboarding';
+import StepExplainOnboarding from './StepDescriptions/StepExplainOnboarding';
+import ExplainOnboardingAction from './ExplainOnboardingAction';
 
 export interface OnboardingStep {
   number: number;
@@ -29,21 +31,21 @@ export interface OnboardingStep {
   descriptionComponent: FunctionComponent<any>;
 }
 export const stepCompleteOnboarding: OnboardingStep = {
-  number: 10,
+  number: 11,
   title: 'Complete',
   nextStep: null,
   actionComponent: CompleteOnboarding,
   descriptionComponent: StepComplete
 };
 export const stepMintNft: OnboardingStep = {
-  number: 9,
+  number: 10,
   title: 'Mint mello NFT',
   nextStep: stepCompleteOnboarding,
   actionComponent: MintNft,
   descriptionComponent: StepMintNft
 };
 export const stepInvestBalancer: OnboardingStep = {
-  number: 8,
+  number: 9,
   title: 'Invest USDC',
   nextStep: stepMintNft,
   actionComponent: PoolRow,
@@ -53,7 +55,7 @@ export const stepInvestBalancer: OnboardingStep = {
   descriptionComponent: StepInvestBalancer
 };
 export const stepBorrowAave: OnboardingStep = {
-  number: 7,
+  number: 8,
   title: 'Borrow USDC from Aave',
   nextStep: stepInvestBalancer,
   actionComponent: AaveReserveRow,
@@ -65,7 +67,7 @@ export const stepBorrowAave: OnboardingStep = {
 };
 
 export const stepDepositAave: OnboardingStep = {
-  number: 6,
+  number: 7,
   title: 'Supply WBTC to Aave',
   nextStep: stepBorrowAave,
   actionComponent: AaveReserveRow,
@@ -77,7 +79,7 @@ export const stepDepositAave: OnboardingStep = {
 };
 
 export const stepPerformSwap: OnboardingStep = {
-  number: 5,
+  number: 6,
   title: 'Swap gas token for WBTC',
   nextStep: stepDepositAave,
   actionComponent: Swap,
@@ -88,35 +90,46 @@ export const stepPerformSwap: OnboardingStep = {
   descriptionComponent: StepSwap
 };
 export const stepAddGasToWallet: OnboardingStep = {
-  number: 4,
+  number: 5,
   title: 'Add gas token to fuel wallet',
   nextStep: stepPerformSwap,
   actionComponent: FiatOnboarding,
   descriptionComponent: StepAddGasToken
 };
 export const stepSignMessage: OnboardingStep = {
-  number: 3,
+  number: 4,
   title: 'Sign test transaction',
   nextStep: stepAddGasToWallet,
   actionComponent: SignTestMessage,
   descriptionComponent: StepSignMessage
 };
 export const stepConnectWallet: OnboardingStep = {
-  number: 2,
+  number: 3,
   title: 'Connect wallet',
   nextStep: stepSignMessage,
   descriptionComponent: StepConnectWallet
 };
+
+export const stepExplainOnboarding: OnboardingStep = {
+  number: 2,
+  title: `What's the plan?`,
+  nextStep: stepConnectWallet,
+  actionComponent: ExplainOnboardingAction,
+  descriptionComponent: StepExplainOnboarding
+};
+
 export const stepTermsAndConditions: OnboardingStep = {
   number: 1,
   title: 'Housekeeping',
-  nextStep: stepConnectWallet,
+  nextStep: stepExplainOnboarding,
   actionComponent: TermsAndConditions,
   descriptionComponent: StepTermsAndConditions
 };
+console.log(__DEV__)
 
 export const steps: OnboardingStep[] = [
   stepTermsAndConditions,
+  stepExplainOnboarding,
   stepConnectWallet,
   stepSignMessage,
   stepAddGasToWallet,
