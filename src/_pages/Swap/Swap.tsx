@@ -34,10 +34,14 @@ import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 
 export default function Swap({
   initialSourceTokenSymbol,
-  initialDestinationTokenSymbol
+  initialDestinationTokenSymbol,
+  initialSourceTokenAmount,
+  prefillAmountDivider: prefillAmountPercent,
 }: {
   initialSourceTokenSymbol?: CryptoCurrencySymbol;
   initialDestinationTokenSymbol?: CryptoCurrencySymbol;
+  initialSourceTokenAmount?: string;
+  prefillAmountDivider?: number;
 }) {
   const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -57,14 +61,27 @@ export default function Swap({
   useEffect(() => {
     if (sourceToken) {
       setSourceTokenBalance(walletBalances[sourceToken.symbol]?.balance);
+      console.log(walletBalances[sourceToken.symbol]?.balance)
     }
   }, [sourceToken, walletBalances]);
   const { complete, ongoing } = useSelector((state: AppState) => state.onboarding);
 
-  console.log('sourceTokenBalance', sourceTokenBalance);
   const [sourceTokenDisabled, setSourceTokenDisabled] = useState<boolean>(false);
   const [destinationTokenDisabled, setDestinationTokenDisabled] = useState<boolean>(false);
   const [sourceAmount, setSourceAmount] = useState<string>('0.0');
+  
+  // Prefill source token amount 
+  useEffect(() => {
+    if(prefillAmountPercent) {
+      // Divide sourceTokenBalance by prefillAmountDivider
+      const prefillAmount = walletBalances[sourceToken.symbol]?.balance.div(100).mul(prefillAmountPercent).toString();
+      if(prefillAmount){
+        const formattedPrefillAmount = formatUnits(prefillAmount, sourceToken.decimals);
+        sourceAmountChanged(formattedPrefillAmount);
+      }
+    }
+  }, []);
+
   const [destinationAmount, setDestinationAmount] = useState<string>('0.0');
   const [fetchingPrices, setFetchingPrices] = useState<boolean>(false);
   const [approvalTransactionHash, setApprovalTransactionHAsh] = useState<string>('');
