@@ -21,6 +21,8 @@ Sentry.init({
   tracesSampleRate: 1.0
 });
 
+if(__DEV__) document.title = `mello DEV`;
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
