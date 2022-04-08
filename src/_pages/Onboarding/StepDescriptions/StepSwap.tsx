@@ -1,7 +1,7 @@
 import OnboardingStepDescription from '_pages/Onboarding/OnboardingStepDescription';
 
 export default function StepSwap() {
-  const whatIsRequired = <>Swap some $MATIC for $WBTC</>;
+  const whatIsRequired = <>Swap some MATIC for WBTC</>;
   const whyIsRequired = (
     <>
       A token swap is the exchanging of one token for another. This allows you to easily exchange
@@ -18,7 +18,13 @@ export default function StepSwap() {
       </a>
     </>
   );
+
+  const notes = (
+    <>
+    We have prefilled the amount of MATIC that you can trade for WBTC. You can change this amount but remember to leave at least 1 MATIC for transaction fees.
+    </>
+  )
   return (
-    <OnboardingStepDescription whatIsRequired={whatIsRequired} whyIsRequired={whyIsRequired} />
+    <OnboardingStepDescription whatIsRequired={whatIsRequired} whyIsRequired={whyIsRequired} notes={notes} />
   );
 }
