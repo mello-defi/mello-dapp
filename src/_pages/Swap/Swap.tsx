@@ -72,6 +72,10 @@ export default function Swap({
   
   // Prefill source token amount 
   useEffect(() => {
+    if(initialSourceTokenAmount) {
+      sourceAmountChanged(initialSourceTokenAmount);
+      return;
+    }
     if(prefillAmountPercent) {
       // Divide sourceTokenBalance by prefillAmountDivider
       const prefillAmount = walletBalances[sourceToken.symbol]?.balance.div(100).mul(prefillAmountPercent).toString();
