@@ -84,7 +84,7 @@ export const stepPerformSwap: OnboardingStep = {
   actionComponentProps: {
     initialSourceTokenSymbol: CryptoCurrencySymbol.MATIC,
     initialDestinationTokenSymbol: CryptoCurrencySymbol.WBTC,
-    prefillAmountDivider: 50,
+    prefillAmountPercent: 50,
   },
   descriptionComponent: StepSwap
 };

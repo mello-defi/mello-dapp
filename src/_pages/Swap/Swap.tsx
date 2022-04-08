@@ -36,12 +36,12 @@ export default function Swap({
   initialSourceTokenSymbol,
   initialDestinationTokenSymbol,
   initialSourceTokenAmount,
-  prefillAmountDivider: prefillAmountPercent,
+  prefillAmountPercent,
 }: {
   initialSourceTokenSymbol?: CryptoCurrencySymbol;
   initialDestinationTokenSymbol?: CryptoCurrencySymbol;
   initialSourceTokenAmount?: string;
-  prefillAmountDivider?: number;
+  prefillAmountPercent?: number;
 }) {
   const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
