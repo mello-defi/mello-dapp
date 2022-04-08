@@ -1,7 +1,7 @@
 import OnboardingStepDescription from '_pages/Onboarding/OnboardingStepDescription';
 
 export default function StepAddGasToken() {
-  const whatIsRequired = <>Deposit or buy Matic for your wallet</>;
+  const whatIsRequired = <>Deposit or buy Matic for your wallet.</>;
   const whyIsRequired = (
     <>
       A gas token is required to perform transactions on a blockchain. These fees are minuscule
