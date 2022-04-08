@@ -5,7 +5,7 @@ export default function StepAddGasToken() {
   const whyIsRequired = (
     <>
       A gas token is required to perform transactions on a blockchain. These fees are minuscule
-      (~$.001) but without them, you can&apos;t authorise transactions. 
+      (~$0.01) but without them, you can&apos;t authorise transactions. 
       <br />
       <br />
       We reccomend you buy €5/$5 to start.
