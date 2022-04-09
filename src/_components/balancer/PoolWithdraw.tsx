@@ -24,7 +24,6 @@ import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 import { getPoolOnChainData, getVaultAddress } from '_services/balancerVaultService';
 import { getErc20TokenInfo } from '_services/walletService';
 import { CryptoCurrencySymbol } from '_enums/currency';
-import { getMarketDataForSymbol } from '_services/marketDataService';
 import { BigNumber } from 'ethers';
 import { MaxUint256 } from '_utils/maths';
 import { getGasPrice } from '_services/gasService';
@@ -281,9 +280,8 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
         (t) => t.address.toLowerCase() === pool.tokens[singleExitTokenIndex].address.toLowerCase()
       );
       const amount = amountsToWithdraw[withdrawTokenIndex];
-      const data = getMarketDataForSymbol(marketPrices, pool.tokens[singleExitTokenIndex].symbol);
-      if (data) {
-        const price = data && data.current_price;
+      const price = marketPrices[pool.tokens[singleExitTokenIndex].address.toLowerCase()];
+      if (price) {
         total += price * parseFloat(amount);
       }
     } else {
@@ -292,10 +290,8 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
         console.log(amount);
         if (!isNaN(parseFloat(amount))) {
           const token = pool.tokens[i];
-          const tokenData = getTokenByAddress(tokenSet, token.address);
-          const data = getMarketDataForSymbol(marketPrices, tokenData.symbol);
-          if (data) {
-            const price = data && data.current_price;
+          const price = marketPrices[token.address.toLowerCase()];
+          if (price) {
             total += price * parseFloat(amount);
           }
         }

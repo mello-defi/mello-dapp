@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react';
 import useCheckAndApproveTokenBalance from '_hooks/useCheckAndApproveTokenBalance';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { amountIsValidNumberGtZero, getTokenByAddress } from '_utils/index';
-import { getMarketDataForSymbol } from '_services/marketDataService';
 import { BigNumber } from 'ethers';
 import { getVaultAddress } from '_services/balancerVaultService';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
@@ -59,14 +58,14 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
     const bal = walletBalances[token.symbol as CryptoCurrencySymbol];
     return !bal || (bal && bal.balance.gt(0));
   };
-  const getMarketPricesForPoolToken = (token: PoolToken): number => {
-    const tokenDetail = getTokenByAddress(tokenSet, token.address);
-    const data = getMarketDataForSymbol(marketPrices, tokenDetail.symbol);
-    if (data) {
-      return data.current_price;
-    }
-    return 0;
-  };
+  // const getMarketPricesForPoolToken = (token: PoolToken): number => {
+  //   const tokenDetail = getTokenByAddress(tokenSet, token.address);
+  //   const data = getMarketDataForSymbol(marketPrices, tokenDetail.symbol);
+  //   if (data) {
+  //     return data.current_price;
+  //   }
+  //   return 0;
+  // };
 
   const getUserBalanceForPoolToken = (token: PoolToken): BigNumber | undefined => {
     const bal = walletBalances[token.symbol as CryptoCurrencySymbol];
@@ -89,11 +88,9 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
       console.log(amount);
       if (!isNaN(parseFloat(amount))) {
         const token = pool.tokens[i];
-        const tokenData = getTokenByAddress(tokenSet, token.address);
-        const data = getMarketDataForSymbol(marketPrices, tokenData.symbol);
-        if (data) {
-          const price = data && data.current_price;
-          total += price * parseFloat(amount);
+        const marketPrice = marketPrices[token.address.toLowerCase()]
+        if (marketPrice) {
+          total += marketPrice * parseFloat(amount);
         }
       }
     }

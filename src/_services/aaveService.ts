@@ -15,7 +15,6 @@ import { executeEthTransaction } from '_services/walletService';
 import { BigNumber, ethers } from 'ethers';
 import LendingPoolInterface from '@aave/protocol-js/dist/tx-builder/interfaces/v2/LendingPool';
 import { CryptoCurrencySymbol } from '_enums/currency';
-import { MarketDataResult } from '_services/marketDataService';
 import { formatTokenValueInFiat } from '_services/priceService';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import { HealthFactorImpact, HealthFactorResource } from '_enums/aave';
@@ -29,25 +28,25 @@ export async function runAaveApprovalTransaction(
   return runAaveTransactionType(txs, provider, eEthereumTxType.ERC20_APPROVAL, gasPrice);
 }
 
-export const getFiatValueForUserReserve = (
-  marketDataResults: MarketDataResult[],
-  reserveAmount: string,
-  reserveSymbol: string
-): string => {
-  const symbol =
-    reserveSymbol.toLowerCase() === CryptoCurrencySymbol.WMATIC.toLowerCase()
-      ? CryptoCurrencySymbol.MATIC.toLowerCase()
-      : reserveSymbol.toLowerCase() === CryptoCurrencySymbol.WETH.toLowerCase()
-      ? CryptoCurrencySymbol.ETH.toLowerCase()
-      : reserveSymbol.toLowerCase();
-  const data = marketDataResults.find(
-    (m: MarketDataResult) => m.symbol.toLocaleLowerCase() === symbol
-  );
-  if (data) {
-    return formatTokenValueInFiat(data.current_price, reserveAmount);
-  }
-  return '';
-};
+// export const getFiatValueForUserReserve = (
+//   marketDataResults: MarketDataResults,
+//   reserveAmount: string,
+//   reserveSymbol: string
+// ): string => {
+//   // const symbol =
+//   //   reserveSymbol.toLowerCase() === CryptoCurrencySymbol.WMATIC.toLowerCase()
+//   //     ? CryptoCurrencySymbol.MATIC.toLowerCase()
+//   //     : reserveSymbol.toLowerCase() === CryptoCurrencySymbol.WETH.toLowerCase()
+//   //     ? CryptoCurrencySymbol.ETH.toLowerCase()
+//   //     : reserveSymbol.toLowerCase();
+//   const data = marketDataResults.find(
+//     (m: MarketDataResult) => m.symbol.toLocaleLowerCase() === symbol
+//   );
+//   if (data) {
+//     return formatTokenValueInFiat(data.current_price, reserveAmount);
+//   }
+//   return '';
+// };
 
 export async function runAaveActionTransaction(
   txs: EthereumTransactionTypeExtended[],

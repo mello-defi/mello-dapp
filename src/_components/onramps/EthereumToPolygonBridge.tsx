@@ -1,7 +1,6 @@
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import React, { useEffect, useState } from 'react';
-import { MarketDataResult } from '_services/marketDataService';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { ethereumTokens } from '_enums/tokens';
 import { EVMChainIdNumerical } from '_enums/networks';
@@ -14,7 +13,7 @@ import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
 // @ts-ignore
 import { Hyphen, RESPONSE_CODES } from '@biconomy/hyphen';
-import useMarketPrices from '_hooks/useMarketPrices';
+// import useMarketPrices from '_hooks/useMarketPrices';
 import { getGasPrice } from '_services/gasService';
 import { logTransactionHash } from '_services/dbService';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
@@ -51,7 +50,7 @@ export default function EthereumToPolygonBridge() {
   const ethereumTokenDefinition = ethereumTokens.eth;
   const [transferAmount, setTransferAmount] = useState<string>('0.0');
   const [depositAddress, setDepositAddress] = useState<string | undefined>(undefined);
-  const [ethereumPrice, setEthereumPrice] = useState<MarketDataResult | undefined>();
+  // const [ethereumPrice, setEthereumPrice] = useState<number | undefined>();
   const [transactionError, setTransactionError] = useState<string>('');
   const [biconomyInitialized, setBiconomyInitialized] = useState<boolean>(false);
   const [isTransferring, setIsTransferring] = useState<boolean>(false);
@@ -59,19 +58,19 @@ export default function EthereumToPolygonBridge() {
   const [ethereumTransactionHash, setEthereumTransactionHash] = useState<string>('');
   const [polygonTransactionHash, setPolygonTransactionHash] = useState<string>('');
   const [polygonTransferComplete, setPolygonTransferComplete] = useState<boolean>(false);
-  const marketPrices = useMarketPrices();
-  useEffect(() => {
-    if (marketPrices) {
-      const eth = marketPrices.find(
-        (item: MarketDataResult) =>
-          item.symbol.toLowerCase() === CryptoCurrencySymbol.ETH.toLowerCase()
-      );
-      if (eth) {
-        setEthereumPrice(eth);
-      }
-    }
-  }, [marketPrices]);
-
+  // const marketPrices = useMarketPrices();
+  // useEffect(() => {
+  //   if (marketPrices) {
+  //     const eth = marketPrices.find(
+  //       (item: MarketDataResult) =>
+  //         item.symbol.toLowerCase() === CryptoCurrencySymbol.ETH.toLowerCase()
+  //     );
+  //     if (eth) {
+  //       setEthereumPrice(eth);
+  //     }
+  //   }
+  // }, []);
+  //
   const onFundsTransfered = async (data: BiconomyFundsTransferedResponse) => {
     console.log('FUNDS TRANSFERRED', data);
     setPolygonTransactionHash(data.exitHash);

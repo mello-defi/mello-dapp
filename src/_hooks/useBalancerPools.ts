@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { useEffect } from 'react';
 import { getBalancerPoolAprs, getBalancerPools } from '_redux/effects/balancerEffects';
-import { MarketDataResult } from '_services/marketDataService';
 import useMarketPrices from '_hooks/useMarketPrices';
 
 const useBalancerPools = () => {
@@ -14,7 +13,7 @@ const useBalancerPools = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!pools && prices.length > 0 && provider && signer && userAddress) {
+    if (!pools && provider && signer && userAddress) {
       const addresses = Object.values(tokenSet).map((token) => token.address.toLowerCase());
       dispatch(getBalancerPools(addresses));
     }
@@ -22,7 +21,7 @@ const useBalancerPools = () => {
 
   useEffect(() => {
     if (pools && pools.length && provider && signer && !aprsSet) {
-      dispatch(getBalancerPoolAprs(pools, tokenSet, prices, provider, signer));
+      dispatch(getBalancerPoolAprs(pools, prices, provider, signer));
     }
   }, [pools, aprsSet, provider, signer, prices, tokenSet]);
   return pools;

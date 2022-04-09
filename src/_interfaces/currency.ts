@@ -1,4 +1,4 @@
-import { CryptoCurrencyName, CryptoCurrencySymbol, FiatCurrencyName } from '_enums/currency';
+import { CryptoCurrencyName, CryptoCurrencySymbol, FiatCurrencySymbol } from '_enums/currency';
 
 export interface CryptoCurrency {
   name: CryptoCurrencyName;
@@ -6,7 +6,7 @@ export interface CryptoCurrency {
 }
 
 export interface FiatCurrency {
-  nameShort: FiatCurrencyName;
+  nameShort: FiatCurrencySymbol;
   nameLong: string;
   symbol: string;
 }
@@ -14,17 +14,17 @@ export interface FiatCurrency {
 export const currencies: FiatCurrency[] = [
   {
     nameLong: 'US Dollar',
-    nameShort: FiatCurrencyName.USD,
+    nameShort: FiatCurrencySymbol.USD,
     symbol: '$'
   },
   {
-    nameShort: FiatCurrencyName.EUR,
+    nameShort: FiatCurrencySymbol.EUR,
     nameLong: 'Euro',
     symbol: '€'
   },
   {
     nameLong: 'British Pound',
-    nameShort: FiatCurrencyName.GBP,
+    nameShort: FiatCurrencySymbol.GBP,
     symbol: '£'
   }
 ];

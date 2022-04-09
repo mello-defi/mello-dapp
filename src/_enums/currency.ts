@@ -44,14 +44,14 @@ export enum CryptoCurrencySymbol {
   WBTCE = 'WBTC.e'
 }
 
-export enum FiatCurrencyName {
-  USD = 'USD',
-  EUR = 'EUR',
-  GBP = 'GBP'
+export enum FiatCurrencySymbol {
+  USD = 'usd',
+  EUR = 'eur',
+  GBP = 'gbp'
 }
 
 export interface CurrencyDefinition {
-  name: FiatCurrencyName;
+  name: FiatCurrencySymbol;
   symbol: string;
 }
 
@@ -63,15 +63,15 @@ export interface Currencies {
 
 export const currencies: Currencies = {
   eur: {
-    name: FiatCurrencyName.EUR,
+    name: FiatCurrencySymbol.EUR,
     symbol: '€'
   },
   usd: {
-    name: FiatCurrencyName.USD,
+    name: FiatCurrencySymbol.USD,
     symbol: '$'
   },
   gbp: {
-    name: FiatCurrencyName.GBP,
+    name: FiatCurrencySymbol.GBP,
     symbol: '£'
   }
 };

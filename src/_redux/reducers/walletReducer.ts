@@ -5,8 +5,10 @@ import {
   WalletActionTypes,
   WalletState
 } from '_redux/types/walletTypes';
+import { FiatCurrencySymbol } from '_enums/currency';
 
 const initialState: WalletState = {
+  fiatCurrency: FiatCurrencySymbol.USD,
   address: undefined,
   balances: {},
   balancesAreStale: true

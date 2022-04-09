@@ -6,7 +6,7 @@ import {
 } from '_redux/types/marketTypes';
 
 const initialState: MarketState = {
-  prices: [],
+  prices: {},
   isFetchingPrices: false
 };
 

@@ -1,4 +1,4 @@
-import { getFiatValueForUserReserve } from '_services/aaveService';
+// import { getFiatValueForUserReserve } from '_services/aaveService';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
@@ -7,6 +7,7 @@ import { getTokenByAddress } from '_utils/index';
 import CryptoAmountWithTooltip from '_components/core/CryptoAmountTooltip';
 import { ethers } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
+import { formatTokenValueInFiat } from '_services/priceService';
 
 export default function ComputedUserReserveListItem({
   reserveName,
@@ -44,7 +45,7 @@ export default function ComputedUserReserveListItem({
               amount={parseUnits(reserveAmount, token.decimals).toString()}
             />
             <span className={'ml-1 text-color-light'}>
-              ({getFiatValueForUserReserve(marketPrices, reserveAmount, reserveSymbol)})
+              ({formatTokenValueInFiat(marketPrices[reserveAddress.toLowerCase()], reserveAmount)})
             </span>
           </span>
         )}

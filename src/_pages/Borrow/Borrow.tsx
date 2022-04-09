@@ -13,20 +13,27 @@ import AaveReservesSkeleton from '_components/aave/AaveReservesSkeleton';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import useAaveReserves from '_hooks/useAaveReserves';
 import UserBorrowSummary from '_pages/Borrow/UserBorrowSummary';
+import { useSelector } from 'react-redux';
+import { AppState } from '_redux/store';
 
 export default function Borrow() {
+  const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const marketPrices = useMarketPrices();
   const userSummary = useAaveUserSummary();
   const aaveReserves = useAaveReserves();
   const [ethPrice, setEthPrice] = useState<number | undefined>(undefined);
 
   useEffect(() => {
-    if (marketPrices && marketPrices.length > 0 && !ethPrice) {
-      const ethPrice = marketPrices.find(
-        (item) => item.symbol.toLowerCase() === CryptoCurrencySymbol.ETH.toLowerCase()
-      );
-      if (ethPrice) {
-        setEthPrice(ethPrice.current_price);
+    if (marketPrices && !ethPrice) {
+      // const ethPrice = marketPrices.find(
+      //   (item) => item.symbol.toLowerCase() === CryptoCurrencySymbol.ETH.toLowerCase()
+      // );
+      const ethAddress = tokenSet[CryptoCurrencySymbol.WETH]?.address;
+      if (ethAddress) {
+        const ethPrice = marketPrices[ethAddress.toLowerCase()];
+        if (ethPrice) {
+          setEthPrice(ethPrice);
+        }
       }
     }
   }, [marketPrices]);
@@ -49,7 +56,7 @@ export default function Borrow() {
       </span>
       <CurrentHealthFactor healthFactor={userSummary?.healthFactor} />
       <div>
-        {userSummary && marketPrices && marketPrices.length > 0 && aaveReserves ? (
+        {userSummary && aaveReserves ? (
           sortUserReservesByKey(aaveReserves, userSummary.reservesData, 'totalBorrowsUSD').map(
             (reserve: ComputedReserveData) => {
               return (

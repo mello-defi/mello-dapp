@@ -8,10 +8,11 @@ import {
 } from '_redux/actions/balancerActions';
 import { getMiningLiquidityApr, getSwapApr } from '_services/balancerCalculatorService';
 import { GenericTokenSet } from '_enums/tokens';
-import { MarketDataResult } from '_services/marketDataService';
+import { NetworkMarketData } from '_services/marketDataService';
 import { Pool, UserPool } from '_interfaces/balancer';
 import { ethers } from 'ethers';
 import { getPools, getUserPools } from '_services/balancerSubgraphClient';
+import { Network } from '@aave/protocol-js';
 
 export const toggleUserPoolDataStale = (userDataStale: boolean) => {
   return function (dispatch: Dispatch<BalancerActionTypes>) {
@@ -27,15 +28,14 @@ export const setTotalInvestedAmount = (totalAmountInvested: number) => {
 
 export const getUserPoolsAprs = (
   userPools: UserPool[],
-  tokenSet: GenericTokenSet,
-  prices: MarketDataResult[],
+  prices: NetworkMarketData,
   provider: ethers.providers.Web3Provider,
   signer: ethers.Signer
 ) => {
   return async function (dispatch: Dispatch<BalancerActionTypes>) {
     const updatedUserPools: UserPool[] = [...userPools];
     for (const p of updatedUserPools.map((up) => up.poolId)) {
-      p.liquidityMiningApr = await getMiningLiquidityApr(tokenSet, p, prices);
+      p.liquidityMiningApr = await getMiningLiquidityApr(p, prices);
       p.swapApr = await getSwapApr(p, provider, signer);
       p.totalApr = (p.liquidityMiningApr + p.swapApr).toFixed(2);
     }
@@ -58,15 +58,14 @@ export const getBalancerPools = (addresses: string[]) => {
 
 export const getBalancerPoolAprs = (
   pools: Pool[],
-  tokenSet: GenericTokenSet,
-  prices: MarketDataResult[],
+  prices: NetworkMarketData,
   provider: ethers.providers.Web3Provider,
   signer: ethers.Signer
 ) => {
   return async function (dispatch: Dispatch<BalancerActionTypes>) {
     const tempPools = [...pools];
     for (const p of tempPools) {
-      p.liquidityMiningApr = await getMiningLiquidityApr(tokenSet, p, prices);
+      p.liquidityMiningApr = await getMiningLiquidityApr(p, prices);
       p.swapApr = await getSwapApr(p, provider, signer);
       p.totalApr = (p.liquidityMiningApr + p.swapApr).toFixed(2);
     }

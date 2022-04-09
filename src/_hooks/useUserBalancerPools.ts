@@ -27,7 +27,7 @@ const useUserBalancerPools = () => {
 
   useEffect(() => {
     if (userPools && userPools.length && provider && signer && !userPoolsAprsSet) {
-      dispatch(getUserPoolsAprs(userPools, tokenSet, prices, provider, signer));
+      dispatch(getUserPoolsAprs(userPools, prices, provider, signer));
     }
   }, [userPools, userPoolsAprsSet, provider, signer, prices, tokenSet]);
 

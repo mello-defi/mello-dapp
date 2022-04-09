@@ -32,7 +32,7 @@ import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { convertCryptoAmounts } from '_services/priceService';
 import { getGasPrice } from '_services/gasService';
-import { getMarketDataForSymbol } from '_services/marketDataService';
+// import { getMarketDataForSymbol } from '_services/marketDataService';
 import { logTransactionHash } from '_services/dbService';
 import { stepBorrowAave, stepDepositAave } from '_pages/Onboarding/OnboardingSteps';
 import { ExpandMore } from '@mui/icons-material';
@@ -55,7 +55,7 @@ export default function AaveReserveRow({
 
   // const userSummaryStale = useSelector((state: AppState) => state.aave.userSummaryStale);
   // const userAddress = useSelector((state: AppState) => state.Wallet.ad);
-  const userAddress = useSelector((state: AppState) => state.wallet.address);
+  const { address: userAddress, fiatCurrency } = useSelector((state: AppState) => state.wallet);
   // TODO- centralise this
   const gasStationUrl = useSelector((state: AppState) => state.web3.network.gasStationUrl);
   const marketPrices = useMarketPrices();
@@ -116,14 +116,18 @@ export default function AaveReserveRow({
   }, [aaveReserves, userSummary]);
   useEffect(() => {
     if (userSummary && reserve && marketPrices) {
-      const ethMarketData = getMarketDataForSymbol(marketPrices, CryptoCurrencySymbol.ETH);
-      const tokenMarketData = getMarketDataForSymbol(marketPrices, reserve.symbol);
-      if (ethMarketData && tokenMarketData) {
+      const ethAddress = tokenSet[CryptoCurrencySymbol.WETH]?.address;
+      if (!ethAddress) {
+        throw new Error('Could not get ETH price')
+      }
+      const ethMarketPrice = marketPrices[ethAddress.toLowerCase()];
+      const tokenMarketPrice = marketPrices[reserve.underlyingAsset.toLowerCase()];
+      if (ethMarketPrice && tokenMarketPrice) {
         setMaxBorrowAmount(
           convertCryptoAmounts(
             userSummary.availableBorrowsETH,
-            ethMarketData.current_price,
-            tokenMarketData.current_price
+            ethMarketPrice,
+            tokenMarketPrice
           ).toFixed(6)
         );
       }

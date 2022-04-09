@@ -13,9 +13,10 @@ import CopyableText from '_components/core/CopyableText';
 import { logTransactionHash } from '_services/dbService';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import useMarketPrices from '_hooks/useMarketPrices';
-import { MarketDataResult } from '_services/marketDataService';
+// import { MarketDataResult } from '_services/marketDataService';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { nativeBitcoin, PolygonMainnetTokenContracts } from '_enums/tokens';
+import { getMarketDataForAdditionalSymbols } from '_services/marketDataService';
 
 function RenBridge() {
   const { provider, network, signer } = useSelector((state: AppState) => state.web3);
@@ -33,20 +34,21 @@ function RenBridge() {
   const [transactionConfirmationTarget, setTransactionConfirmationTarget] = useState(0);
   const [transactionStatus, setTransactionStatus] = useState('');
   const [transactionHash, setTransactionHash] = useState('');
-  const [btcPrice, setBtcPrice] = useState<MarketDataResult | undefined>();
+  const [btcPrice, setBtcPrice] = useState<number | undefined>();
   const [isTransferring, setIsTransferring] = useState<boolean>(false);
 
   const marketPrices = useMarketPrices();
   useEffect(() => {
-    if (marketPrices) {
-      const btc = marketPrices.find(
-        (item: MarketDataResult) =>
-          item.symbol.toLowerCase() === CryptoCurrencySymbol.ETH.toLowerCase()
-      );
-      if (btc) {
-        setBtcPrice(btc);
+    const getBtcPrice = async () => {
+      if (marketPrices) {
+        const prices = await getMarketDataForAdditionalSymbols();
+        const btc = prices[CryptoCurrencySymbol.BTC.toLowerCase()]
+        if (btc) {
+          setBtcPrice(btc);
+        }
       }
     }
+    getBtcPrice();
   }, [marketPrices]);
 
   // TODO needs huge cleanup

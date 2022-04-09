@@ -1,15 +1,16 @@
 import { formatTokenValueInFiat, getTokenValueInFiat } from '_services/priceService';
 import React, { useEffect, useState } from 'react';
 import { amountIsValidNumberGtZero, decimalPlacesAreValid } from '_utils/index';
-import { TokenDefinition } from '_enums/tokens';
+import { EvmTokenDefinition, GenericTokenDefinition } from '_enums/tokens';
 import { BigNumber, ethers } from 'ethers';
 import { DefaultTransition } from '_components/core/Transition';
 import MaxAmountButton from '_components/core/MaxAmountButton';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import BaseCryptoInput from '_components/core/BaseCryptoInput';
-import { MarketDataResult } from '_services/marketDataService';
 import useMarketPrices from '_hooks/useMarketPrices';
+import { getMarketDataForAdditionalSymbols } from '_services/marketDataService';
 
+type AnyTokenType = EvmTokenDefinition | GenericTokenDefinition;
 export default function SingleCryptoAmountInput({
   disabled,
   amount,
@@ -17,30 +18,42 @@ export default function SingleCryptoAmountInput({
   balance,
   token,
   maxAmount,
-  showMaxButton = true
+  showMaxButton = true,
 }: {
   disabled: boolean;
   amount: string;
   balance?: BigNumber;
   amountChanged: (amount: string) => void;
-  token: TokenDefinition;
+  token: AnyTokenType;
   maxAmount?: BigNumber;
   showMaxButton?: boolean;
 }) {
-  const [amountGreaterThanMax, setAmountGreaterThanMax] = React.useState(false);
+  const [amountGreaterThanMax, setAmountGreaterThanMax] = useState(false);
   const [tokenPrice, setTokenPrice] = useState<number>();
   const marketPrices = useMarketPrices();
 
+  const isEvmTokenType = (obj: EvmTokenDefinition | GenericTokenDefinition): obj is EvmTokenDefinition => {
+    return 'address' in obj;
+  }
+
   useEffect(() => {
-    if (token && marketPrices) {
-      const marketPrice = marketPrices.find(
-        (item: MarketDataResult) =>
-          item.symbol.toLocaleLowerCase() === token.symbol.toLocaleLowerCase()
-      );
-      if (marketPrice) {
-        setTokenPrice(marketPrice.current_price);
+    const getPrice = async () => {
+      if (token && marketPrices) {
+        if (isEvmTokenType(token)) {
+          const marketPrice = marketPrices[token.address.toLowerCase()];
+          if (marketPrice) {
+            setTokenPrice(marketPrice);
+          }
+        } else {
+          const symbolPrices = await getMarketDataForAdditionalSymbols();
+          const marketPrice = symbolPrices[token.symbol.toLowerCase()];
+          if (marketPrice) {
+            setTokenPrice(marketPrice);
+          }
+        }
       }
     }
+    getPrice();
   }, [token, marketPrices]);
 
   useEffect(() => {
@@ -96,7 +109,7 @@ export default function SingleCryptoAmountInput({
             <div>{formatUnits(balance, token.decimals)}</div>
             {showMaxButton && (
               <MaxAmountButton
-                onClick={() => amountChanged(formatUnits(balance, token?.decimals))}
+                onClick={() => amountChanged(formatUnits(balance, token.decimals))}
               />
             )}
           </div>

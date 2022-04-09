@@ -12,7 +12,6 @@ import { ethers } from 'ethers';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import UserBorrowSummary from '_pages/Borrow/UserBorrowSummary';
 import UserDepositSummary from '_pages/Deposit/UserDepositSummary';
-import { getMarketDataForSymbol } from '_services/marketDataService';
 import UserPools from '_components/balancer/UserPools';
 import { formatUnits } from 'ethers/lib/utils';
 
@@ -52,16 +51,20 @@ export default function Dashboard() {
       let totalWalletBalances = 0;
       for (const tokenKey of Object.keys(walletBalances)) {
         const symbol = tokenKey as CryptoCurrencySymbol;
-        const data = getMarketDataForSymbol(marketPrices, tokenKey);
+        // const data = getMarketDataForSymbol(marketPrices, tokenKey);
         try {
           // REVIEW
           const balance =
             walletBalances[symbol] !== undefined && walletBalances[symbol]?.balance !== undefined
               ? walletBalances[symbol]?.balance.toString()
               : 0;
-          const decimals = tokenSet[symbol]?.decimals || 0;
-          if (data && balance && decimals) {
-            totalWalletBalances += parseFloat(formatUnits(balance, decimals)) * data.current_price;
+          const token = tokenSet[symbol];
+          if (token) {
+            const decimals = token.decimals;
+            const price = marketPrices[token.address.toLowerCase()]
+            if (price && balance && decimals) {
+              totalWalletBalances += parseFloat(formatUnits(balance, decimals)) * price;
+            }
           }
         } catch (error: any) {
           console.error(error);

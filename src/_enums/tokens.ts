@@ -17,24 +17,6 @@ import {
 } from '_assets/images';
 import { ERC20Abi, WETHAbi } from '_abis/index';
 
-export const validPolygonTokenSymbols: CryptoCurrencySymbol | string[] = [
-  CryptoCurrencySymbol.ETH,
-  CryptoCurrencySymbol.DAI,
-  CryptoCurrencySymbol.MATIC,
-  CryptoCurrencySymbol.WMATIC,
-  CryptoCurrencySymbol.WBTC,
-  CryptoCurrencySymbol.RENBTC,
-  CryptoCurrencySymbol.USDC,
-  CryptoCurrencySymbol.WETH,
-  CryptoCurrencySymbol.BAL,
-  CryptoCurrencySymbol.TUSD,
-  CryptoCurrencySymbol.MIMATIC,
-  CryptoCurrencySymbol.USDT
-];
-// export const validPolygonTokenSymbolsUppercase: string[] = validPolygonTokenSymbols.map((symbol) =>
-//   symbol.toUpperCase()
-// );
-
 export const EvmGasTokenBurnAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export enum EthereumTestnetKovanContracts {
@@ -97,18 +79,18 @@ export enum AvalancheTestnetTokenContracts {
   USDCE = '0x45ea5d57ba80b5e3b0ed502e9a08d568c96278f9'
 }
 
-export interface TokenDefinition {
+export interface GenericTokenDefinition {
   symbol: CryptoCurrencySymbol;
   name: CryptoCurrencyName;
   image?: string;
   decimals: number;
 }
-export interface EvmTokenDefinition extends TokenDefinition {
+export interface EvmTokenDefinition extends GenericTokenDefinition {
   address: string;
   abi: any;
   isGasToken?: boolean;
 }
-export const nativeBitcoin: TokenDefinition = {
+export const nativeBitcoin: GenericTokenDefinition = {
   symbol: CryptoCurrencySymbol.BTC,
   name: CryptoCurrencyName.BITCOIN,
   image: btcLogo,

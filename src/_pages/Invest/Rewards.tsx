@@ -12,7 +12,6 @@ import {
 } from '_interfaces/balancer';
 import { getTokenByAddress } from '_utils/index';
 import useMarketPrices from '_hooks/useMarketPrices';
-import { getMarketDataForSymbol } from '_services/marketDataService';
 import { getTokenValueInFiat } from '_services/priceService';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { BigNumber } from 'ethers';
@@ -47,9 +46,9 @@ export function Rewards() {
         let totalRewardsTemp = 0;
         for (const claim of claims) {
           const token = getTokenByAddress(tokenSet, claim.tokenClaimInfo.token);
-          const marketData = getMarketDataForSymbol(marketPrices, token.symbol);
-          if (marketData) {
-            const fiatValue = getTokenValueInFiat(marketData.current_price, claim.availableToClaim);
+          const price = marketPrices[token.address.toLowerCase()];
+          if (price) {
+            const fiatValue = getTokenValueInFiat(price, claim.availableToClaim);
             totalRewardsTemp += fiatValue;
             formattedClaims.push({
               ...token,
