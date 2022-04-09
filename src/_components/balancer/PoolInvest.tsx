@@ -2,15 +2,11 @@ import { Pool, PoolToken } from '_interfaces/balancer';
 import useWalletBalances from '_hooks/useWalletBalances';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import useMarketPrices from '_hooks/useMarketPrices';
 import React, { useEffect, useState } from 'react';
-import useCheckAndApproveTokenBalance from '_hooks/useCheckAndApproveTokenBalance';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { amountIsValidNumberGtZero, getTokenByAddress } from '_utils/index';
 import { BigNumber } from 'ethers';
-import { getVaultAddress } from '_services/balancerVaultService';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { MaxUint256 } from '_utils/maths';
 import { getGasPrice } from '_services/gasService';
 import { joinPool } from '_services/balancerPoolService';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
@@ -25,26 +21,34 @@ import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
 import { BalancerFunction } from '_components/balancer/PoolFunctions';
 import { setStep } from '_redux/effects/onboardingEffects';
-import { stepInvestBalancer } from '_pages/Onboarding/OnboardingSteps';
+import useBalancerFunctions from '_hooks/useBalancerFunctions';
 
 export default function PoolInvest({ pool }: { pool: Pool }) {
-  const walletBalances = useWalletBalances();
   const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const { provider, network, signer, tokenSet } = useSelector((state: AppState) => state.web3);
   const { complete, ongoing, currentStep } = useSelector((state: AppState) => state.onboarding);
-
-  const marketPrices = useMarketPrices();
-  const [transactionInProgress, setTransactionInProgress] = useState(false);
-  const [transactionComplete, setTransactionComplete] = useState(false);
-  const [transactionHash, setTransactionHash] = useState('');
-  const [tokensApproved, setTokensApproved] = useState(false);
-  const [transactionError, setTransactionError] = useState('');
-  const checkAndApproveAllowance = useCheckAndApproveTokenBalance();
-  const [approvalHash, setApprovalHash] = useState<string>('');
-  const [amountsToInvest, setAmountsToInvest] = useState<string[]>([]);
-  const [sumOfAmountsInFiat, setSumOfAmountsInFiat] = useState<string | null>(null);
-  // const [tokenAmountMap, setTokenAmountMap] = useState<TokenAmountMap | undefined>(undefined);
+  const walletBalances = useWalletBalances();
+  const {
+    sumAmounts,
+    amounts: amountsToInvest,
+    setAmounts: setAmountsToInvest,
+    handleTokenAmountChange,
+    checkApprovalsAndGetAmounts,
+    transactionInProgress,
+    setTransactionInProgress,
+    transactionComplete,
+    setTransactionComplete,
+    transactionHash,
+    setTransactionHash,
+    transactionError,
+    setTransactionError,
+    setTokensApproved,
+    tokensApproved,
+    tokenApprovalHash,
+    sumOfAmountsInFiat,
+    setSumOfAmountsInFiat
+  } = useBalancerFunctions()
 
   const initTokenAmounts = () => {
     setAmountsToInvest(Array(pool.tokens.length).fill('0.0'));
@@ -58,70 +62,28 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
     const bal = walletBalances[token.symbol as CryptoCurrencySymbol];
     return !bal || (bal && bal.balance.gt(0));
   };
-  // const getMarketPricesForPoolToken = (token: PoolToken): number => {
-  //   const tokenDetail = getTokenByAddress(tokenSet, token.address);
-  //   const data = getMarketDataForSymbol(marketPrices, tokenDetail.symbol);
-  //   if (data) {
-  //     return data.current_price;
-  //   }
-  //   return 0;
-  // };
 
   const getUserBalanceForPoolToken = (token: PoolToken): BigNumber | undefined => {
     const bal = walletBalances[token.symbol as CryptoCurrencySymbol];
     return bal && bal.balance;
   };
 
-  const handleTokenAmountChange = (tokenIndex: number, amount: string) => {
-    const newTokenAmountMap = [...amountsToInvest];
-    newTokenAmountMap[tokenIndex] = amount;
-    setAmountsToInvest(newTokenAmountMap);
-  };
 
   useEffect(() => {
     if (!amountsToInvest.length) {
       setSumOfAmountsInFiat('0.0');
     }
-    let total = 0;
-    for (let i = 0; i < amountsToInvest.length; i++) {
-      const amount = amountsToInvest[i];
-      console.log(amount);
-      if (!isNaN(parseFloat(amount))) {
-        const token = pool.tokens[i];
-        const marketPrice = marketPrices[token.address.toLowerCase()]
-        if (marketPrice) {
-          total += marketPrice * parseFloat(amount);
-        }
-      }
-    }
+    const total = sumAmounts(pool.tokens);
     setSumOfAmountsInFiat(isNaN(total) ? null : total.toFixed(2));
   }, [amountsToInvest]);
 
   const join = async () => {
     if (userAddress && signer && amountsToInvest && provider && network) {
       try {
-        const addressesSorted = pool.tokens.map((t) => t.address).sort();
-        const amountsIn: string[] = [];
-        const vaultAddress = getVaultAddress(network.chainId);
         setTransactionInProgress(true);
-        for (let i = 0; i < addressesSorted.length; i++) {
-          const address = addressesSorted[i];
-          const decimals = pool.tokens.find((t) => t.address === address)?.decimals;
-          const amount = parseUnits(amountsToInvest[i], decimals);
-          amountsIn.push(amount.toString());
-          if (amount.gt(0)) {
-            await checkAndApproveAllowance(
-              address,
-              userAddress,
-              setApprovalHash,
-              MaxUint256,
-              vaultAddress
-            );
-          }
-        }
+        const amountsIn = await checkApprovalsAndGetAmounts(pool.tokens);
         setTokensApproved(true);
         const gasResult = await getGasPrice(network.gasStationUrl);
-
         const tx = await joinPool(pool, userAddress, signer, amountsIn, gasResult?.fastest);
         setTransactionHash(tx.hash);
         await tx.wait(3);
@@ -143,7 +105,7 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
     }
   };
 
-  const stateIsValid = (): boolean => {
+  const stateValuesAreValid = (): boolean => {
     if (!amountsToInvest.length) {
       return false;
     }
@@ -215,7 +177,7 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
         </div>
         <div>
           <Button
-            disabled={transactionInProgress || !stateIsValid()}
+            disabled={transactionInProgress || !stateValuesAreValid()}
             className={'w-full'}
             onClick={join}
           >
@@ -232,7 +194,7 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
               stepComplete={tokensApproved}
             >
               {tokensApproved ? 'Tokens approved' : 'Approving tokens'}
-              <BlockExplorerLink transactionHash={approvalHash} />
+              <BlockExplorerLink transactionHash={tokenApprovalHash} />
             </TransactionStep>
             <TransactionStep
               show={tokensApproved}

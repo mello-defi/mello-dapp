@@ -10,6 +10,7 @@ export default function CopyableText({
   textSize?: string;
 }) {
   const [copied, setCopied] = useState(false);
+
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(text);
     setCopied(true);

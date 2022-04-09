@@ -8,36 +8,11 @@ import MobileHamburgerMenu from '_components/header/MobileHamburgerMenu';
 import Web3Login from '_components/Web3Login';
 import NavLink from '_components/NavLink';
 import { navLinks } from '../../App';
-
-function DesktopNavLinks() {
-  // const navLinks = useSelector((state: AppState) => state.ui.navLinks);
-  return (
-    <div className={'flex-row justify-evenly hidden sm:flex'}>
-      {navLinks.map((link: NavLinkDefinition) => (
-        <NavLink key={link.tab} tab={link.tab} title={link.title} />
-      ))}
-    </div>
-  );
-}
+import DesktopNavLinks from '_components/header/DesktopNavLinks';
 
 export default function Header() {
-  const { provider, signer } = useSelector((state: AppState) => state.web3);
-
   const isConnected = useSelector((state: AppState) => state.web3.isConnected);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  useEffect(() => {
-    const getWalletInfo = async () => {
-      if (provider && signer) {
-        // supabase
-        //   .from('wallet_history')
-        //   .insert([walletHistory])
-        //   .then((data) => {
-        //     console.log(data);
-        //   });
-      }
-    };
-    provider && getWalletInfo();
-  }, [provider]);
   return (
     <header className={'mb-2 py-2 sm:py-4 px-2 w-full bg-white'}>
       <div className={'max-w-5xl mx-auto flex-row-center justify-between'}>
