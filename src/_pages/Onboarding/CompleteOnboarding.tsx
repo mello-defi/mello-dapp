@@ -1,4 +1,3 @@
-
 // import { useSelector } from 'react-redux';
 // import { AppState } from '_redux/store';
 import { Button } from '_components/core/Buttons';
@@ -8,7 +7,7 @@ import { setOnboardingComplete, setStep } from '_redux/effects/onboardingEffects
 // import { useState } from 'react';
 // import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 
-export default function CompleteOnboarding () {
+export default function CompleteOnboarding() {
   // const signer = useSelector((state: AppState) => state.web3.provider);
   // const userAddress = useSelector((state: AppState) => state.wallet.address);
   // const doStuff = async () => {

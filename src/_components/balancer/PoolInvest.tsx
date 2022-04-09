@@ -133,7 +133,7 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
         dispatch(toggleUserPoolDataStale(true));
         initTokenAmounts();
         if (ongoing && !complete) {
-          dispatch(setStep(currentStep + 1))
+          dispatch(setStep(currentStep + 1));
         }
       } catch (e: any) {
         console.error(e);

@@ -1,5 +1,6 @@
 import { BigNumber } from 'ethers';
 import { PoolType } from '_enums/balancer';
+import { EvmTokenDefinition, TokenDefinition } from '_enums/tokens';
 
 export interface LiquidityMiningTokenReward {
   tokenAddress: string;
@@ -166,3 +167,68 @@ export interface QueryExitResponse {
   amountsOut: BigNumber[];
   bptIn: BigNumber;
 }
+
+export interface TokenClaimInfo {
+  label: string;
+  distributor: string;
+  token: string;
+  decimals: number;
+  manifest: string;
+  weekStart: number;
+}
+
+export interface TokenDecimals {
+  [key: string]: number;
+}
+export type Snapshot = Record<number, string>;
+
+export type ClaimStatus = boolean;
+export type Report = Record<string, any>;
+export interface Claim {
+  id: string;
+  amount: string;
+}
+
+export interface MultiTokenPendingClaims {
+  claims: Claim[];
+  reports: Report;
+  tokenClaimInfo: TokenClaimInfo;
+  availableToClaim: string;
+}
+export type MultiTokenCurrentRewardsEstimate = {
+  rewards: string;
+  velocity: string;
+  token: string;
+};
+export type MultiTokenCurrentRewardsEstimateResponse = {
+  success: boolean;
+  result: {
+    current_timestamp: string;
+    'liquidity-providers': Array<{
+      snapshot_timestamp: string;
+      address: string;
+      token_address: string;
+      chain_id: number;
+      current_estimate: string;
+      velocity: string;
+      week: number;
+    }>;
+  };
+};
+export interface ClaimableToken extends TokenDefinition {
+  fiatValue: number;
+  value: string;
+}
+export type ComputeClaimProofPayload = {
+  report: Report;
+  account: string;
+  claim: Claim;
+  distributor: string;
+  tokenIndex: number;
+  decimals: number;
+};
+export type ClaimProofTuple = [number, string, string, number, string[]]; // claimId, claimAmount, distributor, tokenIndex, proof
+export type ClaimWorkerMessage<P = any> = {
+  type: 'computeClaimProof';
+  payload: P;
+};

@@ -6,6 +6,7 @@ import { ERC20Abi } from '../_abis';
 import { WalletTokenBalances } from '_redux/types/walletTypes';
 import set from 'lodash/set';
 
+// TODO - split into walletservice + transactionService
 export async function getTransactionCount(
   address: string,
   provider: ethers.providers.Web3Provider
@@ -13,12 +14,25 @@ export async function getTransactionCount(
   const txCount: string = await provider.send('eth_getTransactionCount', [address, 'latest']);
   return BigNumber.from(txCount).toNumber();
 }
-export async function multicall(
+
+export async function multicallToObject<T>(
   provider: ethers.providers.Web3Provider,
   paths: string[],
   calls: any[],
   abi: any
 ): Promise<any> {
+  const results: (T | null)[] = await multicall(provider, calls, abi);
+  const response: any = {};
+  for (let i = 0; i < results.length; i++) {
+    set(response, paths[i], results[i]);
+  }
+  return response;
+}
+export async function multicall<T>(
+  provider: ethers.providers.Web3Provider,
+  calls: any[],
+  abi: any
+): Promise<(T | null)[]> {
   // TODO- make network generic, move ABI to file
   const multi = new Contract(
     '0x275617327c958bD06b5D6b871E7f491D76113dd8', // polygon makerdao multicall
@@ -34,17 +48,11 @@ export async function multicall(
     calls.map((call) => [call[0].toLowerCase(), itf.encodeFunctionData(call[1], call[2])]),
     {}
   );
-  const result = {};
-  res.forEach(([success, data], i) => {
+  return res.map(([success, data], i) => {
+    if (!success) return null;
     const decodedResult = itf.decodeFunctionResult(calls[i][1], data);
-    console.log();
-    set(
-      result,
-      paths[i],
-      success ? (decodedResult.length > 1 ? decodedResult : decodedResult[0]) : null
-    );
+    return decodedResult.length > 1 ? decodedResult : decodedResult[0];
   });
-  return result;
 }
 export async function getAllErc20TokenBalances(
   provider: ethers.providers.Web3Provider,
@@ -64,7 +72,7 @@ export async function getAllErc20TokenBalances(
     [userAddress]
   ]);
 
-  const res = await multicall(provider, paths, calls, ERC20Abi);
+  const res = await multicallToObject<BigNumber>(provider, paths, calls, ERC20Abi);
   return res as WalletTokenBalances;
 }
 
@@ -122,7 +130,7 @@ export async function getErc20TokenInfo(
     [address, 'decimals', []],
     [address, 'name', []]
   ];
-  const token: EvmTokenDefinition = await multicall(provider, paths, calls, ERC20Abi);
+  const token: EvmTokenDefinition = await multicallToObject(provider, paths, calls, ERC20Abi);
   token.address = address;
   token.isGasToken = false;
   token.abi = ERC20Abi;

@@ -37,8 +37,8 @@ export default function WalletDropdown() {
     setDropdownOpen(false);
     dispatch(resetOnboarding());
     dispatch(setOnboardingOngoing(true));
-    dispatch(setActiveTab(NavTab.ONBOARDING))
-  }
+    dispatch(setActiveTab(NavTab.ONBOARDING));
+  };
   const navigateToWallet = () => {
     dispatch(setActiveTab(NavTab.WALLET));
     setDropdownOpen(false);

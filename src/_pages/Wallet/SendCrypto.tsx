@@ -194,8 +194,7 @@ export default function SendCrypto() {
           !ethers.utils.isAddress(destinationAddress) ||
           !token ||
           !amountToSend ||
-          amountToSend !== '' &&
-          parseFloat(amountToSend) === 0 ||
+          (amountToSend !== '' && parseFloat(amountToSend) === 0) ||
           (walletBalance &&
             (parseUnits(amountToSend, token.decimals).gt(walletBalance) ||
               (token.isGasToken && parseUnits(amountToSend, token.decimals).eq(walletBalance))))

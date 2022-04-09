@@ -6,7 +6,6 @@ export const SET_IS_COMPLETE = 'SET_IS_COMPLETE';
 export const SET_IS_ONGOING = 'SET_IS_ONGOING';
 export const RESET = 'RESET';
 
-
 export interface OnboardingStepDescription {
   text?: string;
   whatIsRequired?: string;
@@ -48,8 +47,13 @@ interface SetIsOngoing extends AnyAction {
   };
 }
 
-interface Reset extends AnyAction { 
+interface Reset extends AnyAction {
   type: typeof RESET;
 }
 
-export type OnboardingActionTypes = SetStep | SetIsComplete | SetIsOngoing | SetWaitingToAdvance | Reset;
+export type OnboardingActionTypes =
+  | SetStep
+  | SetIsComplete
+  | SetIsOngoing
+  | SetWaitingToAdvance
+  | Reset;

@@ -63,21 +63,28 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
             {/*<span>THIS STEP {step.number}</span>*/}
             {/*<br/>*/}
             <div className={'flex-row-center w-full text-body-smaller'}>
-              <DefaultTransition isOpen={isExpanded ||
-                (currentStep - 1 === step.number && waitingToAdvance) || (currentStep === step.number && !waitingToAdvance)
-              }>
+              <DefaultTransition
+                isOpen={
+                  isExpanded ||
+                  (currentStep - 1 === step.number && waitingToAdvance) ||
+                  (currentStep === step.number && !waitingToAdvance)
+                }
+              >
                 <div className={'my-2'}>
                   <>{React.createElement(step.descriptionComponent)}</>
                 </div>
               </DefaultTransition>
             </div>
-            {(step.number === currentStep || waitingToAdvance) && step.actionComponent !== undefined &&
-            ((currentStep - 1 === step.number && waitingToAdvance) || !waitingToAdvance || (waitingToAdvance && currentStep === step.number + 1)) && (
-              <>
-                <HorizontalLineBreak />
-                <>{React.createElement(step.actionComponent, step.actionComponentProps)}</>
-              </>
-            )}
+            {(step.number === currentStep || waitingToAdvance) &&
+              step.actionComponent !== undefined &&
+              ((currentStep - 1 === step.number && waitingToAdvance) ||
+                !waitingToAdvance ||
+                (waitingToAdvance && currentStep === step.number + 1)) && (
+                <>
+                  <HorizontalLineBreak />
+                  <>{React.createElement(step.actionComponent, step.actionComponentProps)}</>
+                </>
+              )}
             <DefaultTransition isOpen={waitingToAdvance && currentStep === step.number + 1}>
               <div>
                 <HorizontalLineBreak />

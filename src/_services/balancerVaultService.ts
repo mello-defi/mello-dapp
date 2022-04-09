@@ -12,7 +12,7 @@ import {
 import { formatUnits, getAddress } from 'ethers/lib/utils';
 import { pick } from 'lodash';
 import { BigNumber, Contract, ethers } from 'ethers';
-import { multicall } from '_services/walletService';
+import { multicall, multicallToObject } from '_services/walletService';
 import { isStable, isWeighted } from '_services/balancerCalculatorService';
 import {
   StablePool__factory,
@@ -214,7 +214,7 @@ export async function getPoolOnChainData(
     calls.push([pool.address, 'getAmplificationParameter', []]);
   }
 
-  let result: RawOnchainPoolData = await multicall(
+  let result: RawOnchainPoolData = await multicallToObject(
     provider,
     paths,
     calls,
@@ -241,7 +241,12 @@ export async function getPoolOnChainData(
       paths.push(`linearPools.${address}.totalSupply`);
       calls.push([address, 'getVirtualSupply', []]);
     });
-    const result2 = await multicall(provider, paths, calls, getAbiForPoolType(pool.poolType));
+    const result2 = await multicallToObject(
+      provider,
+      paths,
+      calls,
+      getAbiForPoolType(pool.poolType)
+    );
     result = {
       ...result,
       ...result2

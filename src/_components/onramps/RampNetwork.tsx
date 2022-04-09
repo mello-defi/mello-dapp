@@ -12,7 +12,8 @@ function RampNetwork() {
   const openWidget = async () => {
     new RampInstantSDK({
       hostAppName: 'mello',
-      hostLogoUrl: "https://storageapi2.fleek.co/12c7096b-d75e-4ca8-be93-7ddf73131ef3-bucket/full icon + name slim-dark.svg",
+      hostLogoUrl:
+        'https://storageapi2.fleek.co/12c7096b-d75e-4ca8-be93-7ddf73131ef3-bucket/full icon + name slim-dark.svg',
       fiatCurrency: 'EUR',
       defaultAsset: 'MATIC',
       fiatValue: '6.25',

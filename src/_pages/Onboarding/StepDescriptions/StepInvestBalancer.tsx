@@ -5,8 +5,8 @@ export default function StepInvestBalancer() {
   const whyIsRequired = (
     <>
       By investing your tokens into Balancer investment pools you can earn APR% on those tokens.
-      <br/>
-      Learn more about Balancer <a href={"https://docs.mellodefi.com/invest"}>here</a>.
+      <br />
+      Learn more about Balancer <a href={'https://docs.mellodefi.com/invest'}>here</a>.
     </>
   );
   return (

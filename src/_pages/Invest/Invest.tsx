@@ -8,6 +8,7 @@ import PoolSkeleton from '_components/balancer/PoolSkeleton';
 import UserPools from '_components/balancer/UserPools';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { balLogo } from '_assets/images';
+import { Rewards } from '_pages/Invest/Rewards';
 
 export default function Invest() {
   const pools = useBalancerPools();
@@ -18,7 +19,8 @@ export default function Invest() {
         <div className={'text-header'}>Invest</div>
         <PoweredByLink url={'https://balancer.fi/#/'} logo={balLogo} />
       </div>
-      <HorizontalLineBreak />
+      <Rewards />
+      {/*<HorizontalLineBreak />*/}
       <UserPools />
       <span className={'text-body'}>Investment pools</span>
       {!pools && (
