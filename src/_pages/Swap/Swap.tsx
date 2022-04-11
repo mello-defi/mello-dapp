@@ -26,11 +26,12 @@ import { SwapVert } from '@mui/icons-material';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { CryptoCurrencySymbol } from '_enums/currency';
-import { logTransactionHash } from '_services/dbService';
+import { logTransaction } from '_services/dbService';
 import { stepPerformSwap } from '_pages/Onboarding/OnboardingSteps';
 import { EthereumTransactionError } from '_interfaces/errors';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
+import { GenericActions, ParaswapActions, TransactionServices } from '_enums/db';
 
 export default function Swap({
   initialSourceTokenSymbol,
@@ -139,6 +140,7 @@ export default function Swap({
     signer: ethers.Signer,
     userAddress: string
   ) => {
+    // TODO move to useapprovetoken thing
     const transferProxy = await getTokenTransferProxy();
     const allowance = await getTokenAllowance(
       sourceToken.address,
@@ -159,7 +161,7 @@ export default function Swap({
         approvalGasResult?.fastest,
         transferProxy
       );
-      logTransactionHash(approvalTxHash.hash, network.chainId);
+      logTransaction(approvalTxHash.hash, network.chainId, TransactionServices.Paraswap, GenericActions.Approve, undefined, sourceToken.symbol);
       setApprovalTransactionHAsh(approvalTxHash.hash);
       await approvalTxHash.wait(3);
     }
@@ -184,7 +186,7 @@ export default function Swap({
         );
         setSwapSubmitted(true);
         const swapTxHash = await executeEthTransaction(tx, provider);
-        logTransactionHash(swapTxHash.hash, network.chainId);
+        logTransaction(swapTxHash.hash, network.chainId, TransactionServices.Paraswap, ParaswapActions.Swap,priceRoute.srcAmount, sourceToken.symbol);
         setSwapTransactionHash(swapTxHash.hash);
         await swapTxHash.wait(3);
         setSwapConfirmed(true);

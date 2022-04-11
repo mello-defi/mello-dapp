@@ -16,9 +16,10 @@ import TransactionError from '_components/transactions/TransactionError';
 import { Hyphen, RESPONSE_CODES } from '@biconomy/hyphen';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { getGasPrice } from '_services/gasService';
-import { logTransactionHash } from '_services/dbService';
+import { logTransaction } from '_services/dbService';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { formatUnits } from 'ethers/lib/utils';
+import { BiconomyActions, GenericActions, TransactionServices } from '_enums/db';
 
 interface BiconomyPreTransferStatus {
   code: number;
@@ -77,7 +78,7 @@ export default function EthereumToPolygonBridge() {
     setPolygonTransactionHash(data.exitHash);
     if (provider) {
       const tx = await provider.getTransaction(data.exitHash);
-      logTransactionHash(tx.hash, network.chainId);
+      logTransaction(tx.hash, network.chainId, TransactionServices.Biconomy, BiconomyActions.Mint);
       await tx.wait(3);
       setPolygonTransferComplete(true);
     }
@@ -115,8 +116,9 @@ export default function EthereumToPolygonBridge() {
             preTransferStatus.depositContract,
             transferAmount
           );
-          const gasPrice = await getGasPrice(network.gasStationUrl);
+          // const gasPrice = await getGasPrice(network.gasStationUrl);
           await approveTx.wait(3);
+          logTransaction(approveTx.hash, network.chainId, TransactionServices.Biconomy, GenericActions.Approve, transferAmount, ethereumTokenDefinition.symbol);
         } else if (preTransferStatus.code === RESPONSE_CODES.UNSUPPORTED_NETWORK) {
           setTransactionError('Target chain is not supported yet');
         } else if (preTransferStatus.code === RESPONSE_CODES.NO_LIQUIDITY) {
@@ -145,8 +147,9 @@ export default function EthereumToPolygonBridge() {
           toChainId: EVMChainIdNumerical.POLYGON_MAINNET // chainId of toChain
         });
         setEthereumTransactionHash(depositTx.hash);
-        const gasPrice = await getGasPrice(network.gasStationUrl);
+        // const gasPrice = await getGasPrice(network.gasStationUrl);
         await depositTx.wait(3);
+        logTransaction(depositTx.hash, EVMChainIdNumerical.ETHEREUM_MAINNET, TransactionServices.Biconomy, BiconomyActions.Deposit, weiAmount, ethereumTokenDefinition.symbol);
         setEthereumTransactionComplete(true);
       } catch (e: any) {
         console.error(e);

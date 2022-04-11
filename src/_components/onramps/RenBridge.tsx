@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Bitcoin, EthereumConfigMap, Polygon, PolygonConfigMap } from '@renproject/chains';
+import { Bitcoin, Polygon, PolygonConfigMap } from '@renproject/chains';
 import { AppState } from '_redux/store';
 import { renJS } from '_services/renService';
 import { EthProvider } from '@renproject/chains-ethereum/build/main/types';
@@ -10,12 +10,13 @@ import TransactionError from '_components/transactions/TransactionError';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { renLogo } from '_assets/images';
 import CopyableText from '_components/core/CopyableText';
-import { logTransactionHash } from '_services/dbService';
+import { logTransaction } from '_services/dbService';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { MarketDataResult } from '_services/marketDataService';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { nativeBitcoin, PolygonMainnetTokenContracts } from '_enums/tokens';
+import { RenActions, TransactionServices } from '_enums/db';
 
 function RenBridge() {
   const { provider, network, signer } = useSelector((state: AppState) => state.web3);
@@ -181,7 +182,7 @@ function RenBridge() {
           .on('transactionHash', async (txHash) => {
             console.log('IN TRANSACTION HASH');
             console.log('TX HASH', txHash);
-            logTransactionHash(txHash, network.chainId);
+            logTransaction(txHash, network.chainId, TransactionServices.Ren, RenActions.Mint);
             setTransactionHash(txHash);
             const tx = await provider.getTransaction(txHash);
             await tx.wait(3);
