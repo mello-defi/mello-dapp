@@ -14,6 +14,7 @@ function RampNetwork() {
   const [fiatAmount, setFiatAmount] = useState(10.2);
   const [fiatCurrency, setFiatCurrency] = useState('EUR');
   const [lastRampEvent, setLastRampEvent] = useState<RampInstantEventTypes>();
+  const [hasPurchaseHappened, setHasPurchaseHappened] = useState(false);
   const handleRampEvent = (event: RampInstantEvents) => {
     console.log(event);
     switch (event.type) {
@@ -23,6 +24,7 @@ function RampNetwork() {
         setFiatCurrency(event.payload.purchase.fiatCurrency);
         setCryptoAmount(parseFloat(formatUnits(event.payload.purchase.cryptoAmount, event.payload.purchase.asset.decimals).toString()));
         setCryptoSymbol(event.payload.purchase.asset.symbol);
+        setHasPurchaseHappened(true);
         break;
       case RampInstantEventTypes.WIDGET_CLOSE:
       case RampInstantEventTypes.PURCHASE_SUCCESSFUL:
@@ -57,7 +59,7 @@ function RampNetwork() {
         currencies={[FiatCurrencyName.EUR, FiatCurrencyName.GBP, FiatCurrencyName.USD]}
         onClick={openWidget}
       />
-      {lastRampEvent === RampInstantEventTypes.WIDGET_CLOSE ? (
+      {lastRampEvent === RampInstantEventTypes.WIDGET_CLOSE && hasPurchaseHappened ? (
         <div className={'text-body text-black rounded-2xl bg-gray-100 px-4 py-4 flex-row-center '}>
           <div className={'text-3xl mr-2'}>
             <CheckCircle className={'text-gray-400 mb-1'} fontSize={'inherit'} />
