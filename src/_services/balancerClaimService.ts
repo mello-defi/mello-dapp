@@ -447,11 +447,8 @@ export async function multiTokenClaimRewards(
       computeClaimProofs(tokenPendingClaims, getAddress(userAddress), tokenIndex)
     )
   );
-  // console.log(JSON.stringify(multiTokenClaims, null, 2));
   const contract = new Contract(polygonMerkleOrchardAddress, MerkleOrchardAbi, signer);
   console.log('flattened', flatten(multiTokenClaims));
-  // multiTokenClaims[0]
   console.log('tokens', tokens);
   return await contract.connect(signer).claimDistributions(getAddress(userAddress), flatten(multiTokenClaims), tokens);
 }
-// QmPSaz7TzoQK2xRVtUaKz9xTAi86RVEY8MHJTNGbh5T358

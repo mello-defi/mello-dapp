@@ -1,33 +1,17 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { OnchainPoolData, Pool, PoolToken, TokenInfoMap } from '_interfaces/balancer';
-import useWalletBalances from '_hooks/useWalletBalances';
 import useUserBalancerPools from '_hooks/useUserBalancerPools';
 import useMarketPrices from '_hooks/useMarketPrices';
-import useCheckAndApproveTokenBalance from '_hooks/useCheckAndApproveTokenBalance';
 import React, { useEffect, useState } from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
-import {
-  amountIsValidNumberGtZero,
-  decimalPlacesAreValid,
-  fixDecimalPlaces,
-  getTokenByAddress
-} from '_utils/index';
-import {
-  absMaxBpt,
-  calculatePoolInvestedAmounts,
-  exactBPTInForTokenOut
-} from '_services/balancerCalculatorService';
+import { amountIsValidNumberGtZero, getTokenByAddress } from '_utils/index';
+import { absMaxBpt, calculatePoolInvestedAmounts, exactBPTInForTokenOut } from '_services/balancerCalculatorService';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { getTokenValueInFiat } from '_services/priceService';
-import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
-import { getPoolOnChainData, getVaultAddress } from '_services/balancerVaultService';
+import { getPoolOnChainData } from '_services/balancerVaultService';
 import { getErc20TokenInfo } from '_services/walletService';
-import { CryptoCurrencySymbol } from '_enums/currency';
-import { BigNumber } from 'ethers';
-import { MaxUint256 } from '_utils/maths';
 import { getGasPrice } from '_services/gasService';
-import { exitPoolForExactTokensOut, exitPoolForOneTokenOut } from '_services/balancerPoolService';
+import { exitPoolForExactTokensOut } from '_services/balancerPoolService';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { toggleUserPoolDataStale } from '_redux/effects/balancerEffects';
 import { EthereumTransactionError } from '_interfaces/errors';
@@ -46,10 +30,8 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { WithdrawMode } from '_enums/balancer';
 import useBalancerFunctions from '_hooks/useBalancerFunctions';
 
-// TODO copy shared code between this and poolinvest
 // TODO fix trace amoutns bug
 export default function PoolWithdraw({ pool }: { pool: Pool }) {
-  // const walletBalances = useWalletBalances();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const { userPools } = useUserBalancerPools();
   const { provider, network, signer, tokenSet } = useSelector((state: AppState) => state.web3);
@@ -181,6 +163,8 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
 
   useEffect(() => {
     if (provider && userPools) {
+      // move get onchain data to separate hook
+      // move all of this osther stuff to poolservice
       const getUserPoolAmounts = async () => {
         const onChainData = await getPoolOnChainData(pool, provider);
         setOnchain(onChainData);
