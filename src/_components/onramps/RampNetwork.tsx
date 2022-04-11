@@ -1,13 +1,37 @@
-import React from 'react';
-import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk';
+import React, { useState } from 'react';
+import { RampInstantEventTypes, RampInstantSDK, RampInstantEvents } from '@ramp-network/ramp-instant-sdk';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { FiatCurrencyName } from '_enums/currency';
-import { melloLogoFace, rampNetworkLogo } from '_assets/images';
+import { rampNetworkLogo } from '_assets/images';
 import OnRampCard from '_components/onramps/OnRampCard';
+import { formatUnits } from 'ethers/lib/utils';
+import { CheckCircle, Info } from '@mui/icons-material';
 
 function RampNetwork() {
-  // const provider = useSelector((state: AppState) => state.web3.provider);
+  const [cryptoAmount, setCryptoAmount] = useState(0.22);
+  const [cryptoSymbol, setCryptoSymbol] = useState('MATIC');
+  const [fiatAmount, setFiatAmount] = useState(10.2);
+  const [fiatCurrency, setFiatCurrency] = useState('EUR');
+  const [lastRampEvent, setLastRampEvent] = useState<RampInstantEventTypes>();
+  const handleRampEvent = (event: RampInstantEvents) => {
+    console.log(event);
+    switch (event.type) {
+      case RampInstantEventTypes.PURCHASE_CREATED:
+        setLastRampEvent(RampInstantEventTypes.PURCHASE_CREATED);
+        setFiatAmount(parseFloat(event.payload.purchase.fiatValue) - parseFloat(event.payload.purchase.appliedFee));
+        setFiatCurrency(event.payload.purchase.fiatCurrency);
+        setCryptoAmount(parseFloat(formatUnits(event.payload.purchase.cryptoAmount, event.payload.purchase.asset.decimals).toString()));
+        setCryptoSymbol(event.payload.purchase.asset.symbol);
+        break;
+      case RampInstantEventTypes.WIDGET_CLOSE:
+      case RampInstantEventTypes.PURCHASE_SUCCESSFUL:
+        setLastRampEvent(event.type);
+        break;
+      default:
+        break;
+    }
+  };
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const openWidget = async () => {
     new RampInstantSDK({
@@ -16,23 +40,36 @@ function RampNetwork() {
       fiatCurrency: 'EUR',
       defaultAsset: 'MATIC',
       fiatValue: '6.25',
-      userAddress: userAddress
-      // url: 'https://ri-widget-staging.firebaseapp.com',
-      // webhookStatusUrl: 'https://ea14-80-233-33-216.ngrok.io/'
+      userAddress: userAddress,
+      // url: 'https://ri-widget-staging-goerli2.firebaseapp.com/'
     })
-      .on('*', (event) => console.log(event))
+      .on('*', handleRampEvent)
       .show();
   };
 
   return (
-    <OnRampCard
-      transferMethods={'Bank transfer, credit/debit card, Apple Pay'}
-      imageUrl={rampNetworkLogo}
-      fees={'0.49%-2.9%'}
-      limits={'10,000 EUR per month'}
-      currencies={[FiatCurrencyName.EUR, FiatCurrencyName.GBP, FiatCurrencyName.USD]}
-      onClick={openWidget}
-    />
+    <div>
+      <OnRampCard
+        transferMethods={'Bank transfer, credit/debit card, Apple Pay'}
+        imageUrl={rampNetworkLogo}
+        fees={'0.49%-2.9%'}
+        limits={'10,000 EUR per month'}
+        currencies={[FiatCurrencyName.EUR, FiatCurrencyName.GBP, FiatCurrencyName.USD]}
+        onClick={openWidget}
+      />
+      {lastRampEvent === RampInstantEventTypes.WIDGET_CLOSE ? (
+        <div className={'text-body text-black rounded-2xl bg-gray-100 px-4 py-4 flex-row-center '}>
+          <div className={'text-3xl mr-2'}>
+            <CheckCircle className={'text-gray-400 mb-1'} fontSize={'inherit'} />
+          </div>
+          <h3>
+            If your purchase was successful, you will receive <span className={'font-semibold'}>{cryptoAmount.toFixed(6)} {cryptoSymbol}</span> for <span className={'font-semibold'}>{fiatAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})} {fiatCurrency}</span>.
+            <br/>
+            It should arrive in your wallet in the next few minutes, please stay on this page
+          </h3>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
