@@ -236,18 +236,17 @@ export default function Swap({
     [] // will be created only once initially
   );
 
-  const sourceAmountChanged = (amount: string) => {
+  const sourceAmountChanged = (amount: string, srcToken = sourceToken, destToken = destinationToken) => {
     setSourceAmount(amount);
-    debounceSourceAmountChanged(amount, sourceToken, destinationToken);
+    debounceSourceAmountChanged(amount, srcToken, destToken);
   };
 
   const swapSourceDestination = () => {
     const temp = destinationToken;
     setDestinationToken(sourceToken);
     setSourceToken(temp);
-    const tempAmount = destinationAmount;
-    setDestinationAmount(sourceAmount);
-    setSourceAmount(tempAmount);
+    sourceAmountChanged(destinationAmount, destinationToken, sourceToken);
+    setDestinationAmount('0.0');
   };
 
   return (
