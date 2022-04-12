@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { ComputedReserveData, EthereumTransactionTypeExtended } from '@aave/protocol-js';
 import { getGasPrice } from '_services/gasService';
 import { runAaveActionTransaction, runAaveApprovalTransaction } from '_services/aaveService';
-import { logTransactionHash } from '_services/dbService';
+import { logTransaction } from '_services/dbService';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { AppState } from '_redux/store';
 import { useDispatch, useSelector } from 'react-redux';
@@ -56,17 +56,18 @@ export default function useHandleAaveFunction() {
       provider,
       approvalGas?.fastest
     );
-    // const address =
     if (approvalHash) {
       const tx = await provider.getTransaction(approvalHash);
-      logTransactionHash(approvalHash, network.chainId);
+      // logTransaction(approvalHash, network.chainId, );
       setApprovalTransactionHash(approvalHash);
       await tx.wait(3);
     }
     setTokenApproved(true);
     const actionGas = await getGasPrice(network.gasStationUrl);
     const actionHash = await runAaveActionTransaction(transactions, provider, actionGas?.fastest);
-    logTransactionHash(actionHash, network.chainId);
+    // TODO use this
+    // logTransaction(actionHash, network.chainId);
+
     setActionTransactionHash(actionHash);
     if (actionHash) {
       const tx = await provider.getTransaction(actionHash);

@@ -26,11 +26,13 @@ import { SwapVert } from '@mui/icons-material';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { CryptoCurrencySymbol } from '_enums/currency';
-import { logTransactionHash } from '_services/dbService';
+import { logTransaction } from '_services/dbService';
 import { stepPerformSwap } from '_pages/Onboarding/OnboardingSteps';
 import { EthereumTransactionError } from '_interfaces/errors';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
+import { GenericActions, ParaswapActions, TransactionServices } from '_enums/db';
+import { fixDecimalPlaces } from '_utils/index';
 
 export default function Swap({
   initialSourceTokenSymbol,
@@ -66,6 +68,7 @@ export default function Swap({
   }, [sourceToken, walletBalances]);
   const { complete, ongoing } = useSelector((state: AppState) => state.onboarding);
 
+  // console.log('sourceTokenBalance', sourceTokenBalance);
   const [sourceTokenDisabled, setSourceTokenDisabled] = useState<boolean>(false);
   const [destinationTokenDisabled, setDestinationTokenDisabled] = useState<boolean>(false);
   const [sourceAmount, setSourceAmount] = useState<string>('0.0');
@@ -139,7 +142,7 @@ export default function Swap({
         setDestinationTokenDisabled(true);
         setSourceTokenDisabled(true);
         setFetchingPrices(true);
-        const srcAmount: BigNumber = parseUnits(amount, srcToken.decimals);
+        const srcAmount: BigNumber = parseUnits(fixDecimalPlaces(amount, srcToken.decimals), srcToken.decimals);
         const rate = await getExchangeRate(srcToken, destToken, srcAmount.toString());
         console.log('rate', rate);
         setPriceRoute(rate);
@@ -160,6 +163,7 @@ export default function Swap({
     signer: ethers.Signer,
     userAddress: string
   ) => {
+    // TODO move to useapprovetoken thing AND use rate.tokenTransferProxy
     const transferProxy = await getTokenTransferProxy();
     const allowance = await getTokenAllowance(
       sourceToken.address,
@@ -180,7 +184,7 @@ export default function Swap({
         approvalGasResult?.fastest,
         transferProxy
       );
-      logTransactionHash(approvalTxHash.hash, network.chainId);
+      logTransaction(approvalTxHash.hash, network.chainId, TransactionServices.Paraswap, GenericActions.Approve, undefined, sourceToken.symbol);
       setApprovalTransactionHAsh(approvalTxHash.hash);
       await approvalTxHash.wait(3);
     }
@@ -205,7 +209,7 @@ export default function Swap({
         );
         setSwapSubmitted(true);
         const swapTxHash = await executeEthTransaction(tx, provider);
-        logTransactionHash(swapTxHash.hash, network.chainId);
+        logTransaction(swapTxHash.hash, network.chainId, TransactionServices.Paraswap, ParaswapActions.Swap,priceRoute.srcAmount, sourceToken.symbol);
         setSwapTransactionHash(swapTxHash.hash);
         await swapTxHash.wait(3);
         setSwapConfirmed(true);
@@ -234,18 +238,30 @@ export default function Swap({
     setIsApproving(false);
   };
 
-  // const debounceDestinationTokenChanged = useCallback(
-  //   debounce(
-  //     (amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue),
-  //     750
-  //   ),
-  //   [] // will be created only once initially
-  // );
+  const debounceSourceTokenChanged = useCallback(
+    debounce(
+      (amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue),
+      750
+    ),
+    [] // will be created only once initially
+  );
 
-  // const destinationTokenChanged = (token: EvmTokenDefinition) => {
-  //   setDestinationToken(token);
-  //   debounceDestinationTokenChanged(destinationAmount, sourceToken, token);
-  // };
+  const sourceTokenChanged = (token: EvmTokenDefinition) => {
+    setSourceToken(token);
+    debounceSourceTokenChanged(sourceAmount, token, destinationToken);
+  };
+  const debounceDestinationTokenChanged = useCallback(
+    debounce(
+      (amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue),
+      750
+    ),
+    [] // will be created only once initially
+  );
+
+  const destinationTokenChanged = (token: EvmTokenDefinition) => {
+    setDestinationToken(token);
+    debounceDestinationTokenChanged(sourceAmount, sourceToken, token);
+  };
   const debounceSourceAmountChanged = useCallback(
     debounce(
       (nextValue, srcToken, destToken) => updateExchangeRate(nextValue, srcToken, destToken),
@@ -254,18 +270,17 @@ export default function Swap({
     [] // will be created only once initially
   );
 
-  const sourceAmountChanged = (amount: string) => {
+  const sourceAmountChanged = (amount: string, srcToken = sourceToken, destToken = destinationToken) => {
     setSourceAmount(amount);
-    debounceSourceAmountChanged(amount, sourceToken, destinationToken);
+    debounceSourceAmountChanged(amount, srcToken, destToken);
   };
 
   const swapSourceDestination = () => {
     const temp = destinationToken;
     setDestinationToken(sourceToken);
     setSourceToken(temp);
-    const tempAmount = destinationAmount;
-    setDestinationAmount(sourceAmount);
-    setSourceAmount(tempAmount);
+    sourceAmountChanged(destinationAmount, destinationToken, sourceToken);
+    setDestinationAmount('0.0');
   };
 
   return (
@@ -286,7 +301,7 @@ export default function Swap({
       ) : (
         <MultiCryptoAmountInput
           token={sourceToken}
-          tokenChanged={setSourceToken}
+          tokenChanged={sourceTokenChanged}
           amount={sourceAmount}
           amountChanged={sourceAmountChanged}
           disabled={isSwapping || sourceTokenDisabled}
@@ -319,7 +334,7 @@ export default function Swap({
       ) : (
         <MultiCryptoAmountInput
           token={destinationToken}
-          tokenChanged={setDestinationToken}
+          tokenChanged={destinationTokenChanged}
           amount={destinationAmount}
           amountChanged={setDestinationAmount}
           disabled={isSwapping || destinationTokenDisabled}
