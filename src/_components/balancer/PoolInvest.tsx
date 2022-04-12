@@ -26,7 +26,8 @@ import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
 import { BalancerFunction } from '_components/balancer/PoolFunctions';
 import { setStep } from '_redux/effects/onboardingEffects';
-import { stepInvestBalancer } from '_pages/Onboarding/OnboardingSteps';
+import { BalancerActions, TransactionServices } from '_enums/db';
+import { logTransaction } from '_services/dbService';
 
 export default function PoolInvest({ pool }: { pool: Pool }) {
   const walletBalances = useWalletBalances();
@@ -118,7 +119,8 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
               userAddress,
               setApprovalHash,
               MaxUint256,
-              vaultAddress
+              TransactionServices.Balancer,
+              vaultAddress,
             );
           }
         }
@@ -127,6 +129,7 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
 
         const tx = await joinPool(pool, userAddress, signer, amountsIn, gasResult?.fastest);
         setTransactionHash(tx.hash);
+        logTransaction(tx.hash, network.chainId, TransactionServices.Balancer, BalancerActions.Invest);
         await tx.wait(3);
         setTransactionComplete(true);
         dispatch(toggleBalancesAreStale(true));

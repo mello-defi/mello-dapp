@@ -19,6 +19,7 @@ import PoolRow from '_components/balancer/PoolRow';
 import StepInvestBalancer from '_pages/Onboarding/StepDescriptions/StepInvestBalancer';
 import StepComplete from '_pages/Onboarding/StepDescriptions/StepComplete';
 import CompleteOnboarding from '_pages/Onboarding/CompleteOnboarding';
+import AddGasToWallet from '_pages/Onboarding/AddGasToWallet';
 
 export interface OnboardingStep {
   number: number;
@@ -91,7 +92,7 @@ export const stepAddGasToWallet: OnboardingStep = {
   number: 4,
   title: 'Add gas token to fuel wallet',
   nextStep: stepPerformSwap,
-  actionComponent: FiatOnboarding,
+  actionComponent: AddGasToWallet,
   descriptionComponent: StepAddGasToken
 };
 export const stepSignMessage: OnboardingStep = {

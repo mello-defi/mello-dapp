@@ -33,11 +33,12 @@ import { CryptoCurrencySymbol } from '_enums/currency';
 import { convertCryptoAmounts } from '_services/priceService';
 import { getGasPrice } from '_services/gasService';
 import { getMarketDataForSymbol } from '_services/marketDataService';
-import { logTransactionHash } from '_services/dbService';
+import { logTransaction } from '_services/dbService';
 import { stepBorrowAave, stepDepositAave } from '_pages/Onboarding/OnboardingSteps';
 import { ExpandMore } from '@mui/icons-material';
 import AaveFunctionButton from '_components/aave/AaveFunctionButton';
 import { parseUnits } from 'ethers/lib/utils';
+import { AaveActions, GenericActions, TransactionServices } from '_enums/db';
 
 // TODO huge refactor needed, too big
 export default function AaveReserveRow({
@@ -133,7 +134,8 @@ export default function AaveReserveRow({
   // TODO- move to hook
   const runAaveTransactions = async (
     provider: ethers.providers.Web3Provider,
-    transactions: EthereumTransactionTypeExtended[]
+    transactions: EthereumTransactionTypeExtended[],
+    action: AaveActions,
   ) => {
     const approvalGas = await getGasPrice(gasStationUrl);
     const approvalHash = await runAaveApprovalTransaction(
@@ -141,17 +143,16 @@ export default function AaveReserveRow({
       provider,
       approvalGas?.fastest
     );
-    // const address =
     if (approvalHash) {
       const tx = await provider.getTransaction(approvalHash);
-      logTransactionHash(approvalHash, network.chainId);
+      logTransaction(approvalHash, network.chainId, TransactionServices.Aave, GenericActions.Approve);
       setApprovalTransactionHash(approvalHash);
       await tx.wait(3);
     }
     setTokenApproved(true);
     const actionGas = await getGasPrice(gasStationUrl);
     const actionHash = await runAaveActionTransaction(transactions, provider, actionGas?.fastest);
-    logTransactionHash(actionHash, network.chainId);
+    logTransaction(actionHash, network.chainId, TransactionServices.Aave, action);
     setActionTransactionHash(actionHash);
     if (actionHash) {
       const tx = await provider.getTransaction(actionHash);
@@ -174,6 +175,7 @@ export default function AaveReserveRow({
       underlyingAsset: string,
       amount: string
     ) => Promise<EthereumTransactionTypeExtended[]>,
+    action: AaveActions,
     nextStep?: number | null
   ) => {
     if (provider && userAddress && reserve) {
@@ -186,7 +188,7 @@ export default function AaveReserveRow({
           reserve.underlyingAsset,
           amount
         );
-        await runAaveTransactions(provider, transactions);
+        await runAaveTransactions(provider, transactions, action);
         setAmount('0.0');
         setTransactionInProgress(false);
         dispatch(toggleUserSummaryStale(true));
@@ -214,6 +216,7 @@ export default function AaveReserveRow({
         setBorrowAmount,
         setBorrowSubmitting,
         getBorrowTransactions,
+        AaveActions.Borrow,
         stepBorrowAave.nextStep?.number
       );
     }
@@ -225,8 +228,9 @@ export default function AaveReserveRow({
         userReserve.variableBorrows === repayAmount ? '-1' : repayAmount,
         setRepayAmount,
         setRepaySubmitting,
-        getRepayTransactions
-      );
+        getRepayTransactions,
+        AaveActions.Repay,
+    );
     }
   };
 
@@ -237,6 +241,7 @@ export default function AaveReserveRow({
         setDepositAmount,
         setDepositSubmitting,
         getDepositTransactions,
+        AaveActions.Deposit,
         stepDepositAave.nextStep?.number
       );
     }
@@ -248,8 +253,9 @@ export default function AaveReserveRow({
         withdrawAmount,
         setWithdrawAmount,
         setWithdrawSubmitting,
-        getWithdrawTransactions
-      );
+        getWithdrawTransactions,
+        AaveActions.Withdraw,
+    );
     }
   };
 

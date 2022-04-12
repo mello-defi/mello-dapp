@@ -56,7 +56,7 @@ export default function Onboarding() {
         const transactionCount: number = await getTransactionCount(userAddress, provider);
         if (userBalance.eq(0) && transactionCount === 0) {
           dispatch(setStep(stepAddGasToWallet.number));
-        } else if (userBalance.gt(0) && currentStep <= stepAddGasToWallet.number) {
+        } else if (userBalance.gt(0) && currentStep < stepAddGasToWallet.number) {
           dispatch(setStep(stepPerformSwap.number));
         }
       }
