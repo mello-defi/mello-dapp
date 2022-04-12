@@ -1,7 +1,7 @@
 import OnboardingStepDescription from '_pages/Onboarding/OnboardingStepDescription';
 
 export default function StepDepositAave() {
-  const whatIsRequired = <>Supply your newly swapped $WBTC into the Aave lending protocol</>;
+  const whatIsRequired = <>Supply your newly swapped WBTC into the Aave lending protocol</>;
   const whyIsRequired = (
     <>
       By supplying your tokens into Aave you can passively earn interest, and use deposits as

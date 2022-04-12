@@ -11,7 +11,7 @@ export default function FiatOnboarding() {
         </span>
       </div>
       <RampNetwork />
-      <MtPelerin />
+      {/*<MtPelerin />*/}
     </div>
   );
 }

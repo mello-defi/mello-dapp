@@ -8,8 +8,7 @@ import { EvmTokenDefinition } from '_enums/tokens';
 import { amountIsValidNumberGtZero, getTokenByAddress } from '_utils/index';
 import { absMaxBpt, calculatePoolInvestedAmounts, exactBPTInForTokenOut } from '_services/balancerCalculatorService';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
-import { getPoolOnChainData } from '_services/balancerVaultService';
-import { getErc20TokenInfo } from '_services/walletService';
+import { MaxUint256 } from '_utils/maths';
 import { getGasPrice } from '_services/gasService';
 import { exitPoolForExactTokensOut } from '_services/balancerPoolService';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
@@ -29,6 +28,10 @@ import MaxAmountButton from '_components/core/MaxAmountButton';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { WithdrawMode } from '_enums/balancer';
 import useBalancerFunctions from '_hooks/useBalancerFunctions';
+import { BalancerActions, TransactionServices } from '_enums/db';
+import { logTransaction } from '_services/dbService';
+import { getPoolOnChainData } from '_services/balancerVaultService';
+import { getErc20TokenInfo } from '_services/walletService';
 
 // TODO fix trace amoutns bug
 export default function PoolWithdraw({ pool }: { pool: Pool }) {
@@ -225,6 +228,13 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
       try {
         setTransactionInProgress(true);
         const amountsOut = await checkApprovalsAndGetAmounts(pool.tokens);
+        // await checkAndApproveAllowance(
+        //   pool.address,
+        //   userAddress,
+        //   setApprovalHash,
+        //   MaxUint256,
+        //   vaultAddress
+        // );
         setTokensApproved(true);
         const gasResult = await getGasPrice(network.gasStationUrl);
         let tx: TransactionResponse;
@@ -260,6 +270,7 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
             gasResult?.fastest
           );
         }
+        logTransaction(tx.hash, network.chainId, TransactionServices.Balancer, BalancerActions.Withdraw);
         setTransactionHash(tx.hash);
         await tx.wait(3);
         setTransactionComplete(true);

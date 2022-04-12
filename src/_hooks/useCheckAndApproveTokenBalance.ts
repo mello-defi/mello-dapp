@@ -5,7 +5,8 @@ import { approveToken, getTokenAllowance } from '_services/walletService';
 import { ERC20Abi } from '../_abis';
 import { getGasPrice } from '_services/gasService';
 import { MaxUint256 } from '_utils/maths';
-import { logTransactionHash } from '_services/dbService';
+import { logTransaction } from '_services/dbService';
+import { GenericActions, TransactionServices } from '_enums/db';
 
 const useCheckAndApproveTokenBalance = () => {
   const { provider, signer, network } = useSelector((state: AppState) => state.web3);
@@ -14,7 +15,8 @@ const useCheckAndApproveTokenBalance = () => {
     userAddress: string,
     setTransactionHash: (hash: string) => void,
     amount: ethers.BigNumber = MaxUint256,
-    spenderAddress?: string
+    service: TransactionServices,
+    spenderAddress?: string,
   ) => {
     if (provider && signer && network) {
       const allowance = await getTokenAllowance(
@@ -36,7 +38,7 @@ const useCheckAndApproveTokenBalance = () => {
           approvalGasResult?.fastest,
           spenderAddress
         );
-        logTransactionHash(approvalTxHash.hash, network.chainId);
+        logTransaction(approvalTxHash.hash, network.chainId, service, GenericActions.Approve, undefined);
         setTransactionHash(approvalTxHash.hash);
         await approvalTxHash.wait(3);
       }

@@ -16,9 +16,9 @@ import { EthereumTransactionError } from '_interfaces/errors';
 import { approveToken, getTokenAllowance, sendErc20Token } from '_services/walletService';
 import { getGasPrice } from '_services/gasService';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
-import { logTransactionHash } from '_services/dbService';
+import { logTransaction } from '_services/dbService';
 import { parseUnits } from 'ethers/lib/utils';
-import { decimalPlacesAreValid } from '_utils/index';
+import { GenericActions, TransactionServices, WalletActions } from '_enums/db';
 
 export default function SendCrypto() {
   const marketPrices = useMarketPrices();
@@ -81,6 +81,7 @@ export default function SendCrypto() {
         const amountInUnits = parseUnits(amountToSend, token.decimals);
         setTransactionSubmitting(true);
 
+        // TODO use generic hook
         if (!token.isGasToken) {
           const allowance: BigNumber = await getTokenAllowance(
             token.address,
@@ -100,6 +101,7 @@ export default function SendCrypto() {
               amountInUnits,
               gasPriceResult?.fastest
             );
+            logTransaction(tx.hash, network.chainId, TransactionServices.Wallet, GenericActions.Approve, undefined, token.symbol);
             setApproveTransactionHash(tx.hash);
             await tx.wait(3);
           }
@@ -123,7 +125,7 @@ export default function SendCrypto() {
           finalAmount,
           gasPriceResult?.fastest
         );
-        logTransactionHash(txResponse.hash, network.chainId);
+        logTransaction(txResponse.hash, network.chainId, TransactionServices.Wallet, WalletActions.Send, finalAmount.toString(), token.symbol);
         setSendTransactionHash(txResponse.hash);
         await txResponse.wait(3);
         setTransactionCompleted(true);

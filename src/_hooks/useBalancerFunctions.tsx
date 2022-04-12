@@ -7,6 +7,7 @@ import { MaxUint256 } from '_utils/maths';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import useCheckAndApproveTokenBalance from '_hooks/useCheckAndApproveTokenBalance';
+import { TransactionServices } from '_enums/db';
 
 const useBalancerFunctions = () => {
   const marketPrices = useMarketPrices();
@@ -39,6 +40,7 @@ const useBalancerFunctions = () => {
             userAddress,
             setTokenApprovalHash,
             MaxUint256,
+            TransactionServices.Balancer,
             vaultAddress
           );
         }

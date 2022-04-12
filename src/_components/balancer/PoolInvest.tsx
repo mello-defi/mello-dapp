@@ -22,6 +22,8 @@ import TransactionError from '_components/transactions/TransactionError';
 import { BalancerFunction } from '_components/balancer/PoolFunctions';
 import { setStep } from '_redux/effects/onboardingEffects';
 import useBalancerFunctions from '_hooks/useBalancerFunctions';
+import { BalancerActions, TransactionServices } from '_enums/db';
+import { logTransaction } from '_services/dbService';
 
 export default function PoolInvest({ pool }: { pool: Pool }) {
   const dispatch = useDispatch();
@@ -86,6 +88,7 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
         const gasResult = await getGasPrice(network.gasStationUrl);
         const tx = await joinPool(pool, userAddress, signer, amountsIn, gasResult?.fastest);
         setTransactionHash(tx.hash);
+        logTransaction(tx.hash, network.chainId, TransactionServices.Balancer, BalancerActions.Invest);
         await tx.wait(3);
         setTransactionComplete(true);
         dispatch(toggleBalancesAreStale(true));
