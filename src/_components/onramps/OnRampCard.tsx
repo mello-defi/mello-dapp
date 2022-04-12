@@ -29,20 +29,20 @@ export default function OnRampCard({
       <div
         className={`${
           !userAddress ? 'opacity-20 pointer-events-none' : ''
-        } flex py-8 px-4 flex-col md:flex-row w-full justify-evenly cursor-pointer rounded-lg hover:bg-gray-100 transition mb-4 border-2 border-gray-100`}
+        } flex py-8 px-4 flex-col md:flex-row w-full justify-center items-center md:justify-evenly cursor-pointer rounded-lg hover:bg-gray-100 transition mb-4 border-2 border-gray-100`}
         onClick={onClick}
       >
         <img src={imageUrl} height={150} width={150} />
-        <div className={'text-left md:text-right mt-2 md:mt-0'}>
+        <div className={'text-left text-color-dark md:text-right mt-2 md:mt-0'}>
           <span>{transferMethods}</span>
-          <span className={'text-color-light'}>
-            <br />
-            Fees: {fees}
-            <br />
-            Limits: {limits}
-            <br />
-            Currencies: {currencies.join(', ')}
-          </span>
+          {/*<span className={'text-color-light'}>*/}
+          {/*  <br />*/}
+          {/*  Fees: {fees}*/}
+          {/*  <br />*/}
+          {/*  Limits: {limits}*/}
+          {/*  <br />*/}
+          {/*  Currencies: {currencies.join(', ')}*/}
+          {/*</span>*/}
         </div>
       </div>
     </div>

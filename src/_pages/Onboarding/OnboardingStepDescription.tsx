@@ -19,12 +19,12 @@ export default function OnboardingStepDescription({
         <>
           {whatIsRequired && whyIsRequired && (
             <>
-              <span className={'font-bold text-body'}>What is required?</span>
+              <span className={'font-medium text-body'}>What is required?</span>
               <br />
               <span className={'text-body-smaller'}>{whatIsRequired}</span>
               <br />
               <br />
-              <span className={'font-bold text-body'}>Why is this required?</span>
+              <span className={'font-medium text-body'}>Why is this required?</span>
               <br />
               <span className={'text-body-smaller'}>{whyIsRequired}</span>
               {notes && (

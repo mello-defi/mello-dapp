@@ -6,7 +6,7 @@ import { DefaultTransition } from '_components/core/Transition';
 import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { OnboardingStep } from '_pages/Onboarding/OnboardingSteps';
 import { Button, ButtonSize } from '_components/core/Buttons';
-import { setWaitingToAdvance } from '_redux/effects/onboardingEffects';
+import { setStep, setWaitingToAdvance } from '_redux/effects/onboardingEffects';
 
 export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   const { currentStep, waitingToAdvance } = useSelector((state: AppState) => state.onboarding);
@@ -18,6 +18,11 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   const advanceToNextStep = () => {
     dispatch(setWaitingToAdvance(false));
   };
+
+  const forceAdvanceToNextStep = () => {
+    dispatch(setStep(step.number + 1));
+    dispatch(setWaitingToAdvance(false));
+  }
 
   useEffect(() => {
     if (currentStep === step.number + 1) {
@@ -34,7 +39,7 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
           >
             <div className={'flex flex-row justify-between w-full'}>
               <div className={'flex-row-center'}>
-                <span className={'text-3xl mr-2'}>
+                <span onClick={forceAdvanceToNextStep} className={'text-3xl mr-2'}>
                   {stepIsCurrentStep || stepIsAhead ? (
                     <Info className={'text-gray-400 mb-0.5'} fontSize={'inherit'} />
                   ) : (
