@@ -216,6 +216,18 @@ export default function Swap({
     setIsApproving(false);
   };
 
+  const debounceSourceTokenChanged = useCallback(
+    debounce(
+      (amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue),
+      750
+    ),
+    [] // will be created only once initially
+  );
+
+  const sourceTokenChanged = (token: EvmTokenDefinition) => {
+    setSourceToken(token);
+    debounceSourceTokenChanged(sourceAmount, token, destinationToken);
+  };
   const debounceDestinationTokenChanged = useCallback(
     debounce(
       (amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue),
@@ -267,7 +279,7 @@ export default function Swap({
       ) : (
         <MultiCryptoAmountInput
           token={sourceToken}
-          tokenChanged={setSourceToken}
+          tokenChanged={sourceTokenChanged}
           amount={sourceAmount}
           amountChanged={sourceAmountChanged}
           disabled={isSwapping || sourceTokenDisabled}
