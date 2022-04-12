@@ -32,6 +32,7 @@ import { EthereumTransactionError } from '_interfaces/errors';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { GenericActions, ParaswapActions, TransactionServices } from '_enums/db';
+import { fixDecimalPlaces } from '_utils/index';
 
 export default function Swap({
   initialSourceTokenSymbol,
@@ -62,7 +63,7 @@ export default function Swap({
   }, [sourceToken, walletBalances]);
   const { complete, ongoing } = useSelector((state: AppState) => state.onboarding);
 
-  console.log('sourceTokenBalance', sourceTokenBalance);
+  // console.log('sourceTokenBalance', sourceTokenBalance);
   const [sourceTokenDisabled, setSourceTokenDisabled] = useState<boolean>(false);
   const [destinationTokenDisabled, setDestinationTokenDisabled] = useState<boolean>(false);
   const [sourceAmount, setSourceAmount] = useState<string>('0.0');
@@ -119,7 +120,7 @@ export default function Swap({
         setDestinationTokenDisabled(true);
         setSourceTokenDisabled(true);
         setFetchingPrices(true);
-        const srcAmount: BigNumber = parseUnits(amount, srcToken.decimals);
+        const srcAmount: BigNumber = parseUnits(fixDecimalPlaces(amount, srcToken.decimals), srcToken.decimals);
         const rate = await getExchangeRate(srcToken, destToken, srcAmount.toString());
         console.log('rate', rate);
         setPriceRoute(rate);
@@ -140,7 +141,7 @@ export default function Swap({
     signer: ethers.Signer,
     userAddress: string
   ) => {
-    // TODO move to useapprovetoken thing
+    // TODO move to useapprovetoken thing AND use rate.tokenTransferProxy
     const transferProxy = await getTokenTransferProxy();
     const allowance = await getTokenAllowance(
       sourceToken.address,
@@ -215,18 +216,18 @@ export default function Swap({
     setIsApproving(false);
   };
 
-  // const debounceDestinationTokenChanged = useCallback(
-  //   debounce(
-  //     (amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue),
-  //     750
-  //   ),
-  //   [] // will be created only once initially
-  // );
+  const debounceDestinationTokenChanged = useCallback(
+    debounce(
+      (amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue),
+      750
+    ),
+    [] // will be created only once initially
+  );
 
-  // const destinationTokenChanged = (token: EvmTokenDefinition) => {
-  //   setDestinationToken(token);
-  //   debounceDestinationTokenChanged(destinationAmount, sourceToken, token);
-  // };
+  const destinationTokenChanged = (token: EvmTokenDefinition) => {
+    setDestinationToken(token);
+    debounceDestinationTokenChanged(sourceAmount, sourceToken, token);
+  };
   const debounceSourceAmountChanged = useCallback(
     debounce(
       (nextValue, srcToken, destToken) => updateExchangeRate(nextValue, srcToken, destToken),
@@ -300,7 +301,7 @@ export default function Swap({
       ) : (
         <MultiCryptoAmountInput
           token={destinationToken}
-          tokenChanged={setDestinationToken}
+          tokenChanged={destinationTokenChanged}
           amount={destinationAmount}
           amountChanged={setDestinationAmount}
           disabled={isSwapping || destinationTokenDisabled}

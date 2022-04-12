@@ -41,7 +41,11 @@ export async function getExchangeRate(
     destinationToken.decimals
   );
   if (responseIsError(response)) {
-    throw new Error(`Error getting rate: ${response.message}`);
+    let message = response.message;
+    if (response.message === 'ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT') {
+      message = 'Price impact too high'
+    }
+    throw new Error(`Error getting rate: ${message}`);
   }
   return response;
 }
