@@ -1,4 +1,5 @@
 import { applyMiddleware, createStore } from 'redux';
+import LogRocket from 'logrocket';
 import thunkMiddleware from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import rootReducer from '_redux/reducers';
@@ -14,7 +15,7 @@ const persistConfig = {
 const persistedReducer = persistReducer<AppState, any>(persistConfig, rootReducer);
 export const store = createStore(
   persistedReducer,
-  composeWithDevTools(applyMiddleware(thunkMiddleware))
+  composeWithDevTools(applyMiddleware(thunkMiddleware, LogRocket.reduxMiddleware())),
 );
 export const persistor = persistStore(store);
 export type AppState = ReturnType<typeof rootReducer>;

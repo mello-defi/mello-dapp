@@ -11,6 +11,9 @@ import { BrowserTracing } from '@sentry/tracing';
 import { persistor, store } from '_redux/store';
 import { PersistGate } from 'redux-persist/integration/react';
 
+import LogRocket from 'logrocket';
+LogRocket.init('valslo/mello');
+
 if(__DEV__) {
   document.title = `mello DEV`;
 } else {
