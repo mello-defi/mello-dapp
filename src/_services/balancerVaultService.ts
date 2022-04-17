@@ -10,7 +10,6 @@ import {
   TokenInfoMap
 } from '_interfaces/balancer';
 import { formatUnits, getAddress } from 'ethers/lib/utils';
-import { pick } from 'lodash';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { multicall, multicallToObject } from '_services/walletService';
 import { isStable, isWeighted } from '_services/balancerCalculatorService';
@@ -21,6 +20,7 @@ import {
 } from '@balancer-labs/typechain';
 import { PoolType } from '_enums/balancer';
 import { Zero, WeiPerEther as ONE } from '@ethersproject/constants';
+import { pick } from 'lodash';
 
 const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 

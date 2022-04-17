@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Bitcoin, Polygon, PolygonConfigMap } from '@renproject/chains';
 import { AppState } from '_redux/store';
 import { renJS } from '_services/renService';
 import { EthProvider } from '@renproject/chains-ethereum/build/main/types';
@@ -18,6 +17,8 @@ import { CryptoCurrencySymbol } from '_enums/currency';
 import { nativeBitcoin, PolygonMainnetTokenContracts } from '_enums/tokens';
 import { RenActions, TransactionServices } from '_enums/db';
 import { getMarketDataForAdditionalSymbols } from '_services/marketDataService';
+import { Bitcoin } from '@renproject/chains-bitcoin';
+import { Polygon, PolygonConfigMap } from '@renproject/chains-ethereum';
 
 function RenBridge() {
   const { provider, network, signer } = useSelector((state: AppState) => state.web3);

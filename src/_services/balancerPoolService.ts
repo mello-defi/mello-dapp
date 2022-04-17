@@ -17,7 +17,6 @@ import { StablePoolEncoder, WeightedPoolEncoder } from '_enums/balancer';
 import { ERC20Abi, MerkleOrchardAbi } from '_abis/index';
 import axios from 'axios';
 import { getAddress } from 'ethers/lib/utils';
-import { chunk, flatten, groupBy } from 'lodash';
 import { multicall } from '_services/walletService';
 import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 

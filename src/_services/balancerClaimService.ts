@@ -15,14 +15,13 @@ import {
 } from '_interfaces/balancer';
 import { BigNumber, BytesLike, Contract, ethers } from 'ethers';
 import { MerkleOrchardAbi } from '_abis/index';
-import { chunk, flatten, groupBy } from 'lodash';
 import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 import { getAddress, parseUnits } from 'ethers/lib/utils';
 import { multicall } from '_services/walletService';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
-import { times } from 'lodash';
 import { hexToBytes, soliditySha3 } from 'web3-utils';
 import { bufferToHex, keccak256, keccakFromString } from 'ethereumjs-util';
+import { chunk, flatten, groupBy } from 'lodash';
 
 async function getSnapshot(manifest: string) {
   try {

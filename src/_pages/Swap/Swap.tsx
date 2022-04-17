@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { OptimalRate } from 'paraswap-core';
-import debounce from 'lodash/debounce';
 import {
   buildSwapTransaction,
   getExchangeRate,
@@ -33,6 +32,7 @@ import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { GenericActions, ParaswapActions, TransactionServices } from '_enums/db';
 import { fixDecimalPlaces } from '_utils/index';
+import { debounce } from 'lodash';
 
 export default function Swap({
   initialSourceTokenSymbol,
