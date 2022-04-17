@@ -64,10 +64,7 @@ export default function WalletBalance({
           </div>
           <div className={'flex flex-col items-end space-y-1 font-mono'}>
             <span>
-              {formatTokenValueInFiat(
-                marketPrice,
-                formatUnits(userBalance, token.decimals)
-              )}
+              {formatTokenValueInFiat(marketPrice, formatUnits(userBalance, token.decimals))}
             </span>
           </div>
         </div>

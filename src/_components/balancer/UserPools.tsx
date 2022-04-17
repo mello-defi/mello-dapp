@@ -12,9 +12,6 @@ import { AppState } from '_redux/store';
 
 export default function UserPools() {
   const { userPools, totalInvestedAmount } = useUserBalancerPools();
-  const address = useSelector((state: AppState) => state.wallet.address);
-  const provider = useSelector((state: AppState) => state.web3.provider);
-
   return (
     <>
       {!userPools && (
@@ -48,7 +45,6 @@ export default function UserPools() {
               userBalance={calculateUserSharesInFiat(userPool.poolId, userPool)}
             />
           ))}
-          {/*<HorizontalLineBreak />*/}
         </div>
       )}
     </>

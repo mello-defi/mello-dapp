@@ -18,7 +18,7 @@ export default function SingleCryptoAmountInput({
   balance,
   token,
   maxAmount,
-  showMaxButton = true,
+  showMaxButton = true
 }: {
   disabled: boolean;
   amount: string;
@@ -32,9 +32,11 @@ export default function SingleCryptoAmountInput({
   const [tokenPrice, setTokenPrice] = useState<number>();
   const marketPrices = useMarketPrices();
 
-  const isEvmTokenType = (obj: EvmTokenDefinition | GenericTokenDefinition): obj is EvmTokenDefinition => {
+  const isEvmTokenType = (
+    obj: EvmTokenDefinition | GenericTokenDefinition
+  ): obj is EvmTokenDefinition => {
     return 'address' in obj;
-  }
+  };
 
   useEffect(() => {
     const getPrice = async () => {
@@ -52,7 +54,7 @@ export default function SingleCryptoAmountInput({
           }
         }
       }
-    }
+    };
     getPrice();
   }, [token, marketPrices]);
 

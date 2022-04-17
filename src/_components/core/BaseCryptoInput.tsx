@@ -29,11 +29,15 @@ export default function BaseCryptoInput({
     if (disabled) {
       return true;
     }
-    if (amount && decimalPlacesAreValid(amount, tokenDecimals) && parseUnits(amount, tokenDecimals).eq(0)) {
+    if (
+      amount &&
+      decimalPlacesAreValid(amount, tokenDecimals) &&
+      parseUnits(amount, tokenDecimals).eq(0)
+    ) {
       return true;
     }
     return false;
-  }
+  };
 
   return (
     <input
@@ -48,7 +52,7 @@ export default function BaseCryptoInput({
       type={'number'}
       min={'0'}
       className={`text-2xl w-3/5 font-mono sm:text-3xl bg-gray-100 focus:outline-none px-2 sm:px-0 sm:mt-0 py-1 sm:py-0 ${
-       inputIsDisabled() ? 'text-gray-400' : 'text-color-dark'
+        inputIsDisabled() ? 'text-gray-400' : 'text-color-dark'
       }`}
       value={amount}
       onChange={(e) => handleAmountChanged(e.target.value)}

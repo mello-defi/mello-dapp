@@ -4,37 +4,37 @@ export enum TransactionServices {
   Paraswap = 'paraswap',
   Wallet = 'wallet',
   Biconomy = 'biconomy',
-  Ren = 'ren',
+  Ren = 'ren'
 }
 
 export enum GenericActions {
-  Approve = 'approve',
+  Approve = 'approve'
 }
 export enum AaveActions {
   Deposit = 'deposit',
   Borrow = 'borrow',
   Withdraw = 'withdraw',
-  Repay = 'repay',
+  Repay = 'repay'
 }
 
 export enum BalancerActions {
   Invest = 'invest',
-  Withdraw = 'withdraw',
+  Withdraw = 'withdraw'
 }
 
 export enum ParaswapActions {
-  Swap = 'swap',
+  Swap = 'swap'
 }
 
 export enum WalletActions {
-  Send = 'send',
+  Send = 'send'
 }
 
 export enum BiconomyActions {
   Mint = 'mint',
-  Deposit = 'deposit',
+  Deposit = 'deposit'
 }
 
 export enum RenActions {
-  Mint = 'mint',
+  Mint = 'mint'
 }

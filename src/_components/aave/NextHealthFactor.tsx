@@ -32,7 +32,7 @@ export default function NextHealthFactor({
         )
       );
     }
-  }, [amount]);
+  }, [amount, healthFactorImpact, healthFactorResource, reserve, userSummary]);
   return (
     <div className={'flex-row-center text-body px-1'}>
       <span className={'mr-2'}>Next health factor</span>

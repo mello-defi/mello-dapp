@@ -14,7 +14,7 @@ export const toggleIsFetchingPrices = (isFetching: boolean) => {
   };
 };
 
-export const getMarketPrices = (tokenAddresses: string[], chainId: number,) => {
+export const getMarketPrices = (tokenAddresses: string[], chainId: number) => {
   return async function (dispatch: Dispatch<MarketActionTypes>) {
     const now = Date.now();
     // if (
@@ -26,14 +26,14 @@ export const getMarketPrices = (tokenAddresses: string[], chainId: number,) => {
     //   dispatch(getMarketPricesAction(record.value));
     // } else {
     //   isMarketDataFetching = true;
-      const data = await getMarketDataForNetwork(tokenAddresses, chainId);
-      // isMarketDataFetching = false;
-      // const record: CacheRecord = {
-      //   value: data,
-      //   expiration: now + cacheExpirationInMs
-      // };
-      // marketCache.set(currency, record);
-      dispatch(getMarketPricesAction(data));
+    const data = await getMarketDataForNetwork(tokenAddresses, chainId);
+    // isMarketDataFetching = false;
+    // const record: CacheRecord = {
+    //   value: data,
+    //   expiration: now + cacheExpirationInMs
+    // };
+    // marketCache.set(currency, record);
+    dispatch(getMarketPricesAction(data));
     // }
   };
 };

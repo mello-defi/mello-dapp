@@ -1,7 +1,8 @@
 import axios from 'axios';
 import {
   Claim,
-  ClaimableToken, ClaimProofTuple,
+  ClaimableToken,
+  ClaimProofTuple,
   ClaimStatus,
   ClaimWorkerMessage,
   ComputeClaimProofPayload,
@@ -222,10 +223,7 @@ export async function getMultiTokensCurrentRewardsEstimate(
     timestamp: null
   };
 }
-export function scale(
-  input: AdvancedBigNumber | string,
-  decimalPlaces: number
-): AdvancedBigNumber {
+export function scale(input: AdvancedBigNumber | string, decimalPlaces: number): AdvancedBigNumber {
   const unscaled = typeof input === 'string' ? new AdvancedBigNumber(input) : input;
   const scalePow = new AdvancedBigNumber(decimalPlaces.toString());
   const scaleMul = new AdvancedBigNumber(10).pow(scalePow);
@@ -237,9 +235,7 @@ export class MerkleTree {
   public layers: any;
 
   constructor(elements: any) {
-    this.elements = elements
-      .filter((el: any) => el)
-      .map((el: any) => Buffer.from(hexToBytes(el)));
+    this.elements = elements.filter((el: any) => el).map((el: any) => Buffer.from(hexToBytes(el)));
 
     // console.log('elements', this.elements);
     // Sort elements
@@ -259,13 +255,11 @@ export class MerkleTree {
     return bufferToHex(this.getRoot());
   }
 
-
   bufDedup(elements: any) {
     return elements.filter((el: any, idx: number) => {
       return idx === 0 || !elements[idx - 1].equals(el);
     });
   }
-
 
   getLayers(elements: any) {
     if (elements.length === 0) {
@@ -307,7 +301,6 @@ export class MerkleTree {
 
     return -1;
   }
-
 
   getProof(el: any) {
     let idx = this.bufIndexOf(el, this.elements);
@@ -361,7 +354,6 @@ export class MerkleTree {
     }
   }
 
-
   bufArrToHexArr(arr: any) {
     if (arr.some((el: any) => !Buffer.isBuffer(el))) {
       throw new Error('Array is not an array of buffers');
@@ -373,38 +365,23 @@ export class MerkleTree {
 
 export function loadTree(balances: any, decimals: number) {
   const elements: any[] = [];
-  Object.keys(balances).forEach(address => {
+  Object.keys(balances).forEach((address) => {
     const balance: string = scale(balances[address], decimals).toString(10);
-    const leaf = soliditySha3(
-      { t: 'address', v: address },
-      { t: 'uint', v: balance }
-    );
+    const leaf = soliditySha3({ t: 'address', v: address }, { t: 'uint', v: balance });
     elements.push(leaf);
   });
   return new MerkleTree(elements);
 }
 
-function computeClaimProof(
-  payload: ComputeClaimProofPayload
-): ClaimProofTuple {
-  const {
-    report,
-    account,
-    claim,
-    distributor,
-    tokenIndex,
-    decimals
-  } = payload;
+function computeClaimProof(payload: ComputeClaimProofPayload): ClaimProofTuple {
+  const { report, account, claim, distributor, tokenIndex, decimals } = payload;
 
   const claimAmount = claim.amount;
   const merkleTree = loadTree(report, decimals);
 
   const scaledBalance = scale(claimAmount, decimals).toString(10);
   const proof = merkleTree.getHexProof(
-    soliditySha3(
-      { t: 'address', v: account },
-      { t: 'uint', v: scaledBalance }
-    )
+    soliditySha3({ t: 'address', v: account }, { t: 'uint', v: scaledBalance })
   ) as string[];
 
   return [parseInt(claim.id), scaledBalance, distributor, tokenIndex, proof];
@@ -416,7 +393,7 @@ async function computeClaimProofs(
   tokenIndex: number
 ): Promise<Promise<ClaimProofTuple[]>> {
   return Promise.all(
-    tokenPendingClaims.claims.map(claim => {
+    tokenPendingClaims.claims.map((claim) => {
       const payload: ComputeClaimProofPayload = {
         account,
         distributor: tokenPendingClaims.tokenClaimInfo.distributor,
@@ -435,11 +412,10 @@ async function computeClaimProofs(
 export async function multiTokenClaimRewards(
   signer: ethers.Signer,
   multiTokenPendingClaims: MultiTokenPendingClaims[],
-  userAddress: string,
+  userAddress: string
 ): Promise<TransactionResponse> {
-
   const tokens = multiTokenPendingClaims.map(
-    tokenPendingClaims => tokenPendingClaims.tokenClaimInfo.token
+    (tokenPendingClaims) => tokenPendingClaims.tokenClaimInfo.token
   );
   const multiTokenClaims = await Promise.all(
     multiTokenPendingClaims.map((tokenPendingClaims, tokenIndex) =>
@@ -449,5 +425,7 @@ export async function multiTokenClaimRewards(
   const contract = new Contract(polygonMerkleOrchardAddress, MerkleOrchardAbi, signer);
   console.log('flattened', flatten(multiTokenClaims));
   console.log('tokens', tokens);
-  return await contract.connect(signer).claimDistributions(getAddress(userAddress), flatten(multiTokenClaims), tokens);
+  return await contract
+    .connect(signer)
+    .claimDistributions(getAddress(userAddress), flatten(multiTokenClaims), tokens);
 }

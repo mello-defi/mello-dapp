@@ -49,7 +49,7 @@ function computeAPRForPool(
 function computeTotalAPRForPool(
   tokenRewards: LiquidityMiningTokenReward[],
   totalLiquidity: string,
-  marketPrices: NetworkMarketData,
+  marketPrices: NetworkMarketData
 ) {
   return tokenRewards
     .reduce(
@@ -95,7 +95,7 @@ export async function getSwapApr(
 
 export async function getMiningLiquidityApr(
   pool: Pool,
-  marketPrices: NetworkMarketData,
+  marketPrices: NetworkMarketData
 ): Promise<number> {
   let liquidityMiningAPR = '0';
   const url =
@@ -121,7 +121,7 @@ export async function getMiningLiquidityApr(
     liquidityMiningAPR = computeTotalAPRForPool(
       liquidityMiningRewards,
       miningTotalLiquidity,
-      marketPrices,
+      marketPrices
     );
   }
   return Number(bnum(liquidityMiningAPR).times(100).toFixed(2));

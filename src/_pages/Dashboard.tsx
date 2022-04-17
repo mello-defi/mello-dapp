@@ -61,7 +61,7 @@ export default function Dashboard() {
           const token = tokenSet[symbol];
           if (token) {
             const decimals = token.decimals;
-            const price = marketPrices[token.address.toLowerCase()]
+            const price = marketPrices[token.address.toLowerCase()];
             if (price && balance && decimals) {
               totalWalletBalances += parseFloat(formatUnits(balance, decimals)) * price;
             }

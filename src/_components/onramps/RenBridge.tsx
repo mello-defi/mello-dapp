@@ -44,12 +44,12 @@ function RenBridge() {
     const getBtcPrice = async () => {
       if (marketPrices) {
         const prices = await getMarketDataForAdditionalSymbols();
-        const btc = prices[CryptoCurrencySymbol.BTC.toLowerCase()]
+        const btc = prices[CryptoCurrencySymbol.BTC.toLowerCase()];
         if (btc) {
           setBtcPrice(btc);
         }
       }
-    }
+    };
     getBtcPrice();
   }, [marketPrices]);
 

@@ -2,7 +2,7 @@ import { Pool, PoolToken } from '_interfaces/balancer';
 import useWalletBalances from '_hooks/useWalletBalances';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { amountIsValidNumberGtZero, getTokenByAddress } from '_utils/index';
 import { BigNumber } from 'ethers';
@@ -13,9 +13,6 @@ import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { toggleUserPoolDataStale } from '_redux/effects/balancerEffects';
 import { EthereumTransactionError } from '_interfaces/errors';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
-import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
-import MaxAmountButton from '_components/core/MaxAmountButton';
-import { Button } from '_components/core/Buttons';
 import { TransactionStep } from '_components/transactions/TransactionStep';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
@@ -24,6 +21,8 @@ import { setStep } from '_redux/effects/onboardingEffects';
 import useBalancerFunctions from '_hooks/useBalancerFunctions';
 import { BalancerActions, TransactionServices } from '_enums/db';
 import { logTransaction } from '_services/dbService';
+import BalancerPoolFunctionSummary from '_components/balancer/BalancerPoolFunctionSummary';
+import PoolInvestForm from '_components/balancer/PoolInvestForm';
 
 export default function PoolInvest({ pool }: { pool: Pool }) {
   const dispatch = useDispatch();
@@ -50,7 +49,7 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
     tokenApprovalHash,
     sumOfAmountsInFiat,
     setSumOfAmountsInFiat
-  } = useBalancerFunctions()
+  } = useBalancerFunctions();
 
   const initTokenAmounts = () => {
     setAmountsToInvest(Array(pool.tokens.length).fill('0.0'));
@@ -60,16 +59,11 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
       initTokenAmounts();
     }
   }, [pool]);
-  const walletBalanceGreaterThanZero = (token: PoolToken): boolean => {
-    const bal = walletBalances[token.symbol as CryptoCurrencySymbol];
-    return !bal || (bal && bal.balance.gt(0));
-  };
 
   const getUserBalanceForPoolToken = (token: PoolToken): BigNumber | undefined => {
     const bal = walletBalances[token.symbol as CryptoCurrencySymbol];
     return bal && bal.balance;
   };
-
 
   useEffect(() => {
     if (!amountsToInvest.length) {
@@ -88,7 +82,12 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
         const gasResult = await getGasPrice(network.gasStationUrl);
         const tx = await joinPool(pool, userAddress, signer, amountsIn, gasResult?.fastest);
         setTransactionHash(tx.hash);
-        logTransaction(tx.hash, network.chainId, TransactionServices.Balancer, BalancerActions.Invest);
+        logTransaction(
+          tx.hash,
+          network.chainId,
+          TransactionServices.Balancer,
+          BalancerActions.Invest
+        );
         await tx.wait(3);
         setTransactionComplete(true);
         dispatch(toggleBalancesAreStale(true));
@@ -154,40 +153,18 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
   };
   return (
     <div className={'flex flex-col'}>
-      {amountsToInvest &&
-        amountsToInvest.length > 0 &&
-        pool.tokens.map((token, tokenIndex: number) => (
-          <div key={token.symbol} className={'px-2'}>
-            <SingleCryptoAmountInput
-              disabled={!walletBalanceGreaterThanZero(token)}
-              maxAmount={getUserBalanceForPoolToken(token)}
-              amount={amountsToInvest[tokenIndex]}
-              balance={getUserBalanceForPoolToken(token)}
-              amountChanged={(amount: string) => handleTokenAmountChange(tokenIndex, amount)}
-              token={getTokenByAddress(tokenSet, token.address)}
-            />
-          </div>
-        ))}
-
-      <div className={'px-4 mt-2'}>
-        <HorizontalLineBreak />
-        <div className={'flex-row-center mb-2 justify-between text-body'}>
-          <div>Total:</div>
-          <div className={'flex-row-center'}>
-            <div className={'font-mono'}>{sumOfAmountsInFiat ? `$${sumOfAmountsInFiat}` : '-'}</div>
-            <MaxAmountButton onClick={handleMaxAmountPressed} />
-          </div>
-        </div>
-        <div>
-          <Button
-            disabled={transactionInProgress || !stateValuesAreValid()}
-            className={'w-full'}
-            onClick={join}
-          >
-            {BalancerFunction.Invest}
-          </Button>
-        </div>
-      </div>
+      <PoolInvestForm
+        poolTokens={pool.tokens}
+        handleTokenAmountChange={handleTokenAmountChange}
+        amountsToInvest={amountsToInvest}
+      />
+      <BalancerPoolFunctionSummary
+        sumOfAmountsInFiat={sumOfAmountsInFiat}
+        handleMaxAmountPressed={handleMaxAmountPressed}
+        functionName={BalancerFunction.Invest}
+        buttonDisabled={transactionInProgress || !stateValuesAreValid()}
+        onClick={join}
+      />
       <div className={'text-body px-2 my-2'}>
         {(transactionInProgress || transactionComplete) && (
           <div>

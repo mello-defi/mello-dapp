@@ -13,7 +13,7 @@ const useBalancerFunctions = () => {
   const marketPrices = useMarketPrices();
   const checkAndApproveAllowance = useCheckAndApproveTokenBalance();
   const [amounts, setAmounts] = useState<string[]>([]);
-  const { network }= useSelector((state: AppState) => state.web3);
+  const { network } = useSelector((state: AppState) => state.web3);
   const [transactionInProgress, setTransactionInProgress] = useState(false);
   const [transactionComplete, setTransactionComplete] = useState(false);
   const [transactionHash, setTransactionHash] = useState('');
@@ -46,8 +46,8 @@ const useBalancerFunctions = () => {
         }
       }
     }
-    return amountsOut
-  }
+    return amountsOut;
+  };
   const handleTokenAmountChange = (tokenIndex: number, amount: string) => {
     const newTokenAmountMap = [...amounts];
     newTokenAmountMap[tokenIndex] = amount;
@@ -60,14 +60,14 @@ const useBalancerFunctions = () => {
       console.log(amount);
       if (!isNaN(parseFloat(amount))) {
         const token = poolTokens[i];
-        const marketPrice = marketPrices[token.address.toLowerCase()]
+        const marketPrice = marketPrices[token.address.toLowerCase()];
         if (marketPrice) {
           total += marketPrice * parseFloat(amount);
         }
       }
     }
     return total;
-  }
+  };
   return {
     sumAmounts,
     amounts,
@@ -87,7 +87,7 @@ const useBalancerFunctions = () => {
     tokenApprovalHash,
     sumOfAmountsInFiat,
     setSumOfAmountsInFiat
-  }
+  };
 };
 
 export default useBalancerFunctions;

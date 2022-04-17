@@ -3,7 +3,8 @@ import { AppState } from '_redux/store';
 import React, { useEffect, useState } from 'react';
 import {
   getMultiTokensCurrentRewardsEstimate,
-  getMultiTokensPendingClaims, multiTokenClaimRewards
+  getMultiTokensPendingClaims,
+  multiTokenClaimRewards
 } from '_services/balancerClaimService';
 import {
   ClaimableToken,
@@ -31,15 +32,8 @@ export function Rewards() {
   useEffect(() => {
     const getBalancerData = async () => {
       if (provider && userAddress && network) {
-        const claims = await getMultiTokensPendingClaims(
-          provider,
-          userAddress,
-          network.chainId
-        );
-        const estimates = await getMultiTokensCurrentRewardsEstimate(
-          userAddress,
-          network.chainId
-        );
+        const claims = await getMultiTokensPendingClaims(provider, userAddress, network.chainId);
+        const estimates = await getMultiTokensCurrentRewardsEstimate(userAddress, network.chainId);
         console.log('estimates', estimates);
         setRawTokenClaims(claims);
         const formattedClaims: ClaimableToken[] = [];
@@ -67,12 +61,12 @@ export function Rewards() {
   const claimRewards = async () => {
     if (signer && userAddress) {
       try {
-        await multiTokenClaimRewards(signer, [rawTokenClaims[2]], userAddress)
+        await multiTokenClaimRewards(signer, [rawTokenClaims[2]], userAddress);
       } catch (e: any) {
         console.error(e);
       }
     }
-  }
+  };
   return (
     <div
       className={
@@ -115,13 +109,17 @@ export function Rewards() {
               <div className={'flex flex-col  font-mono'}>
                 <span className={'text-body text-color-dark'}>{token.value}</span>
                 <span className={'text-body-smaller text-color-light'}>
-              ${token.fiatValue.toLocaleString(undefined, { maximumFractionDigits: 6 })}
-            </span>
+                  ${token.fiatValue.toLocaleString(undefined, { maximumFractionDigits: 6 })}
+                </span>
               </div>
               <span className="flex-row-center max-w-2/5 items-center rounded-2xl bg-white px-4 py-2 justify-center">
-            <img src={token.image} alt="person" className="flex-shrink-0 h-6 w-6 rounded-full" />
-            <span className="ml-2 block truncate">{token.symbol}</span>
-          </span>
+                <img
+                  src={token.image}
+                  alt="person"
+                  className="flex-shrink-0 h-6 w-6 rounded-full"
+                />
+                <span className="ml-2 block truncate">{token.symbol}</span>
+              </span>
             </div>
           ))}
           <Button onClick={claimRewards} className={'w-full mt-2'}>

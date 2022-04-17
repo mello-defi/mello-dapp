@@ -11,7 +11,12 @@ const useMarketPrices = () => {
   useEffect(() => {
     if (!isFetching) {
       setIsFetching(true);
-      dispatch(getMarketPrices(Object.values(tokenSet).map((token) => token.address), network.chainId));
+      dispatch(
+        getMarketPrices(
+          Object.values(tokenSet).map((token) => token.address),
+          network.chainId
+        )
+      );
     }
   }, [marketPrices, isFetching]);
   return marketPrices;

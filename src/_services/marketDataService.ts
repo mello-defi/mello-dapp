@@ -21,7 +21,7 @@ export interface SymbolMarketData {
 interface MarketDataForNetworkResponse {
   [address: string]: {
     [currency: string]: number;
-  }
+  };
 }
 interface MarketDataForNetworkParams {
   vs_currencies: string;
@@ -75,7 +75,7 @@ export function getMarketDataForNetwork(
   const currencyParam = currency.toLowerCase();
   const params: MarketDataForNetworkParams = {
     vs_currencies: [currencyParam].join(','),
-    contract_addresses: tokenAddresses.join(','),
+    contract_addresses: tokenAddresses.join(',')
   };
   return instance
     .get(`/simple/token_price/${urlSuffix}`, {

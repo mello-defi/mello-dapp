@@ -22,7 +22,7 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   const forceAdvanceToNextStep = () => {
     dispatch(setStep(step.number + 1));
     dispatch(setWaitingToAdvance(false));
-  }
+  };
 
   useEffect(() => {
     if (currentStep === step.number + 1) {

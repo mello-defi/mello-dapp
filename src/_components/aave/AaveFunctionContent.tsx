@@ -1,7 +1,4 @@
 import { EvmTokenDefinition } from '_enums/tokens';
-import UserReserveBalance from '_components/aave/UserReserveBalance';
-import AmountInputWithPercentages from '_components/aave/AmountInputWithPercentages';
-import TransactionAmountSummary from '_components/aave/TransactionAmountSummary';
 import { Button } from '_components/core/Buttons';
 import React from 'react';
 import { BigNumber, ethers } from 'ethers';
@@ -52,21 +49,6 @@ export default function AaveFunctionContent({
             showMaxButton={showMaxButton}
           />
         )}
-        {/*{userBalance && (*/}
-        {/*  <UserReserveBalance*/}
-        {/*    title={reserveTitle}*/}
-        {/*    formattedUserAmount={formatUnits(userBalance, token.decimals)}*/}
-        {/*    tokenPrice={tokenPrice}*/}
-        {/*  />*/}
-        {/*)}*/}
-        {/*{userBalance && (*/}
-        {/*  <AmountInputWithPercentages*/}
-        {/*    inputAmount={amount}*/}
-        {/*    tokenDecimals={token.decimals}*/}
-        {/*    setInputAmount={setAmount}*/}
-        {/*    maxAmount={formatUnits(userBalance?.toString(), token.decimals)}*/}
-        {/*  />*/}
-        {/*)}*/}
       </div>
 
       <div className={'w-full flex flex-col my-2 md:my-0'}>
@@ -76,7 +58,6 @@ export default function AaveFunctionContent({
           healthFactorImpact={healthFactorImpact}
           healthFactorResource={healthFactorResource}
         />
-        {/*<TransactionAmountSummary tokenPrice={tokenPrice} title={summaryTitle} amount={amount} />*/}
         {token && (
           <Button
             onClick={buttonOnClick}
