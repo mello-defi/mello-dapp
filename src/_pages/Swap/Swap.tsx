@@ -19,7 +19,7 @@ import PoweredByLink from '_components/core/PoweredByLink';
 import { paraswapLogo } from '_assets/images';
 import { BigNumber, ethers } from 'ethers';
 import { getGasPrice } from '_services/gasService';
-import SwapPriceInformation from '_pages/Swap/SwapPriceInformation';
+import SwapSummary from '_pages/Swap/SwapSummary';
 import useWalletBalances from '_hooks/useWalletBalances';
 import { SwapVert } from '@mui/icons-material';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
@@ -34,6 +34,7 @@ import { GenericActions, ParaswapActions, TransactionServices } from '_enums/db'
 import { fixDecimalPlaces } from '_utils/index';
 import { debounce } from 'lodash';
 import { PARASWAP_URL } from '_constants/urls';
+import SwapSummaryDetails from '_pages/Swap/SwapSummaryDetails';
 
 export default function Swap({
   initialSourceTokenSymbol,
@@ -285,34 +286,46 @@ export default function Swap({
       return false;
     }
     return parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance);
-  }
+  };
 
   const isSwappingMoreThanBalance = (): boolean => {
     if (!sourceToken || !sourceTokenBalance || !sourceAmount) {
       return false;
     }
     return parseUnits(sourceAmount, sourceToken.decimals).gt(sourceTokenBalance);
-  }
+  };
 
   const swapButtonDisabled = (): boolean => {
-    return isSwapping || isApproving || parseFloat(sourceAmount) === 0 || parseFloat(destinationAmount) === 0 || !sourceToken || !destinationToken || sourceTokenDisabled || destinationTokenDisabled || sourceToken.symbol === destinationToken.symbol || isSwappingAllOfGasToken() || isSwappingMoreThanBalance();
-  }
+    return (
+      isSwapping ||
+      isApproving ||
+      parseFloat(sourceAmount) === 0 ||
+      parseFloat(destinationAmount) === 0 ||
+      !sourceToken ||
+      !destinationToken ||
+      sourceTokenDisabled ||
+      destinationTokenDisabled ||
+      sourceToken.symbol === destinationToken.symbol ||
+      isSwappingAllOfGasToken() ||
+      isSwappingMoreThanBalance()
+    );
+  };
 
   const getSwapButtonText = (): string => {
     if (isSwapping) {
-      return 'Swapping...'
+      return 'Swapping...';
     }
     if (isApproving) {
-      return 'Approving...'
+      return 'Approving...';
     }
     if (isSwappingMoreThanBalance()) {
-      return 'Insufficient funds'
+      return 'Insufficient funds';
     }
     if (isSwappingAllOfGasToken()) {
       return 'You cannot swap all of your gas token';
     }
     return 'Swap';
-  }
+  };
   return (
     <div>
       <div className={'px-2 flex-row-center justify-between'}>
@@ -371,14 +384,18 @@ export default function Swap({
         />
       )}
       <TransactionError transactionError={fetchingPriceError} />
-      <SwapPriceInformation
-        setSlippagePercentage={setSlippagePercentage}
+      <SwapSummary
         fetchingPrices={fetchingPrices}
         destinationToken={destinationToken}
         priceRoute={priceRoute}
         sourceToken={sourceToken}
-        slippagePercentage={slippagePercentage}
-      />
+      >
+        <SwapSummaryDetails
+          priceRoute={priceRoute}
+          slippagePercentage={slippagePercentage}
+          setSlippagePercentage={setSlippagePercentage}
+        />
+      </SwapSummary>
       <Button
         disabled={swapButtonDisabled()}
         onClick={handleSwap}

@@ -1,5 +1,9 @@
 import { Dispatch } from 'redux';
-import { setAddressAction, setTokenBalancesAction, toggleBalancesAreStaleAction } from '_redux/actions/walletActions';
+import {
+  setAddressAction,
+  setTokenBalancesAction,
+  toggleBalancesAreStaleAction
+} from '_redux/actions/walletActions';
 import { WalletActionTypes, WalletTokenBalances } from '_redux/types/walletTypes';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { CacheRecord } from '_interfaces/cache';

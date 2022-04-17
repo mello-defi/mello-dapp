@@ -7,7 +7,12 @@ import { getTransactionCount } from '_services/walletService';
 import { Button } from '_components/core/Buttons';
 import OnboardingStepRow from '_pages/Onboarding/OnboardingStepRow';
 import { DefaultTransition } from '_components/core/Transition';
-import { stepAddGasToWallet, stepConnectWallet, stepPerformSwap, steps } from '_pages/Onboarding/OnboardingSteps';
+import {
+  stepAddGasToWallet,
+  stepConnectWallet,
+  stepPerformSwap,
+  steps
+} from '_pages/Onboarding/OnboardingSteps';
 import { BigNumber } from 'ethers';
 import { setActiveTab } from '_redux/effects/uiEffects';
 import { NavTab } from '_redux/types/uiTypes';

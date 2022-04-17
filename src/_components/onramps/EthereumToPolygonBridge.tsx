@@ -182,11 +182,7 @@ export default function EthereumToPolygonBridge() {
             <div className={'flex flex-col'}>
               <div className={'flex-row-center justify-between'}>
                 <span className={'text-body'}>Bridge ETH</span>
-                <PoweredByLink
-                  url={BICONOMY_HYPHEN_URL}
-                  logo={hyphenLogo}
-                  isRound={false}
-                />
+                <PoweredByLink url={BICONOMY_HYPHEN_URL} logo={hyphenLogo} isRound={false} />
               </div>
               <SingleCryptoAmountInput
                 disabled={isTransferring}

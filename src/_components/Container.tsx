@@ -101,7 +101,7 @@ export default function Container() {
         <div className={'rounded-2xl py-4 px-2 sm:px-4'}>
           {onboardingComplete || onboardingOngoing ? (
             <>
-              <OnboardingGuard/>
+              <OnboardingGuard />
               {tabsContent.map((tab) => {
                 return (
                   <DefaultTransition key={tab.tab} isOpen={activeTab === tab.tab}>

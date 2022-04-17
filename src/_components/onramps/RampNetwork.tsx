@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { RampInstantEvents, RampInstantEventTypes, RampInstantSDK } from '@ramp-network/ramp-instant-sdk';
+import {
+  RampInstantEvents,
+  RampInstantEventTypes,
+  RampInstantSDK
+} from '@ramp-network/ramp-instant-sdk';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { rampNetworkLogo } from '_assets/images';

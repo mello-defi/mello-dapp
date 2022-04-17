@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
 import { OptimalRate } from 'paraswap-core';
 import { EvStation, ExpandLess, ExpandMore } from '@mui/icons-material';
@@ -6,30 +6,20 @@ import { Spinner } from '_components/core/Animations';
 import { DefaultTransition } from '_components/core/Transition';
 import SlippageControl from '_pages/Swap/SlippageControl';
 import TokenConversion from '_pages/Swap/TokenConversion';
+import GasCost from '_pages/Swap/GasCost';
 
-function GasCost({ gasCostUSD }: { gasCostUSD: string }) {
-  return (
-    <div className={'flex-row-center'}>
-      <EvStation className={'h-5'} />
-      <span className={'font-mono ml-1'}>~${parseFloat(gasCostUSD).toFixed(2)}</span>
-    </div>
-  );
-}
-
-export default function SwapPriceInformation({
+export default function SwapSummary({
+  children,
   fetchingPrices,
   destinationToken,
   priceRoute,
-  sourceToken,
-  setSlippagePercentage,
-  slippagePercentage
+  sourceToken
 }: {
+  children: ReactNode;
   fetchingPrices: boolean;
   destinationToken: EvmTokenDefinition;
   priceRoute?: OptimalRate;
   sourceToken: EvmTokenDefinition;
-  slippagePercentage: number;
-  setSlippagePercentage: (percentage: number) => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   return (
@@ -73,31 +63,7 @@ export default function SwapPriceInformation({
         )}
       </div>
       <DefaultTransition isOpen={isExpanded && priceRoute !== undefined}>
-        <div>
-          {priceRoute && (
-            <div className={'flex flex-col space-y-2 my-2'}>
-              <div className={'flex-row-center justify-between'}>
-                <span>Gas cost</span>
-                <GasCost gasCostUSD={priceRoute?.gasCostUSD} />
-              </div>
-              <SlippageControl
-                setSlippagePercentage={setSlippagePercentage}
-                slippagePercentage={slippagePercentage}
-              />
-              <div className={'flex-row-center justify-between'}>
-                <span>Minimum received after slippage ({slippagePercentage}%)</span>
-                <span className={'font-mono'}>
-                  {priceRoute?.destAmount
-                    ? `$${(
-                        (parseFloat(priceRoute.destUSD) / 100) *
-                        (100 - slippagePercentage)
-                      ).toFixed(6)}`
-                    : '-'}
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
+        <div>{children}</div>
       </DefaultTransition>
     </div>
   );

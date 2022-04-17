@@ -29,7 +29,6 @@ import Container from '_components/Container';
 // constants for URLs (aave etc)
 // Env vars for environment based config (alchemy)
 
-
 function App() {
   const sidebarOpen = useSelector((state: AppState) => state.ui.sidebarOpen);
   return (

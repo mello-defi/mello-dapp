@@ -11,6 +11,7 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import { getMarketDataForAdditionalSymbols } from '_services/marketDataService';
 
 type AnyTokenType = EvmTokenDefinition | GenericTokenDefinition;
+
 export default function SingleCryptoAmountInput({
   disabled,
   amount,

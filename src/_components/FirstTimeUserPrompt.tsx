@@ -36,7 +36,11 @@ export default function FirstTimeUserPrompt() {
     <div className={'flex flex-col'}>
       <span className={'text-2xl text-center'}>Is this your first time using mello?</span>
       <div className={'flex-row-center w-full justify-center space-x-2 my-2'}>
-        <FirstTimeUserPromptButton text={'Yes'} onClick={onClickOnboardingButton} complete={false} />
+        <FirstTimeUserPromptButton
+          text={'Yes'}
+          onClick={onClickOnboardingButton}
+          complete={false}
+        />
         <FirstTimeUserPromptButton text={'No'} onClick={onClickOnboardingButton} complete={true} />
       </div>
     </div>
