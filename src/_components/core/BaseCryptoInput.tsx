@@ -1,6 +1,6 @@
 import { amountIsValidNumberGtZero, decimalPlacesAreValid, fixDecimalPlaces } from '_utils/index';
-import React, { ChangeEvent, useEffect } from 'react';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import React, { useEffect } from 'react';
+import { parseUnits } from 'ethers/lib/utils';
 
 export default function BaseCryptoInput({
   amount,

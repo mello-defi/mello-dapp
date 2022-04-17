@@ -1,24 +1,10 @@
-import {
-  ClaimStatus,
-  LiquidityMiningPoolResult,
-  Pool,
-  PoolToken,
-  Report,
-  Snapshot,
-  TokenClaimInfo,
-  TokenDecimals
-} from '_interfaces/balancer';
+import { Pool, PoolToken } from '_interfaces/balancer';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { TransactionRequest, TransactionResponse } from '@ethersproject/abstract-provider';
 import { MaxUint256 } from '_utils/maths';
 import { isStable } from '_services/balancerCalculatorService';
 import { getWriteVaultContract } from '_services/balancerVaultService';
 import { StablePoolEncoder, WeightedPoolEncoder } from '_enums/balancer';
-import { ERC20Abi, MerkleOrchardAbi } from '_abis/index';
-import axios from 'axios';
-import { getAddress } from 'ethers/lib/utils';
-import { multicall } from '_services/walletService';
-import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 
 const GAS_LIMIT_BUFFER = 0.1;
 

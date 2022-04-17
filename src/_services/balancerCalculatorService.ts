@@ -13,8 +13,6 @@ import axios from 'axios';
 import { differenceInWeeks } from 'date-fns';
 import { BigNumber, BigNumberish, Contract, ethers } from 'ethers';
 import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
-import { getTokenByAddress } from '_utils/index';
-import { GenericTokenSet } from '_enums/tokens';
 import { ProtocolFeeCollectorAbi } from '_abis';
 import { toUtcTime } from '_utils/time';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';

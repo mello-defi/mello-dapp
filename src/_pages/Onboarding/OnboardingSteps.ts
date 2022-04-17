@@ -2,7 +2,6 @@ import AaveReserveRow from '_components/aave/AaveReserveRow';
 import { AaveSection } from '_enums/aave';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import Swap from '_pages/Swap/Swap';
-import FiatOnboarding from '_pages/Fund/FiatOnboarding';
 import SignTestMessage from '_pages/Onboarding/SignTestMessage';
 import TermsAndConditions from '_pages/Onboarding/TermsAndConditions';
 import { FunctionComponent } from 'react';

@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { CryptoCurrencySymbol, FiatCurrencySymbol } from '_enums/currency';
-import { EvmTokenDefinition } from '_enums/tokens';
+import { FiatCurrencySymbol } from '_enums/currency';
 import { EVMChainIdNumerical } from '_enums/networks';
 
 const instance = axios.create({

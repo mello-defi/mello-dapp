@@ -19,6 +19,7 @@ import { RenActions, TransactionServices } from '_enums/db';
 import { getMarketDataForAdditionalSymbols } from '_services/marketDataService';
 import { Bitcoin } from '@renproject/chains-bitcoin';
 import { Polygon, PolygonConfigMap } from '@renproject/chains-ethereum';
+import { REN_BRIDGE_URL } from '_constants/urls';
 
 function RenBridge() {
   const { provider, network, signer } = useSelector((state: AppState) => state.web3);
@@ -226,7 +227,7 @@ function RenBridge() {
     <>
       <div className="rounded-2xl flex flex-col">
         <div className={'flex flex-row items-center justify-end'}>
-          <PoweredByLink url={'https://bridge.renproject.io/'} logo={renLogo} />
+          <PoweredByLink url={REN_BRIDGE_URL} logo={renLogo} />
         </div>
         <SingleCryptoAmountInput
           disabled={isTransferring}

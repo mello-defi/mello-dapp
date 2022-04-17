@@ -7,12 +7,10 @@ import {
   toggleUserPoolDataStaleAction
 } from '_redux/actions/balancerActions';
 import { getMiningLiquidityApr, getSwapApr } from '_services/balancerCalculatorService';
-import { GenericTokenSet } from '_enums/tokens';
 import { NetworkMarketData } from '_services/marketDataService';
 import { Pool, UserPool } from '_interfaces/balancer';
 import { ethers } from 'ethers';
 import { getPools, getUserPools } from '_services/balancerSubgraphClient';
-import { Network } from '@aave/protocol-js';
 
 export const toggleUserPoolDataStale = (userDataStale: boolean) => {
   return function (dispatch: Dispatch<BalancerActionTypes>) {

@@ -6,19 +6,13 @@ import {
   getMultiTokensPendingClaims,
   multiTokenClaimRewards
 } from '_services/balancerClaimService';
-import {
-  ClaimableToken,
-  MultiTokenCurrentRewardsEstimate,
-  MultiTokenPendingClaims
-} from '_interfaces/balancer';
+import { ClaimableToken, MultiTokenPendingClaims } from '_interfaces/balancer';
 import { getTokenByAddress } from '_utils/index';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { getTokenValueInFiat } from '_services/priceService';
-import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
-import { BigNumber } from 'ethers';
 import { ExpandMore } from '@mui/icons-material';
 import { DefaultTransition } from '_components/core/Transition';
-import { Button, ButtonSize } from '_components/core/Buttons';
+import { Button } from '_components/core/Buttons';
 
 export function Rewards() {
   const marketPrices = useMarketPrices();

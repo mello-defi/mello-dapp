@@ -1,6 +1,6 @@
 import { BigNumber } from 'ethers';
 import { PoolType } from '_enums/balancer';
-import { EvmTokenDefinition, GenericTokenDefinition } from '_enums/tokens';
+import { GenericTokenDefinition } from '_enums/tokens';
 
 export interface LiquidityMiningTokenReward {
   tokenAddress: string;

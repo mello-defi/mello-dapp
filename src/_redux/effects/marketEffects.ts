@@ -1,6 +1,4 @@
 import { Dispatch } from 'redux';
-import { FiatCurrencySymbol } from '_enums/currency';
-import { CacheRecord } from '_interfaces/cache';
 import { MarketActionTypes } from '_redux/types/marketTypes';
 import { getMarketDataForNetwork } from '_services/marketDataService';
 import { getMarketPricesAction, toggleIsFetchingPricesAction } from '_redux/actions/marketActions';

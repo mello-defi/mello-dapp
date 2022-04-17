@@ -1,5 +1,4 @@
 import RampNetwork from '_components/onramps/RampNetwork';
-import MtPelerin from '_components/onramps/MtPelerin';
 import React from 'react';
 
 export default function FiatOnboarding() {

@@ -12,7 +12,8 @@
       "_assets/*": ["./_assets/*"],
       "_hooks/*": ["./_hooks/*"],
       "_utils/*": ["./_utils/*"],
-      "_abis/*": ["./_abis/*"]
+      "_abis/*": ["./_abis/*"],
+      "_constants/*": ["./_constants/*"]
     }
   }
 }

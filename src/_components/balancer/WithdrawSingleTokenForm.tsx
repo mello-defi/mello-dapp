@@ -1,4 +1,4 @@
-import TokenSelectDropdown from '_components/TokenSelectDropdown';
+import TokenSelectDropdown from '_components/core/TokenSelectDropdown';
 import { EvmTokenDefinition } from '_enums/tokens';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { parseUnits } from 'ethers/lib/utils';

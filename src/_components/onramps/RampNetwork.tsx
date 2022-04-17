@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
-import {
-  RampInstantEventTypes,
-  RampInstantSDK,
-  RampInstantEvents
-} from '@ramp-network/ramp-instant-sdk';
+import { RampInstantEvents, RampInstantEventTypes, RampInstantSDK } from '@ramp-network/ramp-instant-sdk';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { rampNetworkLogo } from '_assets/images';
 import OnRampCard from '_components/onramps/OnRampCard';
 import { formatUnits } from 'ethers/lib/utils';
-import { CheckCircle, Info } from '@mui/icons-material';
+import { CheckCircle } from '@mui/icons-material';
 import { FiatCurrencySymbol } from '_enums/currency';
 
 function RampNetwork() {

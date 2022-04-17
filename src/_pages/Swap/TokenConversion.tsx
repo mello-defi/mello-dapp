@@ -1,8 +1,6 @@
 import React from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
-import { ethers } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils';
-import { getTokenValueInFiat } from '_services/priceService';
 
 export default function TokenConversion({
   sourceToken,

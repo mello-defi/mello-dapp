@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { melloLogoFaceWithText } from '_assets/images';
-import { NavLinkDefinition } from '_redux/types/uiTypes';
 import WalletDropdown from '_components/header/WalletDropdown';
 import MobileHamburgerMenu from '_components/header/MobileHamburgerMenu';
 import Web3Login from '_components/Web3Login';
-import NavLink from '_components/NavLink';
-import { navLinks } from '../../App';
 import DesktopNavLinks from '_components/header/DesktopNavLinks';
 import { setOnboardingComplete } from '_redux/effects/onboardingEffects';
 

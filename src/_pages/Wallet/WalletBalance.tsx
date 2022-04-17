@@ -3,7 +3,7 @@ import useWalletBalances from '_hooks/useWalletBalances';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { useEffect, useState } from 'react';
 import { formatTokenValueInFiat } from '_services/priceService';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 import CryptoAmountWithTooltip from '_components/core/CryptoAmountTooltip';
 import { formatUnits } from 'ethers/lib/utils';
 

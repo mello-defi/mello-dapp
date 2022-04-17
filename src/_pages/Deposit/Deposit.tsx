@@ -10,6 +10,7 @@ import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import useAaveReserves from '_hooks/useAaveReserves';
 import { sortUserReservesByKey } from '_services/aaveService';
 import UserDepositSummary from '_pages/Deposit/UserDepositSummary';
+import { AAVE_URL } from '_constants/urls';
 
 export default function Deposit() {
   const userSummary = useAaveUserSummary();
@@ -18,7 +19,7 @@ export default function Deposit() {
     <div className={'space-y-2'}>
       <div className={'flex-row-center justify-between mb-2'}>
         <span className={'text-header'}>Supplied</span>
-        <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
+        <PoweredByLink url={AAVE_URL} logo={aaveLogo} />
       </div>
       <UserDepositSummary />
       <CurrentHealthFactor healthFactor={userSummary?.healthFactor} />

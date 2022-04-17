@@ -7,15 +7,11 @@ import { getTransactionCount } from '_services/walletService';
 import { Button } from '_components/core/Buttons';
 import OnboardingStepRow from '_pages/Onboarding/OnboardingStepRow';
 import { DefaultTransition } from '_components/core/Transition';
-import {
-  stepAddGasToWallet,
-  stepConnectWallet,
-  stepPerformSwap,
-  steps
-} from '_pages/Onboarding/OnboardingSteps';
+import { stepAddGasToWallet, stepConnectWallet, stepPerformSwap, steps } from '_pages/Onboarding/OnboardingSteps';
 import { BigNumber } from 'ethers';
 import { setActiveTab } from '_redux/effects/uiEffects';
 import { NavTab } from '_redux/types/uiTypes';
+import { MELLO_DISCORD_URL } from '_constants/urls';
 
 export default function Onboarding() {
   const dispatch = useDispatch();
@@ -75,7 +71,7 @@ export default function Onboarding() {
           <p>
             Upon completion, you will have learned the basics of DeFi and how to use the mello
             platform. Need help?{' '}
-            <a className={'text-orange'} href={'https://discord.gg/kGzrUrvTh3'}>
+            <a className={'text-orange'} href={MELLO_DISCORD_URL}>
               Join our Discord!
             </a>{' '}
           </p>

@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { GasPriceResult } from '_interfaces/gas';
-import { ethers } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 
 export function getGasPrice(gasPriceApiUrl: string | undefined): Promise<GasPriceResult | null> {

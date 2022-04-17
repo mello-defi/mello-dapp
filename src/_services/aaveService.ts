@@ -14,8 +14,6 @@ import {
 import { executeEthTransaction } from '_services/walletService';
 import { BigNumber, ethers } from 'ethers';
 import LendingPoolInterface from '@aave/protocol-js/dist/tx-builder/interfaces/v2/LendingPool';
-import { CryptoCurrencySymbol } from '_enums/currency';
-import { formatTokenValueInFiat } from '_services/priceService';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import { HealthFactorImpact, HealthFactorResource } from '_enums/aave';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';

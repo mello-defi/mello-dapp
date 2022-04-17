@@ -1,7 +1,7 @@
 import { EvmTokenDefinition } from '_enums/tokens';
 import { Button } from '_components/core/Buttons';
 import React from 'react';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 import { ComputedReserveData } from '@aave/protocol-js';
 import NextHealthFactor from '_components/aave/NextHealthFactor';
 import { HealthFactorImpact, HealthFactorResource } from '_enums/aave';

@@ -1,7 +1,6 @@
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import React, { useEffect, useState } from 'react';
-import { CryptoCurrencySymbol } from '_enums/currency';
 import { ethereumTokens } from '_enums/tokens';
 import { EVMChainIdNumerical } from '_enums/networks';
 import { ethers } from 'ethers';
@@ -14,11 +13,11 @@ import TransactionError from '_components/transactions/TransactionError';
 // @ts-ignore
 import { Hyphen, RESPONSE_CODES } from '@biconomy/hyphen';
 // import useMarketPrices from '_hooks/useMarketPrices';
-import { getGasPrice } from '_services/gasService';
 import { logTransaction } from '_services/dbService';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { formatUnits } from 'ethers/lib/utils';
 import { BiconomyActions, GenericActions, TransactionServices } from '_enums/db';
+import { BICONOMY_HYPHEN_URL } from '_constants/urls';
 
 interface BiconomyPreTransferStatus {
   code: number;
@@ -184,7 +183,7 @@ export default function EthereumToPolygonBridge() {
               <div className={'flex-row-center justify-between'}>
                 <span className={'text-body'}>Bridge ETH</span>
                 <PoweredByLink
-                  url={'https://hyphen.biconomy.io/'}
+                  url={BICONOMY_HYPHEN_URL}
                   logo={hyphenLogo}
                   isRound={false}
                 />

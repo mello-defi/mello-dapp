@@ -6,11 +6,7 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import React, { useEffect, useState } from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
 import { amountIsValidNumberGtZero, getTokenByAddress } from '_utils/index';
-import {
-  absMaxBpt,
-  calculatePoolInvestedAmounts,
-  exactBPTInForTokenOut
-} from '_services/balancerCalculatorService';
+import { absMaxBpt, calculatePoolInvestedAmounts, exactBPTInForTokenOut } from '_services/balancerCalculatorService';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { getGasPrice } from '_services/gasService';
 import { exitPoolForExactTokensOut } from '_services/balancerPoolService';

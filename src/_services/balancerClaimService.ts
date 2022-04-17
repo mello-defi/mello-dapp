@@ -1,10 +1,7 @@
 import axios from 'axios';
 import {
-  Claim,
-  ClaimableToken,
   ClaimProofTuple,
   ClaimStatus,
-  ClaimWorkerMessage,
   ComputeClaimProofPayload,
   MultiTokenCurrentRewardsEstimate,
   MultiTokenCurrentRewardsEstimateResponse,
@@ -14,10 +11,10 @@ import {
   TokenClaimInfo,
   TokenDecimals
 } from '_interfaces/balancer';
-import { BigNumber, BytesLike, Contract, ethers } from 'ethers';
+import { BigNumber, Contract, ethers } from 'ethers';
 import { MerkleOrchardAbi } from '_abis/index';
 import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
-import { getAddress, parseUnits } from 'ethers/lib/utils';
+import { getAddress } from 'ethers/lib/utils';
 import { multicall } from '_services/walletService';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { hexToBytes, soliditySha3 } from 'web3-utils';

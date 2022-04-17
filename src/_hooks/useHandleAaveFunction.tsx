@@ -3,7 +3,6 @@ import { ethers } from 'ethers';
 import { ComputedReserveData, EthereumTransactionTypeExtended } from '@aave/protocol-js';
 import { getGasPrice } from '_services/gasService';
 import { runAaveActionTransaction, runAaveApprovalTransaction } from '_services/aaveService';
-import { logTransaction } from '_services/dbService';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 import { AppState } from '_redux/store';
 import { useDispatch, useSelector } from 'react-redux';

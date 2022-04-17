@@ -33,6 +33,7 @@ import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { GenericActions, ParaswapActions, TransactionServices } from '_enums/db';
 import { fixDecimalPlaces } from '_utils/index';
 import { debounce } from 'lodash';
+import { PARASWAP_URL } from '_constants/urls';
 
 export default function Swap({
   initialSourceTokenSymbol,
@@ -276,11 +277,47 @@ export default function Swap({
     setDestinationAmount('0.0');
   };
 
+  const isSwappingAllOfGasToken = (): boolean => {
+    if (isSwapping || isApproving) {
+      return false;
+    }
+    if (!sourceTokenBalance || !sourceToken || !sourceAmount || !sourceToken.isGasToken) {
+      return false;
+    }
+    return parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance);
+  }
+
+  const isSwappingMoreThanBalance = (): boolean => {
+    if (!sourceToken || !sourceTokenBalance || !sourceAmount) {
+      return false;
+    }
+    return parseUnits(sourceAmount, sourceToken.decimals).gt(sourceTokenBalance);
+  }
+
+  const swapButtonDisabled = (): boolean => {
+    return isSwapping || isApproving || parseFloat(sourceAmount) === 0 || parseFloat(destinationAmount) === 0 || !sourceToken || !destinationToken || sourceTokenDisabled || destinationTokenDisabled || sourceToken.symbol === destinationToken.symbol || isSwappingAllOfGasToken() || isSwappingMoreThanBalance();
+  }
+
+  const getSwapButtonText = (): string => {
+    if (isSwapping) {
+      return 'Swapping...'
+    }
+    if (isApproving) {
+      return 'Approving...'
+    }
+    if (isSwappingMoreThanBalance()) {
+      return 'Insufficient funds'
+    }
+    if (isSwappingAllOfGasToken()) {
+      return 'You cannot swap all of your gas token';
+    }
+    return 'Swap';
+  }
   return (
     <div>
       <div className={'px-2 flex-row-center justify-between'}>
         <span className={'text-header'}>Swap</span>
-        <PoweredByLink url={'https://paraswap.io'} logo={paraswapLogo} />
+        <PoweredByLink url={PARASWAP_URL} logo={paraswapLogo} />
       </div>
       {initialSourceTokenSymbol ? (
         <SingleCryptoAmountInput
@@ -343,46 +380,13 @@ export default function Swap({
         slippagePercentage={slippagePercentage}
       />
       <Button
-        // TODO fix duplicate conditions
-        disabled={
-          isSwapping ||
-          isApproving ||
-          parseFloat(sourceAmount) === 0 ||
-          parseFloat(destinationAmount) === 0 ||
-          sourceToken === undefined ||
-          destinationToken === undefined ||
-          sourceTokenDisabled ||
-          destinationTokenDisabled ||
-          sourceToken.symbol === destinationToken.symbol ||
-          (sourceTokenBalance &&
-            sourceToken.isGasToken &&
-            sourceAmount !== '' &&
-            parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance)) ||
-          (sourceTokenBalance &&
-            sourceAmount !== '' &&
-            parseUnits(sourceAmount, sourceToken.decimals).gt(sourceTokenBalance))
-        }
+        disabled={swapButtonDisabled()}
         onClick={handleSwap}
         className={'w-full mt-2 flex-row-center justify-center'}
         variant={ButtonVariant.PRIMARY}
         size={ButtonSize.LARGE}
       >
-        {isSwapping ? 'Swapping...' : ''}
-        {isApproving ? 'Approving...' : ''}
-        {!isSwapping && !isApproving
-          ? sourceTokenBalance &&
-            sourceToken &&
-            sourceAmount !== '' &&
-            sourceToken.isGasToken &&
-            parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance)
-            ? 'You cannot Swap all of your gas token'
-            : sourceToken &&
-              sourceTokenBalance &&
-              sourceAmount !== '' &&
-              parseUnits(sourceAmount, sourceToken.decimals).gt(sourceTokenBalance)
-            ? 'Insufficient funds'
-            : 'Swap'
-          : ''}
+        {getSwapButtonText()}
       </Button>
       <div className={'text-body px-2 my-2'}>
         {(isSwapping || swapConfirmed) && (

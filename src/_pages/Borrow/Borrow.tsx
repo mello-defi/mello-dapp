@@ -15,6 +15,7 @@ import useAaveReserves from '_hooks/useAaveReserves';
 import UserBorrowSummary from '_pages/Borrow/UserBorrowSummary';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
+import { AAVE_URL } from '_constants/urls';
 
 export default function Borrow() {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
@@ -25,9 +26,6 @@ export default function Borrow() {
 
   useEffect(() => {
     if (marketPrices && !ethPrice) {
-      // const ethPrice = marketPrices.find(
-      //   (item) => item.symbol.toLowerCase() === CryptoCurrencySymbol.ETH.toLowerCase()
-      // );
       const ethAddress = tokenSet[CryptoCurrencySymbol.WETH]?.address;
       if (ethAddress) {
         const ethPrice = marketPrices[ethAddress.toLowerCase()];
@@ -41,7 +39,7 @@ export default function Borrow() {
     <div className={'space-y-2'}>
       <div className={'flex-row-center justify-between'}>
         <span className={'text-header'}>Borrowed</span>
-        <PoweredByLink url={'https://aave.com/'} logo={aaveLogo} />
+        <PoweredByLink url={AAVE_URL} logo={aaveLogo} />
       </div>
       <div>
         <UserBorrowSummary />

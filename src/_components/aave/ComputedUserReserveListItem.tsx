@@ -5,7 +5,6 @@ import { AppState } from '_redux/store';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { getTokenByAddress } from '_utils/index';
 import CryptoAmountWithTooltip from '_components/core/CryptoAmountTooltip';
-import { ethers } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 import { formatTokenValueInFiat } from '_services/priceService';
 

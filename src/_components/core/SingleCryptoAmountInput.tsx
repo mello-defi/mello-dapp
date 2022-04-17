@@ -1,8 +1,8 @@
-import { formatTokenValueInFiat, getTokenValueInFiat } from '_services/priceService';
+import { getTokenValueInFiat } from '_services/priceService';
 import React, { useEffect, useState } from 'react';
-import { amountIsValidNumberGtZero, decimalPlacesAreValid } from '_utils/index';
+import { amountIsValidNumberGtZero } from '_utils/index';
 import { EvmTokenDefinition, GenericTokenDefinition } from '_enums/tokens';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 import { DefaultTransition } from '_components/core/Transition';
 import MaxAmountButton from '_components/core/MaxAmountButton';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';

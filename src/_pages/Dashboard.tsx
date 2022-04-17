@@ -8,7 +8,6 @@ import { NavTab } from '_redux/types/uiTypes';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import HealthFactorNumber from '_components/aave/HealthFactorNumber';
 import useMarketPrices from '_hooks/useMarketPrices';
-import { ethers } from 'ethers';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import UserBorrowSummary from '_pages/Borrow/UserBorrowSummary';
 import UserDepositSummary from '_pages/Deposit/UserDepositSummary';
