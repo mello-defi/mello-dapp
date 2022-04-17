@@ -3,19 +3,26 @@ import ComputedUserReserveListItem from '_components/aave/ComputedUserReserveLis
 import React from 'react';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import UserReservesSkeleton from '_components/aave/UserReservesSkeleton';
+import { parseUnits } from 'ethers/lib/utils';
 
 export default function UserDepositSummary() {
   const userSummary = useAaveUserSummary();
+
+  const reserveBalanceGtZero = (reserve: ComputedUserReserve): boolean => {
+    return parseUnits(reserve.underlyingBalance, reserve.reserve.decimals).gt(0);
+  }
+
+  const sortByReserveBalance = (a: ComputedUserReserve, b: ComputedUserReserve): number => {
+    return parseFloat(b.underlyingBalanceETH) - parseFloat(a.underlyingBalanceETH);
+  }
+
   return (
     <div>
       {userSummary && userSummary.reservesData ? (
         <div>
           {userSummary.reservesData
-            .filter(
-              (reserve: ComputedUserReserve) =>
-                parseFloat(parseFloat(reserve.underlyingBalance).toFixed(18)) > 0
-            )
-            .sort((a, b) => parseFloat(b.underlyingBalanceETH) - parseFloat(a.underlyingBalanceETH))
+            .filter(reserveBalanceGtZero)
+            .sort(sortByReserveBalance)
             .map((reserve: ComputedUserReserve) => {
               return (
                 <ComputedUserReserveListItem
