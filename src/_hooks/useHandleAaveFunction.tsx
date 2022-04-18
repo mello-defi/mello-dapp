@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ethers } from 'ethers';
-import { ComputedReserveData, EthereumTransactionTypeExtended } from '@aave/protocol-js';
+import { EthereumTransactionTypeExtended } from '@aave/protocol-js';
 import { getGasPrice } from '_services/gasService';
 import { runAaveActionTransaction, runAaveApprovalTransaction } from '_services/aaveService';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
@@ -9,10 +9,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toggleUserSummaryStale } from '_redux/effects/aaveEffects';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { EthereumTransactionError } from '_interfaces/errors';
+import { AaveActions, GenericActions, TransactionServices } from '_enums/db';
+import { logTransaction } from '_services/dbService';
 
 export default function useHandleAaveFunction() {
   const { provider, network } = useSelector((state: AppState) => state.web3);
-
+  const { complete, ongoing } = useSelector((state: AppState) => state.onboarding);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [amount, setAmount] = useState('0.0');
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const [approvalTransactionHash, setApprovalTransactionHash] = useState<string | undefined>(
     undefined
@@ -23,6 +27,11 @@ export default function useHandleAaveFunction() {
   const [transactionInProgress, setTransactionInProgress] = useState<boolean>(false);
   const [transactionError, setTransactionError] = useState<string>('');
   const dispatch = useDispatch();
+
+  const handleSetAmount = (amount: string) => {
+    setAmount(amount);
+    resetTransactionState();
+  };
 
   const resetTransactionState = () => {
     if (transactionConfirmed) {
@@ -47,7 +56,8 @@ export default function useHandleAaveFunction() {
 
   const runAaveTransactions = async (
     provider: ethers.providers.Web3Provider,
-    transactions: EthereumTransactionTypeExtended[]
+    transactions: EthereumTransactionTypeExtended[],
+    action: AaveActions
   ) => {
     const approvalGas = await getGasPrice(network.gasStationUrl);
     const approvalHash = await runAaveApprovalTransaction(
@@ -57,16 +67,19 @@ export default function useHandleAaveFunction() {
     );
     if (approvalHash) {
       const tx = await provider.getTransaction(approvalHash);
-      // logTransaction(approvalHash, network.chainId, );
+      logTransaction(
+        approvalHash,
+        network.chainId,
+        TransactionServices.Aave,
+        GenericActions.Approve
+      );
       setApprovalTransactionHash(approvalHash);
       await tx.wait(3);
     }
     setTokenApproved(true);
     const actionGas = await getGasPrice(network.gasStationUrl);
     const actionHash = await runAaveActionTransaction(transactions, provider, actionGas?.fastest);
-    // TODO use this
-    // logTransaction(actionHash, network.chainId);
-
+    logTransaction(actionHash, network.chainId, TransactionServices.Aave, action);
     setActionTransactionHash(actionHash);
     if (actionHash) {
       const tx = await provider.getTransaction(actionHash);
@@ -76,36 +89,34 @@ export default function useHandleAaveFunction() {
     dispatch(toggleBalancesAreStale(true));
   };
 
-  // TODOmake into hook
   const handleAaveFunction = async (
-    reserve: ComputedReserveData,
-    amount: string,
-    setAmount: (amount: string) => void,
-    setFunctionSubmitting: (value: boolean) => void,
+    reserveUnderlyingAssetAddress: string,
     getTransactions: (
       provider: ethers.providers.Web3Provider,
       userAddress: string,
       underlyingAsset: string,
       amount: string
     ) => Promise<EthereumTransactionTypeExtended[]>,
+    action: AaveActions,
     nextStep?: number | null
   ) => {
-    if (provider && userAddress && reserve) {
+    if (provider && userAddress && reserveUnderlyingAssetAddress) {
       try {
         setTransactionInProgress(true);
-        setFunctionSubmitting(true);
+        setIsSubmitting(true);
         const transactions: EthereumTransactionTypeExtended[] = await getTransactions(
           provider,
           userAddress,
-          reserve.underlyingAsset,
+          reserveUnderlyingAssetAddress,
           amount
         );
-        await runAaveTransactions(provider, transactions);
+        await runAaveTransactions(provider, transactions, action);
         setAmount('0.0');
         setTransactionInProgress(false);
         dispatch(toggleUserSummaryStale(true));
         dispatch(toggleBalancesAreStale(true));
-        if (nextStep) {
+        // TODO decouple from component
+        if (nextStep && ongoing && !complete) {
           dispatch(setStep(nextStep));
         }
       } catch (e: any) {
@@ -115,11 +126,16 @@ export default function useHandleAaveFunction() {
           `${errorParsed.message}${errorParsed.data ? ' - ' + errorParsed.data.message : ''}`
         );
       }
-      setFunctionSubmitting(false);
+      setIsSubmitting(false);
     }
   };
   return {
     handleAaveFunction,
+    handleSetAmount,
+    amount,
+    setAmount,
+    isSubmitting,
+    setIsSubmitting,
     approvalTransactionHash,
     tokenApproved,
     actionTransactionHash,

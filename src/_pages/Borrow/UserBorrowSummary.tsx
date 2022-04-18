@@ -10,11 +10,11 @@ export default function UserBorrowSummary() {
 
   const reserveBalanceGtZero = (reserve: ComputedUserReserve): boolean => {
     return parseUnits(reserve.underlyingBalance, reserve.reserve.decimals).gt(0);
-  }
+  };
 
   const sortByReserveBorrows = (a: ComputedUserReserve, b: ComputedUserReserve): number => {
     return parseFloat(b.totalBorrowsETH) - parseFloat(a.totalBorrowsETH);
-  }
+  };
 
   return (
     <>

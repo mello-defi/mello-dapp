@@ -87,7 +87,7 @@ export default function SingleCryptoAmountInput({
           tokenDecimals={token.decimals}
         />
         <span className="flex-row-center max-w-2/5 items-center rounded-2xl bg-white px-4 py-2 justify-center">
-          <img src={token.image} alt="person" className="flex-shrink-0 h-6 w-6 rounded-full" />
+          <img src={token.image} alt="token_image" className="flex-shrink-0 h-6 w-6 rounded-full" />
           <span className="ml-2 block truncate">{token.symbol}</span>
         </span>
       </div>

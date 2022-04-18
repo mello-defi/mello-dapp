@@ -10,11 +10,11 @@ export default function UserDepositSummary() {
 
   const reserveBalanceGtZero = (reserve: ComputedUserReserve): boolean => {
     return parseUnits(reserve.underlyingBalance, reserve.reserve.decimals).gt(0);
-  }
+  };
 
   const sortByReserveBalance = (a: ComputedUserReserve, b: ComputedUserReserve): number => {
     return parseFloat(b.underlyingBalanceETH) - parseFloat(a.underlyingBalanceETH);
-  }
+  };
 
   return (
     <div>
