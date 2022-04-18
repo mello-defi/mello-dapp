@@ -22,8 +22,7 @@ import AaveFunctionWithdraw from '_components/aave/functions/AaveFunctionWithdra
 import AaveFunctionBorrow from '_components/aave/functions/AaveFunctionBorrow';
 import AaveFunctionRepay from '_components/aave/functions/AaveFunctionRepay';
 
-// TODO huge refactor needed, too big
-export default function AaveReserveRow({
+export default function AaveReserveCard({
   reserveSymbol,
   aaveSection
 }: {
@@ -143,7 +142,50 @@ export default function AaveReserveRow({
     return !userBalance || userBalance.isZero() || (transactionInProgress && !transactionError);
   };
 
-  const getAaveFunctionContent = (): JSX.Element | null => {
+  const getFunctionButtons = (): JSX.Element[] | null => {
+    if (!reserve || !token) {
+      return null;
+    }
+    switch (aaveSection) {
+      case AaveSection.Borrow:
+        return (
+          [<AaveFunctionButton
+            key={AaveFunction.Borrow}
+            activeFunctionName={aaveFunction}
+            handleClicked={handleFunctionButtonClicked}
+            functionName={AaveFunction.Borrow}
+            disabled={borrowButtonDisabled()}
+          />,
+          <AaveFunctionButton
+            key={AaveFunction.Repay}
+            activeFunctionName={aaveFunction}
+            handleClicked={handleFunctionButtonClicked}
+            functionName={AaveFunction.Repay}
+            disabled={repayButtonDisabled()}
+          />]
+        )
+      case AaveSection.Deposit:
+        return [
+          <AaveFunctionButton
+            key={AaveFunction.Deposit}
+            activeFunctionName={aaveFunction}
+            handleClicked={handleFunctionButtonClicked}
+            functionName={AaveFunction.Deposit}
+            disabled={depositButtonDisabled()}
+          />,
+          <AaveFunctionButton
+            key={AaveFunction.Withdraw}
+            activeFunctionName={aaveFunction}
+            handleClicked={handleFunctionButtonClicked}
+            functionName={AaveFunction.Withdraw}
+            disabled={withdrawButtonDisabled()}
+          />
+        ]
+      default:
+        return null;
+    }
+  }
+  const getFunctionContent = (): JSX.Element | null => {
     if (!reserve || !token || !userReserve) {
       return null;
     }
@@ -200,43 +242,14 @@ export default function AaveReserveRow({
                 className={'cursor-pointer text-color-light hover:text-black transition ml-2 mb-1'}
               />
             </div>
-            {aaveSection === AaveSection.Borrow && (
-              <div className={'flex flex-col md:flex-row items-center'}>
-                <AaveFunctionButton
-                  activeFunctionName={aaveFunction}
-                  handleClicked={handleFunctionButtonClicked}
-                  functionName={AaveFunction.Borrow}
-                  disabled={borrowButtonDisabled()}
-                />
-                <AaveFunctionButton
-                  activeFunctionName={aaveFunction}
-                  handleClicked={handleFunctionButtonClicked}
-                  functionName={AaveFunction.Repay}
-                  disabled={repayButtonDisabled()}
-                />
-              </div>
-            )}
-            {aaveSection === AaveSection.Deposit && (
-              <div className={'flex flex-col md:flex-row items-center'}>
-                <AaveFunctionButton
-                  activeFunctionName={aaveFunction}
-                  handleClicked={handleFunctionButtonClicked}
-                  functionName={AaveFunction.Deposit}
-                  disabled={depositButtonDisabled()}
-                />
-                <AaveFunctionButton
-                  activeFunctionName={aaveFunction}
-                  handleClicked={handleFunctionButtonClicked}
-                  functionName={AaveFunction.Withdraw}
-                  disabled={withdrawButtonDisabled()}
-                />
-              </div>
-            )}
+            <div className={'flex flex-col md:flex-row items-center'}>
+              {getFunctionButtons()}
+            </div>
           </div>
           <DefaultTransition isOpen={aaveFunction !== null}>
             <div>
               <div className={'flex flex-col md:flex-row justify-between space-x-0 sm:space-x-2'}>
-                <div className={'flex flex-col w-full'}>{getAaveFunctionContent()}</div>
+                <div className={'flex flex-col w-full'}>{getFunctionContent()}</div>
               </div>
               {(transactionInProgress || transactionConfirmed) && (
                 <div className={'my-2'}>

@@ -3,7 +3,7 @@ import aaveLogo from '_assets/images/logos/services/aave.svg';
 import React, { useEffect, useState } from 'react';
 import { sortUserReservesByKey } from '_services/aaveService';
 import { ComputedReserveData } from '@aave/protocol-js';
-import AaveReserveRow from '_components/aave/AaveReserveRow';
+import AaveReserveCard from '_components/aave/AaveReserveCard';
 import { formatTokenValueInFiat } from '_services/priceService';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import useMarketPrices from '_hooks/useMarketPrices';
@@ -58,7 +58,7 @@ export default function Borrow() {
           sortUserReservesByKey(aaveReserves, userSummary.reservesData, 'totalBorrowsUSD').map(
             (reserve: ComputedReserveData) => {
               return (
-                <AaveReserveRow
+                <AaveReserveCard
                   aaveSection={AaveSection.Borrow}
                   key={reserve.symbol}
                   reserveSymbol={reserve.symbol}

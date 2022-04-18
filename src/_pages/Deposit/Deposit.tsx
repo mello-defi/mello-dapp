@@ -3,7 +3,7 @@ import React from 'react';
 import aaveLogo from '_assets/images/logos/services/aave.svg';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { AaveSection } from '_enums/aave';
-import AaveReserveRow from '_components/aave/AaveReserveRow';
+import AaveReserveCard from '_components/aave/AaveReserveCard';
 import CurrentHealthFactor from '_components/aave/CurrentHealthFactor';
 import AaveReservesSkeleton from '_components/aave/AaveReservesSkeleton';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
@@ -27,7 +27,7 @@ export default function Deposit() {
         sortUserReservesByKey(aaveReserves, userSummary.reservesData, 'underlyingBalanceUSD').map(
           (reserve: ComputedReserveData) => {
             return (
-              <AaveReserveRow
+              <AaveReserveCard
                 aaveSection={AaveSection.Deposit}
                 key={reserve.symbol}
                 reserveSymbol={reserve.symbol}
