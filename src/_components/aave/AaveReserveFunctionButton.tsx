@@ -3,7 +3,7 @@ import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import React from 'react';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
-export default function AaveFunctionButton({
+export default function AaveReserveFunctionButton({
   activeFunctionName,
   handleClicked,
   functionName,

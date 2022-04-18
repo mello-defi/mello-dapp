@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import HealthFactorNumber from '_components/aave/HealthFactorNumber';
+import HealthFactorNumber from '_components/aave/healthfactor/HealthFactorNumber';
 import { calculateNewHealthFactor } from '_services/aaveService';
 import { ComputedReserveData } from '@aave/protocol-js';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';

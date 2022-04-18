@@ -3,7 +3,7 @@ import { Button } from '_components/core/Buttons';
 import React from 'react';
 import { BigNumber } from 'ethers';
 
-export default function AaveFunctionContent({
+export default function AaveReserveFunctionContent({
   buttonText,
   renderNextHealthFactor,
   renderAmountInput,

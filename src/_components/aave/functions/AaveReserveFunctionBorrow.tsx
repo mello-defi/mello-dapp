@@ -1,4 +1,4 @@
-import AaveFunctionContent from '_components/aave/AaveFunctionContent';
+import AaveReserveFunctionContent from '_components/aave/AaveReserveFunctionContent';
 import { HealthFactorImpact, HealthFactorResource } from '_enums/aave';
 import { parseUnits } from 'ethers/lib/utils';
 import React, { useEffect, useState } from 'react';
@@ -18,7 +18,7 @@ import useWalletBalances from '_hooks/useWalletBalances';
 import { BigNumber } from 'ethers';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { EvmTokenDefinition } from '_enums/tokens';
-import NextHealthFactor from '_components/aave/NextHealthFactor';
+import NextHealthFactor from '_components/aave/healthfactor/NextHealthFactor';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import useAaveReserves from '_hooks/useAaveReserves';
@@ -26,7 +26,7 @@ import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import { convertCryptoAmounts } from '_services/priceService';
 import useMarketPrices from '_hooks/useMarketPrices';
 
-export default function AaveFunctionBorrow({
+export default function AaveReserveFunctionBorrow({
   reserve,
   token,
   transactionInProgress
@@ -96,7 +96,7 @@ export default function AaveFunctionBorrow({
   };
   return (
     <>
-      <AaveFunctionContent
+      <AaveReserveFunctionContent
         renderNextHealthFactor={() => (
           <NextHealthFactor
             reserve={reserve}

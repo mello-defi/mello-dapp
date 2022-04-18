@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { NavTab } from '_redux/types/uiTypes';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
-import HealthFactorNumber from '_components/aave/HealthFactorNumber';
+import HealthFactorNumber from '_components/aave/healthfactor/HealthFactorNumber';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import UserBorrowSummary from '_pages/Borrow/UserBorrowSummary';

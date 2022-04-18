@@ -1,24 +1,31 @@
-import AaveFunctionContent from '_components/aave/AaveFunctionContent';
+import AaveReserveFunctionContent from '_components/aave/AaveReserveFunctionContent';
 import { HealthFactorImpact, HealthFactorResource } from '_enums/aave';
 import { parseUnits } from 'ethers/lib/utils';
 import React, { useEffect, useState } from 'react';
-import { calculateMaxWithdrawAmount, getWithdrawTransactions } from '_services/aaveService';
+import {
+  calculateMaxWithdrawAmount,
+  getBorrowTransactions,
+  getDepositTransactions,
+  getRepayTransactions,
+  getWithdrawTransactions
+} from '_services/aaveService';
 import { AaveActions } from '_enums/db';
-import { stepDepositAave } from '_pages/Onboarding/OnboardingSteps';
+import { stepBorrowAave, stepDepositAave } from '_pages/Onboarding/OnboardingSteps';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import useHandleAaveFunction from '_hooks/useHandleAaveFunction';
 import { ComputedReserveData } from '@aave/protocol-js';
 import useWalletBalances from '_hooks/useWalletBalances';
 import { BigNumber } from 'ethers';
+import { CryptoCurrencySymbol } from '_enums/currency';
 import { EvmTokenDefinition } from '_enums/tokens';
-import NextHealthFactor from '_components/aave/NextHealthFactor';
+import NextHealthFactor from '_components/aave/healthfactor/NextHealthFactor';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import useAaveReserves from '_hooks/useAaveReserves';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 
-export default function AaveFunctionWithdraw({
+export default function AaveReserveFunctionRepay({
   reserve,
   token,
   transactionInProgress
@@ -27,13 +34,20 @@ export default function AaveFunctionWithdraw({
   token: EvmTokenDefinition;
   transactionInProgress: boolean;
 }) {
-  const provider = useSelector((state: AppState) => state.web3.provider);
+  const { provider } = useSelector((state: AppState) => state.web3);
   const [userReserve, setUserReserve] = useState<ComputedUserReserve | undefined>();
-  const [maxWithdrawAmount, setMaxWithdrawAmount] = useState<BigNumber | undefined>();
-  const walletBalances = useWalletBalances();
+  const [maxRepayAmount, setMaxRepayAmount] = useState<BigNumber | undefined>();
   const { handleAaveFunction, amount, handleSetAmount, isSubmitting } = useHandleAaveFunction();
   const aaveReserves = useAaveReserves();
   const userSummary = useAaveUserSummary();
+  const walletBalances = useWalletBalances();
+  const [userBalance, setUserBalance] = useState<BigNumber | undefined>();
+  useEffect(() => {
+    if (token) {
+      setUserBalance(walletBalances[token.symbol]?.balance);
+    }
+  }, [walletBalances, token]);
+
   useEffect(() => {
     if (userSummary) {
       const ur = userSummary.reservesData.find(
@@ -46,88 +60,77 @@ export default function AaveFunctionWithdraw({
   }, [aaveReserves, reserve.symbol, userSummary]);
 
   useEffect(() => {
-    if (userReserve && userSummary) {
-      setMaxWithdrawAmount(calculateMaxWithdrawAmount(userSummary, userReserve, reserve));
+    if (userReserve) {
+      setMaxRepayAmount(parseUnits(userReserve.variableBorrows, token.decimals));
     } else {
-      setMaxWithdrawAmount(BigNumber.from('0'));
+      setMaxRepayAmount(BigNumber.from(0));
     }
-  }, [reserve, reserve.symbol, userReserve, userSummary, walletBalances]);
+  }, [token.decimals, userReserve]);
 
-  const handleWithdraw = async () => {
+  const handleRepay = async () => {
     if (amount && provider) {
-      await handleAaveFunction(
-        reserve.underlyingAsset,
-        getWithdrawTransactions,
-        AaveActions.Withdraw
-      );
+      await handleAaveFunction(reserve.underlyingAsset, getRepayTransactions, AaveActions.Repay);
     }
   };
 
-  const isWithdrawingMoreThanBalance = (): boolean => {
-    if (!amount || !userReserve || !userReserve.underlyingBalance) {
+  const balanceLessThanRepayAmount = (): boolean => {
+    if (!amount || !userBalance) {
       return false;
     }
-    return parseFloat(amount) > parseFloat(userReserve.underlyingBalance);
+    return userBalance.lt(parseUnits(amount, reserve.decimals));
   };
 
-  const isTooCloseToLiquidation = (): boolean => {
-    if (!userReserve || !userSummary || !amount) {
+  const repayAmountGreaterThanBorrowed = (): boolean => {
+    if (!amount || !userReserve || !userReserve.variableBorrows) {
       return false;
     }
-    return calculateMaxWithdrawAmount(userSummary, userReserve, reserve).lt(
-      parseUnits(amount, reserve.decimals)
-    );
+    return parseFloat(amount) > parseFloat(userReserve?.variableBorrows);
   };
 
   const getButtonText = (): string => {
     if (isSubmitting) {
       return 'Submitting...';
     }
-    if (isWithdrawingMoreThanBalance()) {
+    if (balanceLessThanRepayAmount()) {
       return 'Insufficient funds';
     }
-    if (isTooCloseToLiquidation()) {
-      return 'Liquidation risk too high';
-    }
-    return 'Withdraw';
+    return 'Repay';
   };
 
   const buttonIsDisabled = (): boolean => {
     return (
       transactionInProgress ||
       !userReserve ||
-      !userSummary ||
       !amount ||
-      parseFloat(amount) === 0 ||
-      parseFloat(userReserve.underlyingBalance) === 0 ||
-      isWithdrawingMoreThanBalance() ||
-      isTooCloseToLiquidation()
+      parseFloat(userReserve.variableBorrows) === 0 ||
+      balanceLessThanRepayAmount() ||
+      repayAmountGreaterThanBorrowed()
     );
   };
   return (
     <>
-      <AaveFunctionContent
+      <AaveReserveFunctionContent
         renderNextHealthFactor={() => (
           <NextHealthFactor
             reserve={reserve}
             amount={amount}
-            healthFactorImpact={HealthFactorImpact.Decrease}
-            healthFactorResource={HealthFactorResource.Collateral}
+            healthFactorResource={HealthFactorResource.Borrows}
+            healthFactorImpact={HealthFactorImpact.Increase}
           />
         )}
         renderAmountInput={() => (
           <SingleCryptoAmountInput
             disabled={false}
             amount={amount}
-            balance={maxWithdrawAmount}
+            balance={maxRepayAmount}
             amountChanged={handleSetAmount}
             token={token}
           />
         )}
         buttonText={getButtonText()}
-        userBalance={maxWithdrawAmount}
+        userBalance={maxRepayAmount}
         token={token}
-        buttonOnClick={handleWithdraw}
+        buttonOnClick={handleRepay}
         buttonDisabled={buttonIsDisabled()}
       />
     </>

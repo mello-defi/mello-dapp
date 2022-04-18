@@ -16,11 +16,11 @@ import { AaveFunction, AaveSection } from '_enums/aave';
 import useAaveReserves from '_hooks/useAaveReserves';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import { ExpandMore } from '@mui/icons-material';
-import AaveFunctionButton from '_components/aave/AaveFunctionButton';
-import AaveFunctionDeposit from '_components/aave/functions/AaveFunctionDeposit';
-import AaveFunctionWithdraw from '_components/aave/functions/AaveFunctionWithdraw';
-import AaveFunctionBorrow from '_components/aave/functions/AaveFunctionBorrow';
-import AaveFunctionRepay from '_components/aave/functions/AaveFunctionRepay';
+import AaveReserveFunctionButton from '_components/aave/AaveReserveFunctionButton';
+import AaveReserveFunctionDeposit from '_components/aave/functions/AaveReserveFunctionDeposit';
+import AaveReserveFunctionWithdraw from '_components/aave/functions/AaveReserveFunctionWithdraw';
+import AaveReserveFunctionBorrow from '_components/aave/functions/AaveReserveFunctionBorrow';
+import AaveReserveFunctionRepay from '_components/aave/functions/AaveReserveFunctionRepay';
 
 export default function AaveReserveCard({
   reserveSymbol,
@@ -149,14 +149,14 @@ export default function AaveReserveCard({
     switch (aaveSection) {
       case AaveSection.Borrow:
         return (
-          [<AaveFunctionButton
+          [<AaveReserveFunctionButton
             key={AaveFunction.Borrow}
             activeFunctionName={aaveFunction}
             handleClicked={handleFunctionButtonClicked}
             functionName={AaveFunction.Borrow}
             disabled={borrowButtonDisabled()}
           />,
-          <AaveFunctionButton
+          <AaveReserveFunctionButton
             key={AaveFunction.Repay}
             activeFunctionName={aaveFunction}
             handleClicked={handleFunctionButtonClicked}
@@ -166,14 +166,14 @@ export default function AaveReserveCard({
         )
       case AaveSection.Deposit:
         return [
-          <AaveFunctionButton
+          <AaveReserveFunctionButton
             key={AaveFunction.Deposit}
             activeFunctionName={aaveFunction}
             handleClicked={handleFunctionButtonClicked}
             functionName={AaveFunction.Deposit}
             disabled={depositButtonDisabled()}
           />,
-          <AaveFunctionButton
+          <AaveReserveFunctionButton
             key={AaveFunction.Withdraw}
             activeFunctionName={aaveFunction}
             handleClicked={handleFunctionButtonClicked}
@@ -192,7 +192,7 @@ export default function AaveReserveCard({
     switch (aaveFunction) {
       case AaveFunction.Deposit:
         return (
-          <AaveFunctionDeposit
+          <AaveReserveFunctionDeposit
             reserve={reserve}
             token={token}
             transactionInProgress={transactionInProgress}
@@ -200,7 +200,7 @@ export default function AaveReserveCard({
         );
       case AaveFunction.Withdraw:
         return (
-          <AaveFunctionWithdraw
+          <AaveReserveFunctionWithdraw
             reserve={reserve}
             token={token}
             transactionInProgress={transactionInProgress}
@@ -208,7 +208,7 @@ export default function AaveReserveCard({
         );
       case AaveFunction.Borrow:
         return (
-          <AaveFunctionBorrow
+          <AaveReserveFunctionBorrow
             reserve={reserve}
             token={token}
             transactionInProgress={transactionInProgress}
@@ -216,7 +216,7 @@ export default function AaveReserveCard({
         );
       case AaveFunction.Repay:
         return (
-          <AaveFunctionRepay
+          <AaveReserveFunctionRepay
             reserve={reserve}
             token={token}
             transactionInProgress={transactionInProgress}
