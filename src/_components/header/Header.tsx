@@ -30,12 +30,11 @@ export default function Header() {
   const dispatch = useDispatch();
   
   useEffect(() => {
-    if(__DEV__){
-      if(count >= 5) {
-        setCount(0);
-        dispatch(setOnboardingComplete(true));
-      }
+    if(count >= 5) {
+      setCount(0);
+      dispatch(setOnboardingComplete(true));
     }
+
     const getWalletInfo = async () => {
       if (provider && signer) {
         // supabase
