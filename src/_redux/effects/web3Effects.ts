@@ -36,7 +36,7 @@ const providerOptions: IProviderOptions = {
 };
 const web3Modal = new Web3Modal({
   network: 'mainnet', // optional
-  cacheProvider: true, // optional
+  cacheProvider: false, // optional
   disableInjectedProvider: false, // optional
   providerOptions // required
 });
@@ -76,6 +76,7 @@ export const connect = () => {
 export const disconnect = () => {
   return async (dispatch: Dispatch<Web3ActionTypes>) => {
     web3Modal.clearCachedProvider();
+    localStorage.removeItem('walletconnect');
     window.location.reload();
     dispatch(disconnectAction());
   };
