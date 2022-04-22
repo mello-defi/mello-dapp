@@ -16,7 +16,7 @@ const useCheckAndApproveTokenBalance = () => {
     setTransactionHash: (hash: string) => void,
     amount: ethers.BigNumber = MaxUint256,
     service: TransactionServices,
-    spenderAddress?: string,
+    spenderAddress?: string
   ) => {
     if (provider && signer && network) {
       const allowance = await getTokenAllowance(
@@ -38,7 +38,13 @@ const useCheckAndApproveTokenBalance = () => {
           approvalGasResult?.fastest,
           spenderAddress
         );
-        logTransaction(approvalTxHash.hash, network.chainId, service, GenericActions.Approve, undefined);
+        logTransaction(
+          approvalTxHash.hash,
+          network.chainId,
+          service,
+          GenericActions.Approve,
+          undefined
+        );
         setTransactionHash(approvalTxHash.hash);
         await approvalTxHash.wait(3);
       }

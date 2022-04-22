@@ -147,9 +147,8 @@ export default function Dashboard() {
           <WalletBalance key={token.symbol} token={token} hideZeroBalance={true} />
         ))}
       </div>
-      
+
       <HorizontalLineBreak />
-    
     </div>
   );
 }

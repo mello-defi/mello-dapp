@@ -120,7 +120,10 @@ export default function Swap({
         setDestinationTokenDisabled(true);
         setSourceTokenDisabled(true);
         setFetchingPrices(true);
-        const srcAmount: BigNumber = parseUnits(fixDecimalPlaces(amount, srcToken.decimals), srcToken.decimals);
+        const srcAmount: BigNumber = parseUnits(
+          fixDecimalPlaces(amount, srcToken.decimals),
+          srcToken.decimals
+        );
         const rate = await getExchangeRate(srcToken, destToken, srcAmount.toString());
         console.log('rate', rate);
         setPriceRoute(rate);
@@ -162,7 +165,14 @@ export default function Swap({
         approvalGasResult?.fastest,
         transferProxy
       );
-      logTransaction(approvalTxHash.hash, network.chainId, TransactionServices.Paraswap, GenericActions.Approve, undefined, sourceToken.symbol);
+      logTransaction(
+        approvalTxHash.hash,
+        network.chainId,
+        TransactionServices.Paraswap,
+        GenericActions.Approve,
+        undefined,
+        sourceToken.symbol
+      );
       setApprovalTransactionHAsh(approvalTxHash.hash);
       await approvalTxHash.wait(3);
     }
@@ -187,7 +197,14 @@ export default function Swap({
         );
         setSwapSubmitted(true);
         const swapTxHash = await executeEthTransaction(tx, provider);
-        logTransaction(swapTxHash.hash, network.chainId, TransactionServices.Paraswap, ParaswapActions.Swap,priceRoute.srcAmount, sourceToken.symbol);
+        logTransaction(
+          swapTxHash.hash,
+          network.chainId,
+          TransactionServices.Paraswap,
+          ParaswapActions.Swap,
+          priceRoute.srcAmount,
+          sourceToken.symbol
+        );
         setSwapTransactionHash(swapTxHash.hash);
         await swapTxHash.wait(3);
         setSwapConfirmed(true);
@@ -217,10 +234,7 @@ export default function Swap({
   };
 
   const debounceSourceTokenChanged = useCallback(
-    debounce(
-      (amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue),
-      750
-    ),
+    debounce((amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue), 750),
     [] // will be created only once initially
   );
 
@@ -229,10 +243,7 @@ export default function Swap({
     debounceSourceTokenChanged(sourceAmount, token, destinationToken);
   };
   const debounceDestinationTokenChanged = useCallback(
-    debounce(
-      (amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue),
-      750
-    ),
+    debounce((amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue), 750),
     [] // will be created only once initially
   );
 
@@ -248,7 +259,11 @@ export default function Swap({
     [] // will be created only once initially
   );
 
-  const sourceAmountChanged = (amount: string, srcToken = sourceToken, destToken = destinationToken) => {
+  const sourceAmountChanged = (
+    amount: string,
+    srcToken = sourceToken,
+    destToken = destinationToken
+  ) => {
     setSourceAmount(amount);
     debounceSourceAmountChanged(amount, srcToken, destToken);
   };

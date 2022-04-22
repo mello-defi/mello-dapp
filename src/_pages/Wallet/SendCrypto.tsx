@@ -101,7 +101,14 @@ export default function SendCrypto() {
               amountInUnits,
               gasPriceResult?.fastest
             );
-            logTransaction(tx.hash, network.chainId, TransactionServices.Wallet, GenericActions.Approve, undefined, token.symbol);
+            logTransaction(
+              tx.hash,
+              network.chainId,
+              TransactionServices.Wallet,
+              GenericActions.Approve,
+              undefined,
+              token.symbol
+            );
             setApproveTransactionHash(tx.hash);
             await tx.wait(3);
           }
@@ -125,7 +132,14 @@ export default function SendCrypto() {
           finalAmount,
           gasPriceResult?.fastest
         );
-        logTransaction(txResponse.hash, network.chainId, TransactionServices.Wallet, WalletActions.Send, finalAmount.toString(), token.symbol);
+        logTransaction(
+          txResponse.hash,
+          network.chainId,
+          TransactionServices.Wallet,
+          WalletActions.Send,
+          finalAmount.toString(),
+          token.symbol
+        );
         setSendTransactionHash(txResponse.hash);
         await txResponse.wait(3);
         setTransactionCompleted(true);
@@ -196,8 +210,7 @@ export default function SendCrypto() {
           !ethers.utils.isAddress(destinationAddress) ||
           !token ||
           !amountToSend ||
-          amountToSend !== '' &&
-          parseFloat(amountToSend) === 0 ||
+          (amountToSend !== '' && parseFloat(amountToSend) === 0) ||
           (walletBalance &&
             (parseUnits(amountToSend, token.decimals).gt(walletBalance) ||
               (token.isGasToken && parseUnits(amountToSend, token.decimals).eq(walletBalance))))

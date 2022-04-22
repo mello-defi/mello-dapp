@@ -17,4 +17,11 @@ export interface Transaction {
   symbol?: string;
 }
 
-export type TransactionAction = GenericActions | AaveActions | BalancerActions | ParaswapActions | WalletActions | BiconomyActions | RenActions
+export type TransactionAction =
+  | GenericActions
+  | AaveActions
+  | BalancerActions
+  | ParaswapActions
+  | WalletActions
+  | BiconomyActions
+  | RenActions;

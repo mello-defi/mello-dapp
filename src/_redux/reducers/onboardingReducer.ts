@@ -12,7 +12,7 @@ const initialState: OnboardingState = {
   complete: false,
   ongoing: false,
   currentStep: 1,
-  waitingToAdvance: false,
+  waitingToAdvance: false
 };
 
 export const getOnboardingReducer = (
@@ -23,7 +23,7 @@ export const getOnboardingReducer = (
     case SET_STEP:
       return {
         ...state,
-        currentStep: action.payload.step,
+        currentStep: action.payload.step
       };
     case SET_IS_COMPLETE:
       return {
@@ -41,10 +41,10 @@ export const getOnboardingReducer = (
         ...state,
         ongoing: action.payload.ongoing
       };
-      case RESET:
-        return {
-          ...initialState
-        };
+    case RESET:
+      return {
+        ...initialState
+      };
     default:
       return state;
   }

@@ -20,7 +20,7 @@ export const setWaitingToAdvanceAction = (waitingToAdvance: boolean): Onboarding
   return {
     type: SET_WAITING_TO_ADVANCE,
     payload: {
-      waitingToAdvance,
+      waitingToAdvance
     }
   };
 };
@@ -47,4 +47,3 @@ export const resetOnboarding = (): OnboardingActionTypes => {
     type: RESET
   };
 };
-
