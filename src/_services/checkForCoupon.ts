@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 // remove param from url
 const removeParamFromUrl = (param: string) => {
@@ -14,11 +14,20 @@ export const checkForCouponAndRedeem = async (userAddress: string, isOnboardingC
     const params = new URLSearchParams(currentUrlParams);
     const couponCode = params.get('coupon');
     if(couponCode && userAddress && !isOnboardingComplete) {
-        const response = await axios.post('https://coupon-pinger.mellodefi.workers.dev/',{
-            coupon : couponCode,
-            wallet : userAddress
-        })
-        console.log(response);
+        try {
+            const response = await axios.post('https://coupon-pinger.mellodefi.workers.dev/',{
+                coupon : couponCode,
+                wallet : userAddress
+            });
+            console.log(response.statusText);
+        } catch(err) {
+            const errors = err as Error | AxiosError;
+            if(!axios.isAxiosError(errors)){
+              console.error(errors);
+            } else {
+                console.log(errors.response?.data.message)
+            }
+          }
         removeParamFromUrl('coupon');
     }
 }
