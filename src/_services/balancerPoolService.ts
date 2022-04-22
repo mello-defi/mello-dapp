@@ -35,35 +35,24 @@ export async function joinPool(
       maxAmountsIn: amountsIn,
       fromInternalBalance: false,
       userData
-    },
-  ]
-  return executeBalancerTransaction(
-    vault,
-    'joinPool',
-    params,
-    options
-  );
+    }
+  ];
+  return executeBalancerTransaction(vault, 'joinPool', params, options);
 }
 
 async function executeBalancerTransaction(
   contract: Contract,
   method: string,
   params: any[],
-  options: TransactionRequest,
+  options: TransactionRequest
 ): Promise<TransactionResponse> {
-  const gasLimitNumber = await contract.estimateGas[method](
-    ...params,
-    options
-  );
+  const gasLimitNumber = await contract.estimateGas[method](...params, options);
   const gasLimit = Math.floor(gasLimitNumber.toNumber() * (1 + GAS_LIMIT_BUFFER));
   options.gasLimit = gasLimit.toString();
-  return await contract[method](
-    ...params,
-    {
-      ...options,
-      gasLimit
-    }
-  )
+  return await contract[method](...params, {
+    ...options,
+    gasLimit
+  });
 }
 async function exitPool(
   pool: Pool,
@@ -87,14 +76,9 @@ async function exitPool(
       minAmountsOut: amountsOut,
       fromInternalBalance: false,
       userData
-    },
-  ]
-  return executeBalancerTransaction(
-    vault,
-    'exitPool',
-    params,
-    options
-  );
+    }
+  ];
+  return executeBalancerTransaction(vault, 'exitPool', params, options);
 }
 
 export async function exitPoolForOneTokenOut(

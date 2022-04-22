@@ -101,7 +101,10 @@ export default function MultiCryptoAmountInput({
       >
         {tokenPrice ? (
           <div className={'text-left font-mono'}>
-            ${getTokenValueInFiat(tokenPrice, amount).toLocaleString(undefined, { maximumFractionDigits: 6 })}
+            $
+            {getTokenValueInFiat(tokenPrice, amount).toLocaleString(undefined, {
+              maximumFractionDigits: 6
+            })}
           </div>
         ) : (
           <span>&nbsp;</span>

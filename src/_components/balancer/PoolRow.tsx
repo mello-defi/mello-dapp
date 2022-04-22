@@ -12,15 +12,23 @@ import useMarketPrices from '_hooks/useMarketPrices';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 
-export default function PoolRow({ poolId, userBalance, allowFunctions = true }: { poolId: string; userBalance?: string, allowFunctions?: boolean }) {
+export default function PoolRow({
+  poolId,
+  userBalance,
+  allowFunctions = true
+}: {
+  poolId: string;
+  userBalance?: string;
+  allowFunctions?: boolean;
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
   const pools = useBalancerPools();
-  const [pool, setPool] = useState<Pool |undefined>(undefined);
+  const [pool, setPool] = useState<Pool | undefined>(undefined);
   useEffect(() => {
     if (pools && pools.length > 0) {
-      setPool(pools.find(p => p.id === poolId));
+      setPool(pools.find((p) => p.id === poolId));
     }
-  }, [pools])
+  }, [pools]);
   return (
     <>
       {pool && (
@@ -31,7 +39,9 @@ export default function PoolRow({ poolId, userBalance, allowFunctions = true }: 
           }
         >
           <div className={'flex flex-col md:flex-row items-center justify-between'}>
-            <div className={'flex-row-center space-x-1 md:space-x-2 justify-between md:w-auto w-full'}>
+            <div
+              className={'flex-row-center space-x-1 md:space-x-2 justify-between md:w-auto w-full'}
+            >
               <PoolTokenIcons tokens={pool.tokens} />
               <PoolTokenSymbols tokens={pool.tokens} />
             </div>
@@ -54,7 +64,9 @@ export default function PoolRow({ poolId, userBalance, allowFunctions = true }: 
                   <ExpandMore
                     onClick={() => setIsExpanded(!isExpanded)}
                     fontSize={'inherit'}
-                    className={'cursor-pointer text-color-light hover:text-black transition ml-2 mb-1'}
+                    className={
+                      'cursor-pointer text-color-light hover:text-black transition ml-2 mb-1'
+                    }
                   />
                 </div>
               )}
@@ -66,7 +78,6 @@ export default function PoolRow({ poolId, userBalance, allowFunctions = true }: 
             </div>
           </DefaultTransition>
         </div>
-
       )}
     </>
   );

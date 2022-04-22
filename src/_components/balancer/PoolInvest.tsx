@@ -120,7 +120,7 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
               setApprovalHash,
               MaxUint256,
               TransactionServices.Balancer,
-              vaultAddress,
+              vaultAddress
             );
           }
         }
@@ -129,14 +129,19 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
 
         const tx = await joinPool(pool, userAddress, signer, amountsIn, gasResult?.fastest);
         setTransactionHash(tx.hash);
-        logTransaction(tx.hash, network.chainId, TransactionServices.Balancer, BalancerActions.Invest);
+        logTransaction(
+          tx.hash,
+          network.chainId,
+          TransactionServices.Balancer,
+          BalancerActions.Invest
+        );
         await tx.wait(3);
         setTransactionComplete(true);
         dispatch(toggleBalancesAreStale(true));
         dispatch(toggleUserPoolDataStale(true));
         initTokenAmounts();
         if (ongoing && !complete) {
-          dispatch(setStep(currentStep + 1))
+          dispatch(setStep(currentStep + 1));
         }
       } catch (e: any) {
         console.error(e);

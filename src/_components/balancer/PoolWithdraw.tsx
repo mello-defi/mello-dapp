@@ -7,7 +7,11 @@ import useCheckAndApproveTokenBalance from '_hooks/useCheckAndApproveTokenBalanc
 import React, { useEffect, useState } from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
 import { amountIsValidNumberGtZero, getTokenByAddress } from '_utils/index';
-import { absMaxBpt, calculatePoolInvestedAmounts, exactBPTInForTokenOut } from '_services/balancerCalculatorService';
+import {
+  absMaxBpt,
+  calculatePoolInvestedAmounts,
+  exactBPTInForTokenOut
+} from '_services/balancerCalculatorService';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { getPoolOnChainData, getVaultAddress } from '_services/balancerVaultService';
 import { getErc20TokenInfo } from '_services/walletService';
@@ -310,7 +314,7 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
               setApprovalHash,
               MaxUint256,
               TransactionServices.Balancer,
-              vaultAddress,
+              vaultAddress
             );
           }
         }
@@ -356,7 +360,12 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
             gasResult?.fastest
           );
         }
-        logTransaction(tx.hash, network.chainId, TransactionServices.Balancer, BalancerActions.Withdraw);
+        logTransaction(
+          tx.hash,
+          network.chainId,
+          TransactionServices.Balancer,
+          BalancerActions.Withdraw
+        );
         setTransactionHash(tx.hash);
         await tx.wait(3);
         setTransactionComplete(true);

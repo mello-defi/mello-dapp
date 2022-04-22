@@ -43,7 +43,6 @@ export default function SingleCryptoAmountInput({
     }
   }, [token, marketPrices]);
 
-
   useEffect(() => {
     if (maxAmount) {
       if (amountIsValidNumberGtZero(amount)) {
@@ -82,7 +81,11 @@ export default function SingleCryptoAmountInput({
         <div>
           {tokenPrice ? (
             <div className={'text-left font-mono'}>
-              ${getTokenValueInFiat(tokenPrice, amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6})}
+              $
+              {getTokenValueInFiat(tokenPrice, amount).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 6
+              })}
             </div>
           ) : (
             <span>&nbsp;</span>

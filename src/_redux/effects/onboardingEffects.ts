@@ -3,7 +3,8 @@ import { Dispatch } from 'redux';
 import {
   setCurrentStepAction,
   setOnboardingCompleteAction,
-  setOnboardingOngoingAction, setWaitingToAdvanceAction
+  setOnboardingOngoingAction,
+  setWaitingToAdvanceAction
 } from '_redux/actions/onboardingActions';
 
 export const setStep = (step: number) => {

@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { RampInstantEventTypes, RampInstantSDK, RampInstantEvents } from '@ramp-network/ramp-instant-sdk';
+import {
+  RampInstantEventTypes,
+  RampInstantSDK,
+  RampInstantEvents
+} from '@ramp-network/ramp-instant-sdk';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { FiatCurrencyName } from '_enums/currency';
@@ -20,9 +24,19 @@ function RampNetwork() {
     switch (event.type) {
       case RampInstantEventTypes.PURCHASE_CREATED:
         setLastRampEvent(RampInstantEventTypes.PURCHASE_CREATED);
-        setFiatAmount(parseFloat(event.payload.purchase.fiatValue) - parseFloat(event.payload.purchase.appliedFee));
+        setFiatAmount(
+          parseFloat(event.payload.purchase.fiatValue) -
+            parseFloat(event.payload.purchase.appliedFee)
+        );
         setFiatCurrency(event.payload.purchase.fiatCurrency);
-        setCryptoAmount(parseFloat(formatUnits(event.payload.purchase.cryptoAmount, event.payload.purchase.asset.decimals).toString()));
+        setCryptoAmount(
+          parseFloat(
+            formatUnits(
+              event.payload.purchase.cryptoAmount,
+              event.payload.purchase.asset.decimals
+            ).toString()
+          )
+        );
         setCryptoSymbol(event.payload.purchase.asset.symbol);
         setHasPurchaseHappened(true);
         break;
@@ -38,11 +52,12 @@ function RampNetwork() {
   const openWidget = async () => {
     new RampInstantSDK({
       hostAppName: 'mello',
-      hostLogoUrl: "https://storageapi2.fleek.co/12c7096b-d75e-4ca8-be93-7ddf73131ef3-bucket/full icon + name slim-dark.svg",
+      hostLogoUrl:
+        'https://storageapi2.fleek.co/12c7096b-d75e-4ca8-be93-7ddf73131ef3-bucket/full icon + name slim-dark.svg',
       fiatCurrency: 'EUR',
       defaultAsset: 'MATIC',
       fiatValue: '6.25',
-      userAddress: userAddress,
+      userAddress: userAddress
       // url: 'https://ri-widget-staging-goerli2.firebaseapp.com/'
     })
       .on('*', handleRampEvent)
@@ -65,8 +80,20 @@ function RampNetwork() {
             <CheckCircle className={'text-gray-400 mb-1'} fontSize={'inherit'} />
           </div>
           <h3>
-            If your purchase was successful, you will receive <span className={'font-semibold'}>{cryptoAmount.toFixed(6)} {cryptoSymbol}</span> for <span className={'font-semibold'}>{fiatAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2})} {fiatCurrency}</span>.
-            <br/>
+            If your purchase was successful, you will receive{' '}
+            <span className={'font-semibold'}>
+              {cryptoAmount.toFixed(6)} {cryptoSymbol}
+            </span>{' '}
+            for{' '}
+            <span className={'font-semibold'}>
+              {fiatAmount.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })}{' '}
+              {fiatCurrency}
+            </span>
+            .
+            <br />
             It should arrive in your wallet in the next few minutes, please stay on this page
           </h3>
         </div>

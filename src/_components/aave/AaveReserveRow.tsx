@@ -135,7 +135,7 @@ export default function AaveReserveRow({
   const runAaveTransactions = async (
     provider: ethers.providers.Web3Provider,
     transactions: EthereumTransactionTypeExtended[],
-    action: AaveActions,
+    action: AaveActions
   ) => {
     const approvalGas = await getGasPrice(gasStationUrl);
     const approvalHash = await runAaveApprovalTransaction(
@@ -145,7 +145,12 @@ export default function AaveReserveRow({
     );
     if (approvalHash) {
       const tx = await provider.getTransaction(approvalHash);
-      logTransaction(approvalHash, network.chainId, TransactionServices.Aave, GenericActions.Approve);
+      logTransaction(
+        approvalHash,
+        network.chainId,
+        TransactionServices.Aave,
+        GenericActions.Approve
+      );
       setApprovalTransactionHash(approvalHash);
       await tx.wait(3);
     }
@@ -229,8 +234,8 @@ export default function AaveReserveRow({
         setRepayAmount,
         setRepaySubmitting,
         getRepayTransactions,
-        AaveActions.Repay,
-    );
+        AaveActions.Repay
+      );
     }
   };
 
@@ -254,8 +259,8 @@ export default function AaveReserveRow({
         setWithdrawAmount,
         setWithdrawSubmitting,
         getWithdrawTransactions,
-        AaveActions.Withdraw,
-    );
+        AaveActions.Withdraw
+      );
     }
   };
 

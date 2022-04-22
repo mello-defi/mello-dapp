@@ -28,9 +28,9 @@ export default function Header() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const [count, setCount] = useState(0);
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
-    if(count >= 5) {
+    if (count >= 5) {
       setCount(0);
       dispatch(setOnboardingComplete(true));
     }
@@ -53,7 +53,12 @@ export default function Header() {
       <div className={'max-w-5xl mx-auto flex-row-center justify-between'}>
         <div className={'flex-row-center'}>
           <div className={'border-r-2 pr-2 mr-2 sm:pr-4 sm:mr-4 border-gray-200'}>
-            <img onClick={() => setCount(count + 1)} src={melloLogoFaceWithText}  className={'h-10 sm:h-12'} alt={'mello logo'} />
+            <img
+              onClick={() => setCount(count + 1)}
+              src={melloLogoFaceWithText}
+              className={'h-10 sm:h-12'}
+              alt={'mello logo'}
+            />
           </div>
           <DesktopNavLinks />
         </div>
