@@ -17,12 +17,15 @@ export default function StepConnectWallet() {
       }
   }, [userAddress])
 
-
   const whatIsRequired = (
     <>
       Connect or create a non-custodial wallet to use with mello.
       <br />
-      Click &apos;Connect&apos; in the top right of the screen and follow the instructions.
+      A non-custodial wallet is a wallet where the user has  
+      <span className='font-bold'> full control </span>and <span className='font-bold'>ownership</span> of their own funds. 
+      <br />
+      <br />  
+      Click <span className='font-bold'>&apos;Connect&apos; </span>in the top right of the screen and follow the instructions.
     </>
   );
 

@@ -1,11 +1,10 @@
 import OnboardingStepDescription from '_pages/Onboarding/OnboardingStepDescription';
-import { useEffect, useState } from 'react';
 import useWalletBalances from '_hooks/useWalletBalances';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import useInterval from '_hooks/useInterval';
 import { setStep } from '_redux/effects/onboardingEffects';
-import { stepAddGasToWallet, stepPerformSwap } from '_pages/Onboarding/OnboardingSteps';
+import { stepAddGasToWallet } from '_pages/Onboarding/OnboardingSteps';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 
 export default function StepAddGasToken() {

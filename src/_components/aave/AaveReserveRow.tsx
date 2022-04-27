@@ -304,13 +304,6 @@ export default function AaveReserveRow({
         >
           <div className={'flex-row-center justify-between'}>
             <AaveReserveMarketData reserve={reserve} aaveSection={aaveSection} />
-            <div className={'text-3xl'}>
-              <ExpandMore
-                onClick={() => setIsExpanded(!isExpanded)}
-                fontSize={'inherit'}
-                className={'cursor-pointer text-color-light hover:text-black transition ml-2 mb-1'}
-              />
-            </div>
             {aaveSection === AaveSection.Borrow && (
               <div className={'flex flex-col md:flex-row items-center'}>
                 <AaveFunctionButton

@@ -3,7 +3,7 @@ import OnboardingStepDescription from '_pages/Onboarding/OnboardingStepDescripti
 export default function StepTermsAndConditions() {
   return (
     <OnboardingStepDescription>
-      <span>
+      <span className={'text-base'}>
         By connecting a wallet, you agree to mello&apos;s{' '}
         <a target="_blank" rel="noreferrer" href="https://docs.mellodefi.com">
           Terms of Service

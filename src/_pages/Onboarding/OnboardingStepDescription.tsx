@@ -21,17 +21,17 @@ export default function OnboardingStepDescription({
             <>
               <span className={'font-medium text-body'}>What is required?</span>
               <br />
-              <span className={'text-body-smaller'}>{whatIsRequired}</span>
+              <span className={'text-base'}>{whatIsRequired}</span>
               <br />
               <br />
               <span className={'font-medium text-body'}>Why is this required?</span>
               <br />
-              <span className={'text-body-smaller'}>{whyIsRequired}</span>
+              <span className={'text-base'}>{whyIsRequired}</span>
               {notes && (
                 <>
                   <br />
                   <br />
-                  <span className={'italic'}>Notes: {notes}</span>
+                  <span className={'italic text-base'}>Notes: {notes}</span>
                 </>
               )}
             </>

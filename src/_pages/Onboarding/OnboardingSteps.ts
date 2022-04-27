@@ -84,13 +84,14 @@ export const stepPerformSwap: OnboardingStep = {
   actionComponent: Swap,
   actionComponentProps: {
     initialSourceTokenSymbol: CryptoCurrencySymbol.MATIC,
-    initialDestinationTokenSymbol: CryptoCurrencySymbol.WBTC
+    initialDestinationTokenSymbol: CryptoCurrencySymbol.WBTC,
+    isTokenSwitcherHidden: true
   },
   descriptionComponent: StepSwap
 };
 export const stepAddGasToWallet: OnboardingStep = {
   number: 4,
-  title: 'Add gas token to fuel wallet',
+  title: 'Add fuel to wallet',
   nextStep: stepPerformSwap,
   actionComponent: AddGasToWallet,
   descriptionComponent: StepAddGasToken
