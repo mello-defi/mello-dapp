@@ -37,6 +37,7 @@ function RampNetwork() {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const openWidget = async () => {
     new RampInstantSDK({
+      variant: "auto",
       hostAppName: 'mello',
       hostLogoUrl: "https://storageapi2.fleek.co/12c7096b-d75e-4ca8-be93-7ddf73131ef3-bucket/full icon + name slim-dark.svg",
       fiatCurrency: 'EUR',
