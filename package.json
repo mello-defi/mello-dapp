@@ -32,6 +32,8 @@
     "date-fns": "^2.28.0",
     "dotenv": "^14.3.2",
     "ethers": "^5.5.3",
+    "logrocket": "^2.2.1",
+    "logrocket-react": "^5.0.1",
     "paraswap": "^5.0.1",
     "paraswap-core": "^1.0.2",
     "react": "^17.0.2",

@@ -1,6 +1,6 @@
 import { amountIsValidNumberGtZero, decimalPlacesAreValid, fixDecimalPlaces } from '_utils/index';
-import React, { ChangeEvent, useEffect } from 'react';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import React, { useEffect } from 'react';
+import { parseUnits } from 'ethers/lib/utils';
 
 export default function BaseCryptoInput({
   amount,
@@ -14,15 +14,12 @@ export default function BaseCryptoInput({
   tokenDecimals: number;
 }) {
   const handleAmountChanged = (value: string) => {
-    console.log('DEcimals: ', tokenDecimals);
-    console.log('Amount changed1: ' + value);
     if (value && !decimalPlacesAreValid(value, tokenDecimals)) {
       value = fixDecimalPlaces(value, tokenDecimals);
     }
     if (parseFloat(value) < 0) {
       value = '0.0';
     }
-    console.log('AMOUNT CHANGEd2: ', value);
     amountChanged(value);
   };
   useEffect(() => {

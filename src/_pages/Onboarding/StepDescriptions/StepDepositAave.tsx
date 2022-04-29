@@ -8,13 +8,16 @@ export default function StepDepositAave() {
       collateral to take out loans.
       <br />
       <br />
+      <>Click <span className='font-bold'>Max</span> to add all of the WBTC you bought on the previous step.</>
+      <br />
+      <br />
       Learn more about Aave{' '}
       <a
         target="_blank"
         rel="noreferrer"
         href="https://docs.mellodefi.com/introduction/onboarding/deposit-into-aave/"
       >
-        here
+        here.
       </a>
     </>
   );
