@@ -24,13 +24,14 @@ export default function AaveReserveFunctionDeposit({
 }: {
   reserve: ComputedReserveData;
   token: EvmTokenDefinition;
-  transactionState: TransactionStateProps
+  transactionState: TransactionStateProps;
 }) {
   const provider = useSelector((state: AppState) => state.web3.provider);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const [userBalance, setUserBalance] = useState<BigNumber | undefined>();
   const walletBalances = useWalletBalances();
-  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } = useHandleAaveFunction(transactionState);
+  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } =
+    useHandleAaveFunction(transactionState);
 
   useEffect(() => {
     setUserBalance(walletBalances[reserve.symbol.toUpperCase() as CryptoCurrencySymbol]?.balance);

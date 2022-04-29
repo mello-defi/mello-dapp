@@ -33,12 +33,13 @@ export default function AaveReserveFunctionRepay({
 }: {
   reserve: ComputedReserveData;
   token: EvmTokenDefinition;
-  transactionState: TransactionStateProps
+  transactionState: TransactionStateProps;
 }) {
   const { provider } = useSelector((state: AppState) => state.web3);
   const [userReserve, setUserReserve] = useState<ComputedUserReserve | undefined>();
   const [maxRepayAmount, setMaxRepayAmount] = useState<BigNumber | undefined>();
-  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } = useHandleAaveFunction(transactionState);
+  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } =
+    useHandleAaveFunction(transactionState);
   const aaveReserves = useAaveReserves();
   const userSummary = useAaveUserSummary();
   const walletBalances = useWalletBalances();

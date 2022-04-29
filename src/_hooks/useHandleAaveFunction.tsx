@@ -14,23 +14,22 @@ import { logTransaction } from '_services/dbService';
 import { TransactionStateProps } from '_hooks/useTransactionState';
 
 export default function useHandleAaveFunction({
-                                                setActionTransactionHash,
-                                                setApprovalTransactionHash,
-                                                setTokenApproved,
-                                                setTransactionConfirmed,
-                                                setTransactionError,
-                                                setTransactionInProgress,
-                                                isSubmitting,
-                                                setIsSubmitting,
-                                                approvalTransactionHash,
-                                                tokenApproved,
-                                                actionTransactionHash,
-                                                transactionConfirmed,
-                                                transactionInProgress,
-                                                transactionError,
-                                                resetTransactionState
-
-                                              }: TransactionStateProps) {
+  setActionTransactionHash,
+  setApprovalTransactionHash,
+  setTokenApproved,
+  setTransactionConfirmed,
+  setTransactionError,
+  setTransactionInProgress,
+  isSubmitting,
+  setIsSubmitting,
+  approvalTransactionHash,
+  tokenApproved,
+  actionTransactionHash,
+  transactionConfirmed,
+  transactionInProgress,
+  transactionError,
+  resetTransactionState
+}: TransactionStateProps) {
   const { provider, network } = useSelector((state: AppState) => state.web3);
   const { complete, ongoing } = useSelector((state: AppState) => state.onboarding);
   const [amount, setAmount] = useState('0.0');
@@ -41,7 +40,6 @@ export default function useHandleAaveFunction({
     setAmount(amount);
     resetTransactionState();
   };
-
 
   const runAaveTransactions = async (
     provider: ethers.providers.Web3Provider,

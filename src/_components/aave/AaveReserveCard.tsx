@@ -33,9 +33,16 @@ export default function AaveReserveCard({
   const aaveReserves = useAaveReserves();
   const userSummary = useAaveUserSummary();
   const transactionState = useTransactionState();
-  const { resetTransactionState, transactionInProgress, transactionConfirmed, transactionError, tokenApproved, approvalTransactionHash, actionTransactionHash} = transactionState;
+  const {
+    resetTransactionState,
+    transactionInProgress,
+    transactionConfirmed,
+    transactionError,
+    tokenApproved,
+    approvalTransactionHash,
+    actionTransactionHash
+  } = transactionState;
   const { tokenSet } = useSelector((state: AppState) => state.web3);
-  // TODO- centralise this
   const marketPrices = useMarketPrices();
   const [reserve, setReserve] = useState<ComputedReserveData | undefined>();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -60,7 +67,6 @@ export default function AaveReserveCard({
       }
     }
   }, [aaveReserves, userSummary]);
-
 
   const getFunctionTabs = (): JSX.Element[] | null => {
     if (!reserve || !token) {
@@ -156,9 +162,7 @@ export default function AaveReserveCard({
           </div>
           <DefaultTransition isOpen={isExpanded}>
             <div>
-              <TabHeaderContainer>
-                {getFunctionTabs()}
-              </TabHeaderContainer>
+              <TabHeaderContainer>{getFunctionTabs()}</TabHeaderContainer>
               <div className={'flex flex-col md:flex-row justify-between space-x-0 sm:space-x-2'}>
                 <div className={'flex flex-col w-full'}>{getFunctionContent()}</div>
               </div>

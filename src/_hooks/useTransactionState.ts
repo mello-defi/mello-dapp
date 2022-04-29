@@ -17,8 +17,7 @@ export interface TransactionStateProps {
   setTransactionInProgress: (transactionInProgress: boolean) => void;
   resetTransactionState: () => void;
 }
-export default function useTransactionState(): TransactionStateProps{
-
+export default function useTransactionState(): TransactionStateProps {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [approvalTransactionHash, setApprovalTransactionHash] = useState<string | undefined>(
     undefined
@@ -66,6 +65,5 @@ export default function useTransactionState(): TransactionStateProps{
     transactionInProgress,
     transactionError,
     resetTransactionState
-  }
-
+  };
 }

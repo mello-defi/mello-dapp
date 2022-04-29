@@ -30,17 +30,18 @@ import { TransactionStateProps } from '_hooks/useTransactionState';
 export default function AaveReserveFunctionBorrow({
   reserve,
   token,
-  transactionState,
+  transactionState
 }: {
   reserve: ComputedReserveData;
   token: EvmTokenDefinition;
-  transactionState: TransactionStateProps
+  transactionState: TransactionStateProps;
 }) {
   const { provider, tokenSet } = useSelector((state: AppState) => state.web3);
   const marketPrices = useMarketPrices();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const [maxBorrowAmount, setMaxBorrowAmount] = useState<BigNumber | undefined>();
-  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } = useHandleAaveFunction(transactionState);
+  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } =
+    useHandleAaveFunction(transactionState);
   const userSummary = useAaveUserSummary();
 
   useEffect(() => {
@@ -93,7 +94,12 @@ export default function AaveReserveFunctionBorrow({
   };
 
   const buttonIsDisabled = (): boolean => {
-    return isSubmitting || transactionState.transactionInProgress || !amount || borrowGreaterThanMaxAllowed();
+    return (
+      isSubmitting ||
+      transactionState.transactionInProgress ||
+      !amount ||
+      borrowGreaterThanMaxAllowed()
+    );
   };
   return (
     <>
