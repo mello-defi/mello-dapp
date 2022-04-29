@@ -37,11 +37,11 @@ import { fixDecimalPlaces } from '_utils/index';
 export default function Swap({
   initialSourceTokenSymbol,
   initialDestinationTokenSymbol,
-  isTokenSwitcherHidden,
+  isTokenSwitcherDisabled,
 }: {
   initialSourceTokenSymbol?: CryptoCurrencySymbol;
   initialDestinationTokenSymbol?: CryptoCurrencySymbol;
-  isTokenSwitcherHidden?: boolean;
+  isTokenSwitcherDisabled?: boolean;
 }) {
   const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -86,11 +86,11 @@ export default function Swap({
   const [swapSubmitted, setSwapSubmitted] = useState<boolean>(false);
   const [swapConfirmed, setSwapConfirmed] = useState<boolean>(false);
 
-  const [isSwitchHidden, setIsSwitchHidden] = useState('visible');
+  const [isSwitchDisabled, setIsSwitchDisabled] = useState(false);
 
   useEffect(() => {
-    if(isTokenSwitcherHidden){
-      setIsSwitchHidden('invisible');
+    if(isTokenSwitcherDisabled){
+      setIsSwitchDisabled(true);
     }
   }, []);
 
@@ -301,8 +301,9 @@ export default function Swap({
           'flex flex-row mx-auto items-center w-20 justify-center rounded-2xl -my-6 py-2 z-50'
         }
       >
-        <div className={isSwitchHidden}>
+        <div>
           <Button
+            disabled={isSwitchDisabled}
             size={ButtonSize.SMALL}
             onClick={swapSourceDestination}
             className={'z-20 opacity-95 bg-gray-400 rounded-full p-2 mt-2'}

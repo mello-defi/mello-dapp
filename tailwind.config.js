@@ -5,7 +5,7 @@ fontFamily['sans'] = ['Outfit', 'system-ui'];
 fontFamily['mono'] = ['Roboto Mono', 'system-ui'];
 
 module.exports = {
-  content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', "./node_modules/flowbite/**/*.js"],
   purge: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   darkMode: 'class', // or 'media' or 'class'
   variants: {
@@ -41,5 +41,8 @@ module.exports = {
       }
     }
   },
-  plugins: []
+
+  plugins: [
+    require('flowbite/plugin')
+  ]
 };

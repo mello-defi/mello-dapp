@@ -85,7 +85,7 @@ export const stepPerformSwap: OnboardingStep = {
   actionComponentProps: {
     initialSourceTokenSymbol: CryptoCurrencySymbol.MATIC,
     initialDestinationTokenSymbol: CryptoCurrencySymbol.WBTC,
-    isTokenSwitcherHidden: true
+    isTokenSwitcherDisabled: true
   },
   descriptionComponent: StepSwap
 };

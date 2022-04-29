@@ -7,7 +7,7 @@ import { getTransactionCount } from '_services/walletService';
 import { Button } from '_components/core/Buttons';
 import OnboardingStepRow from '_pages/Onboarding/OnboardingStepRow';
 import { DefaultTransition } from '_components/core/Transition';
-import { stepAddGasToWallet, stepConnectWallet, stepPerformSwap, steps } from '_pages/Onboarding/OnboardingSteps';
+import { OnboardingStep, stepAddGasToWallet, stepConnectWallet, stepPerformSwap, steps } from '_pages/Onboarding/OnboardingSteps';
 import { BigNumber } from 'ethers';
 import { setActiveTab } from '_redux/effects/uiEffects';
 import { NavTab } from '_redux/types/uiTypes';
@@ -24,6 +24,10 @@ export default function Onboarding() {
   const walletBalances = useWalletBalances();
 
   const [buttonDisabled, setIsButtonDisabled] = useState(true);
+
+  const currentUrlParams = window.location.search;
+  const params = new URLSearchParams(currentUrlParams);
+  const couponCode = "TEST";
 
   useEffect(() => {
     if (gasToken) {
@@ -61,12 +65,34 @@ export default function Onboarding() {
   }, [userAddress, userBalance, currentStep]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (!__DEV__) {
+      const timer = setTimeout(() => {
+        setIsButtonDisabled(false);
+      }, 8000);
+      return () => clearTimeout(timer);
+    } else {
       setIsButtonDisabled(false);
-    }, 8000);
-    return () => clearTimeout(timer);
+    }
   }, []);
-  
+
+  const renderStep = (step: OnboardingStep) => {
+    return (
+      <div>
+        <div className="flex justify-between m-2">
+          <span className={'text-xl font-medium text-black dark:text-white'}>{step.title}</span>
+          <span className="text-m font-medium text-black dark:text-white">{(step.number / steps.length) * 100}%</span>
+        </div>
+        <div className="w-full justify-items-center	 bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-5" >
+          <div className='flex'>
+            <div className={`bg-black h-2.5 rounded-full`} style={{
+              width: `${(step.number / steps.length) * 100}%`,
+            }}></div>
+          </div>
+        </div>
+        < OnboardingStepRow key = { step.number } step = { step } />
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -74,6 +100,16 @@ export default function Onboarding() {
         <div className={'px-4 mb-2 flex flex-col text-body'}>
           <p onClick={() => setOnboardingInitiated(true)} className={'text-center text-2xl'}>Welcome to the mello onboarding tutorial!<span role="img" aria-label="confetti">📝</span></p>
           <br></br>
+          {couponCode ? (
+            <>
+              <p className={'text-center text-xl'}>
+                You have been given a coupon ({couponCode}) to try out mello.
+                <br />
+                <span role="img" aria-label="robot">🤖</span> Sending your tokens now
+              </p>
+              <br />
+            </>
+          ) : null}
           <p>
             The aim of this tutorial is to teach you the basics of using a DeFi wallet and to guide you through
             the most common steps of the process using <span className='font-bold'>real cryptocurrency!</span>
@@ -111,9 +147,7 @@ export default function Onboarding() {
       </DefaultTransition>
       {onboardingInitiated && (
         <>
-          {steps.map((step) => (
-            <OnboardingStepRow key={step.number} step={step} />
-          ))}
+          {renderStep(steps[currentStep - 1])}
         </>
       )}
     </div>

@@ -40,7 +40,7 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
             key={step.number}
             className={`py-2 px-4 rounded-2xl border bg-white shadow-sm border-gray-100 mb-2`}
           >
-            <div className={'flex flex-row justify-between w-full'}>
+            {/* <div className={'flex flex-row justify-between w-full'}>
               <div className={'flex-row-center'}>
                 <span onClick={forceAdvanceToNextStep} className={'text-3xl mr-2'}>
                   {stepIsCurrentStep || stepIsAhead ? (
@@ -63,7 +63,7 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
                   <ExpandMore className={'mb-0.5'} fontSize={'inherit'} />
                 )}
               </div>
-            </div>
+            </div> */}
             {/*<span>Current step {currentStep}</span>*/}
             {/*<br/>*/}
             {/*<span>Waiting to advance {waitingToAdvance ? 'yes' : 'no'}</span>*/}
