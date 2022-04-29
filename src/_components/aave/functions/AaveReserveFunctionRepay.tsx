@@ -24,20 +24,21 @@ import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import useAaveReserves from '_hooks/useAaveReserves';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
+import { TransactionStateProps } from '_hooks/useTransactionState';
 
 export default function AaveReserveFunctionRepay({
   reserve,
   token,
-  transactionInProgress
+  transactionState
 }: {
   reserve: ComputedReserveData;
   token: EvmTokenDefinition;
-  transactionInProgress: boolean;
+  transactionState: TransactionStateProps
 }) {
   const { provider } = useSelector((state: AppState) => state.web3);
   const [userReserve, setUserReserve] = useState<ComputedUserReserve | undefined>();
   const [maxRepayAmount, setMaxRepayAmount] = useState<BigNumber | undefined>();
-  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } = useHandleAaveFunction();
+  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } = useHandleAaveFunction(transactionState);
   const aaveReserves = useAaveReserves();
   const userSummary = useAaveUserSummary();
   const walletBalances = useWalletBalances();
@@ -99,7 +100,7 @@ export default function AaveReserveFunctionRepay({
 
   const buttonIsDisabled = (): boolean => {
     return (
-      transactionInProgress ||
+      transactionState.transactionInProgress ||
       !userReserve ||
       !amount ||
       parseFloat(userReserve.variableBorrows) === 0 ||

@@ -18,7 +18,7 @@ export default function Invest() {
         <div className={'text-header'}>Invest</div>
         <PoweredByLink url={BALANCER_URL} logo={balLogo} />
       </div>
-      <Rewards />
+      {/*<Rewards />*/}
       <UserPools />
       <span className={'text-body'}>Investment pools</span>
       {!pools && (

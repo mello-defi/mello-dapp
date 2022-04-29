@@ -17,21 +17,22 @@ import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import useAaveReserves from '_hooks/useAaveReserves';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
+import { TransactionStateProps } from '_hooks/useTransactionState';
 
 export default function AaveReserveFunctionWithdraw({
   reserve,
   token,
-  transactionInProgress
+  transactionState
 }: {
   reserve: ComputedReserveData;
   token: EvmTokenDefinition;
-  transactionInProgress: boolean;
+  transactionState: TransactionStateProps
 }) {
   const provider = useSelector((state: AppState) => state.web3.provider);
   const [userReserve, setUserReserve] = useState<ComputedUserReserve | undefined>();
   const [maxWithdrawAmount, setMaxWithdrawAmount] = useState<BigNumber | undefined>();
   const walletBalances = useWalletBalances();
-  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } = useHandleAaveFunction();
+  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } = useHandleAaveFunction(transactionState);
   const aaveReserves = useAaveReserves();
   const userSummary = useAaveUserSummary();
   useEffect(() => {
@@ -94,7 +95,7 @@ export default function AaveReserveFunctionWithdraw({
 
   const buttonIsDisabled = (): boolean => {
     return (
-      transactionInProgress ||
+      transactionState.transactionInProgress ||
       !userReserve ||
       !userSummary ||
       !amount ||

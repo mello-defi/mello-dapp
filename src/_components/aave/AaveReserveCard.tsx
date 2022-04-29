@@ -16,11 +16,12 @@ import { AaveFunction, AaveSection } from '_enums/aave';
 import useAaveReserves from '_hooks/useAaveReserves';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import { ExpandMore } from '@mui/icons-material';
-import AaveReserveFunctionButton from '_components/aave/AaveReserveFunctionButton';
 import AaveReserveFunctionDeposit from '_components/aave/functions/AaveReserveFunctionDeposit';
 import AaveReserveFunctionWithdraw from '_components/aave/functions/AaveReserveFunctionWithdraw';
 import AaveReserveFunctionBorrow from '_components/aave/functions/AaveReserveFunctionBorrow';
 import AaveReserveFunctionRepay from '_components/aave/functions/AaveReserveFunctionRepay';
+import { TabHeader, TabHeaderContainer } from '_components/core/Tabs';
+import useTransactionState from '_hooks/useTransactionState';
 
 export default function AaveReserveCard({
   reserveSymbol,
@@ -31,28 +32,15 @@ export default function AaveReserveCard({
 }) {
   const aaveReserves = useAaveReserves();
   const userSummary = useAaveUserSummary();
+  const transactionState = useTransactionState();
+  const { resetTransactionState, transactionInProgress, transactionConfirmed, transactionError, tokenApproved, approvalTransactionHash, actionTransactionHash} = transactionState;
   const { tokenSet } = useSelector((state: AppState) => state.web3);
   // TODO- centralise this
   const marketPrices = useMarketPrices();
   const [reserve, setReserve] = useState<ComputedReserveData | undefined>();
-  const [userReserve, setUserReserve] = useState<ComputedUserReserve | undefined>();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [tokenApproved, setTokenApproved] = useState<boolean>(false);
-  const [approvalTransactionHash, setApprovalTransactionHash] = useState<string>('');
-  const [actionTransactionHash, setActionTransactionHash] = useState<string>();
-  const [transactionInProgress, setTransactionInProgress] = useState<boolean>(false);
-  const [transactionError, setTransactionError] = useState<string>('');
-  const [transactionConfirmed, setTransactionConfirmed] = useState<boolean>(false);
   const [aaveFunction, setAaveFunction] = useState<AaveFunction | null>(null);
   const [token, setToken] = useState<EvmTokenDefinition | undefined>();
-  const walletBalances = useWalletBalances();
-
-  const [userBalance, setUserBalance] = useState<BigNumber | undefined>();
-  useEffect(() => {
-    if (token) {
-      setUserBalance(walletBalances[token.symbol]?.balance);
-    }
-  }, [walletBalances, token]);
 
   useEffect(() => {
     if (!token) {
@@ -71,131 +59,54 @@ export default function AaveReserveCard({
         setReserve(r);
       }
     }
-    if (userSummary) {
-      const ur = userSummary.reservesData.find(
-        (ur) => ur.reserve.symbol.toLowerCase() === reserveSymbol.toLowerCase()
-      );
-      if (ur) {
-        setUserReserve(ur);
-      }
-    }
   }, [aaveReserves, userSummary]);
 
-  //
 
-  const resetTransactionState = () => {
-    if (transactionConfirmed) {
-      setTransactionConfirmed(false);
-    }
-    if (transactionInProgress) {
-      setTransactionInProgress(false);
-    }
-    if (transactionError) {
-      setTransactionError('');
-    }
-    if (approvalTransactionHash) {
-      setApprovalTransactionHash('');
-    }
-    if (actionTransactionHash) {
-      setActionTransactionHash('');
-    }
-    if (tokenApproved) {
-      setTokenApproved(false);
-    }
-  };
-
-  const handleFunctionButtonClicked = async (functionName: AaveFunction) => {
-    if (!transactionInProgress || transactionError) {
-      if (!aaveFunction || (aaveFunction && aaveFunction !== functionName)) {
-        setAaveFunction(functionName);
-      } else {
-        setAaveFunction(null);
-      }
-      resetTransactionState();
-    }
-  };
-
-  const borrowButtonDisabled = (): boolean => {
-    return (
-      (userSummary && parseFloat(userSummary.availableBorrowsETH) <= 0) ||
-      (transactionInProgress && !transactionError)
-    );
-  };
-
-  const withdrawButtonDisabled = (): boolean => {
-    return (
-      !userReserve ||
-      parseFloat(userReserve.underlyingBalance) === 0 ||
-      (transactionInProgress && !transactionError)
-    );
-  };
-
-  const repayButtonDisabled = (): boolean => {
-    return (
-      !userReserve ||
-      parseFloat(userReserve.variableBorrows) === 0 ||
-      (transactionInProgress && !transactionError)
-    );
-  };
-
-  const depositButtonDisabled = (): boolean => {
-    return !userBalance || userBalance.isZero() || (transactionInProgress && !transactionError);
-  };
-
-  const getFunctionButtons = (): JSX.Element[] | null => {
+  const getFunctionTabs = (): JSX.Element[] | null => {
     if (!reserve || !token) {
       return null;
     }
+    let tabs: AaveFunction[] = [];
     switch (aaveSection) {
       case AaveSection.Borrow:
-        return [
-          <AaveReserveFunctionButton
-            key={AaveFunction.Borrow}
-            activeFunctionName={aaveFunction}
-            handleClicked={handleFunctionButtonClicked}
-            functionName={AaveFunction.Borrow}
-            disabled={borrowButtonDisabled()}
-          />,
-          <AaveReserveFunctionButton
-            key={AaveFunction.Repay}
-            activeFunctionName={aaveFunction}
-            handleClicked={handleFunctionButtonClicked}
-            functionName={AaveFunction.Repay}
-            disabled={repayButtonDisabled()}
-          />
-        ];
+        tabs = [AaveFunction.Borrow, AaveFunction.Repay];
+        break;
       case AaveSection.Deposit:
-        return [
-          <AaveReserveFunctionButton
-            key={AaveFunction.Deposit}
-            activeFunctionName={aaveFunction}
-            handleClicked={handleFunctionButtonClicked}
-            functionName={AaveFunction.Deposit}
-            disabled={depositButtonDisabled()}
-          />,
-          <AaveReserveFunctionButton
-            key={AaveFunction.Withdraw}
-            activeFunctionName={aaveFunction}
-            handleClicked={handleFunctionButtonClicked}
-            functionName={AaveFunction.Withdraw}
-            disabled={withdrawButtonDisabled()}
-          />
-        ];
+        tabs = [AaveFunction.Supply, AaveFunction.Withdraw];
+        break;
       default:
         return null;
     }
+    return tabs.map((functionName) => {
+      return (
+        <TabHeader
+          title={functionName}
+          key={functionName}
+          isActive={aaveFunction === functionName}
+          onClick={() => setAaveFunction(functionName)}
+        />
+      );
+    });
   };
   const getFunctionContent = (): JSX.Element | null => {
-    if (!reserve || !token || !userReserve) {
+    if (!reserve || !token) {
       return null;
     }
+    // set default function
+    if (!aaveFunction) {
+      if (aaveSection === AaveSection.Deposit) {
+        setAaveFunction(AaveFunction.Supply);
+      } else if (aaveSection === AaveSection.Borrow) {
+        setAaveFunction(AaveFunction.Borrow);
+      }
+    }
     switch (aaveFunction) {
-      case AaveFunction.Deposit:
+      case AaveFunction.Supply:
         return (
           <AaveReserveFunctionDeposit
             reserve={reserve}
             token={token}
-            transactionInProgress={transactionInProgress}
+            transactionState={transactionState}
           />
         );
       case AaveFunction.Withdraw:
@@ -203,7 +114,7 @@ export default function AaveReserveCard({
           <AaveReserveFunctionWithdraw
             reserve={reserve}
             token={token}
-            transactionInProgress={transactionInProgress}
+            transactionState={transactionState}
           />
         );
       case AaveFunction.Borrow:
@@ -211,7 +122,7 @@ export default function AaveReserveCard({
           <AaveReserveFunctionBorrow
             reserve={reserve}
             token={token}
-            transactionInProgress={transactionInProgress}
+            transactionState={transactionState}
           />
         );
       case AaveFunction.Repay:
@@ -219,7 +130,7 @@ export default function AaveReserveCard({
           <AaveReserveFunctionRepay
             reserve={reserve}
             token={token}
-            transactionInProgress={transactionInProgress}
+            transactionState={transactionState}
           />
         );
       default:
@@ -242,10 +153,12 @@ export default function AaveReserveCard({
                 className={'cursor-pointer text-color-light hover:text-black transition ml-2 mb-1'}
               />
             </div>
-            <div className={'flex flex-col md:flex-row items-center'}>{getFunctionButtons()}</div>
           </div>
-          <DefaultTransition isOpen={aaveFunction !== null}>
+          <DefaultTransition isOpen={isExpanded}>
             <div>
+              <TabHeaderContainer>
+                {getFunctionTabs()}
+              </TabHeaderContainer>
               <div className={'flex flex-col md:flex-row justify-between space-x-0 sm:space-x-2'}>
                 <div className={'flex flex-col w-full'}>{getFunctionContent()}</div>
               </div>

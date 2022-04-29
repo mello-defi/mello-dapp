@@ -15,21 +15,22 @@ import { CryptoCurrencySymbol } from '_enums/currency';
 import { EvmTokenDefinition } from '_enums/tokens';
 import NextHealthFactor from '_components/aave/healthfactor/NextHealthFactor';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
+import { TransactionStateProps } from '_hooks/useTransactionState';
 
 export default function AaveReserveFunctionDeposit({
   reserve,
   token,
-  transactionInProgress
+  transactionState
 }: {
   reserve: ComputedReserveData;
   token: EvmTokenDefinition;
-  transactionInProgress: boolean;
+  transactionState: TransactionStateProps
 }) {
   const provider = useSelector((state: AppState) => state.web3.provider);
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const [userBalance, setUserBalance] = useState<BigNumber | undefined>();
   const walletBalances = useWalletBalances();
-  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } = useHandleAaveFunction();
+  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } = useHandleAaveFunction(transactionState);
 
   useEffect(() => {
     setUserBalance(walletBalances[reserve.symbol.toUpperCase() as CryptoCurrencySymbol]?.balance);
@@ -62,7 +63,7 @@ export default function AaveReserveFunctionDeposit({
       userBalance.isZero() ||
       !amount ||
       parseFloat(amount) === 0 ||
-      transactionInProgress ||
+      transactionState.transactionInProgress ||
       (amount ? userBalance.lt(parseUnits(amount, token.decimals)) : true)
     );
   };

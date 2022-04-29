@@ -25,21 +25,22 @@ import useAaveReserves from '_hooks/useAaveReserves';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import { convertCryptoAmounts } from '_services/priceService';
 import useMarketPrices from '_hooks/useMarketPrices';
+import { TransactionStateProps } from '_hooks/useTransactionState';
 
 export default function AaveReserveFunctionBorrow({
   reserve,
   token,
-  transactionInProgress
+  transactionState,
 }: {
   reserve: ComputedReserveData;
   token: EvmTokenDefinition;
-  transactionInProgress: boolean;
+  transactionState: TransactionStateProps
 }) {
   const { provider, tokenSet } = useSelector((state: AppState) => state.web3);
   const marketPrices = useMarketPrices();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   const [maxBorrowAmount, setMaxBorrowAmount] = useState<BigNumber | undefined>();
-  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } = useHandleAaveFunction();
+  const { handleAaveFunction, amount, handleSetAmount, isSubmitting } = useHandleAaveFunction(transactionState);
   const userSummary = useAaveUserSummary();
 
   useEffect(() => {
@@ -92,7 +93,7 @@ export default function AaveReserveFunctionBorrow({
   };
 
   const buttonIsDisabled = (): boolean => {
-    return isSubmitting || transactionInProgress || !amount || borrowGreaterThanMaxAllowed();
+    return isSubmitting || transactionState.transactionInProgress || !amount || borrowGreaterThanMaxAllowed();
   };
   return (
     <>

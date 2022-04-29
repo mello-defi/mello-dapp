@@ -11,21 +11,30 @@ import { setStep } from '_redux/effects/onboardingEffects';
 import { EthereumTransactionError } from '_interfaces/errors';
 import { AaveActions, GenericActions, TransactionServices } from '_enums/db';
 import { logTransaction } from '_services/dbService';
+import { TransactionStateProps } from '_hooks/useTransactionState';
 
-export default function useHandleAaveFunction() {
+export default function useHandleAaveFunction({
+                                                setActionTransactionHash,
+                                                setApprovalTransactionHash,
+                                                setTokenApproved,
+                                                setTransactionConfirmed,
+                                                setTransactionError,
+                                                setTransactionInProgress,
+                                                isSubmitting,
+                                                setIsSubmitting,
+                                                approvalTransactionHash,
+                                                tokenApproved,
+                                                actionTransactionHash,
+                                                transactionConfirmed,
+                                                transactionInProgress,
+                                                transactionError,
+                                                resetTransactionState
+
+                                              }: TransactionStateProps) {
   const { provider, network } = useSelector((state: AppState) => state.web3);
   const { complete, ongoing } = useSelector((state: AppState) => state.onboarding);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [amount, setAmount] = useState('0.0');
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const [approvalTransactionHash, setApprovalTransactionHash] = useState<string | undefined>(
-    undefined
-  );
-  const [tokenApproved, setTokenApproved] = useState<boolean>(false);
-  const [actionTransactionHash, setActionTransactionHash] = useState<string | undefined>(undefined);
-  const [transactionConfirmed, setTransactionConfirmed] = useState<boolean>(false);
-  const [transactionInProgress, setTransactionInProgress] = useState<boolean>(false);
-  const [transactionError, setTransactionError] = useState<string>('');
   const dispatch = useDispatch();
 
   const handleSetAmount = (amount: string) => {
@@ -33,26 +42,6 @@ export default function useHandleAaveFunction() {
     resetTransactionState();
   };
 
-  const resetTransactionState = () => {
-    if (transactionConfirmed) {
-      setTransactionConfirmed(false);
-    }
-    if (transactionInProgress) {
-      setTransactionInProgress(false);
-    }
-    if (transactionError) {
-      setTransactionError('');
-    }
-    if (approvalTransactionHash) {
-      setApprovalTransactionHash('');
-    }
-    if (actionTransactionHash) {
-      setActionTransactionHash('');
-    }
-    if (tokenApproved) {
-      setTokenApproved(false);
-    }
-  };
 
   const runAaveTransactions = async (
     provider: ethers.providers.Web3Provider,
