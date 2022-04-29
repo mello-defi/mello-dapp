@@ -1,21 +1,21 @@
 import { NavLinkDefinition, NavTab } from '_redux/types/uiTypes';
 import { DefaultTransition } from '_components/core/Transition';
 import { EVMChainIdNumerical } from '_enums/networks';
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import LoginGuard from '_components/LoginGuard';
 import PolygonMainnetGuard from '_components/PolygonMainnetGuard';
 import FirstTimeUserPrompt from '_components/FirstTimeUserPrompt';
 import OnboardingGuard from '_components/OnboardingGuard';
-import Dashboard from '_pages/Dashboard';
-import Invest from '_pages/Invest/Invest';
-import Deposit from '_pages/Deposit/Deposit';
-import Borrow from '_pages/Borrow/Borrow';
-import Swap from '_pages/Swap/Swap';
-import Fund from '_pages/Fund/Fund';
-import Wallet from '_pages/Wallet/Wallet';
-import Onboarding from '_pages/Onboarding/Onboarding';
+const Dashboard = React.lazy(() => import('_pages/Dashboard'));
+const Invest = React.lazy(() => import('_pages/Invest/Invest'));
+const Deposit = React.lazy(() => import('_pages/Deposit/Deposit'));
+const Borrow = React.lazy(() => import('_pages/Borrow/Borrow'));
+const Swap = React.lazy(() => import('_pages/Swap/Swap'));
+const Fund = React.lazy(() => import('_pages/Fund/Fund'));
+const Wallet = React.lazy(() => import('_pages/Wallet/Wallet'));
+const Onboarding = React.lazy(() => import('_pages/Onboarding/Onboarding'));
 
 interface TabContentDefinition {
   tab: NavTab;
@@ -120,7 +120,9 @@ export default function Container() {
                               {tab.requiresLogin && !isConnected ? (
                                 <LoginGuard />
                               ) : (
-                                <>{tab.component}</>
+                                <Suspense fallback={<div>Loading...</div>}>
+                                  <>{tab.component}</>
+                                </Suspense>
                               )}
                             </>
                           )}

@@ -20,7 +20,7 @@ export default function TokenSelectDropdown({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [tokenList, setTokenList] = useState<EvmTokenDefinition[]>();
   useEffect(() => {
-    if (tokenSet) {
+    if (tokenSet && !tokenList?.length) {
       const list = Object.values(tokenSet);
       if (tokenFilter) {
         setTokenList(list.filter(tokenFilter));

@@ -9,7 +9,7 @@ export default function UserBorrowSummary() {
   const userSummary = useAaveUserSummary();
 
   const reserveBalanceGtZero = (reserve: ComputedUserReserve): boolean => {
-    return parseUnits(reserve.underlyingBalance, reserve.reserve.decimals).gt(0);
+    return parseUnits(reserve.totalBorrows, reserve.reserve.decimals).gt(0);
   };
 
   const sortByReserveBorrows = (a: ComputedUserReserve, b: ComputedUserReserve): number => {

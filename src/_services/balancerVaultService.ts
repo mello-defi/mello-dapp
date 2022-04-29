@@ -13,7 +13,11 @@ import { formatUnits, getAddress } from 'ethers/lib/utils';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { multicallToObject } from '_services/walletService';
 import { isStable, isWeighted } from '_services/balancerCalculatorService';
-import { StablePool__factory, Vault__factory, WeightedPool__factory } from '@balancer-labs/typechain';
+import {
+  StablePool__factory,
+  Vault__factory,
+  WeightedPool__factory
+} from '@balancer-labs/typechain';
 import { PoolType } from '_enums/balancer';
 import { WeiPerEther as ONE, Zero } from '@ethersproject/constants';
 import { pick } from 'lodash';

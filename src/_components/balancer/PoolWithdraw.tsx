@@ -3,10 +3,14 @@ import { AppState } from '_redux/store';
 import { OnchainPoolData, Pool, TokenInfoMap } from '_interfaces/balancer';
 import useUserBalancerPools from '_hooks/useUserBalancerPools';
 import useMarketPrices from '_hooks/useMarketPrices';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
 import { amountIsValidNumberGtZero, getTokenByAddress } from '_utils/index';
-import { absMaxBpt, calculatePoolInvestedAmounts, exactBPTInForTokenOut } from '_services/balancerCalculatorService';
+import {
+  absMaxBpt,
+  calculatePoolInvestedAmounts,
+  exactBPTInForTokenOut
+} from '_services/balancerCalculatorService';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import { getGasPrice } from '_services/gasService';
 import { exitPoolForExactTokensOut } from '_services/balancerPoolService';
@@ -28,6 +32,7 @@ import WithdrawModeToggle from '_components/balancer/WithdrawModeToggle';
 import WithdrawSingleTokenForm from '_components/balancer/WithdrawSingleTokenForm';
 import WithdrawAllTokensForm from '_components/balancer/WithdrawAllTokensForm';
 import BalancerPoolFunctionSummary from '_components/balancer/BalancerPoolFunctionSummary';
+import { ethers } from 'ethers';
 
 // TODO fix trace amoutns bug
 export default function PoolWithdraw({ pool }: { pool: Pool }) {
@@ -66,64 +71,85 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
   useEffect(() => {
     if (!singleExitToken) {
       setSingleExitToken(getTokenByAddress(tokenSet, pool.tokens[0].address));
-    }
-    if (singleExitToken) {
+    } else {
       setSingleExitTokenIndex(
         pool.tokens.findIndex(
           (token) => token.address.toLowerCase() === singleExitToken.address.toLowerCase()
         )
       );
     }
-  }, [singleExitToken]);
+  }, [pool.tokens, singleExitToken, singleExitTokenIndex, tokenSet]);
 
-  const initTokenAmounts = () => {
+  const initDefaultTokenAmounts = useCallback(() => {
     setAmountsToWithdraw(Array(pool.tokens.length).fill('0.0'));
-  };
+  }, []);
   useEffect(() => {
     if (!amountsToWithdraw.length) {
-      initTokenAmounts();
+      initDefaultTokenAmounts();
     }
-  }, [pool, amountsToWithdraw]);
+  }, [pool, amountsToWithdraw, initDefaultTokenAmounts]);
 
-  useEffect(() => {
+  const initAmountsToWithdraw = useCallback(() => {
     if (
       withdrawMode === WithdrawMode.OneToken &&
       singleAssetMaxes &&
       singleExitTokenIndex !== undefined
     ) {
-      setAmountsToWithdraw([
-        ...amountsToWithdraw.map((amount, index) =>
-          index === singleExitTokenIndex ? singleAssetMaxes[singleExitTokenIndex] : '0'
-        )
-      ]);
+      const amounts: string[] = [];
+      for (let i = 0; i < pool.tokens.length; i++) {
+        amounts.push(i === singleExitTokenIndex ? singleAssetMaxes[singleExitTokenIndex] : '0')
+      }
+      setAmountsToWithdraw(amounts);
     } else if (amountsInPool) {
       setAmountsToWithdraw(amountsInPool);
     }
-  }, [withdrawMode, singleAssetMaxes, amountsInPool, singleExitTokenIndex]);
+  }, [amountsInPool, pool.tokens.length, setAmountsToWithdraw, singleAssetMaxes, singleExitTokenIndex, withdrawMode]);
   useEffect(() => {
-    if (
-      !singleAssetMaxes ||
-      (singleAssetMaxes.length === 0 && amountsToWithdraw && onChainData && provider && userAddress)
-    ) {
-      const doStuff = async () => {
-        const maxes = await getSingleAssetMaxes();
-        console.log('maxes', maxes);
+    initAmountsToWithdraw();
+  }, [initAmountsToWithdraw]);
+  useEffect(() => {
+    const doStuff = async () => {
+      if (onChainData && provider && userAddress && (!singleAssetMaxes || singleAssetMaxes.length === 0)) {
+        console.log('getting singel asset mx')
+        console.log('singleAssetMaxes', singleAssetMaxes)
+        const maxes = await getSingleAssetMaxes(amountsToWithdraw, onChainData, provider, userAddress);
         setSingleAssetMaxes(maxes);
-      };
-      doStuff();
-    }
+      }
+    };
+    doStuff();
   }, [onChainData, amountsToWithdraw, userAddress, provider]);
-  const getSingleAssetMaxes = async (): Promise<string[]> => {
-    const btpBalance = userPools?.find(
+  const getSingleAssetMaxes = async (amountsToWithdraw: string[], onChainData: OnchainPoolData, provider: ethers.providers.Web3Provider, userAddress: string): Promise<string[]> => {
+    const bptBalance = userPools?.find(
       (userPool) => userPool.poolId.address.toLowerCase() === pool.address.toLowerCase()
     )?.balance;
-    if (amountsToWithdraw && onChainData && btpBalance && provider && userAddress) {
-      try {
+    console.log('btpBalance', bptBalance)
+    if (!bptBalance) {
+      return [];
+    }
+    try {
+      const amounts = [];
+      for (let i = 0; i < pool.tokens.length; i++) {
+        const token = pool.tokens[i];
+        const amount = await exactBPTInForTokenOut(
+          parseUnits(bptBalance, onChainData.decimals).toString(),
+          i,
+          pool.poolType,
+          pool.tokens,
+          provider,
+          pool.id,
+          userAddress
+        );
+        amounts.push(formatUnits(amount.toString(), token.decimals));
+      }
+      return amounts;
+    } catch (error) {
+      console.error(error);
+      if ((error as Error).message.includes('MIN_BPT_IN_FOR_TOKEN_OUT')) {
         const amounts = [];
         for (let i = 0; i < pool.tokens.length; i++) {
           const token = pool.tokens[i];
           const amount = await exactBPTInForTokenOut(
-            parseUnits(btpBalance, onChainData.decimals).toString(),
+            parseUnits(absMaxBpt(pool, onChainData, bptBalance), onChainData.decimals).toString(),
             i,
             pool.poolType,
             pool.tokens,
@@ -134,70 +160,51 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
           amounts.push(formatUnits(amount.toString(), token.decimals));
         }
         return amounts;
-      } catch (error) {
-        console.error(error);
-        if ((error as Error).message.includes('MIN_BPT_IN_FOR_TOKEN_OUT')) {
-          const amounts = [];
-          // setError(WithdrawalError.SINGLE_ASSET_WITHDRAWAL_MIN_BPT_LIMIT);
-          for (let i = 0; i < pool.tokens.length; i++) {
-            const token = pool.tokens[i];
-            // console.log(exactBPTInForTokenOut);
-            const amount = await exactBPTInForTokenOut(
-              parseUnits(absMaxBpt(pool, onChainData, btpBalance), onChainData.decimals).toString(),
-              i,
-              pool.poolType,
-              pool.tokens,
-              provider,
-              pool.id,
-              userAddress
-            );
-            amounts.push(formatUnits(amount.toString(), token.decimals));
-          }
-          return amounts;
-        }
       }
     }
     return Array.from({ length: pool.tokens.length }, () => '0');
   };
 
-  useEffect(() => {
+  const initAmountsInPool = useCallback(async () => {
     if (provider && userPools) {
       // move get onchain data to separate hook
       // move all of this osther stuff to poolservice
-      const getUserPoolAmounts = async () => {
-        const onChainData = await getPoolOnChainData(pool, provider);
-        setOnchain(onChainData);
-        const tokens: TokenInfoMap = {};
-        for (const token of pool.tokens) {
-          tokens[token.address.toLowerCase()] = {
-            ...token,
-            symbol: token.symbol.toLowerCase(),
-            chainId: network.chainId
-          };
-        }
-        const poolTokenInfo = await getErc20TokenInfo(provider, pool.address);
-        tokens[pool.address] = {
-          ...poolTokenInfo,
+      const onChainData = await getPoolOnChainData(pool, provider);
+      setOnchain(onChainData);
+      const tokens: TokenInfoMap = {};
+      for (const token of pool.tokens) {
+        tokens[token.address.toLowerCase()] = {
+          ...token,
+          symbol: token.symbol.toLowerCase(),
           chainId: network.chainId
         };
-        const btpBalance = userPools?.find(
-          (userPool) => userPool.poolId.address.toLowerCase() === pool.address.toLowerCase()
-        )?.balance;
-        const amounts = calculatePoolInvestedAmounts(
-          pool.address,
-          onChainData,
-          tokens,
-          btpBalance?.toString() || '0',
-          0,
-          'send',
-          'exit'
-        );
-        console.log(amounts);
-        setAmountsInPool(amounts.receive);
+      }
+      const poolTokenInfo = await getErc20TokenInfo(provider, pool.address);
+      tokens[pool.address] = {
+        ...poolTokenInfo,
+        chainId: network.chainId
       };
-      getUserPoolAmounts();
+      const btpBalance = userPools?.find(
+        (userPool) => userPool.poolId.address.toLowerCase() === pool.address.toLowerCase()
+      )?.balance;
+      const amounts = calculatePoolInvestedAmounts(
+        pool.address,
+        onChainData,
+        tokens,
+        btpBalance?.toString() || '0',
+        0,
+        'send',
+        'exit'
+      );
+      console.log(amounts);
+      setAmountsInPool(amounts.receive);
     }
-  }, [userPools]);
+  }, [network.chainId, pool, provider, userPools])
+  useEffect(() => {
+    if (!amountsInPool.length) {
+      initAmountsInPool();
+    }
+  }, [amountsInPool.length, initAmountsInPool]);
 
   useEffect(() => {
     if (!amountsToWithdraw.length) {
@@ -217,7 +224,15 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
       total = sumAmounts(pool.tokens);
     }
     setSumOfAmountsInFiat(isNaN(total) ? null : total.toFixed(2));
-  }, [amountsToWithdraw, withdrawMode]);
+  }, [
+    amountsToWithdraw,
+    marketPrices,
+    pool.tokens,
+    setSumOfAmountsInFiat,
+    singleExitTokenIndex,
+    sumAmounts,
+    withdrawMode
+  ]);
 
   const exit = async () => {
     if (userAddress && signer && amountsToWithdraw && provider && network) {
@@ -277,7 +292,8 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
         setTransactionComplete(true);
         dispatch(toggleUserPoolDataStale(true));
         dispatch(toggleBalancesAreStale(true));
-        initTokenAmounts();
+        initDefaultTokenAmounts();
+        initAmountsInPool();
       } catch (e: any) {
         console.error(e);
         // TODO move to hook
@@ -337,7 +353,7 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
   };
 
   const resetState = () => {
-    initTokenAmounts();
+    initDefaultTokenAmounts();
     setTransactionHash('');
     setTransactionInProgress(false);
     setTransactionComplete(false);

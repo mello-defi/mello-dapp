@@ -57,7 +57,6 @@ const useBalancerFunctions = () => {
     let total = 0;
     for (let i = 0; i < amounts.length; i++) {
       const amount = amounts[i];
-      console.log(amount);
       if (!isNaN(parseFloat(amount))) {
         const token = poolTokens[i];
         const marketPrice = marketPrices[token.address.toLowerCase()];

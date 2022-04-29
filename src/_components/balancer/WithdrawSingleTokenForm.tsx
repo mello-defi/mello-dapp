@@ -4,7 +4,7 @@ import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { parseUnits } from 'ethers/lib/utils';
 import { getTokenByAddress } from '_utils/index';
 import SingleCryptoAmountInputSkeleton from '_components/core/SingleCryptoAmountInputSkeleton';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { PoolToken } from '_interfaces/balancer';
@@ -27,30 +27,31 @@ export default function WithdrawSingleTokenForm({
   handleTokenAmountChange: (index: number, amount: string) => void;
 }) {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
-  const singleTokenOutInputShouldRender = (): boolean => {
+  const [singleTokenInputShouldRender, setSingleTokenInputShouldRender] = React.useState(false);
+
+  useEffect(() => {
+    let shouldRender = true;
     if (!amountsToWithdraw || amountsToWithdraw.length === 0) {
-      return false;
+      shouldRender = false;
     }
     if (!tokenSet) {
-      return false;
+      shouldRender = false;
     }
     if (!singleAssetMaxes || singleAssetMaxes.length === 0) {
-      return false;
+      shouldRender = false;
     }
     if (singleExitTokenIndex === undefined) {
-      return false;
+      shouldRender = false;
     }
-    if (!amountsToWithdraw[singleExitTokenIndex]) {
-      return false;
-    }
-    return true;
-  };
+    setSingleTokenInputShouldRender(shouldRender);
+  }, [amountsToWithdraw, singleAssetMaxes, singleExitTokenIndex, tokenSet]);
+
   return (
     <div className={'px-2'}>
       <TokenSelectDropdown
         tokenFilter={(t) =>
-          Object.keys(poolTokens)
-            .map((address: string) => address.toLowerCase())
+          poolTokens
+            .map((token: PoolToken) => token.address.toLowerCase())
             .includes(t.address.toLowerCase())
         }
         selectedToken={singleExitToken}
@@ -60,7 +61,7 @@ export default function WithdrawSingleTokenForm({
         disabled={false}
       />
       <div>
-        {singleExitTokenIndex && singleTokenOutInputShouldRender() ? (
+        {singleExitTokenIndex !== undefined && singleTokenInputShouldRender ? (
           <SingleCryptoAmountInput
             disabled={parseUnits(
               singleAssetMaxes[singleExitTokenIndex] || '0',

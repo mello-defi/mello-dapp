@@ -34,7 +34,7 @@ export default function NextHealthFactor({
     }
   }, [amount, healthFactorImpact, healthFactorResource, reserve, userSummary]);
   return (
-    <div className={'flex-row-center text-body px-1'}>
+    <div className={'flex-row-center text-body px-1 my-2'}>
       <span className={'mr-2'}>Next health factor</span>
       <HealthFactorNumber healthFactor={healthFactorNumber} />
     </div>
