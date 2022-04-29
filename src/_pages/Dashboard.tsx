@@ -78,7 +78,7 @@ export default function Dashboard() {
     if (!healthFactor && userSummary) {
       setHealthFactor(parseFloat(userSummary.healthFactor).toFixed(2));
     }
-  }, [userSummary, walletBalances, totalInvestedAmount]);
+  }, [userSummary, walletBalances, totalInvestedAmount, totalAssets, healthFactor, tokenSet, marketPrices]);
 
   return (
     <div>

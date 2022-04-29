@@ -15,7 +15,7 @@ const useAaveUserSummary = () => {
     if (rawReserves && userAddress && (userSummaryStale || !userSummary)) {
       dispatch(getUserSummary(userAddress, rawReserves));
     }
-  }, [rawReserves, userSummary, userSummaryStale, reserves]);
+  }, [rawReserves, userSummary, userSummaryStale, reserves, userAddress, dispatch]);
   return userSummary;
 };
 

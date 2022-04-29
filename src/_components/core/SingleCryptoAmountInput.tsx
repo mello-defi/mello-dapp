@@ -68,7 +68,7 @@ export default function SingleCryptoAmountInput({
         setAmountGreaterThanMax(false);
       }
     }
-  }, [amount, maxAmount]);
+  }, [amount, maxAmount, token.decimals]);
   return (
     <div
       className={

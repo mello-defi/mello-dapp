@@ -26,7 +26,7 @@ import PoolInvestForm from '_components/balancer/PoolInvestForm';
 export default function PoolInvest({ pool }: { pool: Pool }) {
   const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
-  const { provider, network, signer, tokenSet } = useSelector((state: AppState) => state.web3);
+  const { provider, network, signer } = useSelector((state: AppState) => state.web3);
   const { complete, ongoing, currentStep } = useSelector((state: AppState) => state.onboarding);
   const walletBalances = useWalletBalances();
   const {
@@ -70,7 +70,7 @@ export default function PoolInvest({ pool }: { pool: Pool }) {
     }
     const total = sumAmounts(pool.tokens);
     setSumOfAmountsInFiat(isNaN(total) ? null : total.toFixed(2));
-  }, [amountsToInvest]);
+  }, [amountsToInvest, pool.tokens, setSumOfAmountsInFiat, sumAmounts]);
 
   const join = async () => {
     if (userAddress && signer && amountsToInvest && provider && network) {

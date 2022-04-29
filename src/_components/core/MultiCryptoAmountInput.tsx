@@ -42,7 +42,7 @@ export default function MultiCryptoAmountInput({
         setAmountGreaterThanUserBalance(false);
       }
     }
-  }, [amount, userTokenBalance, token]);
+  }, [amount, userTokenBalance, token, allowAmountOverMax]);
 
   useEffect(() => {
     if (token) {

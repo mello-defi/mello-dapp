@@ -99,7 +99,7 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
     } else if (amountsInPool) {
       setAmountsToWithdraw(amountsInPool);
     }
-  }, [withdrawMode, singleAssetMaxes, amountsInPool, singleExitTokenIndex]);
+  }, [withdrawMode, singleAssetMaxes, amountsInPool, singleExitTokenIndex, setAmountsToWithdraw, amountsToWithdraw]);
   useEffect(() => {
     if (
       !singleAssetMaxes ||
@@ -197,7 +197,7 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
       };
       getUserPoolAmounts();
     }
-  }, [userPools]);
+  }, [network.chainId, pool, provider, userPools]);
 
   useEffect(() => {
     if (!amountsToWithdraw.length) {
@@ -217,7 +217,7 @@ export default function PoolWithdraw({ pool }: { pool: Pool }) {
       total = sumAmounts(pool.tokens);
     }
     setSumOfAmountsInFiat(isNaN(total) ? null : total.toFixed(2));
-  }, [amountsToWithdraw, withdrawMode]);
+  }, [amountsToWithdraw, marketPrices, pool.tokens, setSumOfAmountsInFiat, singleExitTokenIndex, sumAmounts, withdrawMode]);
 
   const exit = async () => {
     if (userAddress && signer && amountsToWithdraw && provider && network) {

@@ -63,7 +63,7 @@ export default function AaveReserveCard({
         setReserve(r);
       }
     }
-  }, [aaveReserves, userSummary]);
+  }, [aaveReserves, reserve, reserveSymbol, userSummary]);
 
   const getFunctionTabs = (): JSX.Element[] | null => {
     if (!reserve || !token) {

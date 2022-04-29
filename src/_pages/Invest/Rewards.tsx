@@ -50,7 +50,7 @@ export function Rewards() {
       }
     };
     getBalancerData();
-  }, [provider, userAddress, network]);
+  }, [provider, userAddress, network, tokenSet, marketPrices]);
 
   const claimRewards = async () => {
     if (signer && userAddress) {

@@ -26,7 +26,7 @@ export default function WalletBalance({
 
   useEffect(() => {
     setMarketPrice(marketPrices[token.address.toLowerCase()]);
-  }, [marketPrices]);
+  }, [marketPrices, token.address]);
   // const marketPrices = useMarketPrices();
   // const [attemptedToGetMarketData, setAttemptedToGetMarketData] = useState(false);
   // const [marketData, setMarketData] = useState<NetworkMarketData | null>(null);

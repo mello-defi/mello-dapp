@@ -12,7 +12,7 @@ export default function StepConnectWallet() {
     if (userAddress) {
       checkForCouponAndRedeem(userAddress, isOnboardingComplete);
     }
-  }, [userAddress]);
+  }, [isOnboardingComplete, userAddress]);
 
   const whatIsRequired = (
     <>

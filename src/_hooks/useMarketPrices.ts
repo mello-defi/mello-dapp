@@ -18,7 +18,7 @@ const useMarketPrices = () => {
         )
       );
     }
-  }, [marketPrices, isFetching]);
+  }, [marketPrices, isFetching, dispatch, tokenSet, network.chainId]);
   return marketPrices;
 };
 

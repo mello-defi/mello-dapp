@@ -24,7 +24,7 @@ export default function PoolRow({
     if (pools && pools.length > 0) {
       setPool(pools.find((p) => p.id === poolId));
     }
-  }, [pools]);
+  }, [poolId, pools]);
   return (
     <>
       {pool && (

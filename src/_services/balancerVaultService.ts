@@ -17,11 +17,15 @@ import { StablePool__factory, Vault__factory, WeightedPool__factory } from '@bal
 import { PoolType } from '_enums/balancer';
 import { WeiPerEther as ONE, Zero } from '@ethersproject/constants';
 import { pick } from 'lodash';
+import { EVMChainIdNumerical } from '_enums/networks';
 
 const polygonVaultAddress = '0xBA12222222228d8Ba445958a75a0704d566BF2C8';
 
 export function getVaultAddress(chainId: number): string {
-  return polygonVaultAddress;
+  if (chainId === EVMChainIdNumerical.POLYGON_TESTNET_MUMBAI) {
+    return polygonVaultAddress;
+  }
+  throw new Error(`Unsupported chain ${chainId}`);
 }
 export function getWriteVaultContract(signer: ethers.Signer): Contract {
   return new Contract(polygonVaultAddress, Vault__factory.abi, signer);

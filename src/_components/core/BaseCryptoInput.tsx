@@ -24,7 +24,7 @@ export default function BaseCryptoInput({
   };
   useEffect(() => {
     handleAmountChanged(amount);
-  }, [tokenDecimals]);
+  }, [amount, handleAmountChanged, tokenDecimals]);
   const inputIsDisabled = (): boolean => {
     if (disabled) {
       return true;

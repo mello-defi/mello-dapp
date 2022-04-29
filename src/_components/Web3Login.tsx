@@ -28,7 +28,7 @@ function App() {
         dispatch(setStep(stepConnectWallet.number + 1));
       }
     }
-  }, [isConnected, network, dispatch]);
+  }, [isConnected, network, dispatch, signer, address, complete, ongoing, currentStep]);
 
   const login = () => {
     try {

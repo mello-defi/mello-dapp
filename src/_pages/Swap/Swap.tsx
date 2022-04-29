@@ -39,12 +39,8 @@ import SwapSummaryDetails from '_pages/Swap/SwapSummaryDetails';
 export default function Swap({
   singleSourceTokenSymbol,
   singleDestinationTokenSymbol,
-  initialSourceTokenSymbol,
-  initialDestinationTokenSymbol,
   isTokenSwitcherHidden
 }: {
-  initialSourceTokenSymbol?: CryptoCurrencySymbol;
-  initialDestinationTokenSymbol?: CryptoCurrencySymbol;
   singleSourceTokenSymbol?: CryptoCurrencySymbol;
   singleDestinationTokenSymbol?: CryptoCurrencySymbol;
   isTokenSwitcherHidden?: boolean;

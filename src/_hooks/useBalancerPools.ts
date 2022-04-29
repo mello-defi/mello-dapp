@@ -17,13 +17,13 @@ const useBalancerPools = () => {
       const addresses = Object.values(tokenSet).map((token) => token.address.toLowerCase());
       dispatch(getBalancerPools(addresses));
     }
-  }, [pools, prices, provider, signer, userAddress]);
+  }, [dispatch, pools, prices, provider, signer, tokenSet, userAddress]);
 
   useEffect(() => {
     if (pools && pools.length && provider && signer && !aprsSet) {
       dispatch(getBalancerPoolAprs(pools, prices, provider, signer));
     }
-  }, [pools, aprsSet, provider, signer, prices, tokenSet]);
+  }, [pools, aprsSet, provider, signer, prices, tokenSet, dispatch]);
   return pools;
 };
 

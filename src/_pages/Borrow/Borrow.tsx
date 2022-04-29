@@ -34,7 +34,7 @@ export default function Borrow() {
         }
       }
     }
-  }, [marketPrices]);
+  }, [ethPrice, marketPrices, tokenSet]);
   return (
     <div className={'space-y-2'}>
       <div className={'flex-row-center justify-between'}>

@@ -11,7 +11,7 @@ const useAaveReserves = () => {
     if (!reserves) {
       dispatch(getAaveReserves(tokenSet));
     }
-  }, [reserves]);
+  }, [dispatch, reserves, tokenSet]);
   return reserves;
 };
 
