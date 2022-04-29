@@ -1,10 +1,9 @@
 import React, { ReactNode, useState } from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
 import { OptimalRate } from 'paraswap-core';
-import { EvStation, ExpandLess, ExpandMore } from '@mui/icons-material';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Spinner } from '_components/core/Animations';
 import { DefaultTransition } from '_components/core/Transition';
-import SlippageControl from '_pages/Swap/SlippageControl';
 import TokenConversion from '_pages/Swap/TokenConversion';
 import GasCost from '_pages/Swap/GasCost';
 

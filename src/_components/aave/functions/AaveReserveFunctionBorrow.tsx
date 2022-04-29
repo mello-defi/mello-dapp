@@ -2,26 +2,18 @@ import AaveReserveFunctionContent from '_components/aave/AaveReserveFunctionCont
 import { HealthFactorImpact, HealthFactorResource } from '_enums/aave';
 import { parseUnits } from 'ethers/lib/utils';
 import React, { useEffect, useState } from 'react';
-import {
-  calculateMaxWithdrawAmount,
-  getBorrowTransactions,
-  getDepositTransactions,
-  getWithdrawTransactions
-} from '_services/aaveService';
+import { getBorrowTransactions } from '_services/aaveService';
 import { AaveActions } from '_enums/db';
-import { stepBorrowAave, stepDepositAave } from '_pages/Onboarding/OnboardingSteps';
+import { stepBorrowAave } from '_pages/Onboarding/OnboardingSteps';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import useHandleAaveFunction from '_hooks/useHandleAaveFunction';
 import { ComputedReserveData } from '@aave/protocol-js';
-import useWalletBalances from '_hooks/useWalletBalances';
 import { BigNumber } from 'ethers';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import { EvmTokenDefinition } from '_enums/tokens';
 import NextHealthFactor from '_components/aave/healthfactor/NextHealthFactor';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
-import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
-import useAaveReserves from '_hooks/useAaveReserves';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
 import { convertCryptoAmounts } from '_services/priceService';
 import useMarketPrices from '_hooks/useMarketPrices';

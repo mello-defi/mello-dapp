@@ -1,6 +1,5 @@
 import {
   Amounts,
-  LiquidityMiningPool,
   LiquidityMiningPoolData,
   LiquidityMiningPoolResult,
   LiquidityMiningTokenReward,

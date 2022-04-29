@@ -1,10 +1,8 @@
 import { NavLinkDefinition, NavTab } from '_redux/types/uiTypes';
-import { setActiveTab } from '_redux/effects/uiEffects';
-import { ArrowForward, Info } from '@mui/icons-material';
 import { DefaultTransition } from '_components/core/Transition';
 import { EVMChainIdNumerical } from '_enums/networks';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import LoginGuard from '_components/LoginGuard';
 import PolygonMainnetGuard from '_components/PolygonMainnetGuard';

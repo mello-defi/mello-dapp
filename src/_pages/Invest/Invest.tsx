@@ -6,7 +6,6 @@ import PoolSkeleton from '_components/balancer/PoolSkeleton';
 import UserPools from '_components/balancer/UserPools';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { balLogo } from '_assets/images';
-import { Rewards } from '_pages/Invest/Rewards';
 import { BALANCER_URL } from '_constants/urls';
 
 export default function Invest() {

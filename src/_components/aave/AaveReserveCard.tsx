@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { ComputedReserveData } from '@aave/protocol-js';
-import { ComputedUserReserve } from '@aave/protocol-js/dist/v2/types';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { DefaultTransition } from '_components/core/Transition';
@@ -8,8 +7,6 @@ import AaveReserveApyData from '_components/aave/AaveReserveApyData';
 import { TransactionStep } from '_components/transactions/TransactionStep';
 import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
-import { BigNumber } from 'ethers';
-import useWalletBalances from '_hooks/useWalletBalances';
 import { EvmTokenDefinition } from '_enums/tokens';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { AaveFunction, AaveSection } from '_enums/aave';

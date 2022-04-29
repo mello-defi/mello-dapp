@@ -4,7 +4,6 @@ import { parseUnits } from 'ethers/lib/utils';
 import React, { useEffect, useState } from 'react';
 import { calculateMaxWithdrawAmount, getWithdrawTransactions } from '_services/aaveService';
 import { AaveActions } from '_enums/db';
-import { stepDepositAave } from '_pages/Onboarding/OnboardingSteps';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import useHandleAaveFunction from '_hooks/useHandleAaveFunction';
