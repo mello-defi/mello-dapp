@@ -58,7 +58,7 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "craco start",
-    "build": "CI=true craco build",
+    "build": "CI=false craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
     "lint": "eslint ./src",
