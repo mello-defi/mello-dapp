@@ -38,10 +38,16 @@ import SwapSummaryDetails from '_pages/Swap/SwapSummaryDetails';
 
 export default function Swap({
   singleSourceTokenSymbol,
-  singleDestinationTokenSymbol
+  singleDestinationTokenSymbol,
+  initialSourceTokenSymbol,
+  initialDestinationTokenSymbol,
+  isTokenSwitcherHidden
 }: {
+  initialSourceTokenSymbol?: CryptoCurrencySymbol;
+  initialDestinationTokenSymbol?: CryptoCurrencySymbol;
   singleSourceTokenSymbol?: CryptoCurrencySymbol;
   singleDestinationTokenSymbol?: CryptoCurrencySymbol;
+  isTokenSwitcherHidden?: boolean;
 }) {
   const dispatch = useDispatch();
   const userAddress = useSelector((state: AppState) => state.wallet.address);
@@ -84,6 +90,38 @@ export default function Swap({
   const [tokenIsApproved, setTokenIsApproved] = useState<boolean>(false);
   const [swapSubmitted, setSwapSubmitted] = useState<boolean>(false);
   const [swapConfirmed, setSwapConfirmed] = useState<boolean>(false);
+
+  const [isSwitchHidden, setIsSwitchHidden] = useState('visible');
+
+  useEffect(() => {
+    if (isTokenSwitcherHidden) {
+      setIsSwitchHidden('invisible');
+    }
+  }, []);
+
+  const resetTransactionSteps = () => {
+    if (swapConfirmed) {
+      setSwapConfirmed(false);
+    }
+    if (isSwapping) {
+      setIsSwapping(false);
+    }
+    if (swapSubmitted) {
+      setSwapSubmitted(false);
+    }
+    if (approvalTransactionHash) {
+      setApprovalTransactionHAsh('');
+    }
+    if (swapTransactionHash) {
+      setSwapTransactionHash('');
+    }
+    if (transactionError) {
+      setTransactionError('');
+    }
+    if (fetchingPriceError) {
+      setFetchingPriceError('');
+    }
+  };
 
   const updateExchangeRate = async (
     amount: string,
@@ -206,30 +244,6 @@ export default function Swap({
     setIsApproving(false);
   };
 
-  const resetTransactionSteps = () => {
-    if (swapConfirmed) {
-      setSwapConfirmed(false);
-    }
-    if (isSwapping) {
-      setIsSwapping(false);
-    }
-    if (swapSubmitted) {
-      setSwapSubmitted(false);
-    }
-    if (approvalTransactionHash) {
-      setApprovalTransactionHAsh('');
-    }
-    if (swapTransactionHash) {
-      setSwapTransactionHash('');
-    }
-    if (transactionError) {
-      setTransactionError('');
-    }
-    if (fetchingPriceError) {
-      setFetchingPriceError('');
-    }
-  };
-
   const debounceSourceTokenChanged = useCallback(
     debounce((amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue), 750),
     [] // will be created only once initially
@@ -350,7 +364,7 @@ export default function Swap({
           'flex flex-row mx-auto items-center w-20 justify-center rounded-2xl -my-6 py-2 z-50'
         }
       >
-        <div>
+        <div className={isSwitchHidden}>
           <Button
             size={ButtonSize.SMALL}
             onClick={swapSourceDestination}

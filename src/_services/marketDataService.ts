@@ -3,7 +3,7 @@ import { FiatCurrencySymbol } from '_enums/currency';
 import { EVMChainIdNumerical } from '_enums/networks';
 
 const instance = axios.create({
-  baseURL: 'https://api.coingecko.com/api/v3/',
+  baseURL: 'https://prices.mellodefi.com/',
   headers: {
     Accept: 'application/json'
   }

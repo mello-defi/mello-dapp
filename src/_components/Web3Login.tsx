@@ -6,6 +6,7 @@ import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { setAddress } from '_redux/effects/walletEffects';
 import { setStep } from '_redux/effects/onboardingEffects';
 import { stepConnectWallet } from '_pages/Onboarding/OnboardingSteps';
+import LogRocket from 'logrocket';
 
 function App() {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ function App() {
   useEffect(() => {
     if (isConnected && signer && !address) {
       signer.getAddress().then((address) => {
+        LogRocket.identify(address, {});
         dispatch(setAddress(address));
       });
       // TODO decouple

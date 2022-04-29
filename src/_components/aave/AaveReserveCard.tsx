@@ -148,8 +148,8 @@ export default function AaveReserveCard({
     }
     switch (aaveSection) {
       case AaveSection.Borrow:
-        return (
-          [<AaveReserveFunctionButton
+        return [
+          <AaveReserveFunctionButton
             key={AaveFunction.Borrow}
             activeFunctionName={aaveFunction}
             handleClicked={handleFunctionButtonClicked}
@@ -162,8 +162,8 @@ export default function AaveReserveCard({
             handleClicked={handleFunctionButtonClicked}
             functionName={AaveFunction.Repay}
             disabled={repayButtonDisabled()}
-          />]
-        )
+          />
+        ];
       case AaveSection.Deposit:
         return [
           <AaveReserveFunctionButton
@@ -180,11 +180,11 @@ export default function AaveReserveCard({
             functionName={AaveFunction.Withdraw}
             disabled={withdrawButtonDisabled()}
           />
-        ]
+        ];
       default:
         return null;
     }
-  }
+  };
   const getFunctionContent = (): JSX.Element | null => {
     if (!reserve || !token || !userReserve) {
       return null;
@@ -242,9 +242,7 @@ export default function AaveReserveCard({
                 className={'cursor-pointer text-color-light hover:text-black transition ml-2 mb-1'}
               />
             </div>
-            <div className={'flex flex-col md:flex-row items-center'}>
-              {getFunctionButtons()}
-            </div>
+            <div className={'flex flex-col md:flex-row items-center'}>{getFunctionButtons()}</div>
           </div>
           <DefaultTransition isOpen={aaveFunction !== null}>
             <div>

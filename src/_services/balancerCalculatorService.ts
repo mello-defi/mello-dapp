@@ -1,5 +1,7 @@
 import {
   Amounts,
+  LiquidityMiningPool,
+  LiquidityMiningPoolData,
   LiquidityMiningPoolResult,
   LiquidityMiningTokenReward,
   OnchainPoolData,
@@ -91,16 +93,25 @@ export async function getSwapApr(
   return Number(poolApr.times(100).toFixed(2));
 }
 
+let cachedData: LiquidityMiningPoolData | null = null;
+async function getLiquidityMiningData(): Promise<LiquidityMiningPoolData> {
+  if (cachedData) {
+    return cachedData;
+  }
+  const url =
+    'https://raw.githubusercontent.com/balancer-labs/frontend-v2/develop/src/lib/utils/liquidityMining/MultiTokenLiquidityMining.json';
+  const { data } = await axios.get(url);
+  cachedData = Object.assign({}, data);
+  return data;
+}
 export async function getMiningLiquidityApr(
   pool: Pool,
   marketPrices: NetworkMarketData
 ): Promise<number> {
   let liquidityMiningAPR = '0';
-  const url =
-    'https://raw.githubusercontent.com/balancer-labs/frontend-v2/develop/src/lib/utils/liquidityMining/MultiTokenLiquidityMining.json';
-  const { data } = await axios.get(url);
   const week = `week_${getCurrentLiquidityMiningWeek()}`;
-  const weekStats: LiquidityMiningPoolResult[] | undefined = data[week];
+  const liquidityMiningData = await getLiquidityMiningData();
+  const weekStats: LiquidityMiningPoolResult[] | undefined = liquidityMiningData[week];
   let liquidityMiningRewards: LiquidityMiningTokenReward[] = [];
 
   if (weekStats) {

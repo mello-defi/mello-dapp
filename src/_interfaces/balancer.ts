@@ -7,6 +7,9 @@ export interface LiquidityMiningTokenReward {
   amount: number;
 }
 
+export interface LiquidityMiningPoolData {
+  [week: string]: LiquidityMiningPoolResult[];
+}
 export interface LiquidityMiningPool {
   [key: string]: LiquidityMiningTokenReward[];
 }

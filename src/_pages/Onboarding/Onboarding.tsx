@@ -33,6 +33,8 @@ export default function Onboarding() {
   const [userBalance, setUserBalance] = useState<BigNumber | undefined>();
   const walletBalances = useWalletBalances();
 
+  const [buttonDisabled, setIsButtonDisabled] = useState(true);
+
   useEffect(() => {
     if (gasToken) {
       setUserBalance(walletBalances[gasToken.symbol]?.balance);
@@ -68,20 +70,71 @@ export default function Onboarding() {
     }
   }, [userAddress, userBalance, currentStep]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsButtonDisabled(false);
+    }, 8000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div>
       <DefaultTransition isOpen={!onboardingInitiated}>
         <div className={'px-4 mb-2 flex flex-col text-body'}>
-          <p className={'text-center text-2xl'}>Welcome to the mello onboarding tutorial!</p>
+          <p onClick={() => setOnboardingInitiated(true)} className={'text-center text-2xl'}>
+            Welcome to the mello onboarding tutorial!
+            <span role="img" aria-label="confetti">
+              📝
+            </span>
+          </p>
+          <br></br>
           <p>
+            The aim of this tutorial is to teach you the basics of using a DeFi wallet and to guide
+            you through the most common steps of the process using{' '}
+            <span className="font-bold">real cryptocurrency!</span>
+          </p>
+          <br></br>
+          <p>
+            This short tutorial will take maximum <span className="font-bold">5 minutes.</span> This
+            is excluding the time it takes to verify your identity if you purchase tokens with
+            Credit/Debit card{' '}
+            <span role="img" aria-label="card">
+              💳
+            </span>
+            .
+          </p>
+          <br></br>
+          {/* <p>By the end of the tutorial you will have:</p>
+            <ul className={'list-dist text'}>
+              <li>Created a DeFi wallet</li>
+              <li>Bought some gas for your wallet</li>
+              <li>Swapped some tokens on a decentralised exchange</li>
+              <li>Lent your tokens to the Aave protocol</li>
+              <li>Borrowed against your own tokens</li>
+              <li>Invested the tokens you just borrowed</li>
+              <li>Minted your own NFT</li>
+            </ul> */}
+          <p>
+            Once you have finished the tutorial, you will have full access to mello{' '}
+            <span role="img" aria-label="confetti">
+              🎉
+            </span>
+            .
+          </p>
+          <br></br>
+          {/* <p>
             Upon completion, you will have learned the basics of DeFi and how to use the mello
             platform. Need help?{' '}
             <a className={'text-orange'} href={MELLO_DISCORD_URL}>
               Join our Discord!
             </a>{' '}
-          </p>
+          </p> */}
           <div className={'flex justify-center'}>
-            <Button className={'w-full md:w-1/2 my-2'} onClick={() => setOnboardingInitiated(true)}>
+            <Button
+              disabled={buttonDisabled}
+              className={'w-full md:w-1/2 my-2'}
+              onClick={() => setOnboardingInitiated(true)}
+            >
               Get started
             </Button>
           </div>
