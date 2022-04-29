@@ -1,14 +1,14 @@
-import { getFiatValueForUserReserve } from '_services/aaveService';
+// import { getFiatValueForUserReserve } from '_services/aaveService';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { getTokenByAddress } from '_utils/index';
 import CryptoAmountWithTooltip from '_components/core/CryptoAmountTooltip';
-import { ethers } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
+import { formatTokenValueInFiat } from '_services/priceService';
 
-export default function ComputedUserReserveListItem({
+export default function UserReserveListItem({
   reserveName,
   reserveSymbol,
   reserveAddress,
@@ -21,13 +21,6 @@ export default function ComputedUserReserveListItem({
 }) {
   const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const marketPrices = useMarketPrices();
-  // const getAmount = (): string => {
-  //   const amount = parseFloat(reserveAmount);
-  //   if (amount < 0.000001) {
-  //     return '<0.000001';
-  //   }
-  //   return amount.toFixed(6);
-  // };
   const token = getTokenByAddress(tokenSet, reserveAddress);
   return (
     <div key={reserveSymbol} className={'flex flex-row justify-between items-center mb-4 px-1'}>
@@ -44,7 +37,7 @@ export default function ComputedUserReserveListItem({
               amount={parseUnits(reserveAmount, token.decimals).toString()}
             />
             <span className={'ml-1 text-color-light'}>
-              ({getFiatValueForUserReserve(marketPrices, reserveAmount, reserveSymbol)})
+              ({formatTokenValueInFiat(marketPrices[reserveAddress.toLowerCase()], reserveAmount)})
             </span>
           </span>
         )}

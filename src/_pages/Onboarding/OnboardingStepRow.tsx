@@ -20,12 +20,12 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   };
 
   const forceAdvanceToNextStep = () => {
-    if(__DEV__){
+    // @ts-ignore
+    if (__DEV__) {
       dispatch(setStep(step.number + 1));
       dispatch(setWaitingToAdvance(false));
     }
-
-  }
+  };
 
   useEffect(() => {
     if (currentStep === step.number + 1) {

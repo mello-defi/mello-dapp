@@ -3,7 +3,7 @@ import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import React from 'react';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
-export default function AaveFunctionButton({
+export default function AaveReserveFunctionButton({
   activeFunctionName,
   handleClicked,
   functionName,
@@ -14,6 +14,9 @@ export default function AaveFunctionButton({
   functionName: AaveFunction;
   disabled?: boolean;
 }) {
+  const functionIsActiveFunction = () => {
+    return activeFunctionName && activeFunctionName === functionName;
+  };
   return (
     <Button
       variant={ButtonVariant.SECONDARY}
@@ -21,7 +24,7 @@ export default function AaveFunctionButton({
       disabled={disabled}
       onClick={() => handleClicked(functionName)}
       className={`ml-2 py-2 my-1 md:my-0 w-full md:w-auto ${
-        activeFunctionName && activeFunctionName === functionName ? 'bg-gray-200' : ''
+        functionIsActiveFunction() ? 'bg-gray-200' : ''
       }`}
     >
       <div className={'flex-row-center justify-center'}>

@@ -1,5 +1,6 @@
 import OnboardingStepDescription from '_pages/Onboarding/OnboardingStepDescription';
 import React from 'react';
+import { MELLO_DISCORD_URL } from '_constants/urls';
 
 export default function StepComplete() {
   return (
@@ -10,7 +11,7 @@ export default function StepComplete() {
         <br />
         <br />
         Have a question or provide feedback?{' '}
-        <a className={'text-orange'} href={'https://discord.gg/kGzrUrvTh3'}>
+        <a className={'text-orange'} href={MELLO_DISCORD_URL}>
           Join our Discord
         </a>{' '}
         <br />

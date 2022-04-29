@@ -1,4 +1,5 @@
 import { Twitter } from '@mui/icons-material';
+import { MELLO_DISCORD_URL, MELLO_TWITTER_URL } from '_constants/urls';
 
 export default function Footer() {
   return (
@@ -8,13 +9,13 @@ export default function Footer() {
           <span className={'mr-2'}>© {new Date().getFullYear()} mello. All rights reserved.</span>
           <div
             className={'cursor-pointer'}
-            onClick={() => window.open('https://twitter.com/mellodefi', '_blank')}
+            onClick={() => window.open(MELLO_TWITTER_URL, '_blank')}
           >
             <Twitter className={'h-5'} />
           </div>
           <div
             className={'cursor-pointer'}
-            onClick={() => window.open('https://discord.gg/kGzrUrvTh3', '_blank')}
+            onClick={() => window.open(MELLO_DISCORD_URL, '_blank')}
           >
             <svg
               className={'h-5 mx-2 mt-1 text-gray-400'}

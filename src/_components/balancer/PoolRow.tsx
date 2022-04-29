@@ -6,11 +6,7 @@ import { ExpandMore } from '@mui/icons-material';
 import { DefaultTransition } from '_components/core/Transition';
 import { useEffect, useState } from 'react';
 import PoolFunctions from '_components/balancer/PoolFunctions';
-import useUserBalancerPools from '_hooks/useUserBalancerPools';
 import useBalancerPools from '_hooks/useBalancerPools';
-import useMarketPrices from '_hooks/useMarketPrices';
-import { useSelector } from 'react-redux';
-import { AppState } from '_redux/store';
 
 export default function PoolRow({
   poolId,

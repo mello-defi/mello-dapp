@@ -5,7 +5,7 @@ import { AppState } from '_redux/store';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { setAddress } from '_redux/effects/walletEffects';
 import { setStep } from '_redux/effects/onboardingEffects';
-import { stepConnectWallet, stepSignMessage } from '_pages/Onboarding/OnboardingSteps';
+import { stepConnectWallet } from '_pages/Onboarding/OnboardingSteps';
 import LogRocket from 'logrocket';
 
 function App() {

@@ -43,7 +43,7 @@ export async function getExchangeRate(
   if (responseIsError(response)) {
     let message = response.message;
     if (response.message === 'ESTIMATED_LOSS_GREATER_THAN_MAX_IMPACT') {
-      message = 'Price impact too high'
+      message = 'Price impact too high';
     }
     throw new Error(`Error getting rate: ${message}`);
   }

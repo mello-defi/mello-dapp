@@ -1,8 +1,7 @@
-import AaveReserveRow from '_components/aave/AaveReserveRow';
+import AaveReserveCard from '_components/aave/AaveReserveCard';
 import { AaveSection } from '_enums/aave';
 import { CryptoCurrencySymbol } from '_enums/currency';
 import Swap from '_pages/Swap/Swap';
-import FiatOnboarding from '_pages/Fund/FiatOnboarding';
 import SignTestMessage from '_pages/Onboarding/SignTestMessage';
 import TermsAndConditions from '_pages/Onboarding/TermsAndConditions';
 import { FunctionComponent } from 'react';
@@ -57,7 +56,7 @@ export const stepBorrowAave: OnboardingStep = {
   number: 7,
   title: 'Borrow USDC from Aave',
   nextStep: stepInvestBalancer,
-  actionComponent: AaveReserveRow,
+  actionComponent: AaveReserveCard,
   actionComponentProps: {
     aaveSection: AaveSection.Borrow,
     reserveSymbol: CryptoCurrencySymbol.USDC
@@ -69,7 +68,7 @@ export const stepDepositAave: OnboardingStep = {
   number: 6,
   title: 'Supply WBTC to Aave',
   nextStep: stepBorrowAave,
-  actionComponent: AaveReserveRow,
+  actionComponent: AaveReserveCard,
   actionComponentProps: {
     aaveSection: AaveSection.Deposit,
     reserveSymbol: CryptoCurrencySymbol.WBTC

@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
 import { Button, ButtonSize, ButtonVariant } from '_components/core/Buttons';
 import { OptimalRate } from 'paraswap-core';
-import debounce from 'lodash/debounce';
 import {
   buildSwapTransaction,
   getExchangeRate,
@@ -20,7 +19,7 @@ import PoweredByLink from '_components/core/PoweredByLink';
 import { paraswapLogo } from '_assets/images';
 import { BigNumber, ethers } from 'ethers';
 import { getGasPrice } from '_services/gasService';
-import SwapPriceInformation from '_pages/Swap/SwapPriceInformation';
+import SwapSummary from '_pages/Swap/SwapSummary';
 import useWalletBalances from '_hooks/useWalletBalances';
 import { SwapVert } from '@mui/icons-material';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
@@ -33,14 +32,21 @@ import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { GenericActions, ParaswapActions, TransactionServices } from '_enums/db';
 import { fixDecimalPlaces } from '_utils/index';
+import { debounce } from 'lodash';
+import { PARASWAP_URL } from '_constants/urls';
+import SwapSummaryDetails from '_pages/Swap/SwapSummaryDetails';
 
 export default function Swap({
+  singleSourceTokenSymbol,
+  singleDestinationTokenSymbol,
   initialSourceTokenSymbol,
   initialDestinationTokenSymbol,
-  isTokenSwitcherHidden,
+  isTokenSwitcherHidden
 }: {
   initialSourceTokenSymbol?: CryptoCurrencySymbol;
   initialDestinationTokenSymbol?: CryptoCurrencySymbol;
+  singleSourceTokenSymbol?: CryptoCurrencySymbol;
+  singleDestinationTokenSymbol?: CryptoCurrencySymbol;
   isTokenSwitcherHidden?: boolean;
 }) {
   const dispatch = useDispatch();
@@ -49,13 +55,13 @@ export default function Swap({
 
   const [fetchingPriceError, setFetchingPriceError] = useState('');
   const [sourceToken, setSourceToken] = useState<EvmTokenDefinition>(
-    (initialSourceTokenSymbol && tokenSet[initialSourceTokenSymbol]) || Object.values(tokenSet)[0]
+    (singleSourceTokenSymbol && tokenSet[singleSourceTokenSymbol]) || Object.values(tokenSet)[0]
   );
   const [sourceTokenBalance, setSourceTokenBalance] = useState<BigNumber | undefined>();
   const walletBalances = useWalletBalances();
 
   const [destinationToken, setDestinationToken] = useState<EvmTokenDefinition>(
-    (initialDestinationTokenSymbol && tokenSet[initialDestinationTokenSymbol]) ||
+    (singleDestinationTokenSymbol && tokenSet[singleDestinationTokenSymbol]) ||
       Object.values(tokenSet)[1]
   );
   useEffect(() => {
@@ -66,8 +72,7 @@ export default function Swap({
   const { complete, ongoing } = useSelector((state: AppState) => state.onboarding);
 
   // console.log('sourceTokenBalance', sourceTokenBalance);
-  const [sourceTokenDisabled, setSourceTokenDisabled] = useState<boolean>(false);
-  const [destinationTokenDisabled, setDestinationTokenDisabled] = useState<boolean>(false);
+  const [tokenInputsDisabled, setTokenInputsDisabled] = useState(false);
   const [sourceAmount, setSourceAmount] = useState<string>('0.0');
   const [destinationAmount, setDestinationAmount] = useState<string>('0.0');
   const [fetchingPrices, setFetchingPrices] = useState<boolean>(false);
@@ -89,7 +94,7 @@ export default function Swap({
   const [isSwitchHidden, setIsSwitchHidden] = useState('visible');
 
   useEffect(() => {
-    if(isTokenSwitcherHidden){
+    if (isTokenSwitcherHidden) {
       setIsSwitchHidden('invisible');
     }
   }, []);
@@ -127,10 +132,12 @@ export default function Swap({
       resetTransactionSteps();
       setFetchingPriceError('');
       try {
-        setDestinationTokenDisabled(true);
-        setSourceTokenDisabled(true);
+        setTokenInputsDisabled(true);
         setFetchingPrices(true);
-        const srcAmount: BigNumber = parseUnits(fixDecimalPlaces(amount, srcToken.decimals), srcToken.decimals);
+        const srcAmount: BigNumber = parseUnits(
+          fixDecimalPlaces(amount, srcToken.decimals),
+          srcToken.decimals
+        );
         const rate = await getExchangeRate(srcToken, destToken, srcAmount.toString());
         console.log('rate', rate);
         setPriceRoute(rate);
@@ -141,8 +148,7 @@ export default function Swap({
         setFetchingPriceError(e.message);
       }
       setFetchingPrices(false);
-      setDestinationTokenDisabled(false);
-      setSourceTokenDisabled(false);
+      setTokenInputsDisabled(false);
     }
   };
 
@@ -172,7 +178,14 @@ export default function Swap({
         approvalGasResult?.fastest,
         transferProxy
       );
-      logTransaction(approvalTxHash.hash, network.chainId, TransactionServices.Paraswap, GenericActions.Approve, undefined, sourceToken.symbol);
+      logTransaction(
+        approvalTxHash.hash,
+        network.chainId,
+        TransactionServices.Paraswap,
+        GenericActions.Approve,
+        undefined,
+        sourceToken.symbol
+      );
       setApprovalTransactionHAsh(approvalTxHash.hash);
       await approvalTxHash.wait(3);
     }
@@ -197,11 +210,18 @@ export default function Swap({
         );
         setSwapSubmitted(true);
         const swapTxHash = await executeEthTransaction(tx, provider);
-        logTransaction(swapTxHash.hash, network.chainId, TransactionServices.Paraswap, ParaswapActions.Swap,priceRoute.srcAmount, sourceToken.symbol);
+        logTransaction(
+          swapTxHash.hash,
+          network.chainId,
+          TransactionServices.Paraswap,
+          ParaswapActions.Swap,
+          priceRoute.srcAmount,
+          sourceToken.symbol
+        );
         setSwapTransactionHash(swapTxHash.hash);
         await swapTxHash.wait(3);
         setSwapConfirmed(true);
-        resetState();
+        resetForm();
         dispatch(toggleBalancesAreStale(true));
         if (ongoing && !complete) {
           dispatch(setStep(stepPerformSwap.number + 1));
@@ -216,21 +236,16 @@ export default function Swap({
     }
   };
 
-  const resetState = () => {
+  const resetForm = () => {
     setSourceAmount('0.0');
     setDestinationAmount('0.0');
-    // setSourceFiatAmount(0);
-    // setDestinationFiatAmount(0);
     setTransactionError('');
     setIsSwapping(false);
     setIsApproving(false);
   };
 
   const debounceSourceTokenChanged = useCallback(
-    debounce(
-      (amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue),
-      750
-    ),
+    debounce((amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue), 750),
     [] // will be created only once initially
   );
 
@@ -239,10 +254,7 @@ export default function Swap({
     debounceSourceTokenChanged(sourceAmount, token, destinationToken);
   };
   const debounceDestinationTokenChanged = useCallback(
-    debounce(
-      (amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue),
-      750
-    ),
+    debounce((amount, srcToken, nextValue) => updateExchangeRate(amount, srcToken, nextValue), 750),
     [] // will be created only once initially
   );
 
@@ -258,7 +270,11 @@ export default function Swap({
     [] // will be created only once initially
   );
 
-  const sourceAmountChanged = (amount: string, srcToken = sourceToken, destToken = destinationToken) => {
+  const sourceAmountChanged = (
+    amount: string,
+    srcToken = sourceToken,
+    destToken = destinationToken
+  ) => {
     setSourceAmount(amount);
     debounceSourceAmountChanged(amount, srcToken, destToken);
   };
@@ -271,17 +287,64 @@ export default function Swap({
     setDestinationAmount('0.0');
   };
 
+  const isSwappingAllOfGasToken = (): boolean => {
+    if (isSwapping || isApproving) {
+      return false;
+    }
+    if (!sourceTokenBalance || !sourceToken || !sourceAmount || !sourceToken.isGasToken) {
+      return false;
+    }
+    return parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance);
+  };
+
+  const isSwappingMoreThanBalance = (): boolean => {
+    if (!sourceToken || !sourceTokenBalance || !sourceAmount) {
+      return false;
+    }
+    return parseUnits(sourceAmount, sourceToken.decimals).gt(sourceTokenBalance);
+  };
+
+  const swapButtonDisabled = (): boolean => {
+    return (
+      isSwapping ||
+      isApproving ||
+      parseFloat(sourceAmount) === 0 ||
+      parseFloat(destinationAmount) === 0 ||
+      !sourceToken ||
+      !destinationToken ||
+      tokenInputsDisabled ||
+      sourceToken.symbol === destinationToken.symbol ||
+      isSwappingAllOfGasToken() ||
+      isSwappingMoreThanBalance()
+    );
+  };
+
+  const getSwapButtonText = (): string => {
+    if (isSwapping) {
+      return 'Swapping...';
+    }
+    if (isApproving) {
+      return 'Approving...';
+    }
+    if (isSwappingMoreThanBalance()) {
+      return 'Insufficient funds';
+    }
+    if (isSwappingAllOfGasToken()) {
+      return 'You cannot swap all of your gas token';
+    }
+    return 'Swap';
+  };
   return (
     <div>
       <div className={'px-2 flex-row-center justify-between'}>
         <span className={'text-header'}>Swap</span>
-        <PoweredByLink url={'https://paraswap.io'} logo={paraswapLogo} />
+        <PoweredByLink url={PARASWAP_URL} logo={paraswapLogo} />
       </div>
-      {initialSourceTokenSymbol ? (
+      {singleSourceTokenSymbol ? (
         <SingleCryptoAmountInput
           showMaxButton={false}
           balance={sourceTokenBalance}
-          disabled={isSwapping || sourceTokenDisabled}
+          disabled={isSwapping || tokenInputsDisabled}
           amount={sourceAmount}
           amountChanged={sourceAmountChanged}
           token={sourceToken}
@@ -292,7 +355,7 @@ export default function Swap({
           tokenChanged={sourceTokenChanged}
           amount={sourceAmount}
           amountChanged={sourceAmountChanged}
-          disabled={isSwapping || sourceTokenDisabled}
+          disabled={isSwapping || tokenInputsDisabled}
           allowAmountOverMax={false}
         />
       )}
@@ -311,10 +374,10 @@ export default function Swap({
           </Button>
         </div>
       </div>
-      {initialDestinationTokenSymbol ? (
+      {singleDestinationTokenSymbol ? (
         <SingleCryptoAmountInput
           showMaxButton={false}
-          disabled={isSwapping || destinationTokenDisabled}
+          disabled={isSwapping || tokenInputsDisabled}
           amount={destinationAmount}
           amountChanged={setDestinationAmount}
           token={destinationToken}
@@ -325,59 +388,30 @@ export default function Swap({
           tokenChanged={destinationTokenChanged}
           amount={destinationAmount}
           amountChanged={setDestinationAmount}
-          disabled={isSwapping || destinationTokenDisabled}
+          disabled={isSwapping || tokenInputsDisabled}
         />
       )}
       <TransactionError transactionError={fetchingPriceError} />
-      <SwapPriceInformation
-        setSlippagePercentage={setSlippagePercentage}
+      <SwapSummary
         fetchingPrices={fetchingPrices}
         destinationToken={destinationToken}
         priceRoute={priceRoute}
         sourceToken={sourceToken}
-        slippagePercentage={slippagePercentage}
-      />
+      >
+        <SwapSummaryDetails
+          priceRoute={priceRoute}
+          slippagePercentage={slippagePercentage}
+          setSlippagePercentage={setSlippagePercentage}
+        />
+      </SwapSummary>
       <Button
-        // TODO fix duplicate conditions
-        disabled={
-          isSwapping ||
-          isApproving ||
-          parseFloat(sourceAmount) === 0 ||
-          parseFloat(destinationAmount) === 0 ||
-          sourceToken === undefined ||
-          destinationToken === undefined ||
-          sourceTokenDisabled ||
-          destinationTokenDisabled ||
-          sourceToken.symbol === destinationToken.symbol ||
-          (sourceTokenBalance &&
-            sourceToken.isGasToken &&
-            sourceAmount !== '' &&
-            parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance)) ||
-          (sourceTokenBalance &&
-            sourceAmount !== '' &&
-            parseUnits(sourceAmount, sourceToken.decimals).gt(sourceTokenBalance))
-        }
+        disabled={swapButtonDisabled()}
         onClick={handleSwap}
         className={'w-full mt-2 flex-row-center justify-center'}
         variant={ButtonVariant.PRIMARY}
         size={ButtonSize.LARGE}
       >
-        {isSwapping ? 'Swapping...' : ''}
-        {isApproving ? 'Approving...' : ''}
-        {!isSwapping && !isApproving
-          ? sourceTokenBalance &&
-            sourceToken &&
-            sourceAmount !== '' &&
-            sourceToken.isGasToken &&
-            parseUnits(sourceAmount, sourceToken.decimals).gte(sourceTokenBalance)
-            ? 'You cannot Swap all of your gas token'
-            : sourceToken &&
-              sourceTokenBalance &&
-              sourceAmount !== '' &&
-              parseUnits(sourceAmount, sourceToken.decimals).gt(sourceTokenBalance)
-            ? 'Insufficient funds'
-            : 'Swap'
-          : ''}
+        {getSwapButtonText()}
       </Button>
       <div className={'text-body px-2 my-2'}>
         {(isSwapping || swapConfirmed) && (
@@ -399,7 +433,7 @@ export default function Swap({
               {swapConfirmed ? 'Swap confirmed' : 'Swap confirming'}
               <BlockExplorerLink transactionHash={swapTransactionHash} />
             </TransactionStep>
-            <TransactionError onClickClear={resetState} transactionError={transactionError} />
+            <TransactionError onClickClear={resetForm} transactionError={transactionError} />
           </div>
         )}
       </div>

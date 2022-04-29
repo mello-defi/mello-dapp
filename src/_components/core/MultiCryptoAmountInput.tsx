@@ -1,17 +1,16 @@
 import { EvmTokenDefinition } from '_enums/tokens';
-import React, { ChangeEvent, useEffect, useState } from 'react';
-import { MarketDataResult } from '_services/marketDataService';
-import TokenSelectDropdown from '_components/TokenSelectDropdown';
+import React, { useEffect, useState } from 'react';
+import TokenSelectDropdown from '_components/core/TokenSelectDropdown';
 import { Spinner, SpinnerSize } from '_components/core/Animations';
 import useWalletBalances from '_hooks/useWalletBalances';
 import useMarketPrices from '_hooks/useMarketPrices';
-import { BigNumber, ethers } from 'ethers';
-import { amountIsValidNumberGtZero, decimalPlacesAreValid } from '_utils/index';
+import { BigNumber } from 'ethers';
+import { amountIsValidNumberGtZero } from '_utils/index';
 import MaxAmountButton from '_components/core/MaxAmountButton';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import BaseCryptoInput from '_components/core/BaseCryptoInput';
 import { DefaultTransition } from '_components/core/Transition';
-import { formatTokenValueInFiat, getTokenValueInFiat } from '_services/priceService';
+import { getTokenValueInFiat } from '_services/priceService';
 
 export default function MultiCryptoAmountInput({
   token,
@@ -53,12 +52,9 @@ export default function MultiCryptoAmountInput({
 
   useEffect(() => {
     if (token && marketPrices) {
-      const marketPrice = marketPrices.find(
-        (item: MarketDataResult) =>
-          item.symbol.toLocaleLowerCase() === token.symbol.toLocaleLowerCase()
-      );
+      const marketPrice = marketPrices[token.address.toLowerCase()];
       if (marketPrice) {
-        setTokenPrice(marketPrice.current_price);
+        setTokenPrice(marketPrice);
       }
     }
   }, [token, marketPrices]);

@@ -1,11 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import { useEffect } from 'react';
-import {
-  getUserBalancerPools,
-  getUserPoolsAprs,
-  setTotalInvestedAmount
-} from '_redux/effects/balancerEffects';
+import { getUserBalancerPools, getUserPoolsAprs, setTotalInvestedAmount } from '_redux/effects/balancerEffects';
 import { calculateUserSharesInFiat } from '_services/balancerCalculatorService';
 import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
 import useMarketPrices from '_hooks/useMarketPrices';
@@ -27,7 +23,7 @@ const useUserBalancerPools = () => {
 
   useEffect(() => {
     if (userPools && userPools.length && provider && signer && !userPoolsAprsSet) {
-      dispatch(getUserPoolsAprs(userPools, tokenSet, prices, provider, signer));
+      dispatch(getUserPoolsAprs(userPools, prices, provider, signer));
     }
   }, [userPools, userPoolsAprsSet, provider, signer, prices, tokenSet]);
 

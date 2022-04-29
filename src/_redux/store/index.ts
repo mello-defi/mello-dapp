@@ -15,7 +15,7 @@ const persistConfig = {
 const persistedReducer = persistReducer<AppState, any>(persistConfig, rootReducer);
 export const store = createStore(
   persistedReducer,
-  composeWithDevTools(applyMiddleware(thunkMiddleware, LogRocket.reduxMiddleware())),
+  composeWithDevTools(applyMiddleware(thunkMiddleware, LogRocket.reduxMiddleware()))
 );
 export const persistor = persistStore(store);
 export type AppState = ReturnType<typeof rootReducer>;

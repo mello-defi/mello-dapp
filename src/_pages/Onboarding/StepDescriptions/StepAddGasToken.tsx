@@ -8,21 +8,21 @@ import { stepAddGasToWallet } from '_pages/Onboarding/OnboardingSteps';
 import { toggleBalancesAreStale } from '_redux/effects/walletEffects';
 
 export default function StepAddGasToken() {
-  const tokenSet = useSelector((state:AppState) => state.web3.tokenSet );
+  const tokenSet = useSelector((state: AppState) => state.web3.tokenSet);
   const walletBalances = useWalletBalances();
   const dispatch = useDispatch();
 
   const checkBalance = () => {
-    const gasToken = Object.values(tokenSet).find(token => token.isGasToken);
+    const gasToken = Object.values(tokenSet).find((token) => token.isGasToken);
     if (gasToken) {
       const balance = walletBalances[gasToken.symbol];
       if (balance && balance.balance.gt(0)) {
         dispatch(setStep(stepAddGasToWallet.number + 1));
       } else {
-        dispatch(toggleBalancesAreStale(true))
+        dispatch(toggleBalancesAreStale(true));
       }
     }
-  }
+  };
   useInterval(checkBalance, 2000);
 
   const whatIsRequired = <>Deposit or buy Matic for your wallet.</>;
@@ -47,9 +47,6 @@ export default function StepAddGasToken() {
   );
 
   return (
-    <OnboardingStepDescription
-      whatIsRequired={whatIsRequired}
-      whyIsRequired={whyIsRequired}
-    />
+    <OnboardingStepDescription whatIsRequired={whatIsRequired} whyIsRequired={whyIsRequired} />
   );
 }

@@ -1,11 +1,11 @@
 import {
   OnboardingActionTypes,
   OnboardingState,
+  RESET,
   SET_IS_COMPLETE,
   SET_IS_ONGOING,
   SET_STEP,
-  SET_WAITING_TO_ADVANCE,
-  RESET
+  SET_WAITING_TO_ADVANCE
 } from '_redux/types/onboardingTypes';
 
 const initialState: OnboardingState = {

@@ -1,20 +1,12 @@
 import { UserPool } from '_interfaces/balancer';
 import PoolRow from '_components/balancer/PoolRow';
 import { calculateUserSharesInFiat } from '_services/balancerCalculatorService';
-import React, { useEffect } from 'react';
+import React from 'react';
 import PoolSkeleton from '_components/balancer/PoolSkeleton';
 import useUserBalancerPools from '_hooks/useUserBalancerPools';
-import PoweredByLink from '_components/core/PoweredByLink';
-import { balLogo } from '_assets/images';
-import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
-import { useSelector } from 'react-redux';
-import { AppState } from '_redux/store';
 
 export default function UserPools() {
   const { userPools, totalInvestedAmount } = useUserBalancerPools();
-  const address = useSelector((state: AppState) => state.wallet.address);
-  const provider = useSelector((state: AppState) => state.web3.provider);
-
   return (
     <>
       {!userPools && (
@@ -48,7 +40,6 @@ export default function UserPools() {
               userBalance={calculateUserSharesInFiat(userPool.poolId, userPool)}
             />
           ))}
-          {/*<HorizontalLineBreak />*/}
         </div>
       )}
     </>

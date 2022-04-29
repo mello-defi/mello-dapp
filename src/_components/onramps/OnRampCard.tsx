@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiatCurrencyName } from '_enums/currency';
+import { FiatCurrencySymbol } from '_enums/currency';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 
@@ -16,7 +16,7 @@ export default function OnRampCard({
   transferMethods: string;
   fees: string;
   limits: string;
-  currencies: FiatCurrencyName[];
+  currencies: FiatCurrencySymbol[];
 }) {
   const userAddress = useSelector((state: AppState) => state.wallet.address);
   return (

@@ -13,16 +13,17 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 import LogRocket from 'logrocket';
 
-if(__DEV__) {
+// @ts-ignore
+if (__DEV__) {
   document.title = `mello DEV`;
 } else {
   LogRocket.init('usklv7/mellodefi1', {
-    shouldCaptureIP: false,
+    shouldCaptureIP: false
   });
   Sentry.init({
     dsn: 'https://dc6ad1de607440fb96abd7913538948f@o1155179.ingest.sentry.io/6235471',
     integrations: [new BrowserTracing()],
-  
+
     // Set tracesSampleRate to 1.0 to capture 100%
     // of transactions for performance monitoring.
     // We recommend adjusting this value in production

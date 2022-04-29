@@ -1,5 +1,5 @@
 import React from 'react';
-import HealthFactorNumber from '_components/aave/HealthFactorNumber';
+import HealthFactorNumber from '_components/aave/healthfactor/HealthFactorNumber';
 
 export default function CurrentHealthFactor({ healthFactor }: { healthFactor?: string }) {
   return (

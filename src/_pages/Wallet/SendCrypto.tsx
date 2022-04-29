@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { EvmTokenDefinition } from '_enums/tokens';
 import useMarketPrices from '_hooks/useMarketPrices';
 import { CryptoCurrencySymbol } from '_enums/currency';
-import { MarketDataResult } from '_services/marketDataService';
 import { BigNumber, ethers } from 'ethers';
 import { Button, ButtonSize } from '_components/core/Buttons';
 import useWalletBalances from '_hooks/useWalletBalances';
@@ -60,11 +59,12 @@ export default function SendCrypto() {
         symbol = CryptoCurrencySymbol.BTC;
       }
 
-      const data = marketPrices.find(
-        (m: MarketDataResult) => m.symbol.toLocaleLowerCase() === symbol.toLowerCase()
-      );
+      // const data = marketPrices.find(
+      //   (m: MarketDataResult) => m.symbol.toLocaleLowerCase() === symbol.toLowerCase()
+      // );
+      const price = marketPrices[token.address.toLowerCase()];
 
-      setAmountInFiat(data ? data.current_price * parseFloat(amountToSend) : 0);
+      setAmountInFiat(price ? price * parseFloat(amountToSend) : 0);
     }
   };
 
@@ -101,7 +101,14 @@ export default function SendCrypto() {
               amountInUnits,
               gasPriceResult?.fastest
             );
-            logTransaction(tx.hash, network.chainId, TransactionServices.Wallet, GenericActions.Approve, undefined, token.symbol);
+            logTransaction(
+              tx.hash,
+              network.chainId,
+              TransactionServices.Wallet,
+              GenericActions.Approve,
+              undefined,
+              token.symbol
+            );
             setApproveTransactionHash(tx.hash);
             await tx.wait(3);
           }
@@ -125,7 +132,14 @@ export default function SendCrypto() {
           finalAmount,
           gasPriceResult?.fastest
         );
-        logTransaction(txResponse.hash, network.chainId, TransactionServices.Wallet, WalletActions.Send, finalAmount.toString(), token.symbol);
+        logTransaction(
+          txResponse.hash,
+          network.chainId,
+          TransactionServices.Wallet,
+          WalletActions.Send,
+          finalAmount.toString(),
+          token.symbol
+        );
         setSendTransactionHash(txResponse.hash);
         await txResponse.wait(3);
         setTransactionCompleted(true);

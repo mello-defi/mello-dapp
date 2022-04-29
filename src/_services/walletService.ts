@@ -4,7 +4,7 @@ import { EvmTokenDefinition, GenericTokenSet } from '_enums/tokens';
 import { Interface } from '@ethersproject/abi';
 import { ERC20Abi } from '../_abis';
 import { WalletTokenBalances } from '_redux/types/walletTypes';
-import set from 'lodash/set';
+import { set } from 'lodash';
 
 // TODO - split into walletservice + transactionService
 export async function getTransactionCount(

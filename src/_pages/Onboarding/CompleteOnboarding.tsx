@@ -1,9 +1,8 @@
 // import { useSelector } from 'react-redux';
 // import { AppState } from '_redux/store';
 import { Button } from '_components/core/Buttons';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '_redux/store';
-import { setOnboardingComplete, setStep } from '_redux/effects/onboardingEffects';
+import { useDispatch } from 'react-redux';
+import { setOnboardingComplete } from '_redux/effects/onboardingEffects';
 // import { useState } from 'react';
 // import { ThirdwebSDK } from "@thirdweb-dev/sdk";
 

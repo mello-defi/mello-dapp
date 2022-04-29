@@ -5,7 +5,7 @@ import { AppState } from '_redux/store';
 import { AaveSection } from '_enums/aave';
 import { getTokenByAddress } from '_utils/index';
 
-export default function AaveReserveMarketData({
+export default function AaveReserveApyData({
   reserve,
   aaveSection
 }: {

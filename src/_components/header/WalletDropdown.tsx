@@ -15,7 +15,7 @@ import {
   Link,
   LogoutOutlined
 } from '@mui/icons-material';
-import { setOnboardingComplete, setOnboardingOngoing } from '_redux/effects/onboardingEffects';
+import { setOnboardingOngoing } from '_redux/effects/onboardingEffects';
 import { resetOnboarding } from '_redux/actions/onboardingActions';
 
 function WalletDropdownListItem({ children }: { children: React.ReactNode }) {

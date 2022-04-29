@@ -1,12 +1,15 @@
 import { BigNumber } from 'ethers';
 import { PoolType } from '_enums/balancer';
-import { EvmTokenDefinition, TokenDefinition } from '_enums/tokens';
+import { GenericTokenDefinition } from '_enums/tokens';
 
 export interface LiquidityMiningTokenReward {
   tokenAddress: string;
   amount: number;
 }
 
+export interface LiquidityMiningPoolData {
+  [week: string]: LiquidityMiningPoolResult[];
+}
 export interface LiquidityMiningPool {
   [key: string]: LiquidityMiningTokenReward[];
 }
@@ -215,7 +218,7 @@ export type MultiTokenCurrentRewardsEstimateResponse = {
     }>;
   };
 };
-export interface ClaimableToken extends TokenDefinition {
+export interface ClaimableToken extends GenericTokenDefinition {
   fiatValue: number;
   value: string;
 }

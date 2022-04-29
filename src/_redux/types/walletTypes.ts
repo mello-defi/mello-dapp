@@ -1,4 +1,4 @@
-import { CryptoCurrencySymbol } from '_enums/currency';
+import { CryptoCurrencySymbol, FiatCurrencySymbol } from '_enums/currency';
 import { BigNumber } from 'ethers';
 import { AnyAction } from 'redux';
 
@@ -14,6 +14,7 @@ export type WalletTokenBalances = {
 };
 
 export interface WalletState {
+  fiatCurrency: FiatCurrencySymbol;
   address?: string;
   balances: WalletTokenBalances;
   balancesAreStale: boolean;

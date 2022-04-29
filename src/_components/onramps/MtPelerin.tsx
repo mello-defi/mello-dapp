@@ -1,6 +1,6 @@
 import React from 'react';
 import OnRampCard from '_components/onramps/OnRampCard';
-import { FiatCurrencyName } from '_enums/currency';
+import { FiatCurrencySymbol } from '_enums/currency';
 import { mtPelerinLogo } from '_assets/images';
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
@@ -42,7 +42,7 @@ function MtPelerin() {
       imageUrl={mtPelerinLogo}
       fees={'0%-1.3%'}
       limits={'100,000 EUR per year'}
-      currencies={[FiatCurrencyName.EUR, FiatCurrencyName.GBP, FiatCurrencyName.USD]}
+      currencies={[FiatCurrencySymbol.EUR, FiatCurrencySymbol.GBP, FiatCurrencySymbol.USD]}
       onClick={openWidget}
     />
   );

@@ -1,8 +1,6 @@
 import { useSelector } from 'react-redux';
 import { AppState } from '_redux/store';
 import React, { useEffect, useState } from 'react';
-import { MarketDataResult } from '_services/marketDataService';
-import { CryptoCurrencySymbol } from '_enums/currency';
 import { ethereumTokens } from '_enums/tokens';
 import { EVMChainIdNumerical } from '_enums/networks';
 import { ethers } from 'ethers';
@@ -14,12 +12,12 @@ import BlockExplorerLink from '_components/core/BlockExplorerLink';
 import TransactionError from '_components/transactions/TransactionError';
 // @ts-ignore
 import { Hyphen, RESPONSE_CODES } from '@biconomy/hyphen';
-import useMarketPrices from '_hooks/useMarketPrices';
-import { getGasPrice } from '_services/gasService';
+// import useMarketPrices from '_hooks/useMarketPrices';
 import { logTransaction } from '_services/dbService';
 import SingleCryptoAmountInput from '_components/core/SingleCryptoAmountInput';
 import { formatUnits } from 'ethers/lib/utils';
 import { BiconomyActions, GenericActions, TransactionServices } from '_enums/db';
+import { BICONOMY_HYPHEN_URL } from '_constants/urls';
 
 interface BiconomyPreTransferStatus {
   code: number;
@@ -52,7 +50,7 @@ export default function EthereumToPolygonBridge() {
   const ethereumTokenDefinition = ethereumTokens.eth;
   const [transferAmount, setTransferAmount] = useState<string>('0.0');
   const [depositAddress, setDepositAddress] = useState<string | undefined>(undefined);
-  const [ethereumPrice, setEthereumPrice] = useState<MarketDataResult | undefined>();
+  // const [ethereumPrice, setEthereumPrice] = useState<number | undefined>();
   const [transactionError, setTransactionError] = useState<string>('');
   const [biconomyInitialized, setBiconomyInitialized] = useState<boolean>(false);
   const [isTransferring, setIsTransferring] = useState<boolean>(false);
@@ -60,19 +58,19 @@ export default function EthereumToPolygonBridge() {
   const [ethereumTransactionHash, setEthereumTransactionHash] = useState<string>('');
   const [polygonTransactionHash, setPolygonTransactionHash] = useState<string>('');
   const [polygonTransferComplete, setPolygonTransferComplete] = useState<boolean>(false);
-  const marketPrices = useMarketPrices();
-  useEffect(() => {
-    if (marketPrices) {
-      const eth = marketPrices.find(
-        (item: MarketDataResult) =>
-          item.symbol.toLowerCase() === CryptoCurrencySymbol.ETH.toLowerCase()
-      );
-      if (eth) {
-        setEthereumPrice(eth);
-      }
-    }
-  }, [marketPrices]);
-
+  // const marketPrices = useMarketPrices();
+  // useEffect(() => {
+  //   if (marketPrices) {
+  //     const eth = marketPrices.find(
+  //       (item: MarketDataResult) =>
+  //         item.symbol.toLowerCase() === CryptoCurrencySymbol.ETH.toLowerCase()
+  //     );
+  //     if (eth) {
+  //       setEthereumPrice(eth);
+  //     }
+  //   }
+  // }, []);
+  //
   const onFundsTransfered = async (data: BiconomyFundsTransferedResponse) => {
     console.log('FUNDS TRANSFERRED', data);
     setPolygonTransactionHash(data.exitHash);
@@ -118,7 +116,14 @@ export default function EthereumToPolygonBridge() {
           );
           // const gasPrice = await getGasPrice(network.gasStationUrl);
           await approveTx.wait(3);
-          logTransaction(approveTx.hash, network.chainId, TransactionServices.Biconomy, GenericActions.Approve, transferAmount, ethereumTokenDefinition.symbol);
+          logTransaction(
+            approveTx.hash,
+            network.chainId,
+            TransactionServices.Biconomy,
+            GenericActions.Approve,
+            transferAmount,
+            ethereumTokenDefinition.symbol
+          );
         } else if (preTransferStatus.code === RESPONSE_CODES.UNSUPPORTED_NETWORK) {
           setTransactionError('Target chain is not supported yet');
         } else if (preTransferStatus.code === RESPONSE_CODES.NO_LIQUIDITY) {
@@ -149,7 +154,14 @@ export default function EthereumToPolygonBridge() {
         setEthereumTransactionHash(depositTx.hash);
         // const gasPrice = await getGasPrice(network.gasStationUrl);
         await depositTx.wait(3);
-        logTransaction(depositTx.hash, EVMChainIdNumerical.ETHEREUM_MAINNET, TransactionServices.Biconomy, BiconomyActions.Deposit, weiAmount, ethereumTokenDefinition.symbol);
+        logTransaction(
+          depositTx.hash,
+          EVMChainIdNumerical.ETHEREUM_MAINNET,
+          TransactionServices.Biconomy,
+          BiconomyActions.Deposit,
+          weiAmount,
+          ethereumTokenDefinition.symbol
+        );
         setEthereumTransactionComplete(true);
       } catch (e: any) {
         console.error(e);
@@ -170,11 +182,7 @@ export default function EthereumToPolygonBridge() {
             <div className={'flex flex-col'}>
               <div className={'flex-row-center justify-between'}>
                 <span className={'text-body'}>Bridge ETH</span>
-                <PoweredByLink
-                  url={'https://hyphen.biconomy.io/'}
-                  logo={hyphenLogo}
-                  isRound={false}
-                />
+                <PoweredByLink url={BICONOMY_HYPHEN_URL} logo={hyphenLogo} isRound={false} />
               </div>
               <SingleCryptoAmountInput
                 disabled={isTransferring}

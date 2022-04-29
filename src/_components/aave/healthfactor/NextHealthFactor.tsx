@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import HealthFactorNumber from '_components/aave/HealthFactorNumber';
+import HealthFactorNumber from '_components/aave/healthfactor/HealthFactorNumber';
 import { calculateNewHealthFactor } from '_services/aaveService';
 import { ComputedReserveData } from '@aave/protocol-js';
 import useAaveUserSummary from '_hooks/useAaveUserSummary';
@@ -32,7 +32,7 @@ export default function NextHealthFactor({
         )
       );
     }
-  }, [amount]);
+  }, [amount, healthFactorImpact, healthFactorResource, reserve, userSummary]);
   return (
     <div className={'flex-row-center text-body px-1'}>
       <span className={'mr-2'}>Next health factor</span>

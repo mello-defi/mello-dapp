@@ -1,4 +1,3 @@
-import { ethers } from 'ethers';
 import { EvmTokenDefinition } from '_enums/tokens';
 import React, { useState } from 'react';
 import { DefaultTransition } from '_components/core/Transition';

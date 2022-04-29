@@ -1,5 +1,6 @@
 import {
   Amounts,
+  LiquidityMiningPoolData,
   LiquidityMiningPoolResult,
   LiquidityMiningTokenReward,
   OnchainPoolData,
@@ -13,9 +14,6 @@ import axios from 'axios';
 import { differenceInWeeks } from 'date-fns';
 import { BigNumber, BigNumberish, Contract, ethers } from 'ethers';
 import { BigNumber as AdvancedBigNumber } from '@aave/protocol-js';
-import { getTokenByAddress } from '_utils/index';
-import { MarketDataResult } from '_services/marketDataService';
-import { GenericTokenSet } from '_enums/tokens';
 import { ProtocolFeeCollectorAbi } from '_abis';
 import { toUtcTime } from '_utils/time';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
@@ -23,6 +21,7 @@ import { getPastPools } from '_services/balancerSubgraphClient';
 import { getReadVaultContract } from '_services/balancerVaultService';
 import { PoolType, StablePoolEncoder, WeightedPoolEncoder } from '_enums/balancer';
 import { BalancerHelpers__factory } from '@balancer-labs/typechain';
+import { NetworkMarketData } from '_services/marketDataService';
 
 const liquidityMiningStartTime = Date.UTC(2020, 5, 1, 0, 0);
 const polygonHelperAddress = '0x239e55F427D44C3cc793f49bFB507ebe76638a2b';
@@ -35,23 +34,6 @@ function bnum(val: string | number | BigNumber): AdvancedBigNumber {
   const number = typeof val === 'string' ? val : val ? val.toString() : '0';
   return new AdvancedBigNumber(number);
 }
-
-const getPriceForAddress = (
-  tokenSet: GenericTokenSet,
-  prices: MarketDataResult[],
-  address: string
-): number => {
-  try {
-    const token = getTokenByAddress(tokenSet, address);
-    const p = prices.find(
-      (p: MarketDataResult) => p.symbol.toLowerCase() === token.symbol.toLowerCase()
-    );
-    return p ? p.current_price : 0;
-  } catch (e: any) {
-    console.log(e);
-  }
-  return 0;
-};
 
 function computeAPRForPool(
   rewards: number,
@@ -66,8 +48,7 @@ function computeAPRForPool(
 function computeTotalAPRForPool(
   tokenRewards: LiquidityMiningTokenReward[],
   totalLiquidity: string,
-  marketPrices: MarketDataResult[],
-  tokenSet: GenericTokenSet
+  marketPrices: NetworkMarketData
 ) {
   return tokenRewards
     .reduce(
@@ -75,7 +56,7 @@ function computeTotalAPRForPool(
         totalRewards.plus(
           computeAPRForPool(
             amount,
-            getPriceForAddress(tokenSet, marketPrices, tokenAddress),
+            marketPrices[tokenAddress] ? marketPrices[tokenAddress.toLowerCase()] : null,
             totalLiquidity
           )
         ),
@@ -111,17 +92,25 @@ export async function getSwapApr(
   return Number(poolApr.times(100).toFixed(2));
 }
 
-export async function getMiningLiquidityApr(
-  tokenSet: GenericTokenSet,
-  pool: Pool,
-  marketPrices: MarketDataResult[]
-): Promise<number> {
-  let liquidityMiningAPR = '0';
+let cachedData: LiquidityMiningPoolData | null = null;
+async function getLiquidityMiningData(): Promise<LiquidityMiningPoolData> {
+  if (cachedData) {
+    return cachedData;
+  }
   const url =
     'https://raw.githubusercontent.com/balancer-labs/frontend-v2/develop/src/lib/utils/liquidityMining/MultiTokenLiquidityMining.json';
   const { data } = await axios.get(url);
+  cachedData = Object.assign({}, data);
+  return data;
+}
+export async function getMiningLiquidityApr(
+  pool: Pool,
+  marketPrices: NetworkMarketData
+): Promise<number> {
+  let liquidityMiningAPR = '0';
   const week = `week_${getCurrentLiquidityMiningWeek()}`;
-  const weekStats: LiquidityMiningPoolResult[] | undefined = data[week];
+  const liquidityMiningData = await getLiquidityMiningData();
+  const weekStats: LiquidityMiningPoolResult[] | undefined = liquidityMiningData[week];
   let liquidityMiningRewards: LiquidityMiningTokenReward[] = [];
 
   if (weekStats) {
@@ -140,8 +129,7 @@ export async function getMiningLiquidityApr(
     liquidityMiningAPR = computeTotalAPRForPool(
       liquidityMiningRewards,
       miningTotalLiquidity,
-      marketPrices,
-      tokenSet
+      marketPrices
     );
   }
   return Number(bnum(liquidityMiningAPR).times(100).toFixed(2));

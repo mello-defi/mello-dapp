@@ -1,7 +1,11 @@
 import OnboardingStepDescription from '_pages/Onboarding/OnboardingStepDescription';
 
 export default function StepBorrowAave() {
-  const whatIsRequired = <>Borrow USDC from Aave with a health factor<span className='font-bold'> greater than 2.</span></>;
+  const whatIsRequired = (
+    <>
+      Borrow USDC from Aave with a health factor<span className="font-bold"> greater than 2.</span>
+    </>
+  );
   const whyIsRequired = (
     <>
       Now that you have supplied WBTC as collateral, you can now borrow against it.

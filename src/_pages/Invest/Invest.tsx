@@ -1,6 +1,4 @@
-import useMarketPrices from '_hooks/useMarketPrices';
 import { Pool } from '_interfaces/balancer';
-import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import PoolRow from '_components/balancer/PoolRow';
 import useBalancerPools from '_hooks/useBalancerPools';
 import React from 'react';
@@ -8,7 +6,7 @@ import PoolSkeleton from '_components/balancer/PoolSkeleton';
 import UserPools from '_components/balancer/UserPools';
 import PoweredByLink from '_components/core/PoweredByLink';
 import { balLogo } from '_assets/images';
-import { Rewards } from '_pages/Invest/Rewards';
+import { BALANCER_URL } from '_constants/urls';
 
 export default function Invest() {
   const pools = useBalancerPools();
@@ -17,10 +15,9 @@ export default function Invest() {
     <div>
       <div className={'flex-row-center justify-between px-2'}>
         <div className={'text-header'}>Invest</div>
-        <PoweredByLink url={'https://balancer.fi/#/'} logo={balLogo} />
+        <PoweredByLink url={BALANCER_URL} logo={balLogo} />
       </div>
-      <Rewards />
-      {/*<HorizontalLineBreak />*/}
+      {/*<Rewards />*/}
       <UserPools />
       <span className={'text-body'}>Investment pools</span>
       {!pools && (
