@@ -1,9 +1,52 @@
-# Mello DeFi - Client Application
+# mello DeFi :relaxed:
 
-There is no one-stop shop for DeFi on Polygon. There is a huge appetite for DeFi but the time commitment needed to access and utilize all the services is high. There are a number of separate services that a user has to learn and understand before accessing DeFi on Polygon. There are many pitfalls and simple mistakes that can easily be devastating, with examples of users losing thousands of dollars. Most of these pitfalls are predictable and just need some simple guardrails in place so as to stop a beginner from becoming a detractor.
+![MelloLogo](https://github.com/mello-defi/mello-dapp/raw/main/public/android-chrome-192x192.png)
 
-Mello v1 combines:
-Non-custodial social recovery DeFi wallet
-Fiat + crypto onramps
-Curve for swaps
-Aave for lending/deposits
+## Table of Contents
+
+- [About](#about)
+- [Getting Started](#getting_started)
+- [Contributing](../CONTRIBUTING.md)
+
+## About <a name = "about"></a>
+
+mello DeFi: A decentralised non-custodial one-stop shop for DeFi users.
+
+Check out [mello Documentation](https://docs.mellodefi.com)
+
+## Getting Started <a name = "getting_started"></a>
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
+
+### Prerequisites
+
+Node v16+
+
+Yarn or NPM installed
+
+An Alchemy Polygon RPC url from [Alchemy](https://www.alchemy.com/)
+
+An AnyBlock API key from [AnyBlock](https://anyblock.com)
+
+A supabase API Key from [supabase](https://supabase.com)
+
+See `env.example`.
+
+### Installing
+
+A step by step series of examples that tell you how to get a development env running.
+
+Clone the repo.
+
+```
+git clone https://github.com/mello-defi/mello-dapp
+```
+
+Enter the directory and install dependencies
+
+```
+cd mello-dapp
+yarn install
+```
+
+You can then access mello from [localhost](http://localhost:3000).
