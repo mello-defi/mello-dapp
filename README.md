@@ -26,8 +26,6 @@ Yarn or NPM installed
 
 An Alchemy Polygon RPC url from [Alchemy](https://www.alchemy.com/)
 
-An AnyBlock API key from [AnyBlock](https://anyblock.com)
-
 A supabase API Key from [supabase](https://supabase.com)
 
 See `env.example`.
