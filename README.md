@@ -1,4 +1,4 @@
-# mello DeFi :relaxed:
+# mello DeFi
 
 ![MelloLogo](https://github.com/mello-defi/mello-dapp/raw/main/public/android-chrome-192x192.png)
 
@@ -16,7 +16,7 @@ Check out [mello Documentation](https://docs.mellodefi.com)
 
 ## Getting Started <a name = "getting_started"></a>
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
 
 ### Prerequisites
 
@@ -45,6 +45,7 @@ Enter the directory and install dependencies
 ```
 cd mello-dapp
 yarn install
+yarn start
 ```
 
 You can then access mello from [localhost](http://localhost:3000).
