@@ -1,4 +1,4 @@
-# mello DeFi :relaxed:
+# mello DeFi
 
 ![MelloLogo](https://github.com/mello-defi/mello-dapp/raw/main/public/android-chrome-192x192.png)
 
