@@ -3,7 +3,7 @@ import axios from 'axios';
 const instance = axios.create({
   baseURL: 'https://api.anyblock.tools',
   headers: {
-    Authorization: 'Bearer ' + process.env.REACT_ANYBLOCK_API_KEY,
+    Authorization: 'Bearer ' + import.meta.env.REACT_ANYBLOCK_API_KEY,
     Accept: 'application/json'
   }
 });

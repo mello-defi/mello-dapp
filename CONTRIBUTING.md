@@ -39,37 +39,37 @@ You may overwrite them for the production build, by creating an additional `.env
 
 ### General network
 
-REACT_APP_RATES_HISTORY_ENDPOINT - enable rates history endpoint support, optional
+VITE_RATES_HISTORY_ENDPOINT - enable rates history endpoint support, optional
 
-REACT_APP_ENABLE_TESTNET - enables markets that are on a network flagged as testnet
+VITE_ENABLE_TESTNET - enables markets that are on a network flagged as testnet
 
 ### Fiat onboard
 
 This interface includes libraries to connect with fiat on-ramp services. They are disabled by default and it is the sole responsibility of the users running the interface to provide credentials in order the run them.
 
-REACT_APP_ONRAMP_API_KEY - [Ramp network](https://ramp.network/) API key, disabled by default (optional)
+VITE_ONRAMP_API_KEY - [Ramp network](https://ramp.network/) API key, disabled by default (optional)
 
-REACT_APP_TRANSAK_API_KEY - [Transak](https://transak.com/) API key, disabled by default (optional)
+VITE_TRANSAK_API_KEY - [Transak](https://transak.com/) API key, disabled by default (optional)
 
-REACT_APP_ENABLE_NASH - enabled by default
+VITE_ENABLE_NASH - enabled by default
 
 ### Wallets
 
-REACT_APP_AUTHEREUM_API_KEY - [Authereum wallet](https://authereum.com/) API key, disabled by default (optional)
+VITE_AUTHEREUM_API_KEY - [Authereum wallet](https://authereum.com/) API key, disabled by default (optional)
 
-REACT_APP_PORTIS_DAPP_ID - [Portis wallet](https://www.portis.io/) API key, disabled by default (optional)
+VITE_PORTIS_DAPP_ID - [Portis wallet](https://www.portis.io/) API key, disabled by default (optional)
 
-REACT_APP_FORTMATIC_KEY_MAINNET - [Fortmatic wallet](https://fortmatic.com/) production API key(for mainnet), disabled by default (optional)
+VITE_FORTMATIC_KEY_MAINNET - [Fortmatic wallet](https://fortmatic.com/) production API key(for mainnet), disabled by default (optional)
 
-REACT_APP_FORTMATIC_KEY_TESTNET - [Fortmatic wallet](https://fortmatic.com/) development API key(for testnets), disabled by default (optional)
+VITE_FORTMATIC_KEY_TESTNET - [Fortmatic wallet](https://fortmatic.com/) development API key(for testnets), disabled by default (optional)
 
 ### Bug tracking and misc
 
 It is possible to configure the interface to integrate with standard bug tracking (Sentry) and analytics services (GTM). Both are disabled by default and **we put emphasis on using them with responsibility, with users' privacy always in mind**.
 
-REACT_APP_GTM_ID - [Google tag manager](https://marketingplatform.google.com/about/tag-manager/) id (optional)
+VITE_GTM_ID - [Google tag manager](https://marketingplatform.google.com/about/tag-manager/) id (optional)
 
-REACT_APP_SENTRY_DSN - [Sentry](https://sentry.io/) dsn url (optional)
+VITE_SENTRY_DSN - [Sentry](https://sentry.io/) dsn url (optional)
 
 ## Connecting to forks
 
