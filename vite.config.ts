@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import reactRefresh from '@vitejs/plugin-react-refresh';
 import react from '@vitejs/plugin-react';
 import svgrPlugin from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -11,10 +10,18 @@ export default defineConfig({
   build: {
     outDir: 'build'
   },
+  optimizeDeps: {
+    include: ['@apollo/client/core', '@apollo/client/cache'],
+    exclude: ['react']
+  },
+  // rollupInputOptions: {
+  //   external: ['react']
+  // },
   plugins: [
-    react(),
+    react({
+      jsxRuntime: 'classic'
+    }),
     tsconfigPaths(),
-    reactRefresh(),
     svgrPlugin({
       svgrOptions: {
         icon: true

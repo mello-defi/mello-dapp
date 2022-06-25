@@ -3,14 +3,20 @@
   "version": "0.1.0",
   "homepage": ".",
   "private": true,
+  "exports": {
+    ".": "./lib/invariant.esm.js",
+    "./process/index.js": "./process/index.js"
+  },
   "dependencies": {
     "@aave/protocol-js": "^4.3.0",
-    "@apollo/client": "^3.5.8",
+    "@apollo/client": "^3.6.9",
     "@balancer-labs/typechain": "^1.0.0",
     "@biconomy/hyphen": "^0.0.20",
-    "@emotion/styled": "^11.8.1",
+    "@emotion/react": "^11.9.3",
+    "@emotion/styled": "^11.9.3",
     "@headlessui/react": "^1.4.3",
     "@mui/icons-material": "^5.4.4",
+    "@mui/material": "^5.8.5",
     "@ramp-network/ramp-instant-sdk": "^3.0.0",
     "@renproject/chains": "^2.5.11",
     "@renproject/ren": "^2.5.11",

@@ -1,4 +1,5 @@
-import { ApolloClient, DefaultOptions, gql, InMemoryCache } from '@apollo/client';
+import { ApolloClient, DefaultOptions, gql } from '@apollo/client/core';
+import { InMemoryCache } from '@apollo/client/cache';
 import { ethers } from 'ethers';
 import { Pool, PoolToken, UserPool } from '_interfaces/balancer';
 import { twentyFourHoursInSecs } from '_utils/time';

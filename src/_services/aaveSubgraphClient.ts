@@ -1,4 +1,5 @@
-import { ApolloClient, DefaultOptions, gql, InMemoryCache } from '@apollo/client';
+import { ApolloClient, DefaultOptions, gql } from '@apollo/client/core';
+import { InMemoryCache } from '@apollo/client/cache';
 import { ReserveData, UserSummaryData, v2 } from '@aave/protocol-js';
 
 export async function getEthPrice(): Promise<string> {
