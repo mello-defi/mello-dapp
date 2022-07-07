@@ -1,5 +1,4 @@
-import { ApolloClient, DefaultOptions, gql } from '@apollo/client/core';
-import { InMemoryCache } from '@apollo/client/cache';
+import { createClient, gql } from 'urql';
 import { ethers } from 'ethers';
 import { Pool, PoolToken, UserPool } from '_interfaces/balancer';
 import { twentyFourHoursInSecs } from '_utils/time';
@@ -116,21 +115,9 @@ const GET_ALL_POOLS = gql`
   }
 `;
 
-const defaultOptions: DefaultOptions = {
-  watchQuery: {
-    fetchPolicy: 'no-cache',
-    errorPolicy: 'ignore'
-  },
-  query: {
-    fetchPolicy: 'no-cache',
-    errorPolicy: 'all'
-  }
-};
-const client = new ApolloClient({
+const client = createClient({
   // TODO make network specific
-  uri: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-v2',
-  cache: new InMemoryCache({ resultCaching: false }),
-  defaultOptions
+  url: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-v2'
 });
 
 const getBlockNum = async (provider: ethers.providers.Web3Provider): Promise<number> => {
@@ -144,29 +131,22 @@ export const getPastPools = async (
   provider: ethers.providers.Web3Provider
 ): Promise<Pool> => {
   const blockNum = await getBlockNum(provider);
-  const poolResults = await client.query({
-    query: GET_PAST_POOL_FOR_ID,
-    variables: { block: blockNum, poolId }
-  });
-  return poolResults.data ? poolResults.data.pools[0] : null;
+  const poolResults = await client.readQuery(GET_PAST_POOL_FOR_ID, { block: blockNum, poolId });
+  return poolResults?.data ? poolResults.data.pools[0] : null;
 };
 
 export async function getUserPools(userAddress: string): Promise<UserPool[]> {
-  const userPools = await client.query({
-    query: GET_USER_POOLS,
-    variables: { userAddress: userAddress.toLowerCase() }
+  const userPools = await client.readQuery(GET_USER_POOLS, {
+    userAddress: userAddress.toLowerCase()
   });
-  return userPools.data ? userPools.data.poolShares : [];
+  return userPools?.data ? userPools.data.poolShares : [];
 }
 export async function getPools(addresses: string[]): Promise<Pool[]> {
   const addressesLowercase = addresses.map((address) => address.toLowerCase());
-  const poolResults = await client.query({
-    query: GET_ALL_POOLS,
-    variables: {
-      minimumLiquidity: MINIMUM_LIQUIDITY
-    }
+  const poolResults = await client.readQuery(GET_ALL_POOLS, {
+    minimumLiquidity: MINIMUM_LIQUIDITY
   });
-  if (!poolResults.data) {
+  if (!poolResults?.data) {
     return [];
   }
 

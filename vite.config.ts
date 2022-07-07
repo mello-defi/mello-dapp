@@ -10,9 +10,9 @@ export default defineConfig({
   build: {
     outDir: 'build'
   },
-  optimizeDeps: {
-    include: ['@apollo/client/core', '@apollo/client/cache'],
-    exclude: ['react']
+  define: {
+    'process.env': {},
+    global: {}
   },
   // rollupInputOptions: {
   //   external: ['react']

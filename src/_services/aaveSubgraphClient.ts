@@ -1,29 +1,13 @@
-import { ApolloClient, DefaultOptions, gql } from '@apollo/client/core';
-import { InMemoryCache } from '@apollo/client/cache';
 import { ReserveData, UserSummaryData, v2 } from '@aave/protocol-js';
+import { createClient, gql } from 'urql';
 
 export async function getEthPrice(): Promise<string> {
-  const { data } = await client.query({
-    query: GET_ETH_PRICE
-  });
-  return data.priceOracle.usdPriceEth;
+  const result = await client.readQuery(GET_ETH_PRICE);
+  return result?.data.getEthPrice;
 }
-const defaultOptions: DefaultOptions = {
-  watchQuery: {
-    fetchPolicy: 'no-cache',
-    errorPolicy: 'ignore'
-  },
-  query: {
-    fetchPolicy: 'no-cache',
-    errorPolicy: 'all'
-  }
-};
-
-const client = new ApolloClient({
+const client = createClient({
   // TODO- make network specific
-  uri: 'https://api.thegraph.com/subgraphs/name/aave/aave-v2-matic',
-  cache: new InMemoryCache({ resultCaching: false }),
-  defaultOptions
+  url: 'https://api.thegraph.com/subgraphs/name/aave/aave-v2-matic'
 });
 
 const GET_RESERVES = gql`
@@ -132,22 +116,21 @@ export async function getUserSummaryData(
   userAddress: string,
   reserves: ReserveData[]
 ): Promise<UserSummaryData> {
-  const userReservesResults = await client.query({
-    query: GET_USER_RESERVES,
-    variables: { userAddress: userAddress.toLocaleLowerCase() }
+  const userReservesResults = await client.readQuery(GET_USER_RESERVES, {
+    userAddress: userAddress.toLocaleLowerCase()
   });
   const ethPrice = await getEthPrice();
-  const incentivesControllerResults = await client.query({ query: GET_INCENTIVES_CONTROLLER });
+  const incentivesControllerResults = await client.readQuery(GET_INCENTIVES_CONTROLLER);
   return v2.formatUserSummaryData(
     reserves,
-    userReservesResults.data.userReserves,
+    userReservesResults?.data.userReserves,
     userAddress.toLocaleLowerCase(),
     ethPrice,
     Math.floor(Date.now() / 1000),
-    incentivesControllerResults.data.incentivesController
+    incentivesControllerResults?.data.incentivesController
   );
 }
 export async function getReserves(): Promise<ReserveData[]> {
-  const reserveResults = await client.query({ query: GET_RESERVES });
-  return reserveResults.data.reserves as ReserveData[];
+  const reserveResults = await client.readQuery(GET_RESERVES);
+  return reserveResults?.data.reserves as ReserveData[];
 }
