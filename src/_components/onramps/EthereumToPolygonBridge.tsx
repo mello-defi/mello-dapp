@@ -26,11 +26,6 @@ interface BiconomyPreTransferStatus {
   responseCode: number;
 }
 
-interface BiconomyDepositResponse {
-  hash: string;
-  wait: (confirmations: number) => Promise<void>;
-}
-
 interface BiconomyFundsTransferedResponse {
   amount: string;
   code: number;
@@ -96,34 +91,40 @@ export default function EthereumToPolygonBridge() {
       if (provider && userAddress && !biconomyInitialized) {
         await hyphen.init();
         setBiconomyInitialized(true);
-        const preTransferStatus: BiconomyPreTransferStatus = await hyphen.preDepositStatus({
-          tokenAddress: ethereumTokenDefinition.address,
-          amount: ethers.utils
-            .parseUnits(transferAmount, ethereumTokenDefinition.decimals)
-            .toString(),
-          fromChainId: EVMChainIdNumerical.ETHEREUM_MAINNET,
-          toChainId: EVMChainIdNumerical.POLYGON_MAINNET,
-          userAddress
-        });
+        const preTransferStatus: BiconomyPreTransferStatus =
+          await hyphen.depositManager.preDepositStatus({
+            tokenAddress: ethereumTokenDefinition.address,
+            amount: ethers.utils
+              .parseUnits(transferAmount, ethereumTokenDefinition.decimals)
+              .toString(),
+            fromChainId: EVMChainIdNumerical.ETHEREUM_MAINNET,
+            toChainId: EVMChainIdNumerical.POLYGON_MAINNET,
+            userAddress
+          });
 
         if (preTransferStatus.code === RESPONSE_CODES.OK) {
           setDepositAddress(preTransferStatus.depositContract);
         } else if (preTransferStatus.code === RESPONSE_CODES.ALLOWANCE_NOT_GIVEN) {
-          const approveTx = await hyphen.approveERC20(
+          const approveTx = await hyphen.tokens.approveERC20(
             ethereumTokenDefinition.address,
             preTransferStatus.depositContract,
-            transferAmount
+            transferAmount,
+            userAddress,
+            true,
+            true
           );
           // const gasPrice = await getGasPrice(network.gasStationUrl);
-          await approveTx.wait(3);
-          logTransaction(
-            approveTx.hash,
-            network.chainId,
-            TransactionServices.Biconomy,
-            GenericActions.Approve,
-            transferAmount,
-            ethereumTokenDefinition.symbol
-          );
+          await approveTx?.wait(3);
+          if (approveTx?.hash) {
+            logTransaction(
+              approveTx.hash,
+              network.chainId,
+              TransactionServices.Biconomy,
+              GenericActions.Approve,
+              transferAmount,
+              ethereumTokenDefinition.symbol
+            );
+          }
         } else if (preTransferStatus.code === RESPONSE_CODES.UNSUPPORTED_NETWORK) {
           setTransactionError('Target chain is not supported yet');
         } else if (preTransferStatus.code === RESPONSE_CODES.NO_LIQUIDITY) {
@@ -137,20 +138,23 @@ export default function EthereumToPolygonBridge() {
   }, [provider, userAddress]);
 
   const deposit = async () => {
-    if (provider) {
+    if (provider && userAddress && depositAddress) {
       setIsTransferring(true);
       const etherVal = ethers.utils.parseEther(transferAmount.toString());
       const weiAmount = formatUnits(etherVal, 'wei');
       try {
-        const depositTx: BiconomyDepositResponse = await hyphen.deposit({
+        const depositTx = await hyphen.depositManager.deposit({
           sender: userAddress,
           receiver: userAddress,
           tokenAddress: ethereumTokenDefinition.address,
           depositContractAddress: depositAddress,
           amount: weiAmount,
-          fromChainId: EVMChainIdNumerical.ETHEREUM_MAINNET, // chainId of fromChain
-          toChainId: EVMChainIdNumerical.POLYGON_MAINNET // chainId of toChain
+          fromChainId: EVMChainIdNumerical.ETHEREUM_MAINNET.toString(), // chainId of fromChain
+          toChainId: EVMChainIdNumerical.POLYGON_MAINNET.toString(), // chainId of toChain
+          useBiconomy: true,
+          dAppName: 'Mello DeFi'
         });
+        if (!depositTx?.hash) throw new Error('No transaction hash');
         setEthereumTransactionHash(depositTx.hash);
         // const gasPrice = await getGasPrice(network.gasStationUrl);
         await depositTx.wait(3);
@@ -198,23 +202,20 @@ export default function EthereumToPolygonBridge() {
                   <TransactionStep
                     show={true}
                     transactionError={transactionError}
-                    stepComplete={depositAddress !== ''}
-                  >
+                    stepComplete={depositAddress !== ''}>
                     Deposit address generated
                   </TransactionStep>
                   <TransactionStep
                     show={depositAddress !== ''}
                     requiresUserInput={true}
                     transactionError={transactionError}
-                    stepComplete={!!transferAmount && parseFloat(transferAmount) > 0}
-                  >
+                    stepComplete={!!transferAmount && parseFloat(transferAmount) > 0}>
                     Transfer amount set
                   </TransactionStep>
                   <TransactionStep
                     show={isTransferring}
                     transactionError={transactionError}
-                    stepComplete={ethereumTransactionComplete}
-                  >
+                    stepComplete={ethereumTransactionComplete}>
                     Ethereum transaction complete
                     <BlockExplorerLink transactionHash={ethereumTransactionHash} />
                   </TransactionStep>
@@ -222,8 +223,7 @@ export default function EthereumToPolygonBridge() {
                     showTransition={false}
                     show={ethereumTransactionComplete}
                     transactionError={transactionError}
-                    stepComplete={polygonTransferComplete}
-                  >
+                    stepComplete={polygonTransferComplete}>
                     Polygon transaction complete
                     <BlockExplorerLink transactionHash={polygonTransactionHash} />
                   </TransactionStep>
