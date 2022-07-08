@@ -110,8 +110,8 @@ export default function EthereumToPolygonBridge() {
             preTransferStatus.depositContract,
             transferAmount,
             userAddress,
-            true,
-            true
+            true, //infinite approval
+            false //  * useBiconomy Boolean flag whether to use Biconomy for gasless transaction for approval
           );
           // const gasPrice = await getGasPrice(network.gasStationUrl);
           await approveTx?.wait(3);
