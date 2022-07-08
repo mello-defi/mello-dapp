@@ -1,3 +1,4 @@
+/* eslint-disable */
 const CracoAlias = require('craco-alias');
 // const {
 //   addAfterLoader,
