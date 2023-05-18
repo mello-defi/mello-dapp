@@ -7,6 +7,7 @@ import { HorizontalLineBreak } from '_components/core/HorizontalLineBreak';
 import { OnboardingStep } from '_pages/Onboarding/OnboardingSteps';
 import { Button, ButtonSize } from '_components/core/Buttons';
 import { setStep, setWaitingToAdvance } from '_redux/effects/onboardingEffects';
+import { isInDebugMode } from '_utils/isDebugMode';
 
 export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   const { currentStep, waitingToAdvance } = useSelector((state: AppState) => state.onboarding);
@@ -20,12 +21,11 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
   };
 
   const forceAdvanceToNextStep = () => {
-    if(__DEV__){
+    if (isInDebugMode()) {
       dispatch(setStep(step.number + 1));
       dispatch(setWaitingToAdvance(false));
     }
-
-  }
+  };
 
   useEffect(() => {
     if (currentStep === step.number + 1) {
@@ -38,8 +38,7 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
         <>
           <div
             key={step.number}
-            className={`py-2 px-4 rounded-2xl border bg-white shadow-sm border-gray-100 mb-2`}
-          >
+            className={`py-2 px-4 rounded-2xl border bg-white shadow-sm border-gray-100 mb-2`}>
             <div className={'flex flex-row justify-between w-full'}>
               <div className={'flex-row-center'}>
                 <span onClick={forceAdvanceToNextStep} className={'text-3xl mr-2'}>
@@ -55,8 +54,7 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
                 onClick={() => {
                   !stepIsCurrentStep && setIsExpanded(!isExpanded);
                 }}
-                className={'text-2xl cursor-pointer text-gray-400 hover:text-gray-600 transition'}
-              >
+                className={'text-2xl cursor-pointer text-gray-400 hover:text-gray-600 transition'}>
                 {isExpanded ? (
                   <ExpandLess className={'mb-0.5'} fontSize={'inherit'} />
                 ) : (
@@ -71,21 +69,27 @@ export default function OnboardingStepRow({ step }: { step: OnboardingStep }) {
             {/*<span>THIS STEP {step.number}</span>*/}
             {/*<br/>*/}
             <div className={'flex-row-center w-full text-body-smaller'}>
-              <DefaultTransition isOpen={isExpanded ||
-                (currentStep - 1 === step.number && waitingToAdvance) || (currentStep === step.number && !waitingToAdvance)
-              }>
+              <DefaultTransition
+                isOpen={
+                  isExpanded ||
+                  (currentStep - 1 === step.number && waitingToAdvance) ||
+                  (currentStep === step.number && !waitingToAdvance)
+                }>
                 <div className={'my-2'}>
                   <>{React.createElement(step.descriptionComponent)}</>
                 </div>
               </DefaultTransition>
             </div>
-            {(step.number === currentStep || waitingToAdvance) && step.actionComponent !== undefined &&
-            ((currentStep - 1 === step.number && waitingToAdvance) || !waitingToAdvance || (waitingToAdvance && currentStep === step.number + 1)) && (
-              <>
-                <HorizontalLineBreak />
-                <>{React.createElement(step.actionComponent, step.actionComponentProps)}</>
-              </>
-            )}
+            {(step.number === currentStep || waitingToAdvance) &&
+              step.actionComponent !== undefined &&
+              ((currentStep - 1 === step.number && waitingToAdvance) ||
+                !waitingToAdvance ||
+                (waitingToAdvance && currentStep === step.number + 1)) && (
+                <>
+                  <HorizontalLineBreak />
+                  <>{React.createElement(step.actionComponent, step.actionComponentProps)}</>
+                </>
+              )}
             <DefaultTransition isOpen={waitingToAdvance && currentStep === step.number + 1}>
               <div>
                 <HorizontalLineBreak />
